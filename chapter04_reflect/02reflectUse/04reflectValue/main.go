@@ -32,23 +32,23 @@ func (p Person) Test(i,j int,s string){
 func main() {
 
 	var num float64 = 1.2345
-	fmt.Println("old value of pointer:", num) // 1.2345
+	fmt.Println("old value of 03PointerSetPrivateValue:", num) // 1.2345
 
 	// 通过reflect.ValueOf获取num中的reflect.Value，注意，参数必须是指针才能修改其值
 	pointer := reflect.ValueOf(&num)
 	newValue := pointer.Elem()
 
-	fmt.Println("type of pointer:", newValue.Type()) // float64
-	fmt.Println("settability of pointer:", newValue.CanSet()) // true
+	fmt.Println("type of 03PointerSetPrivateValue:", newValue.Type()) // float64
+	fmt.Println("settability of 03PointerSetPrivateValue:", newValue.CanSet()) // true
 
 	// 重新赋值
 	newValue.SetFloat(77)
-	fmt.Println("new value of pointer:", num) // 77
+	fmt.Println("new value of 03PointerSetPrivateValue:", num) // 77
 
 	////////////////////
 	// 如果reflect.ValueOf的参数不是指针，会如何？
-	//pointer = reflect.ValueOf(num)
-	//newValue = pointer.Elem() // 如果非指针，这里直接panic，“panic: reflect: call of reflect.Value.Elem on float64 Value”
+	//03PointerSetPrivateValue = reflect.ValueOf(num)
+	//newValue = 03PointerSetPrivateValue.Elem() // 如果非指针，这里直接panic，“panic: reflect: call of reflect.Value.Elem on float64 Value”
 
 
 	// 一。 通过反射，调用方法
