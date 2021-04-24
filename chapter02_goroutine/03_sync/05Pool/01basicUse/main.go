@@ -1,5 +1,8 @@
 package main
 
+// sync pool 使用，比如fmt.Printf就有用到
+//fmt.Printf->Fprintf(os.Stdout, format, a...)-->newPrinter()-->ppFree sync.pool实例
+
 import (
 	"bytes"
 	"fmt"
@@ -28,10 +31,12 @@ func main()  {
 
 	pool := &sync.Pool{}
 
+	// put 归还 内存对象
 	pool.Put(NewConnection(1))
 	pool.Put(NewConnection(2))
 	pool.Put(NewConnection(3))
 
+	// get 获取 内存对象
 	connection := pool.Get().(*Connection)
 	fmt.Printf("%d\n", connection.id)
 
