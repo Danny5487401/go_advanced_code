@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 /*
 装饰模式：一种动态地往一个类中添加新的行为的设计模式.
 从process2中得知主要包含四个角色，抽象构件 Component，具体构件 ConcreteComponent，抽象装饰类 Decorator，具体装饰类 ConcreteComponent
@@ -17,61 +19,92 @@ package main
 2.需要给一批兄弟类增加或者改装功能
  */
 
-import (
-	"fmt"
-)
-//定义一个抽象组件
-type Company interface {
-	Showing()
+/*
+从example.png得知，
+1. Component(抽象构建)：具体构建和抽象装饰类的基类，声明了在具体构建中实现的业务方法，UML类图中的Component
+2. ConcreteComponent(具体构建)：抽象构建的子类，用于定义具体的构建对象，实现了在抽象构建中声明的方法，装饰器可以给它增加额外的职责(方法)，UML类图中的Window、TextBox、ListBox
+3. Decorator(抽象装饰类)：也是抽象构建类的子类，用于给具体构建增加职责，但是具体职责在其子类中实现，UML类图中的ComponentDecorator
+4. ConcreteDecorator(具体装饰类)：抽象装饰类的子类，负责向构建添加新的职责，UML类图中的ScrollBarDecorator、BlackBorderDecorator
+
+ */
+
+// 步骤一 ：实现Component抽象类以及ConcreteComponent具体构建
+
+type Component interface {
+	Display()
 }
 
-//实现Company的一个组件
-type BaseCompany struct {
+type Window struct{}
+
+func (w Window) Display() {
+	fmt.Println("显示窗体")
 }
 
-func (pB *BaseCompany) Showing() {
-	fmt.Println("基础公司有老板，有前台，有人事...")
+type TextBox struct{}
+
+func (t TextBox) Display() {
+	fmt.Println("显示文本框")
 }
 
-//实现Company的一个组件
-type DevelopingCompany struct {
-	Company
+type ListBox struct{}
+
+func (l ListBox) Display() {
+	fmt.Println("显示列表框")
+}
+//  步骤二：实现ConcretDecorator具体装饰类
+type ScrollBarDecorator struct {
+	Component
 }
 
-func (pD *DevelopingCompany) AddWorker() {
-	fmt.Println("发展中公司还有开发、测试、财务人员")
+func (sbd ScrollBarDecorator) Display() {
+	fmt.Println("为构建增加滚动条")
+	sbd.Component.Display()
 }
 
-func (pD *DevelopingCompany) Showing() {
-	fmt.Println("发展中公司中：")
-	pD.Company.Showing()
-	pD.AddWorker()
+type BlackBorderDecorator struct {
+	Component
 }
 
-//实现Company的一个组件
-type BigCompany struct {
-	Company
+func (bbd BlackBorderDecorator) Display() {
+	fmt.Println("为构建增加黑色边框")
+	bbd.Component.Display()
 }
-
-func (pD *BigCompany) AddWorker() {
-	fmt.Println("大公司除此之外，个职能人员应有尽有")
+// 步骤三：  定义工厂函数生产出具体装饰类
+func NewDecorator(t string, decorator Component) Component {
+	switch t {
+	case "sbd":
+		return ScrollBarDecorator{
+			Component: decorator,
+		}
+	case "bbd":
+		return BlackBorderDecorator{
+			Component: decorator,
+		}
+	default:
+		return nil
+	}
 }
-
-func (pD *BigCompany) Showing() {
-	fmt.Println("大型公司中：")
-	pD.Company.Showing()
-	pD.AddWorker()
-}
+// 测试
 
 func main() {
+	// 1. 选择Window
+	component := Window{}
+	tScrollBarDecorator := NewDecorator("sbd", component)
+	tScrollBarDecorator.Display()
+	fmt.Println("==============================")
+	//tBlackBorderDecorator := NewDecorator("bbd", component)
+	tBlackBorderDecorator := NewDecorator("bbd", tScrollBarDecorator)
+	tBlackBorderDecorator.Display()
 
-	company := &BaseCompany{}
-	developingCompany := &DevelopingCompany{Company: company}
-	developingCompany.Showing()
-
-	bigCompany := &BigCompany{Company: developingCompany}
-	bigCompany.Showing()
-	return
+	// 2. 选择TextBox
+	//component := TextBox{}
+	//tScrollBarDecorator := NewDecorator("sbd", component)
+	//tScrollBarDecorator.Display()
+	//fmt.Println("==============================")
+	//tBlackBorderDecorator := NewDecorator("bbd", tScrollBarDecorator)
+	//tBlackBorderDecorator.Display()
 }
+
+
 
 
