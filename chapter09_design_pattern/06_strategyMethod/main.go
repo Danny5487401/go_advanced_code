@@ -28,7 +28,8 @@ type CashRebate struct {
 	Rebate float64
 }
 func (c *CashRebate) SetRebate(rebate float64) {
-	c.Rebate = rebate}
+	c.Rebate = rebate
+}
 
 func (c *CashRebate) AcceptCash(money float64) float64 {
 	return c.Rebate * money
@@ -67,6 +68,8 @@ func (c *CashContext) SetCashContext(t string) {
 		r := new(CashReturn)
 		r.SetCashReturn(200, 100)
 		c.Strategy = r }}
+
+// 收钱
 func (c *CashContext) GetMoney(money float64) float64 {
 	return c.Strategy.AcceptCash(money)
 }
