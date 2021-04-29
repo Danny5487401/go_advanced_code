@@ -1,5 +1,5 @@
 package main
-
+// 资源竞争
 import (
 	"fmt"
 	"math/rand"

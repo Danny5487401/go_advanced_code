@@ -1,5 +1,6 @@
 package main
 
+// 数据一致性
 import (
 	"fmt"
 	"math/rand"
