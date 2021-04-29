@@ -84,8 +84,8 @@ type Employee struct {
 func main()  {
 	// 可以用于字符串数组
 	list := []string{"1", "2", "3", "4", "5", "6"}
-	result := Transform(list, func(a string) string{
-		return a +a +a
+	result := Transform(list, func(str string) string{
+		return str + str + str
 	})
 	fmt.Printf("原始切片:%+v\n",list)
 	fmt.Printf("%+v\n",result)
