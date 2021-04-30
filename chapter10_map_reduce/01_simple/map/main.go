@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// 定义两个函数 函数func(s string) string 或 func(s string) in
+// 定义两个函数 函数func(s string_test) string_test 或 func(s string_test) in
 
 func MapStrToStr(arr []string, fn func(s string) string) []string {
 	var newArray = make([]string,0)

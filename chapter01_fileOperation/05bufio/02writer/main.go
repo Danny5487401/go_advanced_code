@@ -17,7 +17,7 @@ func main() {
 			func (b *Writer) Write(p []byte) (nn int, err error)
 			func (b *Writer) WriteByte(c byte) error
 			func (b *Writer) WriteRune(r rune) (size int, err error)
-			func (b *Writer) WriteString(s string) (int, error)
+			func (b *Writer) WriteString(s string_test) (int, error)
 
 	*/
 

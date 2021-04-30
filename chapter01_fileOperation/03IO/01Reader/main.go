@@ -34,21 +34,21 @@ func main() {
 	fmt.Println(err) //<nil>
 	fmt.Println(n) //4
 	fmt.Println(bs) //[97 98 99 100]  // ASCII值
-	fmt.Println(string(bs)) //abcd
+	fmt.Println(string_test(bs)) //abcd
 
 	//第二次读取
 	n,err = file.Read(bs)
 	fmt.Println(err)//<nil>
 	fmt.Println(n)//4
 	fmt.Println(bs) //[101 102 13 10]
-	fmt.Println(string(bs)) //ef
+	fmt.Println(string_test(bs)) //ef
 
 	//第三次读取
 	n,err = file.Read(bs)
 	fmt.Println(err) //<nil>
 	fmt.Println(n) //4
 	fmt.Println(bs) //[65 66 13 10]
-	fmt.Println(string(bs)) //AB
+	fmt.Println(string_test(bs)) //AB
 
 	//第四次读取
 	n,err = file.Read(bs)

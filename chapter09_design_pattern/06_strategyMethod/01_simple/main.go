@@ -14,7 +14,7 @@ type API struct {
 
 }
 // 这个主题时变化不稳定的，没有可扩展性
-func (a *API) Recognition(name string){
+func (a *API) Recognition(name string_test){
 	if name == "ali"{
 		fmt.Println("ali api调用")
 	}else if name == "baidu"{

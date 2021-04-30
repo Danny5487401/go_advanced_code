@@ -33,7 +33,7 @@ import (
 /*
 Go语言的类型:
 1.变量包括（type, value）两部分,这一点就知道为什么nil != nil了
-2. type 包括 static type和concrete type. 简单来说 static type是你在编码是看见的类型(如int、string)，
+2. type 包括 static type和concrete type. 简单来说 static type是你在编码是看见的类型(如int、string_test)，
 	concrete type是runtime系统看见的类型
 3. 类型断言能否成功，取决于变量的concrete type，而不是static type。
 	因此，一个 reader变量如果它的concrete type也实现了write方法的话，它也可以被类型断言为writer
@@ -47,7 +47,7 @@ func main()  {
 		type MyInt int // int 就是静态类型
 
 		type A struct{
-			Name string  // string就是静态
+			Name string_test  // string就是静态
 		}
 		var i *int  // *int就是静态类型
 	 */

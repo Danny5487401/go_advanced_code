@@ -44,14 +44,14 @@ func main() {
 	//p := make([]byte,1024)
 	//n1,err := b1.Read(p)
 	//fmt.Println(n1)
-	//fmt.Println(string(p[:n1]))
+	//fmt.Println(string_test(p[:n1]))
 
 	////2.ReadLine()
 	//data,flag,err := b1.ReadLine()
 	//fmt.Println(flag)
 	//fmt.Println(err)
 	//fmt.Println(data)
-	//fmt.Println(string(data))
+	//fmt.Println(string_test(data))
 
 	//3.ReadString() 读到分隔符
 	//s1,err :=b1.ReadString('\n')
@@ -78,7 +78,7 @@ func main() {
 	//4.ReadBytes() 读到分隔符
 	//data,err :=b1.ReadBytes('\n')
 	//fmt.Println(err)
-	//fmt.Println(string(data))
+	//fmt.Println(string_test(data))
 
 
 	//Scanner

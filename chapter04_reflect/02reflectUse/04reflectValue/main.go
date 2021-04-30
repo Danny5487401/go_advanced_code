@@ -69,12 +69,12 @@ func main() {
 
 	// 有参数的方法调用
 	methodValue2 := getValue.MethodByName("Say")
-	fmt.Printf("Kind : %s, Type : %s\n",methodValue2.Kind(),methodValue2.Type()) // Kind : func, Type : func(string)
+	fmt.Printf("Kind : %s, Type : %s\n",methodValue2.Kind(),methodValue2.Type()) // Kind : func, Type : func(string_test)
 	args2 := []reflect.Value{reflect.ValueOf("反射机制")}
 	methodValue2.Call(args2)
 	// 多个不同类型的参数
 	methodValue3 := getValue.MethodByName("Test")
-	fmt.Printf("Kind : %s, Type : %s\n",methodValue3.Kind(),methodValue3.Type()) // Kind : func, Type : func(int, int, string)
+	fmt.Printf("Kind : %s, Type : %s\n",methodValue3.Kind(),methodValue3.Type()) // Kind : func, Type : func(int, int, string_test)
 	args3 := []reflect.Value{reflect.ValueOf(100), reflect.ValueOf(200),reflect.ValueOf("Hello")}
 
 	methodValue3.Call(args3)
@@ -86,7 +86,7 @@ func main() {
 	fmt.Printf("Kind : %s , Type : %s\n",value.Kind(),value.Type()) //Kind : func , Type : func()
 
 	value2 := reflect.ValueOf(fun2)
-	fmt.Printf("Kind : %s , Type : %s\n",value2.Kind(),value2.Type()) //Kind : func , Type : func(int, string)
+	fmt.Printf("Kind : %s , Type : %s\n",value2.Kind(),value2.Type()) //Kind : func , Type : func(int, string_test)
 
 
 	//通过反射调用函数
