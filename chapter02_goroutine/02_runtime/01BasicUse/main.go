@@ -1,4 +1,16 @@
 package main
+// runtime的基本使用
+
+/*
+golang 的 runtime 核心功能包括以下内容:
+
+1.协程(goroutine)调度(并发调度模型)
+2.垃圾回收(GC)
+3.内存分配
+4.使得 golang 可以支持如 pprof、trace、race 的检测
+5.支持 golang 的内置类型 channel、map、slice、string等的实现
+
+ */
 
 import (
 	"fmt"

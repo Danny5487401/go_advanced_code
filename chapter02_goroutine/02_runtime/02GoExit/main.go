@@ -5,7 +5,8 @@ import (
 	"runtime"
 	"time"
 )
-// 6.Goexit()使用
+// .Goexit()使用
+
 func main() {
 	//创建新建的协程
 	go func() {
