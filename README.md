@@ -3,6 +3,11 @@
 ![高级go编程](https://gimg2.baidu.com/image_search/src=http%3A%2F%2Ft.ki4.cn%2F2020%2F1%2FvIVv6v.jpg&refer=http%3A%2F%2Ft.ki4.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1621305693&t=1a817e6e6ecf0e1ec1890212636f0c19)
 # *目录*
 ## 1. 第一章 文件操作
+    1. os中FileInfo底层的文件描述符和相关信息
+    2. os文件操作
+    3. io包底层Reader和Writer接口
+    4. io断点续传
+    5. bufio缓存读写
 ---
 ## 2. 第二章 协程
     1. 两级线程模型
@@ -38,7 +43,7 @@
    1.  闭包理论
    2.  闭包应用   
 ## 8. 第八章 defer函数及汇编语言理解
-
+    1. 注册延迟调用机制
 ## 9. 第九章 设计模式
     1. 简单工厂模式
     2. 装饰模式
