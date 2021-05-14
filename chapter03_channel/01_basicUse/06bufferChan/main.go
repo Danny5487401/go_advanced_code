@@ -6,6 +6,12 @@ import (
 	"time"
 )
 
+/* 使用缓冲channel增强并发
+场景：并发
+原理：有缓冲通道可供多个协程同时处理，在一定程度可提高并发性。
+也就是并发中的并行
+*/
+
 func main() {
 	/*
 		非缓存通道：make(chan T)
@@ -34,7 +40,7 @@ func main() {
 	ch3 := make(chan string, 4)
 	go sendData3(ch3)
 	for {
-		time.Sleep(1*time.Second)
+		time.Sleep(1 * time.Second)
 		v, ok := <-ch3
 		if !ok {
 			fmt.Println("读完了，，", ok)
