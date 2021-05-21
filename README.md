@@ -14,12 +14,13 @@
     2. runtime模块和GC
     3. sync模块
     4. 并发数量控制
-    5. goroutine泄漏
+    5. goroutine泄漏分析及处理
+    6. 线程池
 ---
 ## 第三章 通道
     1. 基本使用
     2. TimerChan模块
-    3. Select
+    3. Select多路复用
     4. CSP理论中的Process/Channel
     5. Channel结构
 ---
@@ -44,7 +45,10 @@
     1. 闭包理论
     2. 闭包应用   
 ## 第八章 defer函数及汇编语言理解
-    1. 注册延迟调用机制
+    1. 注册延迟调用机制定义及使用
+    2. defer陷阱
+    3. defer传参和返回设置
+    4. defer循环性能问题
 ## 第九章 设计模式
     1. 简单工厂模式
     2. 装饰模式
@@ -54,7 +58,7 @@
     6. 解释器模式
 ## 第十章 编写高级函数map,reduce
     1. 简单写法
-    2. 类型检查
+    2. 泛型及类型检查
 ## 第十一章 汇编理解go语言
     1. 汇编的基本概念
     2. plan9汇编
@@ -65,3 +69,8 @@
     1. Go调用C函数
     2. Go调用C库
 ## 第十四章 Context上下文
+    1. 使用Context理由
+    2. WithCancel
+    3. WithDealine
+    4. WithValue
+    5. WithTimeout
