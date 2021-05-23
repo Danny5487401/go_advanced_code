@@ -28,10 +28,6 @@ func main()  {
 	//handler参数一般会设为nil，此时会使用DefaultServeMux。
 	http.ListenAndServe(":8080",nil)
 
-
-
-
-	
 }
 
 func sayHello(res http.ResponseWriter,req *http.Request)  {
