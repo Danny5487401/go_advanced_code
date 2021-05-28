@@ -10,6 +10,14 @@ import (
 原理：所有读ch的协程都会收到close(ch)的信号
 */
 
+func sendData(ch1 chan int) {
+	// 发送方：10条数据
+	for i := 0; i < 10; i++ {
+		ch1 <- i //将i写入通道中
+	}
+	close(ch1) //将ch1通道关闭了。
+}
+
 func main() {
 	ch1 := make(chan int)
 	go sendData(ch1)
@@ -35,13 +43,7 @@ func main() {
 
 	fmt.Println("main...over....")
 }
-func sendData(ch1 chan int) {
-	// 发送方：10条数据
-	for i := 0; i < 10; i++ {
-		ch1 <- i //将i写入通道中
-	}
-	close(ch1) //将ch1通道关闭了。
-}
+
 
 /*
 结果：

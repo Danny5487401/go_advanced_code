@@ -5,7 +5,18 @@ import (
 	"runtime"
 	"time"
 )
-// .Goexit()使用
+
+// Goexit()使用
+func fun() {
+	// 调度器确保所有已注册 defer延迟调用被执行。
+	defer fmt.Println("defer。。。")
+
+	//return           //终止此函数
+	runtime.Goexit() //终止所在的协程
+
+	fmt.Println("fun函数。。。")
+}
+
 
 func main() {
 	//创建新建的协程
@@ -23,14 +34,6 @@ func main() {
 }
 
 
-func fun() {
-	defer fmt.Println("defer。。。")
-
-	//return           //终止此函数
-	runtime.Goexit() //终止所在的协程
-
-	fmt.Println("fun函数。。。")
-}
 
 /*结果：
 goroutine开始。。。

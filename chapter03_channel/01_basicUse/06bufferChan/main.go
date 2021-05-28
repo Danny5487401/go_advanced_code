@@ -12,6 +12,14 @@ import (
 也就是并发中的并行
 */
 
+func sendData3(ch3 chan string) {
+	for i := 0; i < 10; i++ {
+		ch3 <- "数据" + strconv.Itoa(i)
+		fmt.Println("子goroutine，写出第", i, "个数据")
+	}
+	close(ch3)
+}
+
 func main() {
 	/*
 		非缓存通道：make(chan T)
@@ -52,10 +60,4 @@ func main() {
 	fmt.Println("main...over...")
 }
 
-func sendData3(ch3 chan string) {
-	for i := 0; i < 10; i++ {
-		ch3 <- "数据" + strconv.Itoa(i)
-		fmt.Println("子goroutine，写出第", i, "个数据")
-	}
-	close(ch3)
-}
+

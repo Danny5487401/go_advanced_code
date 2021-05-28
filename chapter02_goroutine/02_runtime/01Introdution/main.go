@@ -4,11 +4,11 @@ package main
 /*
 golang 的 runtime 核心功能包括以下内容:
 
-1.协程(goroutine)调度(并发调度模型)
-2.垃圾回收(GC)
-3.内存分配
-4.使得 golang 可以支持如 pprof、trace、race 的检测
-5.支持 golang 的内置类型 channel、map_test、slice、string等的实现
+1. 协程(goroutine)调度(并发调度模型)
+2. 垃圾回收(GC)
+3. 内存分配
+4. 使得 golang 可以支持如 pprof、trace、race 的检测
+5. 支持 golang 的内置类型 channel、map_test、slice、string等的实现
 
  */
 
@@ -32,7 +32,7 @@ func main()  {
 	// 5. Gosched()
 	go func() {
 		for i := 0; i < 5; i++ {
-			fmt.Println("goroutine。。。")
+			fmt.Printf("goroutine。。。%d\n",i)
 		}
 
 	}()
@@ -40,8 +40,7 @@ func main()  {
 	for i := 0; i < 4; i++ {
 		//让出时间片，先让别的协议执行，它执行完，再回来执行此协程
 		runtime.Gosched()
-		fmt.Println("main。。")
+		fmt.Printf("main。%d\n",i)
 	}
-
 
 }
