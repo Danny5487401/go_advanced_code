@@ -10,8 +10,7 @@ import (
 切片本身并不是动态数组或者数组指针。
 它内部实现的数据结构通过指针引用底层数组，设定相关属性将数据读写操作限定在指定的区域内。切片本身是一个只读对象，其工作机制类似数组指针的一种封装。
 切片（slice）是对数组一个连续片段的引用，所以切片是一个引用类型（因此更类似于 C++ 中的 Vector 类型，或者 Python 中的 list 类型）
- */
-/*
+
 结构
 type slice struct {
 	array unsafe.Pointer
@@ -59,7 +58,6 @@ func main()  {
 	fmt.Printf("结构是%T,数值是%v\n",s1,s1)  // 结构是struct { addr uintptr; len int; cap int },数值是{0 3 3}[]
 	s := *(*[]byte)(unsafe.Pointer(&s1))
 	fmt.Printf("结构是%T,数值是%v\n",s,s) // 结构是[]uint8,数值是[]
-
 
 
 	// 方式二
