@@ -1,4 +1,4 @@
-package _1basic_idea
+package _1asm_basic_idea
 /*
 
 汇编语言（assembly language）:用于电子计算机、微处理器、微控制器或其他可编程器件的低级语言，亦称为符号语言
