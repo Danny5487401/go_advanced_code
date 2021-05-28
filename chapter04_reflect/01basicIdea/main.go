@@ -76,12 +76,12 @@ func main()  {
 	// value是实际变量值，type是实际变量的类型。一个interface{}类型的变量包含了2个指针，
 	//1.一个指针指向值的类型【对应concrete type】，2.另外一个指针指向实际的值【对应value】。
 
-	tty, err := os.OpenFile("E:\\go_advanced_code\\chapter04_reflect\\danny_reflect.txt", os.O_RDWR, 0)
+	tty, err := os.OpenFile("chapter04_reflect/danny_reflect.txt", os.O_RDWR, 0)
 	if err != nil{
 		fmt.Println("出现错误",err.Error())
 	}
-	fmt.Printf("tty是%v\n",tty)
-	// 建类型为*os.File的变量,然后将其赋给一个接口变量r
+	fmt.Printf("tty是%v\n",*tty)
+	// 类型为*os.File的变量,然后将其赋给一个接口变量r
 	var r io.Reader
 	r = tty
 	// 接口变量r的pair中将记录如下信息：(tty, *os.File)，这个pair在接口变量的连续赋值过程中是不变的，将接口变量r赋给另一个接口变量w:
@@ -98,5 +98,15 @@ func main()  {
 	// reflect.TypeOf()是获取pair中的type，reflect.ValueOf()获取pair中的value。
 	v := reflect.ValueOf(r) //得到实际的值，通过v我们获取存储在里面的值，还可以去改变值
 	t := reflect.TypeOf(r) //得到类型的元数据,通过t我们能获取类型定义里面的所有元素
+
 	fmt.Println(v,t) // &{0xc0000ce780} *os.File
+	fmt.Printf("t的kind是%+v\n",v.Kind()) // t的kind是ptr
+
+	/*
+	反射简单来说就是取得对象的类型(Type)，类别(Kind)，值(Value)，对元素（Element）的字段（Field）进行遍历和操作（读写）。
+
+	对于类型(Type)和类别(Kind)需要注意一下。Type可以认为是Kind的子集
+	对于基本类型来说Type和Kind是一致的。例如int的Type和Kind一样都是int
+	对于Struct来说，Type是你定义的结构体， Kind为Struct
+	 */
 }
