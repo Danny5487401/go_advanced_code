@@ -42,6 +42,17 @@ import "fmt"
 	// VisitorFunc对应这个对象的方法，也就是定义中的“操作”
 	type VisitorFunc func(*Info, error) error
 
+Visitor的链式处理
+	1.多个对象聚合为一个对象
+		VisitorList
+		EagerVisitorList
+	2.多个方法聚合为一个方法
+		DecoratedVisitor
+		ContinueOnErrorVisitor
+	3.将对象抽象为多个底层对象，逐个调用方法
+		FlattenListVisitor
+		FilteredVisitor
+
 1. VisitorList:封装多个Visitor为一个，出现错误就立刻中止并返回-->k8s.io/cli-runtime/pkg/resource/visitor.go
 	// VisitorList定义为[]Visitor，又实现了Visit方法，也就是将多个[]Visitor封装为一个Visitor
 	type VisitorList []Visitor
