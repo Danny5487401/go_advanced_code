@@ -23,19 +23,20 @@
 ---
 ## 第三章 通道
     1. 基本使用
-        1.1 阻塞
+        1.0 channel来源
+        1.1 无缓存通道
         1.2 父子通信
         1.3 死锁
         1.4 close(ch)关闭所有下游协程
         1.5 通道遍历range
-        1.6 缓冲channel增强并发
+        1.6 有缓冲channel增强并发
         1.7 双向通道
         1.8 单向通道
         1.9 使用channel传递channel
     2. TimerChan模块
     3. Select多路复用
     4. CSP理论中的Process/Channel
-    5. Channel通道结构
+    5. Channel内部结构PPT分析
 ---
 ## 第四章 反射
     1. 反射原理及应用场景
