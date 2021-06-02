@@ -62,7 +62,7 @@ func NewServer(addr string, port int, options ...OptionWithError) (*Server, erro
 func main() {
 	s1, _ := NewServer("localhost", 1024)
 	s2, _ := NewServer("localhost", 2048, Protocol("udp"))
-	s3, _ := NewServer("0.0.0.0", 8080, Timeout(300*time.Second), MaxConns(1000))
+	s3, _ := NewServer("0.0.0.0", 8080, Timeout(300*time.Second), Protocol("tcp"))
 
 	fmt.Println(s1, s2, s3)
 
