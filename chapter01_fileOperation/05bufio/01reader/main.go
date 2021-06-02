@@ -22,7 +22,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	_ "io"
 	"os"
 	"strings"
