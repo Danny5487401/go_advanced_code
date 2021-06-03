@@ -18,6 +18,13 @@
         2.3 资源竞争一致性问题分析
         2.4 垃圾回收机制
     3. sync模块
+        2.1 waitGroup同步等待组对象
+        2.2 互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比
+        2.3 Once单例对象
+        2.4 并发安全Map
+        2.5 Pool不是*连接池*!
+        2.6 Cond条件变量
+        2.7 atomic原子操作
     4. 并发数量控制
     5. goroutine泄漏分析及处理
     6. 线程池
