@@ -6,8 +6,7 @@ import (
 	"sync/atomic"
 )
 
-// sync/atomic 库提供了原子操作的支持，原子操作直接有底层CPU硬件支持，因而一般要比基于操作系统API的锁方式效率高些。
-
+// 加减操作
 var sum uint32 = 100
 var wg sync.WaitGroup
 
