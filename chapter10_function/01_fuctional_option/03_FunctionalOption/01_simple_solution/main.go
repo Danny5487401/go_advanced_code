@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+// 函数选项：可参考google.golang.org\grpc@v1.27.1\server.go源码 serverOptions
+
 type Server struct {
 	Addr     string
 	Port     int
