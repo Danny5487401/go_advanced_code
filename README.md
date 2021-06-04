@@ -1,7 +1,8 @@
+# *高级Goland学习代码*
 # go_advanced_code
-# goVersion==1.16
-![高级go编程](https://gimg2.baidu.com/image_search/src=http%3A%2F%2Ft.ki4.cn%2F2020%2F1%2FvIVv6v.jpg&refer=http%3A%2F%2Ft.ki4.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1621305693&t=1a817e6e6ecf0e1ec1890212636f0c19)
+![高级go编程](./img/advenced_go_code_logo.jpg)
 # *目录*
+## *goVersion==1.16*
 ## 第一章 文件操作
     1. os中FileInfo底层的文件描述符和相关信息
     2. os文件操作
@@ -17,6 +18,13 @@
         2.3 资源竞争一致性问题分析
         2.4 垃圾回收机制
     3. sync模块
+        2.1 waitGroup同步等待组对象
+        2.2 互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比
+        2.3 Once单例对象
+        2.4 并发安全Map
+        2.5 Pool不是 **连接池** !
+        2.6 Cond条件变量
+        2.7 atomic原子操作
     4. 并发数量控制
     5. goroutine泄漏分析及处理
     6. 线程池
@@ -54,8 +62,8 @@
     6. 扩容策略
 ---
 ## 第六章 指针
-    1. 指针分类
-    2. unsafe包使用
+    1. 指针类型转换及修改值
+    2. 指针分类及unsafe包使用
     3. 获取私有变量值
 ---
 ## 第七章 闭包  
@@ -67,20 +75,33 @@
     3. defer传参和返回设置
     4. defer循环性能问题
 ## 第九章 设计模式
+### OOP七大准则
     1. 创建型模式
     2. 结构型模式
     3. 行为型模式
-## 第十章 编写高级函数map,reduce
-    1. 简单写法
-    2. 泛型及类型检查
+## 第十章 函数式编程
+    1. 函数选项
+    2. 高级函数
+        2.1 简单实现filter,map,reduce
+        2.2 简单案例
+        2.3 复杂实现：泛型及类型检查
+    3. 一等公民
+        3.1 函数介绍
+        3.2 网络管理中三种处理对比
+            3.2.1 通过同享内存通信
+            3.2.2 通过通信(具体数据)共享内存
+            3.2.3 通过通信(函数)共享内存
 ## 第十一章 汇编理解go语言
     1. 汇编的基本概念
     2. plan9汇编
     3. Golang底层数据结构
+        3.1 Map底层结构
+        3.2 String底层结构
+        3.3 Struct底层结构
 ## 第十二章 网络编程net
-    1. net/http高级封装
-    2. 爬虫案例
-    3. Tcp使用
+    1. net/http高级封装演变
+    2. 爬虫获取邮箱案例
+    3. Tcp实现客户端及服务端
     4. Tcp黏包分析及处理
 ## 第十三章 CGO调用C语言
     1. Go调用C函数
@@ -95,3 +116,7 @@
     3. WithDealine
     4. WithValue
     5. WithTimeout
+## 第十五章 接口编程
+    1. 冗余代码写法
+    2. 简单优化
+    3. 常用优化方式

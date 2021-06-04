@@ -4,7 +4,7 @@ import "fmt"
 
 /*
 装饰模式：一种动态地往一个类中添加新的行为的设计模式.
-从process2中得知主要包含四个角色，抽象构件 Component，具体构件 ConcreteComponent，抽象装饰类 Decorator，具体装饰类 ConcreteComponent
+从process2.png中得知主要包含四个角色，抽象构件 Component，具体构件 ConcreteComponent，抽象装饰类 Decorator，具体装饰类 ConcreteComponent
 优点：
 1. 可以通过一种动态的方式来扩展一个对象的功能
 2. 可以使用多个具体装饰类来装饰同一对象，增加其功能
@@ -17,7 +17,7 @@ import "fmt"
 使用场景：
 1.需要给一个对象增加功能，这些功能可以动态地撤销，例如：在不影响其他对象的情况下，动态、透明的方式给单个对象添加职责，处理那些可以撤销的职责
 2.需要给一批兄弟类增加或者改装功能
- */
+*/
 
 /*
 从example.png得知，
@@ -26,7 +26,7 @@ import "fmt"
 3. Decorator(抽象装饰类)：也是抽象构建类的子类，用于给具体构建增加职责，但是具体职责在其子类中实现，UML类图中的ComponentDecorator
 4. ConcreteDecorator(具体装饰类)：抽象装饰类的子类，负责向构建添加新的职责，UML类图中的ScrollBarDecorator、BlackBorderDecorator
 
- */
+*/
 
 // 步骤一 ：实现Component抽象类以及ConcreteComponent具体构建
 
@@ -51,6 +51,7 @@ type ListBox struct{}
 func (l ListBox) Display() {
 	fmt.Println("显示列表框")
 }
+
 //  步骤二：实现ConcretDecorator具体装饰类
 type ScrollBarDecorator struct {
 	Component
@@ -69,6 +70,7 @@ func (bbd BlackBorderDecorator) Display() {
 	fmt.Println("为构建增加黑色边框")
 	bbd.Component.Display()
 }
+
 // 步骤三：  定义工厂函数生产出具体装饰类
 func NewDecorator(t string, decorator Component) Component {
 	switch t {
@@ -84,6 +86,7 @@ func NewDecorator(t string, decorator Component) Component {
 		return nil
 	}
 }
+
 // 测试
 
 func main() {
@@ -104,7 +107,3 @@ func main() {
 	//tBlackBorderDecorator := NewDecorator("bbd", tScrollBarDecorator)
 	//tBlackBorderDecorator.Display()
 }
-
-
-
-
