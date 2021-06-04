@@ -2,6 +2,8 @@ package main
 
 import "fmt"
 
+// Golang使用goroutine和channel简单、高效的解决并发问题，channel解决的是goroutine之间的通信。
+
 /*
 channel存在3种状态:
 1. nil，未初始化的状态，只进行了声明，或者手动赋值为nil
