@@ -46,5 +46,22 @@ Context 原理
 	Deadline()，返回截止时间和ok。
 	Value()，返回值。
 
-上面可以看到Context是一个接口，想要使用就得实现其方法。在context包内部已经为我们实现好了两个空的Context，可以通过调用Background()和TODO()方法获取。一般的将它们作为Context的根，往下派生。
+上面可以看到Context是一个接口，想要使用就得实现其方法。在context包内部已经为我们实现好了两个空的Context，可以通过调用Background()和TODO()方法获取。
+	一般的将它们作为Context的根，往下派生。
+
+	1. Deadline方法需要返回当前Context被取消的时间，也就是完成工作的截止时间（deadline）；
+	2. Done方法需要返回一个Channel，这个Channel会在当前工作完成或者上下文被取消之后关闭，多次调用Done方法会返回同一个Channel；
+	3. Err方法会返回当前Context结束的原因，它只会在Done返回的Channel被关闭时才会返回非空的值；
+		如果当前Context被取消就会返回Canceled错误；
+		如果当前Context超时就会返回DeadlineExceeded错误；
+	4. Value方法会从Context中返回键对应的值，对于同一个上下文来说，多次调用Value 并传入相同的Key会返回相同的结果，该方法仅用于传递跨API和进程间跟请求域的数据
+实现的类型：
+	emptyCtx：默认初始的context使用的类型，仅实现Context接口，不做任何处理，返回默认空值。
+
+	valueCtx：对应携带K-V值的context接口实现，携带k-v数据成员，实现了value函数的具体操作。
+
+	cancelCtx：实现了cancler接口，为context提供了可取消自身和子孙的功能。
+
+	timerCtx：在cancelCtx的基础上，对带有定时功能的Context进行了实现。
+
 */
