@@ -2,7 +2,12 @@ package main
 
 import "fmt"
 
-// 内嵌struct :embedded 的特性来删除冗余的代码。当然，代价是初始化会稍微麻烦点
+/*
+方法二：
+	内嵌满足接口的struct来删除冗余的代码。当然，代价是初始化会稍微麻烦点
+*/
+
+// 内嵌struct :embedded 的特性
 type WithName struct {
 	Name string
 }
@@ -21,7 +26,7 @@ type Printer interface {
 	PrintStr()
 }
 
-// 绑定接口方法
+// 方法一：绑定接口方法
 //func (c Country) PrintStr() {
 //fmt.Println(c.Name) //需要简化
 //}
@@ -35,7 +40,7 @@ func (w WithName) PrintStr() {
 }
 
 func main() {
-	// 初始化
+	// 初始化复杂
 	c1 := Country{WithName{"China"}}
 	c2 := City{WithName{"Shanghai"}}
 	var cList = []Printer{c1, c2}
