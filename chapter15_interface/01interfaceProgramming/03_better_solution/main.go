@@ -3,7 +3,11 @@ package main
 import "fmt"
 
 // 更好的方法
-// 这种方法的好处有很多（先不谈弊端），比如可以将具体的实现Country和City私有化，不对外暴露实现细节。今天不做细谈。
+/*
+方法三：
+	嵌套+将具体的实现Country和City私有化，不对外暴露实现细节
+
+*/
 
 // 内嵌struct :embedded 的特性来删除冗余的代码。当然，代价是初始化会稍微麻烦点
 //type WithName struct {
@@ -49,6 +53,8 @@ func main() {
 	// 外部初始化要求简单
 	//c1 := Country{WithName{"China"}} // 初始化复杂
 	//c2 := City{WithName{"Shanghai"}} // 初始化复杂
+
+	// 初始化简单
 	c1 := NewCountry("China")
 	c2 := NewCity("Shanghai")
 	var cList = []Printer{c1, c2}

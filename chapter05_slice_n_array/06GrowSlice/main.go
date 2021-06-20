@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 /*
 func growslice(et *_type, old slice, cap int) slice {
@@ -43,17 +45,23 @@ func growslice(et *_type, old slice, cap int) slice {
 			}
 		}
 	}
-
+	// 计算出新的容量的情况下，就需要准备去申请足够空间的内存，但之前还需要一系列内存对齐的计算操作：
+	//	当数组中元素所占的字节大小为1、8或者2的倍数时,对应相应的内存空间计算
 	// 计算新的切片的容量，长度。
 	var lenmem, newlenmem, capmem uintptr
+	 *lenmem表示旧切片实际元素长度所占的内存空间大小
+	 *newlenmem表示新切片实际元素长度所占的内存空间大小
+	 *capmem表示扩容之后的容量大小
+	 *overflow是否溢出
+
 	const ptrSize = unsafe.Sizeof((*byte)(nil))
 	switch et.size {
-	case 1:
+	case 1://元素所占的字节数为1
 		lenmem = uintptr(old.len)
 		newlenmem = uintptr(cap)
-		capmem = roundupsize(uintptr(newcap))
+		capmem = roundupsize(uintptr(newcap)) //向上取整分配内存
 		newcap = int(capmem)
-	case ptrSize:
+	case ptrSize: //元素所占的字节数为8个字节
 		lenmem = uintptr(old.len) * ptrSize
 		newlenmem = uintptr(cap) * ptrSize
 		capmem = roundupsize(uintptr(newcap) * ptrSize)
@@ -69,17 +77,18 @@ func growslice(et *_type, old slice, cap int) slice {
 	if cap < old.cap || uintptr(newcap) > maxSliceCap(et.size) {
 		panic(errorString("growslice: cap out of range"))
 	}
-
+	计算出需要分配的内存大小后，就会重新申请内存,然后将原来切片的元素重新赋值到新的切片中。
 	var p unsafe.Pointer
 	if et.kind&kindNoPointers != 0 {
-		// 在老的切片后面继续扩充容量
+		// //申请一块无类型的内存空间，在老的切片后面继续扩充容量
 		p = mallocgc(capmem, nil, false)
 		// 将 lenmem 这个多个 bytes 从 old.array地址 拷贝到 p 的地址处
 		memmove(p, old.array, lenmem)
-		// 先将 P 地址加上新的容量得到新切片容量的地址，然后将新切片容量地址后面的 capmem-newlenmem 个 bytes 这块内存初始化。为之后继续 append() 操作腾出空间。
+		// 先将 P 地址加上新的容量得到新切片容量的地址，然后将新切片容量地址后面的 capmem-newlenmem 个 bytes 这块内存初始化。
+			为之后继续 append() 操作腾出空间。
 		memclrNoHeapPointers(add(p, newlenmem), capmem-newlenmem)
 	} else {
-		// 重新申请新的数组给新切片
+		// //根据元素类型申请内存空间，重新申请新的数组给新切片
 		// 重新申请 capmen 这个大的内存地址，并且初始化为0值
 		p = mallocgc(capmem, et, true)
 		if !writeBarrier.enabled {

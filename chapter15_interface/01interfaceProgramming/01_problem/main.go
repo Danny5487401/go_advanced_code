@@ -2,7 +2,15 @@ package main
 
 import "fmt"
 
-// 打印名字
+/*
+需求：
+	国家，城市，地区打印他们自己的名字
+方法一：
+	 绑定接口方法，经常这样写
+缺点：
+	如果我要实现N个Printer，就要定义N个strcut+N个PrintStr()方法。
+*/
+
 type Country struct {
 	Name string
 }
@@ -31,5 +39,3 @@ func main() {
 		v.PrintStr()
 	}
 }
-
-// 问题：如果我要实现N个Printer，就要定义N个strcut+N个PrintStr()方法。
