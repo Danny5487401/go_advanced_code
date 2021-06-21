@@ -9,8 +9,8 @@ import (
 // 函数选项：可参考google.golang.org\grpc@v1.27.1\server.go源码 serverOptions
 
 type Server struct {
-	Addr     string
-	Port     int
+	Addr     string // must
+	Port     int    // must
 	Protocol string
 	Timeout  time.Duration
 	MaxConns int
@@ -45,6 +45,7 @@ func TLS(tls *tls.Config) Option {
 	}
 }
 
+// 实现函数功能
 // 用到了不定参数的特性，将任意个option应用到Server上
 func NewServer(addr string, port int, options ...Option) (*Server, error) {
 	// 先填写默认值
@@ -72,8 +73,8 @@ func main() {
 
 }
 
-/*优点：
-1. 可读性强，将配置都转化成了对应的函数项option
-2. 扩展性好，新增参数只需要增加一个对应的方法
-
+/*
+优点：
+	1. 可读性强，将配置都转化成了对应的函数项option
+	2. 扩展性好，新增参数只需要增加一个对应的方法
 */
