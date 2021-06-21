@@ -1,4 +1,5 @@
 package _2plan9
+
 /*
 Golang 的汇编是基于 Plan9 汇编的
 
@@ -23,8 +24,6 @@ PC-> Program counter: jumps and branches.
 Note:    virtual_mem_distribution 虚拟内存分布图
 
 
-
-
 1. 静态数据区：存放的是全局变量与常量。这些变量的地址编译的时候就确定了（这也是使用虚拟地址的好处，如果是物理地址，这些地址编译的时候是不可能确定的）。
 	Data 与 BSS 都属于这一部分。这部分只有程序中止（kill 掉、crasg 掉等）才会被销毁。
 	a. BSS段->BSS segment:通常是指用来存放程序中未初始化的全局变量的一块内存区域。BSS是英文BlockStarted by Symbol的简称。
@@ -44,29 +43,62 @@ Note:    virtual_mem_distribution 虚拟内存分布图
 
 
 逃逸分析：
-如果变量被分配到栈上，会伴随函数调用结束自动回收，并且分配效率很高；其次分配到堆上，则需要 GC 进行标记回收。所谓逃逸就是指变量从栈上逃到了堆上。
-go 也提供了更方便的命令来进行逃逸分析：go build -gcflags="-m"，如果真的是做逃逸分析，建议使用该命令，别折腾用汇编
- */
+	如果变量被分配到栈上，会伴随函数调用结束自动回收，并且分配效率很高；其次分配到堆上，则需要 GC 进行标记回收。所谓逃逸就是指变量从栈上逃到了堆上。
+	go 也提供了更方便的命令来进行逃逸分析：go build -gcflags="-m"，如果真的是做逃逸分析，建议使用该命令，别折腾用汇编
 
 
-/* 使用
-1. 变量声明
-使用 DATA 结合 GLOBL 来定义一个变量。
-	DATA	symbol+offset(SB)/width, value
-使用 GLOBL 指令将变量声明为 global，额外接收两个参数，一个是 flag，另一个是变量的总大小。
-	GLOBL divtab(SB), RODATA, $8
+运行分析
+	很多时候我们无法确定一块代码是如何执行的，需要通过生成汇编、反汇编来研究
+		// 编译
+		go build -gcflags="-S"
+		go tool compile -S hello.go
+		go tool compile -N -S hello.go // 禁止优化
+		// 反编译
+		go tool objdump <binary>
 
-GLOBL 必须跟在 DATA 指令之后，下面是一个定义了多个 readonly 的全局变量的完整例子：
-	DATA pi+0(SB)/8, $3.1415926
-	GLOBL pi(SB), RODATA, $8
+常见指令
+1。栈扩大、缩小：plan9 中栈操作并没有使用push，pop，而是采用sub 跟add SP。
+	SUBQ $0x18, SP // 对 SP 做减法，为函数分配函数栈帧
+	ADDQ $0x18, SP // 对 SP 做加法，清除函数栈帧
+2。数据copy
+	MOVB $1, DI      // 1 byte
+	MOVW $0x10, BX   // 2 bytes
+	MOVD $1, DX      // 4 bytes
+	MOVQ $-10, AX     // 8 bytes
+3。 计算指令
+	ADDQ  AX, BX   // BX += AX
+	SUBQ  AX, BX   // BX -= AX
+	IMULQ AX, BX   // BX *= AX
+4。 跳转
+	// 无条件跳转
+	JMP addr   // 跳转到地址，地址可为代码中的地址，不过实际上手写不会出现这种东西
+	JMP label  // 跳转到标签，可以跳转到同一函数内的标签位置
+	JMP 2(PC)  // 以当前指令为基础，向前/后跳转 x 行
+	JMP -2(PC) // 同上
+	// 有条件跳转
+	JNZ target // 如果 zero flag 被 set 过，则跳转
+5。 变量声明
+	在汇编里所谓的变量，一般是存储在 .rodata 或者 .data 段中的只读值。对应到应用层的话，就是已初始化过的全局的 const、var、static 变量/常量。
+	格式：
+		DATA    symbol+offset(SB)/width, value
+		使用 DATA 结合 GLOBL 来定义一个变量
+		GLOBL 必须跟在 DATA 指令之后:
+		DATA age+0x00(SB)/4, $18  // forever 18
+		GLOBL age(SB), RODATA, $4
+
+		DATA pi+0(SB)/8, $3.1415926
+		GLOBL pi(SB), RODATA, $8
+
+		DATA birthYear+0(SB)/4, $1988
+		GLOBL birthYear(SB), RODATA, $4
 
 
-2. 函数声明
-// 该声明一般写在任意一个 .go 文件中，例如：add.go
-func add(a, b int) int
+6. 函数声明
+	// 该声明一般写在任意一个 .go 文件中，例如：add.go
+	func add(a, b int) int
 
 // 函数实现
-// 该实现一般写在与声明同名的 _{Arch}.s 文件中，例如：add_amd64.s
+// 该实现一般写在 与声明同名的 _{Arch}.s 文件中，例如：add_amd64.s
 TEXT pkgname·add(SB), NOSPLIT, $0-16
     MOVQ a+0(FP), AX
     MOVQ a+8(FP), BX
@@ -76,6 +108,7 @@ TEXT pkgname·add(SB), NOSPLIT, $0-16
 
 pkgname 包名可以不写，一般都是不写的，可以参考 go 的源码， 另外 add 前的 · 不是 .
 
+代码存储在TEXT段中
                            参数及返回值大小
                                  |
  TEXT pkgname·add(SB),NOSPLIT,$0-16
@@ -85,16 +118,5 @@ pkgname 包名可以不写，一般都是不写的，可以参考 go 的源码�
 
 
 以上使用的 RODATA，NOSPLIT flag，还有其他的值，可以参考：https://golang.org/doc/asm#directives，
- */
 
-/* 分析
-很多时候我们无法确定一块代码是如何执行的，需要通过生成汇编、反汇编来研究
-	// 编译
-	go build -gcflags="-S"
-	go tool compile -S hello.go
-	go tool compile -N -S hello.go // 禁止优化
-	// 反编译
-	go tool objdump <binary>
-
-
- */
+*/
