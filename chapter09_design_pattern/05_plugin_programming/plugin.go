@@ -76,7 +76,7 @@ func (p *plugins) init() {
 }
 
 // 注册插件
-func (p *plugins) register(name string, plugin pluginunc) {
+func (p *plugins) register(name string, plugin pluginFunc) {
 	p.plist[name] = plugin
 	//p.plist = append(p.plist, a)
 }
