@@ -73,3 +73,16 @@ func main() {
 		}()
 	}
 }
+
+/*
+源码分析：
+	数据结构
+		type Value struct {
+		  v interface{}
+		}
+	文件里还定义了一个ifaceWords类型，它的作用是将interface{}类型分解
+		type ifaceWords struct {
+		  typ  unsafe.Pointer
+		  data unsafe.Pointer
+		}
+*/

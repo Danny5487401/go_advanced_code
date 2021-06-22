@@ -60,7 +60,8 @@ func main() {
 
 	// 指针类型转换二
 	/*
-		[]byte和string其实内部的存储结构都是一样的，但 Go 语言的类型系统禁止他俩互换。如果借助unsafe.Pointer，我们就可以实现在零拷贝的情况下，将[]byte数组直接转换成string类型	、
+		[]byte和string其实内部的存储结构都是一样的，但 Go 语言的类型系统禁止他俩互换。如果借助unsafe.Pointer，我们就可以实现在零拷贝的情况下，
+			将[]byte数组直接转换成string类型	、
 	*/
 	fmt.Println("-----------")
 	bytes := []byte{104, 101, 108, 108, 111}
