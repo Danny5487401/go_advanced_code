@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 /*
 背景：
@@ -35,10 +37,11 @@ import "fmt"
 	2。runtime.iface表示包含方法的接口,结构体包含itab和data数据,itab包含的是接口类型interfacetype
 		和装载实体的任意类型_type以及实现接口的方法fun,fun是可变大小,go在编译期间就会对接口实现校验检查,并将对应的方法存储fun。
 		type iface struct {
-			tab  *itab
-			data unsafe.Pointer
+			tab  *itab  // tab 是接口表指针，指向类型信息  --->动态类型
+			data unsafe.Pointer // 数据指针，则指向具体的数据 --> 动态值
 		}
-
+		接口类型和 nil 作比较
+			接口值的零值是指动态类型和动态值都为 nil。当仅且当这两部分的值都为 nil 的情况下，这个接口值就才会被认为 接口值 == nil
 		type itab struct {
 			inter *interfacetype //接口类型的表示
 			_type *_type
@@ -49,26 +52,39 @@ import "fmt"
 
 */
 // 带方法的interface iface
-type Print interface {
-	Print()
-}
-
-type User struct {
-	Name string
-	Age  int
-}
-
-func (r User) Print() {
-	fmt.Printf("hello %v,Age %v", r.Name, r.Age)
-}
-
 func main() {
-	//eface 不带方法
-	var y interface{} = User{}
-	fmt.Printf("%+v\n", y) // {Name: Age:0}
+	x := 200
+	// 不带方法
+	var any interface{} = x
+	fmt.Println(any)
 
-	//iface 带方法
-	var p Print = User{Name: "小明", Age: 18}
-	fmt.Printf("%+v\n", p) // {Name:小明 Age:18}
-	p.Print()
+	//带方法
+	g := Gopher{"Go"}
+	var c coder = g
+	fmt.Println(c)
 }
+
+type coder interface {
+	code()
+	debug()
+}
+
+type Gopher struct {
+	language string
+}
+
+func (p Gopher) code() {
+	fmt.Printf("I am coding %s language\n", p.language)
+}
+
+func (p Gopher) debug() {
+	fmt.Printf("I am debuging %s language\n", p.language)
+}
+
+/*
+汇编：
+	go tool compile -S chapter15_interface/02OriginalCode/main.go
+可以看到，main 函数里调用了两个函数
+	func convT2E64(t *_type, elem unsafe.Pointer) (e eface)
+	func convT2I(tab *itab, elem unsafe.Pointer) (i iface)
+*/
