@@ -16,8 +16,10 @@ type GoPool struct {
 	tokenChan chan struct{}
 }
 
+// 函数选项模式
 type GoPoolOption func(*GoPool)
 
+// 初始化选项
 func WithMaxLimit(max int) GoPoolOption {
 	return func(gp *GoPool) {
 		gp.MaxLimit = max
@@ -91,7 +93,7 @@ func main() {
 
 }
 
-/* 运行结果：打印无须
+/* 运行结果：打印无序
 5
 1
 3
