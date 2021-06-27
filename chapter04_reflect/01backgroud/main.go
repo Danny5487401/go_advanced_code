@@ -53,9 +53,7 @@ func main() {
 		A = "String"      // 静态类型为interface{}  动态为string
 		var M *int
 		A = M             // A的值可以改变
-	*/
 
-	/*
 		Noted:
 		Go语言的反射就是建立在类型之上的，Golang的指定类型的变量的类型是静态的（也就是指定int、string这些的变量，它的type是static type），
 		在创建变量的时候就已经确定，反射主要与Golang的interface类型相关（它的type是concrete type），只有interface类型才有反射一说
@@ -74,11 +72,15 @@ func main() {
 	// 类型为*os.File的变量,然后将其赋给一个接口变量r
 	var r io.Reader
 	r = tty
+	// 首先声明 r 的类型是 io.Reader，注意，这是 r 的静态类型，此时它的动态类型为 nil，并且它的动态值也是 nil。
+	//之后，r = tty 这一语句，将 r 的动态类型变成 *os.File，动态值则变成非空，表示打开的文件对象。
+	//	这时，r 可以用<value, type>对来表示为： <tty, *os.File>
 	// 接口变量r的pair中将记录如下信息：(tty, *os.File)，这个pair在接口变量的连续赋值过程中是不变的，将接口变量r赋给另一个接口变量w:
 
 	//var w io.Writer
 	//w = r.(io.Writer)
 	// 接口变量w的pair与r的pair相同，都是:(tty, *os.File)，即使w是空接口类型，pair也是不变的。
+	// 和 r 相比，仅仅是 fun 对应的函数变了：Read -> Write
 
 	//interface及其pair的存在，是Golang中实现反射的前提，理解了pair，就更容易理解反射。
 	//反射就是用来检测存储在接口变量内部(值value；类型concrete type) pair对的一种机制
