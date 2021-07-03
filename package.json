@@ -1,0 +1,29 @@
+{
+  "name": "go_advanced_code",
+  "version": "1.0.0",
+  "description": "![高级go编程](./img/advenced_go_code_logo.jpg) # *目录* ## *goVersion==1.16* ## 第一章 文件操作     1. os中FileInfo底层的文件描述符和相关信息     2. os文件操作     3. io包底层Reader和Writer接口     4. io断点续传     5. bufio缓存读写 --- ## 第二章 协程     1. 两级线程模型     2. runtime模块和GC         2.1 runtime核心功能及系统信息调用         2.2 Goexit()终止线程         2.3 资源竞争一致性问题分析         2.4 垃圾回收机制         2.5 监控代码pprof     3. sync模块         2.1 waitGroup同步等待组对象         2.2 互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比         2.3 Once单例对象         2.4 并发安全Map         2.5 Pool主要作用不是  * 连接池 * !         2.6 Cond条件变量         2.7 atomic原子操作         2.8 ErrorGroup     4. 并发数量控制     5. goroutine泄漏分析及处理     6. 线程池 --- ## 第三章 通道     1. 基本使用         1.0 channel来源         1.1 无缓存通道         1.2 父子通信         1.3 死锁         1.4 close(ch)关闭所有下游协程         1.5 通道遍历range         1.6 有缓冲channel增强并发         1.7 双向通道         1.8 单向通道         1.9 使用channel传递channel     2. TimerChan模块     3. Select多路复用     4. CSP理论中的Process/Channel     5. Channel内部结构PPT分析 --- ## 第四章 反射     1. 反射原理及应用场景     2. 反射使用         2.1 反射三大定律         2.2 已知类型         2.3 未知类型         2.4 reflect.Value         2.5 反射源码分析 --- ## 第五章 切片和数组     1. 值传递     2. 引用传递     3. 切片和数组参数传递性能对比     4. 切片底层结构     5. nil切片和空切片     6. 扩容策略     7. 不同类型的切片间互转 --- ## 第六章 指针     1. 指针类型转换及修改值     2. 指针分类及unsafe包使用     3. 获取私有变量值     4. 切片与字符串零拷贝互转 --- ## 第七章 闭包       1. 闭包理论     2. 闭包应用    ## 第八章 defer函数及汇编语言理解     1. 注册延迟调用机制定义及使用     2. defer陷阱     3. defer传参和返回设置     4. defer循环性能问题 ## 第九章 设计模式 ### OOP七大准则     1. 创建型模式         1.1 静态工厂模式         1.2 工厂方法模式         1.3 单例模式     2. 结构型模式         2.1 组合模式         2.2 装饰模式         2.3 享元模式         2.4 适配器模式         2.5 桥接模式     3. 行为型模式         3.1 访问者模式         3.2 迭代器         3.3 状态模式         3.4 责任链模式          3.5 模版模式         3.6 策略模式         3.7 解释器模式          3.8 命令模式     4. 函数选项:成例模式         4.1 未使用的现状         4.2 区分必填项和选项         4.3 带参数的选项模式     5. 插件式编程     6. 同步模式         6.1 信号量Semaphore ## 第十章 函数式编程     1. 函数介绍     2. 高级函数         2.1 简单实现filter,map,reduce         2.2 简单案例         2.3 复杂实现：泛型及类型检查     3. 一等公民         3.1 网络管理中问题需求         3.2 网络管理中三种处理对比             3.2.1 通过同享内存通信             3.2.2 通过通信(具体数据)共享内存             3.2.3 通过通信(函数)共享内存 ## 第十一章 汇编理解go语言底层源码     1. 汇编的基本概念     2. plan9汇编     3. Golang底层数据结构         3.1 Map底层结构         3.2 String底层结构         3.3 Struct底层结构 ## 第十二章 网络编程net     1. net/http高级封装演变     2. 爬虫获取邮箱案例     3. Tcp实现客户端及服务端     4. Tcp黏包分析及处理 ## 第十三章 CGO调用C语言     1. Go调用C函数     2. Go调用C库 ## 第十四章 Context上下文     0. 父类EmptyCtx     1. Context来源         1.1 如何释放资源         1.2 方式一：全局参数         1.3 方式二: 通道channel         1.4 方式三: Context     2. WithCancel源码及使用     3. WithDealine源码及使用     4. WithValue源码及使用     5. WithTimeout源码及使用 ## 第十五章 接口编程     1. 接口实现         1.1 冗余代码写法         1.2 简单优化         1.3 更优方式     2. interface源码分析 ## 第十六章 并发编程     1. 简单流水线模型     2. FAN-IN和FAN-OUT模型 ## 第十七章 数据结构     1. queue队列",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "cz-conventional-changelog": "^3.3.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Danny5487401/go_advanced_code.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Danny5487401/go_advanced_code/issues"
+  },
+  "homepage": "https://github.com/Danny5487401/go_advanced_code#readme",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
