@@ -1,6 +1,6 @@
 /*
 文件操作：file类是在os包中的，封装了底层的文件描述符和相关信息，同时封装了Read和Write的实现。
- */
+*/
 
 package main
 
@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func main()  {
+func main() {
 	/*
 		FileInfo：文件信息
 			interface
@@ -20,12 +20,13 @@ func main()  {
 				Mode()，权限
 
 	*/
-	fileInfo,err :=  os.Stat("E:\\go_advanced_code\\chapter01_fileOperation\\danny.txt")
-	if err != nil{
-		fmt.Println("err :",err)
+	// 获取文件的信息，里面有文件的名称，大小，修改时间等
+	fileInfo, err := os.Stat("chapter01_fileOperation/danny.txt")
+	if err != nil {
+		fmt.Println("err :", err)
 		return
 	}
-	fmt.Printf("%T\n",fileInfo)
+	fmt.Printf("%T\n", fileInfo)
 	//文件名
 	fmt.Println(fileInfo.Name())
 	//文件大小
