@@ -106,5 +106,7 @@ func (o *Once) doSlow(f func()) {
       f()
    }
 }
+性能：
+	单次执行时间在 0.3ns 左右
 
 */

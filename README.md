@@ -4,11 +4,13 @@
 # *目录*
 ## *goVersion==1.16*
 ## 第一章 文件操作
-    1. os中FileInfo底层的文件描述符和相关信息
-    2. os文件操作
-    3. io包底层Reader和Writer接口
-    4. io断点续传
-    5. bufio缓存读写
+    1. os操作系统模块
+        1.1 os中FileInfo底层的文件描述符和相关信息
+        1.2 os文件操作
+        1.3 io包底层Reader和Writer接口
+        1.4 io断点续传
+        1.5 walkPath遍历目录及文件
+    2. bufio缓存读写
 ---
 ## 第二章 协程
     1. 两级线程模型
