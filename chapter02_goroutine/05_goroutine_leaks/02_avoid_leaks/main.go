@@ -29,12 +29,13 @@ func gen(done chan struct{}, nums ...int) <-chan int {
 func main() {
 	defer func() {
 		time.Sleep(time.Second)
-		fmt.Println("the number of goroutines: ", runtime.NumGoroutine())
+		fmt.Println("关闭时线程数量: ", runtime.NumGoroutine()) //程序关闭时线程数量
 	}()
 
+	//解决方式
 	// Set up the pipeline.
 	done := make(chan struct{})
-	defer close(done)
+	defer close(done) // 注意defer的顺序   用于发送关闭信号
 
 	out := gen(done, 2, 3)
 
