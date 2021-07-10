@@ -1,17 +1,19 @@
 # *高级Goland学习代码*
 # go_advanced_code
-![高级go编程](./img/advenced_go_code_logo.jpg)
+![高级go编程](./img/golang.jpeg)
 # *目录*
 ## *goVersion==1.16*
 ## 第一章 文件操作
-    1. os中FileInfo底层的文件描述符和相关信息
-    2. os文件操作
-    3. io包底层Reader和Writer接口
-    4. io断点续传
-    5. bufio缓存读写
+    1. os操作系统模块
+        1.1 os中FileInfo底层的文件描述符和相关信息
+        1.2 os文件操作
+        1.3 io包底层Reader和Writer接口
+        1.4 io断点续传
+        1.5 walkPath遍历目录及文件
+    2. bufio缓存读写
 ---
-## 第二章 协程
-    1. 两级线程模型
+## 第二章 协程Goroutine
+    1. 线程模型分类
     2. runtime模块和GC
         2.1 runtime核心功能及系统信息调用
         2.2 Goexit()终止线程
@@ -31,7 +33,7 @@
     5. goroutine泄漏分析及处理
     6. 线程池
 ---
-## 第三章 通道
+## 第三章 通道Channel
     1. 基本使用
         1.0 channel来源
         1.1 无缓存通道
@@ -46,7 +48,7 @@
     2. TimerChan模块
     3. Select多路复用
     4. CSP理论中的Process/Channel
-    5. Channel内部结构PPT分析
+    5. Channel内部结构(含PPT分析)
 ---
 ## 第四章 反射
     1. 反射原理及应用场景
