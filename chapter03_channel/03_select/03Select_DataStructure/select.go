@@ -1,4 +1,4 @@
-package _3Select_DataStructure
+package main
 
 /*
 // 阻塞读，对应channel的 chanrecv1函数
@@ -437,3 +437,7 @@ sclose:
     panic(plainError("send on closed channel"))
 }
 */
+
+func main() {
+
+}
