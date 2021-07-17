@@ -40,5 +40,16 @@ func main() {
 
 
 	*/
+	//实例化是有地址的
+	var p1 = &People{}
+	var p2 = People{}
+	fmt.Printf("地址%p\n", p1) // 0xc00000c060
+	fmt.Printf("%p\n", &p2)  // 0xc00000c080
+	//fmt.Println(p1 == nil, &p2 == nil) // false false
 
+}
+
+type People struct {
+	name string
+	age  int
 }
