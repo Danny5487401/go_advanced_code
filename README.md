@@ -3,7 +3,7 @@
 ![高级go编程](./img/golang.jpeg)
 # *目录*
 ## *goVersion==1.16*
-## 第一章 文件操作
+## 第一章 I/O操作
     1. os操作系统模块
         1.1 os中FileInfo底层的文件描述符和相关信息
         1.2 os文件操作
