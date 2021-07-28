@@ -11,7 +11,9 @@
 	其实缓冲区的设计是为了存储多次的写入，最后一口气把缓冲区内容写入文件
 分类：
 	主要分三部分Reader、Writer、Scanner,分别是读数据、写数据和扫描器三种数据类型
-
+主要读取方式
+	ReadLine和ReadString方法：buf.ReadLine()，buf.ReadString("\n")都是按行读，只不过ReadLine读出来的是[]byte，后者直接读出了string，
+	最终他们底层调用的都是ReadSlice方法
 bufio 封装了io.Reader或io.Writer接口对象，并创建另一个也实现了该接口的对象
 
 io.Reader或io.Writer 接口实现read() 和 write() 方法，对于实现这个接口的对象都是可以使用这两个方法的
