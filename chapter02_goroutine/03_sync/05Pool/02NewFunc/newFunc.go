@@ -8,30 +8,38 @@ package main
 
 */
 
+// Newfunc使用：
+//	Get 返回 Pool 中的任意一个对象。如果 Pool 为空，则调用 New 返回一个新创建的对象。
 import (
 	"fmt"
 	"sync"
 )
 
 func main() {
-	p := &sync.Pool{
-		New: func() interface{} {
-			return 0
-		},
-	}
+	// 建立对象
+	var pipe = &sync.Pool{New: func() interface{} { return "Hello, danny" }}
 
-	a := p.Get().(int)
-	p.Put(1)
+	// 准备放入的字符串
+	val := "Hello,World!"
 
-	//runtime.GC() //注意注释前后的结果
+	// 放入
+	pipe.Put(val)
 
-	b := p.Get().(int)
-	fmt.Println(a, b)
+	// 取出
+	first := pipe.Get().(string)
+	fmt.Println(first) // Hello,World!
 
+	pipe.Put(val) //注意注释前后的结果
+	//runtime.GC()  //注意注释前后的结果
+
+	// 再取就没有了,会自动调用NEW
+	second := pipe.Get().(string)
+	fmt.Println(second) // Hello, danny
 }
 
 /*
-上面我们可以看到pool创建的时候是不能指定大小的，所有sync.Pool的缓存对象数量是没有限制的（只受限于内存），
+缺点：
+	上面我们可以看到pool创建的时候是不能指定大小的，所有sync.Pool的缓存对象数量是没有限制的（只受限于内存），
 	因此使用sync.pool是没办法做到控制缓存对象数量的个数的。另外sync.pool缓存对象的期限是很诡异的，这是很多人错误理解的地方，
 
 源码分析

@@ -25,7 +25,11 @@
         2.2 互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比
         2.3 Once单例对象
         2.4 并发安全Map
-        2.5 Pool主要作用不是  * 连接池 * !
+        2.5 Pool对象复用(*非连接池 * !）
+            2.5.1 未使用newFunc
+            2.5.2 newFunc与GC（附源码分析）
+            2.5.3 何时使用对象缓存
+            2.5.4 第三方对象池object pool(bytebufferpool)
         2.6 Cond条件变量
         2.7 atomic原子操作
         2.8 ErrorGroup
