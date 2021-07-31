@@ -30,6 +30,10 @@ package _0_value
 atomic.Value类型使用：
 	1. v.Store(c) - 写操作，将原始的变量c存放到一个atomic.Value类型的v里。
 	2. c = v.Load() - 读操作，从线程安全的v中读取上一步存放的内容
+操作的数据类型几操作：
+	六种类型：int32, int64, uint32, uint64, uintptr, unsafe.Pinter
+	五种操作：Add增减， CompareAndSwap比较并交换， Swap交换， Load载入， Store存储
+	函数名以"操作+类型"组合而来。例如AddInt32/AddUint64/LoadInt32/LoadUint64.
 */
 
 import (
