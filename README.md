@@ -32,7 +32,12 @@
             2.5.4 第三方对象池object pool(bytebufferpool)
         2.6 Cond条件变量及NoCopy机制
         2.7 atomic原子操作
-        2.8 ErrorGroup
+            2.7.0 Value的load和store
+            2.7.1 add
+            2.7.2 cas算法和自旋锁
+            2.7.3 load和store用法
+            2.7.4 swap交换
+        2.8 ErrorGroup获取协程中error
     4. 线程池
         4.1 Goroutine最大数量限制(令牌桶方式)
         4.2 百万请求处理

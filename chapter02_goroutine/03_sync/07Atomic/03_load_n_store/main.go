@@ -42,8 +42,4 @@ func main() {
 	fmt.Println("c : ", c)
 	fmt.Println("----------------")
 
-	var d int32
-	fmt.Println("d : ", d)
-	atomic.StoreInt32(&d, 666)
-	fmt.Println("d : ", d)
 }
