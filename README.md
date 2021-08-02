@@ -30,7 +30,7 @@
             2.5.2 newFunc与GC（附源码分析）
             2.5.3 何时使用对象缓存
             2.5.4 第三方对象池object pool(bytebufferpool)
-        2.6 Cond条件变量
+        2.6 Cond条件变量及NoCopy机制
         2.7 atomic原子操作
         2.8 ErrorGroup
     4. 线程池
