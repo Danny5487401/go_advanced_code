@@ -44,7 +44,6 @@ func main() {
 	middlewares := []Middleware{
 		PanicRecover,
 		WithLogger,
-		Metric,
 	}
 	mux.Handle("/greeting", applyMiddlewares(greeting("welcome, dj"), middlewares...))
 
