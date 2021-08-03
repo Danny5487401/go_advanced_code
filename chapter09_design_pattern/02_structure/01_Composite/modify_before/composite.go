@@ -3,25 +3,27 @@ package main
 import "fmt"
 
 /*
-组合模式：
-	将对象组合成树形结构以表示“部分整体”的层次结构，组合模式使得用户对单个对象和组合对象的使用具有一致性
-
 需求：
 	把KFC里的食物认为是菜单项，一份套餐是菜单。菜单和菜单项有一些公有属性：名字、描述、价格、都能被购买等
+实现
+	面向对象实现
 */
-// 第一个版本,提取所有的抽象功能
+
+// MenuComponent 第一个版本,提取所有的抽象功能
 type MenuComponent interface {
+	// 菜单具体项目的方法
 	Name() string
 	Description() string
 	Price() float32
 	Print()
 
+	// 菜单额外需要的方法
 	Add(MenuComponent)
 	Remove(int)
 	Child(int) MenuComponent
 }
 
-// 菜单项的实现
+// MenuItem 菜单项的实现
 type MenuItem struct {
 	name        string
 	description string
@@ -36,7 +38,7 @@ func NewMenuItem(name, description string, price float32) MenuComponent {
 	}
 }
 
-// 实现接口
+// Name 实现接口
 func (m *MenuItem) Name() string {
 	return m.name
 }
@@ -132,7 +134,7 @@ func main() {
 	menu1.Add(NewMenuItem("小吃", "玉米沙拉1份", 5.0))
 	menu1.Add(NewMenuItem("饮料", "九珍果汁饮料1杯", 6.5))
 
-	menu2 := NewMenu("奥尔良烤鸡腿饭套餐", "供应时间：09:15--22:44")
+	menu2 := NewMenu("奥尔良烤鸡腿饭套餐", "供应时间：09:00--22:55")
 	menu2.Add(NewMenuItem("主食", "新奥尔良烤鸡腿饭1份", 15.0))
 	menu2.Add(NewMenuItem("小吃", "新奥尔良烤翅2块", 11.0))
 	menu2.Add(NewMenuItem("饮料", "芙蓉荟蔬汤1份", 4.5))
@@ -154,4 +156,6 @@ func main() {
 	func (m *Menu) Description() string {
 		return m.description
 	}
+	2.添加产品menuComponent
+		使用者拿到一个MenuComponent后，依然要知道其类型后才能正确使用，假如不加判断在MenuItem使用Add()等未实现的方法就会产生panic
 */

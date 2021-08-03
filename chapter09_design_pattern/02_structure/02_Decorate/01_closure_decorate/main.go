@@ -1,7 +1,9 @@
 package main
 
-// 装饰模式
 import "fmt"
+
+// 装饰模式
+// 方法一：使用闭包
 
 type Decorator func(i int, s string) bool
 
