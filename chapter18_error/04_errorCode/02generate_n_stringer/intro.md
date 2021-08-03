@@ -16,6 +16,7 @@ go generate + stringer
 //go:generate stringer -type ErrCode -output code_string.go
 
 //但是我们更希望的是能返回后面的注释作为错误描述。这就需要使用stringer的-linecomment选项
+//go:generate stringer -type ErrCode -linecomment -output code_string.go
 ```
 
 # 好处
