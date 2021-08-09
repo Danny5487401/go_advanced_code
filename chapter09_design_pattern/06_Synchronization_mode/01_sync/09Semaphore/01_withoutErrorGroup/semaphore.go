@@ -87,3 +87,12 @@ func collatzSteps(n int) (steps int) {
 
 	return steps
 }
+
+/*
+golang/sync/semaphore.Weighted.Acquire 方法获取过程
+	1。当信号量中剩余的资源大于获取的资源并且没有等待的 Goroutine 时，会直接获取信号量；
+	2。当需要获取的信号量大于 golang/sync/semaphore.Weighted 的上限时，由于不可能满足条件会直接返回错误；
+	3。遇到其他情况时会将当前 Goroutine 加入到等待列表并通过 select 等待调度器唤醒当前 Goroutine，Goroutine 被唤醒后会获取信号量；
+获取信号量的方法 golang/sync/semaphore.Weighted.TryAcquire方法获取过程
+	只会非阻塞地判断当前信号量是否有充足的资源，如果有充足的资源会直接立刻返回 true，否则会返回 false
+*/

@@ -64,3 +64,22 @@ func main() {
 }
 
 // 最终读写次数：11823, 与Mutex结果差距大概在 2 倍左右，读锁的效率要快很多
+/*
+源码：
+	type RWMutex struct {
+		w           Mutex  // 复用互斥锁提供的能力；
+		writerSem   uint32 // 写等待读
+		readerSem   uint32  // 读等待写
+		readerCount int32 / /存储了当前正在执行的读操作数量
+		readerWait  int32 // 表示当写操作被阻塞时等待的读操作个数
+	}
+	方法
+	写操作使用 sync.RWMutex.Lock 和 sync.RWMutex.Unlock 方法；
+	读操作使用 sync.RWMutex.RLock 和 sync.RWMutex.RUnlock 方法；
+
+读和写锁关系
+	调用 sync.RWMutex.Lock 尝试获取写锁时；
+		1。每次 sync.RWMutex.RUnlock 都会将 readerCount 其减一，当它归零时该 Goroutine 会获得写锁；
+		2。将 readerCount 减少 rwmutexMaxReaders 个数以阻塞后续的读操作；
+	调用 sync.RWMutex.Unlock 释放写锁时，会先通知所有的读操作，然后才会释放持有的互斥锁
+*/

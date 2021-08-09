@@ -20,24 +20,6 @@
         2.3 资源竞争一致性问题分析
         2.4 垃圾回收机制
         2.5 监控代码pprof
-    3. sync模块
-        2.1 waitGroup同步等待组对象
-        2.2 互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比
-        2.3 Once单例对象
-        2.4 并发安全Map
-        2.5 Pool对象复用(*非连接池 * !）
-            2.5.1 未使用newFunc
-            2.5.2 newFunc与GC（附源码分析）
-            2.5.3 何时使用对象缓存
-            2.5.4 第三方对象池object pool(bytebufferpool)
-        2.6 Cond条件变量及NoCopy机制
-        2.7 atomic原子操作
-            2.7.0 Value的load和store
-            2.7.1 add
-            2.7.2 cas算法和自旋锁
-            2.7.3 load和store用法
-            2.7.4 swap交换
-        2.8 ErrorGroup获取协程中error
     4. 线程池
         4.1 Goroutine最大数量限制(令牌桶方式)
         4.2 百万请求处理
@@ -128,7 +110,26 @@
         4.3 带参数的选项模式
     5. 插件式编程
     6. 同步模式
-        6.1 信号量Semaphore
+        sync同步原语以及扩展原语
+        2.1 waitGroup同步等待组对象
+        2.2 互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比
+        2.3 Once单例对象
+        2.4 并发安全Map
+        2.5 Pool对象复用(*非连接池 * !）
+            2.5.1 未使用newFunc
+            2.5.2 newFunc与GC（附源码分析）
+            2.5.3 何时使用对象缓存
+            2.5.4 第三方对象池object pool(bytebufferpool)
+        2.6 Cond条件变量及NoCopy机制
+        2.7 atomic原子操作
+        2.7.0 Value的load和store
+            2.7.1 add
+            2.7.2 cas算法和自旋锁
+            2.7.3 load和store用法
+            2.7.4 swap交换
+        2.8 ErrorGroup获取协程中error
+        2.9 信号量Semaphore
+        2.10 SingleFlight避免缓存击穿
 ## 第十章 函数式编程
     1. 函数介绍
     2. 高级函数
