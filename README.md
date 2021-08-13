@@ -14,6 +14,7 @@
 ---
 ## 第二章 协程Goroutine
     1. 线程模型分类及Goroutine切换原则
+        1.1 trace查看宏观调度流程
     2. runtime模块和GC
         2.1 runtime核心功能及系统信息调用
         2.2 Goexit()终止线程

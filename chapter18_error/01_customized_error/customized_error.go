@@ -3,12 +3,14 @@ package _1_customized_error
 import "runtime"
 
 /*
+构造 error 的时候，要求传入的字符串首字母小写，结尾不带标点符号
 自定义错误
 	接口
 	type error interface {
 		Error() string
 	}
 */
+
 // 1。简单版
 func New(text string) error {
 	return &errorString{text}
