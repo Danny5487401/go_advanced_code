@@ -1,4 +1,4 @@
-module go_advenced_code
+module go_advanced_code
 
 go 1.15
 

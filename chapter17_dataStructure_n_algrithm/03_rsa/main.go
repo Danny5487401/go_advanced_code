@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/base64"
-	"go_advenced_code/chapter17_dataStructure/03_rsa/security"
+	"go_advenced_code/chapter17_dataStructure_n_algrithm/03_rsa/security"
 	"log"
 )
 
