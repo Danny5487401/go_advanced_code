@@ -1,4 +1,3 @@
-
 /*
 解释器模式（Interpreter）:针对特定问题设计的一种解决方案。例如，匹配字符串的时候，由于匹配条件非常灵活，使得通过代码来实现非常不灵活
 举个例子，针对以下的匹配条件：
@@ -19,10 +18,7 @@
 1. 执行效率比较低，可利用场景比较少。
 
 2. 对于复杂的文法比较难维护
- */
-
-
-
+*/
 
 package main
 
@@ -39,7 +35,7 @@ type Node interface {
 
 //数据节点
 type ValNode struct {
-	val int  // 存放1,2,3,+,-
+	val int // 存放1,2,3,+,-
 }
 
 func (vn *ValNode) Interpret() int {
@@ -63,7 +59,6 @@ type SubNode struct {
 func (an *SubNode) Interpret() int {
 	return an.left.Interpret() - an.right.Interpret()
 }
-
 
 //=============解释对象=============
 type Parser struct {
@@ -103,7 +98,7 @@ func (p *Parser) Parse(exp string) { //对表达式进行解析
 		if p.index >= len(p.exp) {
 			return
 		}
-		switch p.exp [p.index] {
+		switch p.exp[p.index] {
 		case "+":
 			p.prev = p.newAddNode()
 		case "-":
@@ -121,4 +116,3 @@ func main() {
 	p.Parse("1 + 2 + 30 - 4 + 10") //是通过空格进行解释的
 	fmt.Println(p.Result().Interpret())
 }
-

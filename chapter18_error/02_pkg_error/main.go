@@ -7,6 +7,17 @@ import (
 )
 
 /*
+背景：
+	func AuthenticateRequest(r *Request) error {
+		 err := authenticate(r.User)
+		 if err != nil {
+			return fmt.Errorf("authenticate failed: %v", err)
+		 }
+		 return nil
+	}这种做法实际上是先错误转换成字符串，再拼接另一个字符串，最后，再通过 fmt.Errorf 转换成错误。这样做破坏了相等性检测，即我们无法判断错误是否是一种预先定义好的错误了。
+方案：
+	github.com/pkg/errors。提供了友好的界面
+
 %s,%v //功能一样，输出错误信息，不包含堆栈
 
 %q //输出的错误信息带引号，不包含堆栈

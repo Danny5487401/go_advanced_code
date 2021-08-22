@@ -37,7 +37,7 @@ func main() {
 	done := make(chan struct{})
 	defer close(done) // 注意defer的顺序   用于发送关闭信号
 
-	out := gen(done, 2, 3)
+	out := gen(done, 2, 3, 4, 5)
 
 	for n := range out {
 		fmt.Println(n)              // 2

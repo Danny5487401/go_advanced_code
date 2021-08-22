@@ -5,10 +5,13 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"runtime/debug"
+	"time"
 )
 
 //对比第一版本：传入的handler是nil，接下来我们要把nil换掉，换成我们自己实现的handler
@@ -35,6 +38,15 @@ func main() {
 	mux.Handle("/static/", http.StripPrefix("/static/",
 		http.FileServer(http.Dir(wd))))
 
+	// 方式一：添加中间件--缺点复杂
+	//mux.Handle("/greeting", PanicRecover(WithLogger(Metric(greeting("welcome, dj")))))
+	// 方式二:
+	middlewares := []Middleware{
+		PanicRecover,
+		WithLogger,
+	}
+	mux.Handle("/greeting", applyMiddlewares(greeting("welcome, dj"), middlewares...))
+
 	err = http.ListenAndServe(":8080", mux) //使用自定义的路由器mux时，用http包的ListenAndServe函数，此时要传入mux
 	if err != nil {
 		log.Fatal(err)
@@ -42,6 +54,10 @@ func main() {
 
 }
 
+// 我们当然可以直接定义一个实现Handler接口的类型，然后注册该类型的实例：
+//type Handler interface {
+//	ServeHTTP(ResponseWriter, *Request)
+//}
 type myHandler struct{}
 
 func (*myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -51,3 +67,53 @@ func (*myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func sayHello(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "hello Danny, this is version 2")
 }
+
+// PanicRecover 添加中间件
+func PanicRecover(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				fmt.Println(string(debug.Stack()))
+			}
+		}()
+
+		handler.ServeHTTP(w, r)
+	})
+}
+
+func Metric(handler http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		defer func() {
+			fmt.Printf("path:%s elapsed:%fs\n", r.URL.Path, time.Since(start).Seconds())
+		}()
+		time.Sleep(1 * time.Second)
+		handler.ServeHTTP(w, r)
+	}
+}
+
+func WithLogger(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Printf("path:%s process start...\n", r.URL.Path)
+		defer func() {
+			fmt.Printf("path:%s process end...\n", r.URL.Path)
+		}()
+		handler.ServeHTTP(w, r)
+	})
+}
+
+type greeting string
+
+func (g greeting) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, g)
+}
+
+func applyMiddlewares(handler http.Handler, middlewares ...Middleware) http.Handler {
+	for i := len(middlewares) - 1; i >= 0; i-- {
+		handler = middlewares[i](handler)
+	}
+
+	return handler
+}
+
+type Middleware func(handler http.Handler) http.Handler
