@@ -30,24 +30,17 @@ Go语言的类型:
 		因此，一个 reader变量如果它的concrete type也实现了write方法的话，它也可以被类型断言为writer
 
 在反射的概念中， 编译时就知道变量类型的是静态类型；运行时才知道一个变量类型的叫做动态类型。
-*/
-func main() {
-	// 静态类型
-	//静态类型就是变量声明时的赋予的类型。比如：
-	/*
+	静态类型
+		//静态类型就是变量声明时的赋予的类型。比如：
 		type MyInt int // int 就是静态类型
 
 		type A struct{
 			Name string_test  // string就是静态
 		}
 		var i *int  // *int就是静态类型
-	*/
-
-	// 动态类型
-	//动态类型：运行时给这个变量赋值时，这个值的类型(如果值为nil的时候没有动态类型)。
-	//一个变量的动态类型在运行时可能改变，这主要依赖于它的赋值（前提是这个变量是接口类型）
-
-	/*
+	动态类型
+		//动态类型：运行时给这个变量赋值时，这个值的类型(如果值为nil的时候没有动态类型)。
+		//一个变量的动态类型在运行时可能改变，这主要依赖于它的赋值（前提是这个变量是接口类型）
 		var A interface{} // 静态类型interface{}
 		A = 10            // 静态类型为interface{}  动态为int
 		A = "String"      // 静态类型为interface{}  动态为string
@@ -57,20 +50,23 @@ func main() {
 		Noted:
 		Go语言的反射就是建立在类型之上的，Golang的指定类型的变量的类型是静态的（也就是指定int、string这些的变量，它的type是static type），
 		在创建变量的时候就已经确定，反射主要与Golang的interface类型相关（它的type是concrete type），只有interface类型才有反射一说
-	*/
+在Golang的实现中，每个interface变量都有一个对应pair，pair中记录了实际变量的值和类型:(value, type)
+	value是实际变量值，type是实际变量的类型。一个interface{}类型的变量包含了2个指针，
+	1.一个指针指向值的类型【对应concrete type】，2.另外一个指针指向实际的值【对应value】。
+*/
+func main() {
 
-	//在Golang的实现中，每个interface变量都有一个对应pair，pair中记录了实际变量的值和类型:
-	// (value, type)
-	// value是实际变量值，type是实际变量的类型。一个interface{}类型的变量包含了2个指针，
-	//1.一个指针指向值的类型【对应concrete type】，2.另外一个指针指向实际的值【对应value】。
+	// 一.带函数的interface
+	// 类型为*os.File的变量,然后将其赋给一个接口变量r
+
+	var r io.Reader
 
 	tty, err := os.OpenFile("chapter04_reflect/danny_reflect.txt", os.O_RDWR, 0)
 	if err != nil {
 		fmt.Println("出现错误", err.Error())
 	}
 	fmt.Printf("tty是%+v\n", tty) // tty是&{file:0xc000058180}
-	// 类型为*os.File的变量,然后将其赋给一个接口变量r
-	var r io.Reader
+
 	r = tty
 	// 首先声明 r 的类型是 io.Reader，注意，这是 r 的静态类型，此时它的动态类型为 nil，并且它的动态值也是 nil。
 	//之后，r = tty 这一语句，将 r 的动态类型变成 *os.File，动态值则变成非空，表示打开的文件对象。
@@ -92,11 +88,17 @@ func main() {
 	fmt.Printf("reflect.ValueOf(r)==%+v,reflect.TypeOf(r)==%+v\n", v, t) // &{0xc0000ce780} *os.File
 	fmt.Printf("t的kind是%+v\n", v.Kind())                                 // t的kind是ptr
 
-	/*
-		反射简单来说就是取得对象的类型(Type)，类别(Kind)，值(Value)，对元素（Element）的字段（Field）进行遍历和操作（读写）。
+	//不带函数的interface
+	var empty interface{}
+	empty = tty
+	fmt.Printf("%T", empty)
 
-		对于类型(Type)和类别(Kind)需要注意一下。Type可以认为是Kind的子集
-		对于基本类型来说Type和Kind是一致的。例如int的Type和Kind一样都是int
-		对于Struct来说，Type是你定义的结构体， Kind为Struct
-	*/
 }
+
+/*
+	反射简单来说就是取得对象的类型(Type)，类别(Kind)，值(Value)，对元素（Element）的字段（Field）进行遍历和操作（读写）。
+
+	对于类型(Type)和类别(Kind)需要注意一下。Type可以认为是Kind的子集
+	对于基本类型来说Type和Kind是一致的。例如int的Type和Kind一样都是int
+	对于Struct来说，Type是你定义的结构体， Kind为Struct
+*/
