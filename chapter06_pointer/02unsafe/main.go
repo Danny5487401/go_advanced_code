@@ -6,20 +6,19 @@ import (
 )
 
 /*
-Golang指针分为3种
+一。Golang指针分为3种
 	1.  *类型:普通指针类型，用于传递对象地址，不能进行指针运算。
 	2.  unsafe.Pointer:通用指针类型，用于转换不同类型的指针，不能进行指针运算，不能读取内存存储的值（必须转换到某一类型的普通指针）。
 	3.  uintptr:用于指针运算，GC 不把 uintptr 当指针，uintptr 无法持有对象。uintptr 类型的目标会被回收。
 		注意：uintptr是平台相关的，在32位系统下大小是4bytes，在64位系统下是8bytes,所以不可移植.
 		uintptr 并没有指针的语义，意思就是 uintptr 所指向的对象会被 gc 无情地回收
 
-为什么有 unsafe
+二。 为什么有 unsafe
 	Go 语言类型系统是为了安全和效率设计的，有时，安全会导致效率低下。有了 unsafe 包，高阶的程序员就可以利用它绕过类型系统的低效。
 	因此，它就有了存在的意义，阅读 Go 源码，会发现有大量使用 unsafe 包的例子。
-
-unsafe.Pointer 是桥梁，可以让任意类型的指针实现相互转换，也可以将任意类型的指针转换为 uintptr 进行指针运算。
-	unsafe.Pointer 可以让你的变量在不同的普通指针类型转来转去，也就是表示为任意可寻址的指针类型。
-	而 uintptr 常用于与 unsafe.Pointer 打配合，用于做指针运算
+	unsafe.Pointer 是桥梁，可以让任意类型的指针实现相互转换，也可以将任意类型的指针转换为 uintptr 进行指针运算。
+		unsafe.Pointer 可以让你的变量在不同的普通指针类型转来转去，也就是表示为任意可寻址的指针类型。
+		而 uintptr 常用于与 unsafe.Pointer 打配合，用于做指针运算
 
 1. unsafe.Pointer   通用指针
 
@@ -73,22 +72,22 @@ type Programmer struct {
 }
 
 func main() {
-	// 结构体操作
+	// 一。结构体操作
 	p := Programmer{Name: "danny", Language: "Golang"}
-	fmt.Println(p)
+	fmt.Println("修改前：", p)
 	//获取 name的指针
 	name := (*string)(unsafe.Pointer(&p))
 	*name = "Joy"
 	// offset使用获取language地址
-	lang := (*string)(unsafe.Pointer(uintptr(unsafe.Pointer(&p)) + unsafe.Offsetof(p.Language)))
+	lang := (*string)(unsafe.Pointer(uintptr(unsafe.Pointer(&p)) + unsafe.Offsetof(p.Name)))
 	*lang = "Python"
-	fmt.Println(p)
+	fmt.Println("修改后：", p)
 	//异常情况 示例
 	//... 中间逻辑使personAaddr2指向不合法位置
 	//personB = (*Person)(unsafe.Pointer(uintptr(0)))
 	//fmt.Println("personB.Age is :", personB.Age)
 
-	// 获取slice的长度
+	// 二。切片操作
 	/* runtime/slice.go
 	type slice struct{
 		array unsafe.Pointer
@@ -100,19 +99,19 @@ func main() {
 	*/
 	s := make([]int, 9, 20)
 	var len1 = *(*int)(unsafe.Pointer(uintptr(unsafe.Pointer(&s)) + uintptr(8)))
-	fmt.Println(len1, len(s))
+	fmt.Println("长度", len1, len(s))
 	var cap1 = *(*int)(unsafe.Pointer(uintptr(unsafe.Pointer(&s)) + uintptr(16)))
-	fmt.Println(cap1, cap(s))
+	fmt.Println("容量", cap1, cap(s))
 	// 转换过程 Len: &s => pointer => uintptr => pointer => *int => int
 
-	// 获取map的长度
+	// 三。获取map的长度
 	/*
-			type hmap struct{
-				count int
-				flag uint8
-				B	uint8
-				....
-			}
+		type hmap struct{
+			count int
+			flag uint8
+			B	uint8
+			....
+		}
 		和 slice 不同的是，makemap 函数返回的是 hmap 的指针
 		func makemap()*map
 		我们依然能通过 unsafe.Pointer 和 uintptr 进行转换，得到 hamp 字段的值，只不过，现在 count 变成二级指针
@@ -122,6 +121,6 @@ func main() {
 	mp["Joy"] = 2
 	count := **(**int)(unsafe.Pointer(&mp))
 	// 转换过程&mp->pointer->**int->int
-	fmt.Println(count, len(mp))
+	fmt.Println("长度", count, len(mp))
 
 }
