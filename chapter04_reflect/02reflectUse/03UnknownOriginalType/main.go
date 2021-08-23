@@ -31,9 +31,9 @@ func main() {
 // 通过接口来获取任意参数
 func DoFiledAndMethod(input interface{}) {
 
-	getType := reflect.TypeOf(input)              //先获取input的类型
-	fmt.Println("get Type is :", getType.Name())  // Person
-	fmt.Println("get Kind is : ", getType.Kind()) // struct
+	getType := reflect.TypeOf(input)             //先获取input的类型
+	fmt.Println("get Type is :", getType.Name()) // Person
+	fmt.Println("get Kind is :", getType.Kind()) // struct
 
 	getValue := reflect.ValueOf(input)
 	fmt.Println("get all Fields is:", getValue) //{danny 30 男}

@@ -59,7 +59,7 @@ func main() {
 	fmt.Println(any)
 
 	//带方法
-	g := Gopher{"Go"}
+	g := Gopher{"Go", 1}
 	var c coder = g
 	fmt.Println(c)
 }
@@ -71,6 +71,7 @@ type coder interface {
 
 type Gopher struct {
 	language string
+	Level    int
 }
 
 func (p Gopher) code() {
