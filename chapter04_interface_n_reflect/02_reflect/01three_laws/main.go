@@ -8,6 +8,19 @@ import (
 func main() {
 	// 定律1：从接口值到反射对象  普通变量 -> 接口interface变量 -> 反射对象
 	//反射操作：通过反射，可以获取一个接口类型变量的 类型和数值
+	Law1()
+
+	// 定律2：反射对象->interface变量
+	Law2()
+
+	// 定律3：当反射对象所存的值是可设置时，反射对象才可修改
+	//Go 语言里的函数都是值传递，只要你传递的不是变量的指针，你在函数内部对变量的修改是不会影响到原始的变量的。
+	//回到反射上来，当你使用 reflect.Typeof 和 reflect.Valueof 的时候，如果传递的不是接口变量的指针，
+	//反射世界里的变量值始终将只是真实世界里的一个拷贝，你对该反射对象进行修改，并不能反映到真实世界里。
+	// 可以使用Value.CanSet()检测是否可以通过此Value修改原始变量的值,可寻址的
+	Law3()
+}
+func Law1() {
 	// 1。内置类型
 	var x float64 = 3.4
 
@@ -43,16 +56,18 @@ func main() {
 
 	// 确认coder是否实现了String() string接口
 	fmt.Println("implements of stringer:", typ.Implements(typeofStringer)) // implements of stringer: true
-
-	// 定律2：反射对象->interface变量
+}
+func Law2() {
+	coder := &Coder{Name: "danny"}
+	val := reflect.ValueOf(coder)
 	c, ok := val.Interface().(*Coder)
 	if ok {
 		fmt.Println(c.Name) // danny
 	} else {
 		panic("type assert to *Coder error")
 	}
-	// 定律3：当反射对象所存的值是可设置时，反射对象才可修改
-	// 可以使用Value.CanSet()检测是否可以通过此Value修改原始变量的值,可寻址的
+}
+func Law3() {
 	z := 10 // 不是指针
 	v2 := reflect.ValueOf(z)
 	fmt.Println("settable:", v2.CanSet()) // settable: false
