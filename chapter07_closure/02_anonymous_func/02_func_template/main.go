@@ -20,7 +20,6 @@ func Data(arr interface{}, filterFunc FilterFunc) interface{} {
 	array, _ := arr.([]int)
 
 	for _, value := range array {
-
 		integer, ok := filterFunc(value).(int)
 		if ok {
 			slice = append(slice, integer)
@@ -29,6 +28,7 @@ func Data(arr interface{}, filterFunc FilterFunc) interface{} {
 	}
 	return slice
 }
+
 /*
   具体操作:奇数变偶数（这里可以不使用接口类型,直接使用int类型)
 */
@@ -42,7 +42,6 @@ func EvenFilter(ele interface{}) interface{} {
 	}
 	return integer
 }
-
 
 /*
   具体操作:偶数变奇数（这里可以不使用接口类型,直接使用int类型)
@@ -72,4 +71,3 @@ func main() {
 	fmt.Println(sliceOdd) //[1 3 3 5 5]
 
 }
-
