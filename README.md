@@ -41,6 +41,9 @@
         1.8 单向通道
         1.9 使用channel传递channel
     2. TimerChan模块
+        2.1 reset陷阱
+        2.2 timerStop使用
+        2.3 TimerAfter陷阱
     3. Select多路复用
     4. CSP理论中的Process/Channel
     5. Channel内部结构(含PPT分析)
