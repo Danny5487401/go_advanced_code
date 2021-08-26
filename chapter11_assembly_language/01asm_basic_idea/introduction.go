@@ -73,5 +73,47 @@ package _1asm_basic_idea
 	2. Stack
 	Stack 是由于函数运行而临时占用的内存区域.Stack 是由内存区域的结束地址开始，从高位（地址）向低位（地址）分配。
 
+math.go
+	package main
+	import "fmt"
+
+	func add(a, b int) int // 汇编函数声明
+
+	func sub(a, b int) int // 汇编函数声明
+
+	func mul(a, b int) int // 汇编函数声明
+
+	func main() {
+		fmt.Println(add(10, 11))
+		fmt.Println(sub(99, 15))
+		fmt.Println(mul(11, 12))
+	}
+math.s
+	#include "textflag.h" // 因为我们声明函数用到了 NOSPLIT 这样的 flag，所以需要将 textflag.h 包含进来
+
+	// func add(a, b int) int
+	TEXT ·add(SB), NOSPLIT, $0-24
+		MOVQ a+0(FP), AX // 参数 a
+		MOVQ b+8(FP), BX // 参数 b
+		ADDQ BX, AX    // AX += BX
+		MOVQ AX, ret+16(FP) // 返回
+		RET
+
+	// func sub(a, b int) int
+	TEXT ·sub(SB), NOSPLIT, $0-24
+		MOVQ a+0(FP), AX
+		MOVQ b+8(FP), BX
+		SUBQ BX, AX    // AX -= BX
+		MOVQ AX, ret+16(FP)
+		RET
+
+	// func mul(a, b int) int
+	TEXT ·mul(SB), NOSPLIT, $0-24
+		MOVQ  a+0(FP), AX
+		MOVQ  b+8(FP), BX
+		IMULQ BX, AX    // AX *= BX
+		MOVQ  AX, ret+16(FP)
+		RET
+		// 最后一行的空行是必须的，否则可能报 unexpected EOF
 
 */
