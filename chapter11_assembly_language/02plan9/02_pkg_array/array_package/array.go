@@ -1,3 +1,3 @@
 package array_package
 
-var num [2]int
+var Num [2]int
