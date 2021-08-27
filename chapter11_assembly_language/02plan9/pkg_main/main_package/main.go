@@ -1,8 +1,6 @@
-package main_package
+package main
 
 var helloworld = "你好, 世界"
-
-func Main()
 
 /*
 TEXT ·main(SB), $16-0用于定义main函数，其中$16-0表示main函数的帧大小是16个字节（对应string头部结构体的大小，用于给runtime·printstring函数传递参数），
