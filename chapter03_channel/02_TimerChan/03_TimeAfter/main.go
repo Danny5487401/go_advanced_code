@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -48,4 +49,46 @@ func do() <-chan int {
 		//outCh <- 2 // 看是否返回
 	}()
 	return outCh
+}
+
+var wg sync.WaitGroup
+
+//在3分钟内容易重复创建对象
+func useTimeAfter1(queue <-chan string) {
+	defer wg.Done()
+	Running := true
+	for Running {
+		select {
+		case _, ok := <-queue:
+			if !ok {
+				return
+			}
+
+		case <-time.After(3 * time.Minute):
+			return
+		}
+	}
+}
+
+// 正确的方式:重复利用对象
+func useNewTimer2(in <-chan string) {
+	defer wg.Done()
+	idleDuration := 3 * time.Minute
+	idleDelay := time.NewTimer(idleDuration)
+	defer idleDelay.Stop()
+	Running := true
+	for Running {
+		idleDelay.Reset(idleDuration)
+
+		select {
+		case _, ok := <-in:
+			if !ok {
+				return
+			}
+
+			// handle `s`
+		case <-idleDelay.C:
+			return
+		}
+	}
 }

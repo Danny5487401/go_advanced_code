@@ -1,12 +1,14 @@
 package main
 
-// 普通的map，map保存到是int到int的映射，会执行delete删除map的每一项，执行垃圾回收，看内存是否被回收，map设置为nil，再看是否被回收
-
 import (
 	"log"
 	"runtime"
 )
 
+/*
+空间收缩
+	map 不会收缩 “不再使用” 的空间。就算把所有键值删除，它依然保留内存空间以待后用
+*/
 var lastTotalFreed uint64
 var intMap map[int]int
 var cnt = 8192
@@ -14,11 +16,13 @@ var cnt = 8192
 func main() {
 	printMemStats()
 
+	// 添加数据
 	initMap()
 	runtime.GC()
 	printMemStats()
 
 	log.Println(len(intMap))
+	// 删除数据
 	for i := 0; i < cnt; i++ {
 		delete(intMap, i)
 	}
@@ -27,6 +31,7 @@ func main() {
 	runtime.GC()
 	printMemStats()
 
+	// 释放map对象
 	intMap = nil
 	runtime.GC()
 	printMemStats()
@@ -51,14 +56,15 @@ func printMemStats() {
 }
 
 /*
-Alloc：当前堆上对象占用的内存大小。
-TotalAlloc：堆上总共分配出的内存大小。
-Sys：程序从操作系统总共申请的内存大小。
-NumGC：垃圾回收运行的次数。
+术语解释
+	Alloc：当前堆上对象占用的内存大小。
+	TotalAlloc：堆上总共分配出的内存大小。
+	Sys：程序从操作系统总共申请的内存大小。
+	NumGC：垃圾回收运行的次数。
 结论：
 	Alloc代表了map占用的内存大小，这个结果表明，执行完delete后，map占用的内存并没有变小，Alloc依然是387，代表map的key和value占用的空间仍在map里.
 	执行完map设置为nil，Alloc变为74，与刚创建的map大小基本是约等于。
-
+提示：如长期使用 map 对象（比如用作 cache 容器），偶尔换成 “新的” 或许会更好。还有，int key 要比 string key 更快。
 源码注释
 	type MemStats struct {
 		// 一般统计
