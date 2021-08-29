@@ -12,6 +12,36 @@ import (
 //通过map保存注册的handler
 //然后通过底层的serveHTTP进行转发，这是效率最高的，因为没有进任何封装
 //参考beego的那些路由
+
+/*
+网络底层概念：
+	netFD // 网络描述符
+	pollDesc  // 底层数据结构
+怎么实现同步编程：
+	网络描述netFD与pollDesc进行绑定。当在一个netFD上遇到EAGAIN,就将当前goroutine存储在netFD对应的pollDesc中，同时将goroutine给park住，
+	直到这个netFD上再次发生读写事件时，才将次goroutine给ready激活.显然，在底层通知goroutine再次发生读写等事件的方式就是epoll等事件驱动机制.
+epoll为例：
+
+源码分析：
+	type Listener interface {
+		// Accept waits for and returns the next connection to the listener.
+		Accept() (Conn, error)
+
+		// Close closes the listener.
+		// Any blocked Accept operations will be unblocked and return errors.
+		Close() error
+
+		// Addr returns the listener's network address.
+		Addr() Addr
+	}
+	type TCPConn struct {
+		conn
+	}
+	type conn struct {
+		fd *netFD  // // 网络描述符
+	}
+*/
+
 var mux map[string]func(http.ResponseWriter, *http.Request)
 
 func main() {
