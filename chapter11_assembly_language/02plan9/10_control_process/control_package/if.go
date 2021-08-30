@@ -16,3 +16,5 @@ if/goto跳转
 		return b
 	}
 */
+
+func If(ok int, a, b int) int

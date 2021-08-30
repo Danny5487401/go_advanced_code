@@ -41,6 +41,7 @@ func (e errorStackString) Error() string {
 	return e.s
 }
 
+// runtime.Caller函数可以获取当前函数的调用者列表
 // 存储堆栈信息的stack字段，我们在生成错误的时候，就可以把调用的堆栈信息存储在这个字段里
 func callers() *stack {
 	const depth = 32

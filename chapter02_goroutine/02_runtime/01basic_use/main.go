@@ -73,11 +73,9 @@ func main() {
 	runtime.Stack(buf, true)
 	fmt.Println(string(buf))
 
+	// 9.runtime.Caller函数可以获取当前函数的调用者列表
 	// 获取当前函数或者上层函数的标识号、文件名、调用方法在当前文件中的行号
-	pc, _, line, _ := runtime.Caller(1)
-	fmt.Printf("main函数的pc:%d\n", pc)
-	fmt.Printf("main函数被调用的行数:%d\n", line)
-	show()
+	show(2)
 }
 
 type Student struct {
@@ -91,16 +89,19 @@ func showRecord() {
 	}
 }
 
-func show() {
-	pc, _, line, _ := runtime.Caller(1)
-	fmt.Printf("show函数的pc:%d\n", pc)
-	fmt.Printf("show函数被调用的行数:%d\n", line)
-	// 这个是main函数的栈
-	pc, _, line, _ = runtime.Caller(2)
-	fmt.Printf("show的上层函数的pc:%d\n", pc)
-	fmt.Printf("show的上层函数被调用的行数:%d\n", line)
-	pc, _, _, _ = runtime.Caller(3)
-	fmt.Println(pc)
-	pc, _, _, _ = runtime.Caller(4)
-	fmt.Println(pc)
+func show(depth int) {
+	for skip := 0; skip < depth; skip++ {
+		// runtime.Caller先获取当时的PC寄存器值，以及文件和行号
+		pc, file, line, ok := runtime.Caller(skip)
+		if !ok {
+			break
+		}
+		// 根据PC寄存器表示的指令位置，通过runtime.FuncForPC函数获取函数的基本信息
+		p := runtime.FuncForPC(pc)
+		fnfile, fnline := p.FileLine(0)
+
+		fmt.Printf("skip = %d, pc = 0x%08X\n", skip, pc)
+		fmt.Printf("  func: file = %s, line = L%03d, name = %s, entry = 0x%08X\n", fnfile, fnline, p.Name(), p.Entry())
+		fmt.Printf("  call: file = %s, line = L%03d\n", file, line)
+	}
 }
