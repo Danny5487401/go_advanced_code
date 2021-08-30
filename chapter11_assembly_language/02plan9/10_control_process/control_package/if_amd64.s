@@ -1,3 +1,4 @@
+#include "textflag.h"
 
 TEXT ·If(SB), NOSPLIT, $0-32
 	MOVQ ok+8*0(FP), CX // ok
@@ -13,3 +14,4 @@ TEXT ·If(SB), NOSPLIT, $0-32
 L:
 	MOVQ BX, ret+24(FP) // return b
 	RET
+

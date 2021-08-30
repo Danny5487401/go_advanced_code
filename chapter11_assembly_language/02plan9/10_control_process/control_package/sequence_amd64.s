@@ -29,3 +29,4 @@ TEXT ·main(SB), $16-0
     CALL runtime·printnl(SB)
 
     RET
+
