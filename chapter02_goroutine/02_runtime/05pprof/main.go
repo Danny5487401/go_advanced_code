@@ -69,16 +69,19 @@ func main() {
 
 /*
 展示参数：
-
 	类型	描述
-	allocs	内存分配情况的采样信息
-	blocks	阻塞操作情况的采样信息
+
 	cmdline	显示程序启动命令参数及其参数
-	goroutine	显示当前所有协程的堆栈信息
-	heap	堆上的内存分配情况的采样信息
-	mutex	锁竞争情况的采样信息
 	profile	cpu占用情况的采样信息，点击会下载文件
-	threadcreate	系统线程创建情况的采样信息
 	trace	程序运行跟踪信息
 
+源码：
+	profiles.m = map[string]*Profile{
+		"goroutine":    goroutineProfile,  //显示当前所有协程的堆栈信息
+		"threadcreate": threadcreateProfile, // 系统线程创建情况的采样信息
+		"heap":         heapProfile,  // 堆上的内存分配情况的采样信息
+		"allocs":       allocsProfile,  //内存分配情况的采样信息
+		"block":        blockProfile,  //阻塞操作情况的采样信息
+		"mutex":        mutexProfile,  // 锁竞争情况的采样信息
+	}
 */

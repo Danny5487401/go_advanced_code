@@ -1,5 +1,4 @@
-package main
-
+```go
 /*
 第三方性能分析来分析代码包
 	runtime.pprof 提供基础的运行时分析的驱动，但是这套接口使用起来还不是太方便，例如：
@@ -10,3 +9,6 @@ package main
 使用下面代码安装这个包
 	go get github.com/pkg/profile
 */
+
+```
+

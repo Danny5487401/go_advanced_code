@@ -21,6 +21,8 @@
         2.3 资源竞争一致性问题分析
         2.4 垃圾回收机制(trace查看map垃圾回收）
         2.5 监控代码pprof
+            2.5.1 标准包runtime/pprof及net/http/pprof
+            2.5.2 第三方包pkg/profile
         2.6 Go内存结构
     4. 线程池
         4.1 Goroutine最大数量限制(令牌桶方式)
