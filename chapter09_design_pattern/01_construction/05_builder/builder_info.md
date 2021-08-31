@@ -1,22 +1,29 @@
-package builder
 
-/*
-背景：
+#背景：
 	当一个方法有多个变量的时候，我们在调用该方法的时候可能会因为参数的顺序、个数错误，而造成调用错误或者不能达到我们预期的目的
-建造者模式
+#建造者模式
 	将一个复杂对象的构造与它的表示分离，使同样的构建过程可以创建不同的表示。主要解决多变参数传递问题
-角色
+#角色
 	Product 这是我们要创建的复杂对象(一般都是很复杂的对象才需要使用建造者模式)。
 	Builder 抽象的一个东西， 主要是用来规范我们的建造者的。
 	ConcreteBuilder 具体的Builder实现， 这是今天的重点，主要用来根据不用的业务来完成要创建对象的组建的创建。
 	Director 这个的作用是规范复杂对象的创建流程
 
-案例
-	xorm就是使用了builder设计模式
-场景
+#案例
+	1.xorm就是使用了builder设计模式
 	某业务系统, 希望使用SQLQuery类动态构造复杂SQL查询语句
 	SQLQuery类的各种属性组合情况很多, 因此创建SQLQueryBuilder作为SQLQuery的建造者
-故事：
+	2.k8s---k8s.io/cli-runtime/pkg/resource/builder.go
+	r := f.NewBuilder().
+		Unstructured().
+		Schema(schema).
+		ContinueOnError().
+		NamespaceParam(cmdNamespace).DefaultNamespace().
+		// 读取文件信息，发现除了支持简单的本地文件，也支持标准输入和http/https协议访问的文件
+		FilenameParam(enforceNamespace, &o.FilenameOptions).
+		LabelSelectorParam(o.Selector).
+		Flatten()
+#故事：
 	1。平时去面馆吃面，有各种味道的面条（牛肉味、肥肠味等）
 		有各种配料（香菜、葱、姜、辣椒等）
 		第一个客人：一碗牛肉面 加葱、姜
@@ -24,11 +31,11 @@ package builder
 	2。例如肯德基的点餐系统，汉堡，薯条，可乐，炸鸡是不变的，变化的是他们组合出的套餐，所以点餐系统使用建造者模式，非常容易拓展出不同的套餐，
 		而且既定的套餐，修改薯条为大份的时候，也非常方便
 
-建造者模式的优点
+#建造者模式的优点
 （1）封装性好，构建和表示分离。
 （2）扩展性好，建造类之间独立，在一定程度上解耦。
 （3）便于控制细节，建造者可以对创建过程逐步细化，而不对其他模块产生任何影响。
-建造者模式的缺点
+#建造者模式的缺点
 （1）需要多创建一个IBuilder对象。
 （2）如果产品内部发生变化，则建造者也要同步修改，后期维护成本较大。
-*/
+
