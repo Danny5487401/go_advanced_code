@@ -8,6 +8,16 @@ import (
 	"log"
 )
 
+/*
+PEM
+	将X.509基础证书用base64重新编码存为ASCII文件，用于和邮件一起传输保证邮件安全性。
+X.509
+	这是由国际电信联盟（ITU-T）制定的ASN.1规范下数字证书标准，它规定了证书应包含哪些信息和使用什么样的编码格式（默认DER二进制编码）。
+PKCS，
+	The Public-Key Cryptography Standards，公钥密码学标准，由美帝的RSA公司制定的一系列标准，这里我们只讨论#7/#8/#12，
+	#7/#12是对X.509证书进行扩展、加密用于交换。#8是一种私钥格式标准。openssl生成的私钥，可以转换成pkcs8格式
+*/
+
 //生成RSA密钥对
 func GenRSAKey(size int) (privateKeyBytes, publicKeyBytes []byte, err error) {
 	//生成密钥
