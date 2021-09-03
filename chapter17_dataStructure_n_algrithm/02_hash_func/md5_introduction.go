@@ -7,23 +7,29 @@ import (
 )
 
 /*
+hash 函数，有加密型和非加密型。
+	加密型的一般用于加密数据、数字摘要等，典型代表就是 md5、sha1、sha256、aes256 这种；非加密型的一般就是查找。在 map 的应用场景中，用的是查找。选择 hash 函数主要考察的是两点：性能、碰撞概率
 md5
 	md5算法属于hash算法的一种，所以在了解md5之前，我们先认识一下go提供的hash接口。hash算法是保证只要输入的值不同，就一定会得到两个不同的指定长度的hash值。当前两个不同值产生相同的hash还是有可能的，只是这个可能性很小很小
 hash源码:hash包
 	type Hash interface {
 		// 通过io.Writer接口的Write方法向hash中添加数据
 		io.Writer
+
 		// 返回添加b到当前的hash值后的新切片，不会改变底层的hash状态，这个方法就是返回计算后的hash值，只是它是字符切片
 		Sum(b []byte) []byte
+
 		// 重设hash为无数据输入的状态，就是清空hash之前写入的数据
 		Reset()
+
 		// 返回Sum会返回的切片的长度
 		Size() int
+
 		// 返回hash底层的块大小；Write方法可以接受任何大小的数据，
 		// 但提供的数据是块大小的倍数时效率更高
 		BlockSize() int
 	}
- Hash包还有两个Hash接口：
+Hash包还有两个Hash接口：
 type Hash32 interface { // Hash32是一个被所有32位hash函数实现的公共接口。
     Hash
     Sum32() uint32
