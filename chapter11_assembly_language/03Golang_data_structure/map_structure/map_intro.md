@@ -1,31 +1,60 @@
-package main
+#Map介绍
+map 的设计也被称为 “The dictionary problem”，它的任务是设计一种数据结构用来维护一个集合的数据，并且可以同时对集合进行增删查改的操作。
 
-import (
-	"fmt"
-	"sort"
-)
+最主要的数据结构有两种：哈希查找表（Hashtable）、 搜索树（Searchtree）
+##哈希查找表（Hashtable）
+哈希查找表用一个哈希函数将 key 分配到不同的桶（bucket，也就是数组的不同 index）。这样，开销主要在哈希函数的计算以及数组的常数访问时间。
+在很多场景下，哈希查找表的性能很高。
 
-/*
-1. map哈希表源码解析
+哈希查找表一般会存在“碰撞”的问题，就是说不同的 key 被哈希到了同一个 bucket。一般有两种应对方法：链表法和 开放地址法。
+
+链表法将一个 bucket 实现成一个链表，落在同一个 bucket 中的 key 都会插入这个链表。开放地址法则是碰撞发生后，通过一定的规律，在数组的后面挑选“空位”，用来放置新的 key
+
+##搜索树法
+一般采用自平衡搜索树，包括：AVL 树，红黑树。
+
+##对比：
+自平衡搜索树法的最差搜索效率是 O(logN)，而哈希查找表最差是 O(N)。当然，哈希查找表的平均查找效率是 O(1)，
+如果哈希函数设计的很好，最坏的情况基本不会出现。
+还有一点，遍历自平衡搜索树，返回的 key 序列，一般会按照从小到大的顺序；而哈希查找表则是乱序的。
+
+#map哈希表源码解析
+Go 语言采用的是哈希查找表，并且使用链表解决哈希冲突。  
+1. 表示 map 的结构体是 hmap，它是 hashmap 的“缩写”：
+```go
+
 
 src/runtime/map.go
 
 	type hmap struct {
+        // 元素个数，调用 len(map) 时，直接返回此值
 		count     int    // 表示当前哈希表中元素的数量
+		
 		flags     uint8  // 表示哈希表的标记 1表示buckets正在被使用 2表示oldbuckets正在被使用 4表示哈希正在被写入 8表示哈希是等量扩容
+
+		// buckets 的对数 log_2
 		B         uint8  // 可以最多容纳 6.5 * 2 ^ B 个元素，6.5为装载因子
 		noverflow uint16 // 溢出的个数
+		
+		//  计算 key 的哈希的时候会传入哈希函数
 		hash0     uint32 // 哈希种子
 
+        // 指向 buckets 数组，大小为 2^B
+        // 如果元素个数为0，就为 ni
 		buckets    unsafe.Pointer // 桶的地址
+		
 		oldbuckets unsafe.Pointer // 旧桶的地址，用于扩容
+		
 		nevacuate  uintptr        // 搬迁进度，小于nevacuate的已经搬迁
 		overflow *[2]*[]*bmap
 	}
 
-	其中，overflow是一个指针，指向一个元素个数为2的数组，数组的类型是一个指针，指向一个slice，slice的元素是桶(bmap)的地址，这些桶都是溢出桶；
+    /*B 是 buckets 数组的长度的对数，也就是说 buckets 数组的长度就是 2^B。
+        其中，overflow是一个指针，指向一个元素个数为2的数组，数组的类型是一个指针，指向一个slice，slice的元素是桶(bmap)的地址，这些桶都是溢出桶；
 		为什么有两个？因为Go map在hash冲突过多时，会发生扩容操作，为了不全量搬迁数据，使用了增量搬迁，[0]表示当前使用的溢出桶集合，
 		[1]是在发生扩容时，保存了旧的溢出桶集合；overflow存在的意义在于防止溢出桶被gc。
+    
+     */
 
 
 	// A bucket for a Go map.桶结构体
@@ -35,9 +64,9 @@ src/runtime/map.go
 		// 接下来是8个key、8个value，但是我们不能直接看到；为了优化对齐，go采用了key放在一起，value放在一起的存储方式，
 		// 再接下来是hash冲突发生时，下一个溢出桶的地址
 	}
-		tophash的存在是为了快速试错，毕竟只有8位，比较起来会快一点。
-	桶的结构到底是怎样的？
-		桶的结构体并不是上面提到的tophash [8]uint8,因为go是不支持泛型的，所以在编译过程中才会根据具体的类型确定,实际上桶的结构可以表示为
+	//	tophash的存在是为了快速试错，毕竟只有8位，比较起来会快一点。
+	//  桶的结构到底是怎样的？
+	//	桶的结构体并不是上面提到的tophash [8]uint8,因为go是不支持泛型的，所以在编译过程中才会根据具体的类型确定,实际上桶的结构可以表示为
 		type bmap struct {
 			topbits  [8]uint8
 			keys     [8]keytype
@@ -45,10 +74,31 @@ src/runtime/map.go
 			pad      uintptr
 			overflow uintptr
 		}
+	// 从定义可以看出，不同于STL中map以红黑树实现的方式，Golang采用了HashTable的实现，解决冲突采用的是链地址法。也就是说，使用数组+链表来实现map
+```
+![](./bmap_in_mem.png)
+上图就是 bucket 的内存模型， HOBHash 指的就是 top hash。注意到 key 和 value 是各自放在一起的，并不是 key/value/key/value/... 这样的形式。
+源码里说明这样的好处是在某些情况下可以省略掉 padding 字段，节省内存空间。
 
-从定义可以看出，不同于STL中map以红黑树实现的方式，Golang采用了HashTable的实现，解决冲突采用的是链地址法。也就是说，使用数组+链表来实现map
+例如，有这样一个类型的 map：
+```go
+map[int64]int8
+```
+如果按照 key/value/key/value/... 这样的模式存储，那在每一个 key/value 对之后都要额外 padding 7 个字节；而将所有的 key，value 分别绑定到一起，
+这种形式 key/key/.../value/value/...，则只需要在最后添加 padding。
 
+每个 bucket 设计成最多只能放 8 个 key-value 对，如果有第 9 个 key-value 落入当前的 bucket，那就需要再构建一个 bucket ，通过 overflow 指针连接起来
 2. 初始化 makemap
+   从语法层面上来说，创建 map 很简单
+```go
+ageMap := make(map[string]int)
+//指定长度
+ageMap2 := make(map[string]int.8)
+//ageMap 为nil，不能向其添加元素，会直接panic
+var ageMap3 map[string]int
+```
+通过汇编语言可以看到，实际上底层调用的是 makemap 函数，主要做的工作就是初始化 hmap 结构体的各种字段，例如计算 B 的大小，设置哈希种子 hash0 等等。a
+```go
 	func makemap(t *maptype, hint int, h *hmap) *hmap {
 		//计算内存空间和判断是否内存溢出
 		mem, overflow := math.MulUintptr(uintptr(hint), t.bucket.size)
@@ -85,7 +135,6 @@ src/runtime/map.go
 	a. 计算出需要的内存空间并且判断内存是否溢出
 	b.hmap没有的情况进行初始化，并设置hash0表示hash因子
 	c.计算出指数B,桶的数量表示为2^B,通过makeBucketArray去创建对应的桶和溢出桶
-
 
 3. 赋值mapassign
 	func mapassign(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
@@ -207,43 +256,5 @@ src/runtime/map.go
 6. 删除mapdelete
 	a. 引入emptyOne和emptyRest，后者为了加速查找
 
-*/
 
-// 排序及传参
-func main() {
-	// 初始化
-	var m = map[int]int{}
-	m[43] = 1
-	var n = map[string]int{}
-	n["abc"] = 1
-	fmt.Println(m, n) // map[43:1] map[abc:1]
-
-	// 排序：无序变有序
-	mapScore := map[string]int{
-		"Tom":   78,
-		"Mary":  60,
-		"Kevin": 90,
-		"Danny": 100,
-	}
-	len := len(mapScore)
-	names := make([]string, 0, len)
-	for key, _ := range mapScore {
-		names = append(names, key)
-	}
-	// 按字母升序
-	sort.Strings(names)
-	for _, name := range names {
-		fmt.Println("Key:", name, "Value:", mapScore[name])
-	}
-
-	// 传递
-	fmt.Println("传递前Tom的值", mapScore["Tom"])
-	modify(mapScore)
-	fmt.Println("传递后Tom的值", mapScore["Tom"])
-	// 运行结果是可以看出key为"Tom"的值被修改了,说明map是引用类型
-}
-
-//修改
-func modify(mapScore map[string]int) {
-	mapScore["Tom"] = 66
-}
+```
