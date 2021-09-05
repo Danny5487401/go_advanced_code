@@ -21,11 +21,11 @@ TEXT ·Swap(SB), $0
 
 
 TEXT ·Foo(SB), $0
-	MOVEQ a+0(FP),       AX // a
-	MOVEQ b+2(FP),       BX // b
-	MOVEQ c_dat+8*1(FP), CX // c.Data
-	MOVEQ c_len+8*2(FP), DX // c.Len
-	MOVEQ c_cap+8*3(FP), DI // c.Cap
+	MOVQ a+0(FP),       AX // a
+	MOVQ b+2(FP),       BX // b
+	MOVQ c_dat+8*1(FP), CX // c.Data
+	MOVQ c_len+8*2(FP), DX // c.Len
+	MOVQ c_cap+8*3(FP), DI // c.Cap
 	RET
 // 其中a和b参数之间出现了一个字节的空洞，b和c之间出现了4个字节的空洞。出现空洞的原因是要保证每个参数变量地址都要对齐到相应的倍数
 

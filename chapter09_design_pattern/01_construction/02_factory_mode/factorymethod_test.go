@@ -9,6 +9,7 @@ func compute(factory OperatorFactory, a, b int) int {
 	return op.Result()
 }
 
+// 操作符工厂
 func TestOperator(t *testing.T) {
 	var (
 		factory OperatorFactory

@@ -61,9 +61,33 @@ unsafe 包 两个类型，三个函数
 	ArbitraryType是int的一个别名，在Go中对ArbitraryType赋予特殊的意义。代表一个任意Go表达式类型。实际上它类似于 C 语言里的 void*。
 	Pointer是int指针类型的一个别名，在Go中可以把Pointer类型，理解成任何指针的父类型。
 
-注意：
-	高阶的 Gopher，怎么能不会使用 unsafe 包呢？它可以绕过 Go 语言的类型系统，直接操作内存。例如，一般我们不能操作一个结构体的未导出成员，
-	但是通过 unsafe 包就能做到。unsafe 包让我可以直接读写内存，还管你什么导出还是未导
+应用：
+	例如，一般我们不能操作一个结构体的未导出成员，但是通过 unsafe 包就能做到。unsafe 包让我可以直接读写内存，还管你什么导出还是未导出
+	map 源码中的应用
+简单
+		mapaccess1、mapassign、mapdelete 函数中，需要定位 key 的位置，会先对 key 做哈希运算。
+		b := (*bmap)(unsafe.Pointer(uintptr(h.buckets) + (hash&m)*uintptr(t.bucketsize)))
+
+		h.buckets 是一个 unsafe.Pointer，将它转换成 uintptr，然后加上 (hash&m)*uintptr(t.bucketsize)，
+		二者相加的结果再次转换成 unsafe.Pointer，最后，转换成 bmap指针，得到 key 所落入的 bucket 位置
+复杂
+	// store new key/value at insert position
+	if t.indirectkey {
+		kmem := newobject(t.key)
+		*(*unsafe.Pointer)(insertk) = kmem
+		insertk = kmem
+		}
+	if t.indirectvalue {
+		vmem := newobject(t.elem)
+		*(*unsafe.Pointer)(val) = vmem
+		}
+	typedmemmove(t.key, insertk, key)
+
+	这段代码是在找到了 key 要插入的位置后，进行“赋值”操作。insertk 和 val 分别表示 key 和 value 所要“放置”的地址。
+	如果 t.indirectkey 为真，说明 bucket 中存储的是 key 的指针，因此需要将 insertk 看成 指针的指针，
+	这样才能将 bucket 中的相应位置的值设置成指向真实 key 的地址值，也就是说 key 存放的是指针
+注意
+	uintptr 并没有指针的语义，意思就是 uintptr 所指向的对象会被 gc 无情地回收。而 unsafe.Pointer 有指针语义，可以保护它所指向的对象在“有用”的时候不会被垃圾回收
 */
 
 type Programmer struct {
@@ -73,6 +97,16 @@ type Programmer struct {
 
 func main() {
 	// 一。结构体操作
+	StructOperation()
+
+	// 二。切片操作
+	SliceOperation()
+
+	// 三。获取map的长度
+	MapOperation()
+}
+
+func StructOperation() {
 	p := Programmer{Name: "danny", Language: "Golang"}
 	fmt.Println("修改前：", p)
 	//获取 name的指针
@@ -86,8 +120,10 @@ func main() {
 	//... 中间逻辑使personAaddr2指向不合法位置
 	//personB = (*Person)(unsafe.Pointer(uintptr(0)))
 	//fmt.Println("personB.Age is :", personB.Age)
+}
 
-	// 二。切片操作
+func SliceOperation() {
+	// 有一个内存分配相关的事实：结构体会被分配一块连续的内存，结构体的地址也代表了第一个成员的地址
 	/* runtime/slice.go
 	type slice struct{
 		array unsafe.Pointer
@@ -98,13 +134,14 @@ func main() {
 	func makeslice() slice  返回slice 结构体
 	*/
 	s := make([]int, 9, 20)
-	var len1 = *(*int)(unsafe.Pointer(uintptr(unsafe.Pointer(&s)) + uintptr(8)))
+	var len1 = *(*int)(unsafe.Pointer(uintptr(unsafe.Pointer(&s)) + unsafe.Sizeof(int(0))))
 	fmt.Println("长度", len1, len(s))
 	var cap1 = *(*int)(unsafe.Pointer(uintptr(unsafe.Pointer(&s)) + uintptr(16)))
 	fmt.Println("容量", cap1, cap(s))
 	// 转换过程 Len: &s => pointer => uintptr => pointer => *int => int
+}
 
-	// 三。获取map的长度
+func MapOperation() {
 	/*
 		type hmap struct{
 			count int
@@ -122,5 +159,4 @@ func main() {
 	count := **(**int)(unsafe.Pointer(&mp))
 	// 转换过程&mp->pointer->**int->int
 	fmt.Println("长度", count, len(mp))
-
 }

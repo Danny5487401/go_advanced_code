@@ -7,23 +7,29 @@ import (
 )
 
 /*
+hash 函数，有加密型和非加密型。
+	加密型的一般用于加密数据、数字摘要等，典型代表就是 md5、sha1、sha256、aes256 这种；非加密型的一般就是查找。在 map 的应用场景中，用的是查找。选择 hash 函数主要考察的是两点：性能、碰撞概率
 md5
 	md5算法属于hash算法的一种，所以在了解md5之前，我们先认识一下go提供的hash接口。hash算法是保证只要输入的值不同，就一定会得到两个不同的指定长度的hash值。当前两个不同值产生相同的hash还是有可能的，只是这个可能性很小很小
 hash源码:hash包
 	type Hash interface {
 		// 通过io.Writer接口的Write方法向hash中添加数据
 		io.Writer
+
 		// 返回添加b到当前的hash值后的新切片，不会改变底层的hash状态，这个方法就是返回计算后的hash值，只是它是字符切片
 		Sum(b []byte) []byte
+
 		// 重设hash为无数据输入的状态，就是清空hash之前写入的数据
 		Reset()
+
 		// 返回Sum会返回的切片的长度
 		Size() int
+
 		// 返回hash底层的块大小；Write方法可以接受任何大小的数据，
 		// 但提供的数据是块大小的倍数时效率更高
 		BlockSize() int
 	}
- Hash包还有两个Hash接口：
+Hash包还有两个Hash接口：
 type Hash32 interface { // Hash32是一个被所有32位hash函数实现的公共接口。
     Hash
     Sum32() uint32
@@ -38,15 +44,17 @@ md5实现的Hash接口是16位的hash函数（它的Sum方法返回的字符切�
 func main() {
 	//// 方式一
 	// 1. 创建md5算法
-	has := md5.New()
+	h := md5.New()
 	// 2. 写入需要加密的数据
-	has.Write([]byte("abc123"))
-	b := has.Sum(nil) // 获取hash值字符切片；Sum函数接受一个字符切片，这个切片的内容会原样的追加到abc123加密后的hash值的前面，这里我们不需要这么做，所以传入nil
-	fmt.Println(b)    // 打印一下 [233 154 24 196 40 203 56 213 242 96 133 54 120 146 46 3]
+	h.Write([]byte("abc123"))
+	b := h.Sum(nil) // 获取hash值字符切片；Sum函数接受一个字符切片，这个切片的内容会原样的追加到abc123加密后的hash值的前面，这里我们不需要这么做，所以传入nil
+	fmt.Println(b)  // 打印一下 [233 154 24 196 40 203 56 213 242 96 133 54 120 146 46 3]
+	// 3.打印结果
 	// 上面可以看到加密后的数据为长度为16位的字符切片，一般我们会把它转为16进制，方便存储和传播，下一步转换16进制
-	fmt.Println(hex.EncodeToString(b)) // 通过hex包的EncodeToString函数，将数据转为16进制字符串； 打印 e99a18c428cb38d5f260853678922e03
+	// a.通过hex包的EncodeToString函数，将数据转为16进制字符串； 打印 e99a18c428cb38d5f260853678922e03
+	fmt.Println(hex.EncodeToString(b))
 
-	// 还有一种方法转换为16进制,通过fmt的格式化打印方法， %x表示转换为16进制
+	// b.还有一种方法转换为16进制,通过fmt的格式化打印方法， %x表示转换为16进制
 	fmt.Printf("%x", b) // 打印 e99a18c428cb38d5f260853678922e03
 
 	//方式二

@@ -4,11 +4,12 @@
     寄存器是CPU内部用来存放数据的一些小型存储区域，用来暂时存放参与运算的数据和运算结果。
    
 
-1. 通用寄存器
+####1. 通用寄存器
 下面是通用通用寄存器的名字在 IA64 和 plan9 中的对应关系：
 
-	IA64	RAX	RBX	RCX	RDX	RDI	RSI	RBP	RSP	R8	R9	R10	R11	R12	R13	R14	RIP
-	Plan9	AX	BX	CX	DX	DI	SI	BP	SP	R8	R9	R10	R11	R12	R13	R14	PC
+    IA64	RAX	RBX	RCX	RDX	RDI	RSI	RBP	RSP	R8	R9	R10	R11	R12	R13	R14	RIP
+    Plan9	AX	BX	CX	DX	DI	SI	BP	SP	R8	R9	R10	R11	R12	R13	R14	PC
+```html
 <tr>助记符  名字    用途</tr>
 <tr>AX  累加寄存器(AccumulatorRegister) 用于存放数据，包括算术、操作数、结果和临时存放地址</tr>
 <tr>BX  基址寄存器(BaseRegister)        用于存放访问存储器时的地址</tr>
@@ -20,7 +21,7 @@
 <tr>FP  栈帧指针(FramePointer)          go汇编的伪寄存器。引用函数的输入参数，形式是symbol+offset(FP)，例如arg0+0(FP)</tr>
 <tr>SI  源变址寄存器(SourceIndex)        用于存放源操作数的偏移地址</tr>
 <tr>DI  目的寄存器(DestinationIndex)    用于存放目的操作数的偏移地址</tr>
-	
+```
 
 Noted:Plan9 汇编的操作数方向和 Intel 汇编相反的，与 AT&T 类似。
 ```shell script
@@ -31,7 +32,8 @@ mov rax, 123
 ```
 
 
-2. 伪寄存器用来维护上下文、特殊标识等作用    
+####2. 伪寄存器用来维护上下文、特殊标识等作用
+```css
 SB-> Static base pointer: global symbols.理解为原始内存
     是一个虚拟寄存器，保存了静态基地址(static-base) 指针，即我们程序地址空间的开始地址；
     foo(SB)可以用来定义全局的function和数据，foo<>(SB)表示foo只在当前文件可见，跟C中的static效果类似。
@@ -57,13 +59,71 @@ SP->Stack pointer: top of stack. (栈指针)
     硬件SP：函数栈真实栈顶地址
 PC-> Program counter: jumps and branches.    
     实际上就是在体系结构的知识中常见的PC寄存器，在x86平台下对应ip寄存器，amd64上则是rip。
+```
+####真假 SP/FP/BP关系
+```
+
+
+							   caller                                                                                 
+						  +------------------+                                                                              
+						  |                  |                                                                         
++---------------------->  --------------------                                                                             
+|                         |                  |                                                                         
+|                         | caller parent BP |                                                                         
+|           BP(pseudo SP) --------------------                                                                         
+|                         |                  |                                                                         
+|                         |   Local Var0     |                                                                         
+|                         --------------------                                                                         
+|                         |                  |                                                                         
+|                         |   .......        |                                                                         
+|                         --------------------                                                                         
+|                         |                  |                                                                         
+|                         |   Local VarN     |                                                                         
+						 --------------------                                                                         
+caller stack frame        |                  |                                                                         
+|   					  |  callee arg2     |                                                                         
+|                         |------------------|                                                                         
+|                         |                  |                                                                         
+|                         |   callee arg1    |                                                                         
+|                         |------------------|                                                                         
+|                         |                  |                                                                         
+|                         |   callee arg0    |                                                                         
+|                         ----------------------------------------------+   FP(virtual register)                       
+|                         |                  |                          |                                              
+|                         |   return addr    |  parent return address   |                                              
++---------------------->  +------------------+---------------------------    <-------------------------------+         
+											 |  caller BP               |                                    |         
+											 |  (caller frame pointer)  |                                    |         
+							  BP(pseudo SP)  ----------------------------                                    |         
+											 |                          |                                    |         
+											 |     Local Var0           |                                    |              
+											 ----------------------------                                    |         
+											 |                          |                                              
+											 |     Local Var1           |                                              
+											----------------------------                            callee stack frame
+											 |                          |                                              
+											 |       .....              |                                              
+											----------------------------                                     |         
+											 |                          |                                    |         
+											 |     Local VarN           |                                    |         
+							SP(Real Register) ----------------------------                                   |         
+											 |                          |                                    |         
+											 |                          |                                    |         
+											 |                          |                                    |         
+											 |                          |                                    |         
+											 |                          |                                    |         
+											 +--------------------------+    <-------------------------------+ 
+													callee
+
+```
+
 
 Noted:所有用户空间的数据都可以通过FP/SP(局部数据、输入参数、返回值)和SB(全局数据)访问。通常情况下，不会对SB/FP寄存器进行运算操作，
 通常情况会以SB/FP/SP作为基准地址，进行偏移、解引用等操作
 
 !["虚拟内存分布图"](./virtual_mem_distribution.jpg)
  
-
+```css
 1. 静态数据区：存放的是全局变量与常量。这些变量的地址编译的时候就确定了（这也是使用虚拟地址的好处，如果是物理地址，这些地址编译的时候是不可能确定的）。
 	Data 与 BSS 都属于这一部分。这部分只有程序中止（kill 掉、crasg 掉等）才会被销毁。
 	a. BSS段->BSS segment:通常是指用来存放程序中未初始化的全局变量的一块内存区域。BSS是英文BlockStarted by Symbol的简称。
@@ -79,6 +139,8 @@ Noted:所有用户空间的数据都可以通过FP/SP(局部数据、输入参�
 
 4. 堆区->heap：像 C/C++ 语言，堆完全是程序员自己控制的。但是 Golang 里边由于有 GC 机制，我们写代码的时候并不需要关心内存是在栈还是堆上分配。
 	Golang 会自己判断如果变量的生命周期在函数退出后还不能销毁或者栈上资源不够分配等等情况，就会被放到堆上。堆的性能会比栈要差一些。
+
+```
 
 
 
@@ -103,11 +165,12 @@ Noted:所有用户空间的数据都可以通过FP/SP(局部数据、输入参�
 //方法三 生成的事最终机器码的汇编
 ```
 		   
-###内联    
+#### 3.内联    
 	如果学过c/c++就知道，通过inline关键字修饰的函数叫做内联函数。内联函数的优势是在编译过程中直接展开函数中的代码，将其替换到源码的函数调用位置，
 	这样可以节省函数调用的消耗，提高运行速度。适用于函数体短小且频繁调用的函数，如果函数体太大了，会增大目标代码。是一种空间换时间的做法。
 	go编译器会智能判断对代码进行优化和使用汇编
-	go build -gcflags="-N -l -S" file来获得汇编代码。    
+	go build -gcflags="-N -l -S" file来获得汇编代码。 
+```css
 常见指令    
 MOVQ	传送	数据传送	MOVQ 48, AX表示把48传送AX中    
 LEAQ	传送	地址传送	LEAQ AX, BX表示把AX有效地址传送到BX中    
@@ -162,17 +225,17 @@ JLS	转移	条件转移指令	JLS 389上一行的比较结果，左边小于右�
 	// 该声明一般写在任意一个 .go 文件中，例如：add.go
 	func add(a, b int) int
 
+
+
 // 函数实现   
 // 该实现一般写在 与声明同名的 _{Arch}.s 文件中，例如：add_amd64.s
-```shell
+
 TEXT pkgname·add(SB), NOSPLIT, $0-16
     MOVQ a+0(FP), AX
     MOVQ a+8(FP), BX
     ADDQ AX, BX
     MOVQ BX, ret+16(FP)
     RET
-```
-
 
 pkgname 包名可以不写，一般都是不写的，可以参考 go 的源码， 另外 add 前的 · 不是 .
 
@@ -186,24 +249,25 @@ pkgname 包名可以不写，一般都是不写的，可以参考 go 的源码�
 
 
 以上使用的 RODATA，NOSPLIT flag，还有其他的值，可以参考：https://golang.org/doc/asm#directives  
-```shell
-	#include textflag.h
-
-	NOPROF = 1
-	(For TEXT items.) Don’t profile the marked function. This flag is deprecated.
-	DUPOK = 2
-	It is legal to have multiple instances of this symbol in a single binary. The linker will choose one of the duplicates to use.
-	NOSPLIT = 4
-	(For TEXT items.) Don’t insert the preamble to check if the stack must be split. The frame for the routine, plus anything it calls, must fit in the spare space at the top of the stack segment. Used to protect routines such as the stack splitting code itself.
-	RODATA = 8
-	(For DATA and GLOBL items.) Put this data in a read-only section.
-	NOPTR = 16
-	(For DATA and GLOBL items.) This data contains no pointers and therefore does not need to be scanned by the garbage collector.
-	WRAPPER = 32
-	(For TEXT items.) This is a wrapper function and should not count as disabling recover.
-	NEEDCTXT = 64
-	(For TEXT items.) This function is a closure so it uses its incoming context register.
 ```
+
+```shell
+#include textflag.h
+
+NOPROF = 1
+(For TEXT items.) Don’t profile the marked function. This flag is deprecated.
+DUPOK = 2
+It is legal to have multiple instances of this symbol in a single binary. The linker will choose one of the duplicates to use.
+NOSPLIT = 4
+(For TEXT items.) Don’t insert the preamble to check if the stack must be split. The frame for the routine, plus anything it calls, must fit in the spare space at the top of the stack segment. Used to protect routines such as the stack splitting code itself.
+RODATA = 8
+(For DATA and GLOBL items.) Put this data in a read-only section.
+NOPTR = 16
+(For DATA and GLOBL items.) This data contains no pointers and therefore does not need to be scanned by the garbage collector.
+WRAPPER = 32
+(For TEXT items.) This is a wrapper function and should not count as disabling recover.
+NEEDCTXT = 64
+(For TEXT items.) This function is a closure so it uses its incoming context register.
 
 
 标志位
@@ -215,64 +279,8 @@ pkgname 包名可以不写，一般都是不写的，可以参考 go 的源码�
     ZF	零	0表示结果不为0 1表示结果为0   
     SF	符号	0表示最高位为0 1表示最高位为1   
 
-真假 SP/FP/BP关系    
-```css
-
-
-							   caller                                                                                 
-						  +------------------+                                                                              
-						  |                  |                                                                         
-+---------------------->  --------------------                                                                             
-|                         |                  |                                                                         
-|                         | caller parent BP |                                                                         
-|           BP(pseudo SP) --------------------                                                                         
-|                         |                  |                                                                         
-|                         |   Local Var0     |                                                                         
-|                         --------------------                                                                         
-|                         |                  |                                                                         
-|                         |   .......        |                                                                         
-|                         --------------------                                                                         
-|                         |                  |                                                                         
-|                         |   Local VarN     |                                                                         
-						 --------------------                                                                         
-caller stack frame        |                  |                                                                         
-|   					  |  callee arg2     |                                                                         
-|                         |------------------|                                                                         
-|                         |                  |                                                                         
-|                         |   callee arg1    |                                                                         
-|                         |------------------|                                                                         
-|                         |                  |                                                                         
-|                         |   callee arg0    |                                                                         
-|                         ----------------------------------------------+   FP(virtual register)                       
-|                         |                  |                          |                                              
-|                         |   return addr    |  parent return address   |                                              
-+---------------------->  +------------------+---------------------------    <-------------------------------+         
-											 |  caller BP               |                                    |         
-											 |  (caller frame pointer)  |                                    |         
-							  BP(pseudo SP)  ----------------------------                                    |         
-											 |                          |                                    |         
-											 |     Local Var0           |                                    |         
-											 ----------------------------                                    |         
-											 |                          |                                              
-											 |     Local Var1           |                                              
-											----------------------------                            callee stack frame
-											 |                          |                                              
-											 |       .....              |                                              
-											----------------------------                                     |         
-											 |                          |                                    |         
-											 |     Local VarN           |                                    |         
-							SP(Real Register) ----------------------------                                   |         
-											 |                          |                                    |         
-											 |                          |                                    |         
-											 |                          |                                    |         
-											 |                          |                                    |         
-											 |                          |                                    |         
-											 +--------------------------+    <-------------------------------+
-
-                                                              callee
-
 ```
-地址运算   
+####7.地址运算LEA
 	lea( Load Effective Address),amd64 平台地址都是 8 个字节，所以直接就用 LEAQ   
 ```shell
 	LEAQ (BX)(AX*8), CX   
@@ -296,6 +304,99 @@ caller stack frame        |                  |
 	// 三个寄存器做运算，还是别想了
 	// LEAQ DX(BX)(AX*8), CX
 	// ./a.s:13: expected end of operand, found (
+
 ```
+#### 高级汇编语言
+Go汇编语言其实是一种高级的汇编语言。在这里高级一词并没有任何褒义或贬义的色彩，而是要强调Go汇编代码和最终真实执行的代码并不完全等价。Go汇编语言中一个指令在最终的目标代码中可能会被编译为其它等价的机器指令。Go汇编实现的函数或调用函数的指令在最终代码中也会被插入额外的指令。要彻底理解Go汇编语言就需要彻底了解汇编器到底插入了哪些指令。
+
+为了便于分析，我们先构造一个禁止栈分裂的printnl函数。printnl函数内部都通过调用runtime.printnl函数输出换行：
+
+```
+TEXT ·printnl_nosplit(SB), NOSPLIT, $8
+	CALL runtime·printnl(SB)
+	RET
+```
+
+然后通过`go tool asm -S main_amd64.s`指令查看编译后的目标代码：
+
+```
+"".printnl_nosplit STEXT nosplit size=29 args=0xffffffff80000000 locals=0x10
+0x0000 00000 (main_amd64.s:5) TEXT "".printnl_nosplit(SB), NOSPLIT	$16
+0x0000 00000 (main_amd64.s:5) SUBQ $16, SP
+
+0x0004 00004 (main_amd64.s:5) MOVQ BP, 8(SP)
+0x0009 00009 (main_amd64.s:5) LEAQ 8(SP), BP
+
+0x000e 00014 (main_amd64.s:6) CALL runtime.printnl(SB)
+
+0x0013 00019 (main_amd64.s:7) MOVQ 8(SP), BP
+0x0018 00024 (main_amd64.s:7) ADDQ $16, SP
+0x001c 00028 (main_amd64.s:7) RET
+```
+输出代码中我们删除了非指令的部分。为了便于讲述，我们将上述代码重新排版，并根据缩进表示相关的功能：
+
+```
+TEXT "".printnl(SB), NOSPLIT, $16
+	SUBQ $16, SP
+		MOVQ BP, 8(SP)
+		LEAQ 8(SP), BP
+			CALL runtime.printnl(SB)
+		MOVQ 8(SP), BP
+	ADDQ $16, SP
+RET
+```
+
+第一层是TEXT指令表示函数开始，到RET指令表示函数返回。第二层是`SUBQ $16, SP`指令为当前函数帧分配16字节的空间，在函数返回前通过`ADDQ $16, SP`指令回收16字节的栈空间。我们谨慎猜测在第二层是为函数多分配了8个字节的空间。那么为何要多分配8个字节的空间呢？再继续查看第三层的指令：开始部分有两个指令`MOVQ BP, 8(SP)`和`LEAQ 8(SP), BP`，首先是将BP寄存器保持到多分配的8字节栈空间，然后将`8(SP)`地址重新保持到了BP寄存器中；结束部分是`MOVQ 8(SP), BP`指令则是从栈中恢复之前备份的前BP寄存器的值。最里面第四次层才是我们写的代码，调用runtime.printnl函数输出换行。
+
+如果去掉NOSPILT标志，再重新查看生成的目标代码，会发现在函数的开头和结尾的地方又增加了新的指令。下面是经过缩进格式化的结果：
+
+```
+TEXT "".printnl_nosplit(SB), $16
+L_BEGIN:
+	MOVQ (TLS), CX
+	CMPQ SP, 16(CX)
+	JLS  L_MORE_STK
+
+		SUBQ $16, SP
+			MOVQ BP, 8(SP)
+			LEAQ 8(SP), BP
+				CALL runtime.printnl(SB)
+			MOVQ 8(SP), BP
+		ADDQ $16, SP
+
+L_MORE_STK:
+	CALL runtime.morestack_noctxt(SB)
+	JMP  L_BEGIN
+RET
+```
+其中开头有三个新指令，`MOVQ (TLS), CX`用于加载g结构体指针，然后第二个指令`CMPQ SP, 16(CX)`SP栈指针和g结构体中stackguard0成员比较，如果比较的结果小于0则跳转到结尾的L_MORE_STK部分。当获取到更多栈空间之后，通过`JMP L_BEGIN`指令跳转到函数的开始位置重新进行栈空间的检测。
+
+g结构体在`$GOROOT/src/runtime/runtime2.go`文件定义，开头的结构成员如下：
+
+```go
+type g struct {
+	// Stack parameters.
+	stack       stack   // offset known to runtime/cgo
+	stackguard0 uintptr // offset known to liblink
+	stackguard1 uintptr // offset known to liblink
+
+	...
+}
+```
+
+第一个成员是stack类型，表示当前栈的开始和结束地址。stack的定义如下：
+
+```go
+// Stack describes a Go execution stack.
+// The bounds of the stack are exactly [lo, hi),
+// with no implicit data structures on either side.
+type stack struct {
+	lo uintptr
+	hi uintptr
+}
+```
+在g结构体中的stackguard0成员是出现爆栈前的警戒线。stackguard0的偏移量是16个字节，因此上述代码中的`CMPQ SP, 16(AX)`表示将当前的真实SP和爆栈警戒线比较，如果超出警戒线则表示需要进行栈扩容，也就是跳转到L_MORE_STK。在L_MORE_STK标号处，先调用runtime·morestack_noctxt进行栈扩容，然后又跳回到函数的开始位置，此时此刻函数的栈已经调整了。然后再进行一次栈大小的检测，如果依然不足则继续扩容，直到栈足够大为止。
+
+以上是栈的扩容，但是栈的收缩是在何时处理的呢？我们知道Go运行时会定期进行垃圾回收操作，这其中包含栈的回收工作。如果栈使用到比例小于一定到阈值，则分配一个较小到栈空间，然后将栈上面到数据移动到新的栈中，栈移动的过程和栈扩容的过程类似
 
 
