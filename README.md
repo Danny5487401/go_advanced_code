@@ -208,10 +208,10 @@
         3.1 分段与不分段加解密
     4. 排序分析
     5. Jwt源码分析及中间件使用
-## 第十八章 错误跟踪
+## 第十八章 错误跟踪和panic
     1. 自定义错误类型打印错误栈
     2. 扩展包pkg.error
-    3. Gin的错误recover分析
+    3. Gin的错误recover分析(panic和recover源码分析)
     4. errCode自动化生成
 ## 第十九章 nil预定义标识
     1. nil时的地址和大小
