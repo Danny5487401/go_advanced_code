@@ -8,6 +8,9 @@ import (
 /*
 空间收缩
 	map 不会收缩 “不再使用” 的空间。就算把所有键值删除，它依然保留内存空间以待后用
+
+runtime.ReadMemStats(&m)
+	直接通过运行时的内存相关的 API 进行监控
 */
 var lastTotalFreed uint64
 var intMap map[int]int
@@ -45,6 +48,7 @@ func initMap() {
 	}
 }
 
+// 打印内存状态
 func printMemStats() {
 	var m runtime.MemStats
 	// 查看内存申请和分配统计信息

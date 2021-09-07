@@ -6,8 +6,20 @@ import (
 )
 
 /*
-GODEBUG 变量可以控制运行时内的调试变量，参数以逗号分隔，格式为：name=val。本文着重点在 GC 的观察上，主要涉及 gctrace 参数，
-我们通过设置 gctrace=1 后就可以使得垃圾收集器向标准错误流发出 GC 运行信息
+观察 Go GC
+方式一:
+	GODEBUG=gctrace=1
+	GODEBUG 变量可以控制运行时内的调试变量，参数以逗号分隔，格式为：name=val。本文着重点在 GC 的观察上，主要涉及 gctrace 参数，
+	我们通过设置 gctrace=1 后就可以使得垃圾收集器向标准错误流发出 GC 运行信息
+
+方式二：
+	go tool trace trace.out
+
+方式三：
+	 debug.ReadGCStats
+
+方式四：
+	runtime.ReadMemStats
 
 gc 18 @17.141s 0%: 0.21+4.8+0.007 ms clock, 1.7+0/0.45/4.8+0.062 ms cpu, 1->1->1 MB, 4 MB goal, 8 P (forced)
 gc 19 @18.151s 0%: 0.063+1.1+0.003 ms clock, 0.51+0/0.12/1.1+0.030 ms cpu, 1->1->1 MB, 4 MB goal, 8 P (forced)
@@ -30,6 +42,7 @@ gc # @#s #%: #+#+# ms clock, #+#/#/#+# ms cpu, #->#-># MB, # MB goal, # P
 	#->#-># MB：分别表示 GC 启动时, GC 结束时, GC 活动时的堆大小.
 	#MB goal：下一次触发 GC 的内存占用阈值。
 	#P：当前使用的处理器 P 的数量
+
 案例
 gc 7 @0.140s 1%: 0.031+2.0+0.042 ms clock, 0.12+0.43/1.8/0.049+0.17 ms cpu, 4->4->1 MB, 5 MB goal, 4 P
 gc 7：第 7 次 GC。
@@ -51,6 +64,14 @@ gc 7：第 7 次 GC。
 	1：表示被标记对象的大小。
 5 MB goal：表示下一次触发 GC 回收的阈值是 5 MB。
 4 P：本次 GC 一共涉及多少个 P。
+
+wall clock 是指开始执行到完成所经历的实际时间，包括其他程序和本程序所消耗的时间；cpu time 是指特定程序使用 CPU 的时间；他们存在以下关系：
+
+	wall clock < cpu time: 充分利用多核
+
+	wall clock ≈ cpu time: 未并行执行
+
+	wall clock > cpu time: 多核优势不明显
 */
 const capacity = 50000
 
