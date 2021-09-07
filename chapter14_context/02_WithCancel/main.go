@@ -30,11 +30,6 @@ withCancel
 */
 
 func main() {
-	// gen generates integers in a separate goroutine and
-	// sends them to the returned channel.
-	// The callers of gen need to cancel the context once
-	// they are done consuming generated integers not to leak
-	// the internal goroutine started by gen.
 
 	/*
 		gen函数在单独的goroutine中生成整数并将它们发送到返回的通道。 gen的调用者在使用生成的整数之后需要取消上下文，以免gen启动的内部goroutine发生泄漏。
@@ -66,6 +61,7 @@ func main() {
 		}
 	}
 }
+
 /*
 使用分析：
 
@@ -131,4 +127,4 @@ func parentCancelCtx(parent Context) (*cancelCtx, bool) {
 	得益于子context引用父context的设计，对于每个contest都将可以通过向上回溯得到一条引用链，
 	辅助函数 parentCancelCtx即通过不断向内部引用类型转换，达到回看context历史的目的，寻找最近的*cancelCtx型祖先
 
- */
+*/

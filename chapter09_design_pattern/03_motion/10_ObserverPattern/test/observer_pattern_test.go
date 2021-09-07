@@ -1,12 +1,13 @@
 package test
 
 import (
-	observer "go_advenced_code/chapter09_design_pattern/03_motion/10_ObserverPattern"
+	observer "go_advanced_code/chapter09_design_pattern/03_motion/10_ObserverPattern"
 	"testing"
 	"time"
 )
 
 func Test_ObserverPattern(t *testing.T) {
+	// 开会就一次
 	_ = observer.NewAlarmClock("下午开会", 14, 30, false)
 
 	_ = observer.NewAlarmClock("起床", 6, 0, true)
@@ -22,3 +23,8 @@ func Test_ObserverPattern(t *testing.T) {
 		time.Sleep(time.Second)
 	}
 }
+
+/*
+案例：
+	etcd的v2轮训->grpc流式相应，监听事件实现
+*/
