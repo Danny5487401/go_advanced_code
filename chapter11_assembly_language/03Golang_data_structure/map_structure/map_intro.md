@@ -135,8 +135,10 @@ func makemap(t *maptype, hint int, h *hmap) *hmap {
 //a. 计算出需要的内存空间并且判断内存是否溢出
 //b.hmap没有的情况进行初始化，并设置hash0表示hash因子
 //c.计算出指数B,桶的数量表示为2^B,通过makeBucketArray去创建对应的桶和溢出桶
-
+```
 3. 赋值mapassign
+```go
+
 	func mapassign(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
 
 		.....
@@ -287,4 +289,14 @@ buckets 编号就是桶编号，当两个不同的 key 落在同一个桶中，�
     c. 访问到oldbuckets的数据时，会迁移到buckets
 
 7. 删除mapdelete
-    a. 引入emptyOne和emptyRest，后者为了加速查找
+
+
+    它首先会检查 h.flags 标志，如果发现写标位是 1，直接 panic，因为这表明有其他协程同时在进行写操作。
+    
+    计算 key 的哈希，找到落入的 bucket。检查此 map 如果正在扩容的过程中，直接触发一次搬迁操作。
+    
+    删除操作同样是两层循环，核心还是找到 key 的具体位置。寻找过程都是类似的，在 bucket 中挨个 cell 寻找。
+    
+    找到对应位置后，对 key 或者 value 进行“清零”操作
+
+    最后，将 count 值减 1，将对应位置的 tophash 值置成 Empty
