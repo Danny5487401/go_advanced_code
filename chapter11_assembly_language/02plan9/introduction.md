@@ -1,14 +1,12 @@
 # Golang 的汇编是基于 Plan9 汇编的
-## 汇编的简单知识
-### 寄存器
-    寄存器是CPU内部用来存放数据的一些小型存储区域，用来暂时存放参与运算的数据和运算结果。
-   
 
 ####1. 通用寄存器
 下面是通用通用寄存器的名字在 IA64 和 plan9 中的对应关系：
 
     IA64	RAX	RBX	RCX	RDX	RDI	RSI	RBP	RSP	R8	R9	R10	R11	R12	R13	R14	RIP
     Plan9	AX	BX	CX	DX	DI	SI	BP	SP	R8	R9	R10	R11	R12	R13	R14	PC
+
+
 ```html
 <tr>助记符  名字    用途</tr>
 <tr>AX  累加寄存器(AccumulatorRegister) 用于存放数据，包括算术、操作数、结果和临时存放地址</tr>
