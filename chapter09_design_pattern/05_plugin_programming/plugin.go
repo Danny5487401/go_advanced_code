@@ -5,7 +5,10 @@ import "fmt"
 /*
 插件式编程
 	特点可插拨
-第三方源码分析grpc
+案例
+	sql驱动，grpc
+
+第三方源码分析:grpc
 	google.golang.org/grpc@v1.26.0/resolver/resolver.go
 
 	// 定义插件的接口
@@ -58,7 +61,7 @@ import "fmt"
 		return resolver.Get(scheme)
 	}
 
-实现的插件有：consul,etcd等等
+grpc实现的插件有：consul,etcd，等等
 */
 // 定义一个接口，里面有两个方法
 

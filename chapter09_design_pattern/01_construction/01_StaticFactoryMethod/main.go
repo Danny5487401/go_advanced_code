@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 /*
-简单工厂模式:专门定义一个类来负责创建其他类的实例，被创建的实例通常都具有共同的父类.
+简单工厂模式: 专门定义一个类来负责创建其他类的实例，被创建的实例通常都具有共同的父类.
 
 意图：定义一个创建对象的接口，让其子类自己决定实例化哪一个工厂类，工厂模式使其创建过程延迟到子类进行。
 
@@ -24,12 +24,10 @@ import "fmt"
 使用场景： 1、日志记录器：记录可能记录到本地硬盘、系统事件、远程服务器等，用户可以选择记录日志到什么地方。 2、数据库访问，当用户不知道最后系统采用哪一类数据库，以及数据库可能有变化时。 3、设计一个连接服务器的框架，需要三个协议，"POP3"、"IMAP"、"HTTP"，可以把这三个作为产品类，共同实现一个接口。
 
 注意事项：作为一种创建类模式，在任何需要生成复杂对象的地方，都可以使用工厂方法模式。有一点需要注意的地方就是复杂对象适合使用工厂模式，而简单对象，特别是只需要通过 new 就可以完成创建的对象，无需使用工厂模式。如果使用工厂模式，就需要引入一个工厂类，会增加系统的复杂度
- */
 
-/*
 go 语言没有构造函数一说，所以一般会定义NewXXX函数来初始化相关类。
 NewXXX 函数返回接口时就是简单工厂模式，也就是说Golang的一般推荐做法就是简单工厂。
- */
+*/
 
 // 看example.png实例流程，FactoryPatternDemo，我们的演示类使用 ShapeFactory 来获取 Shape 对象。它将向 ShapeFactory 传递信息（CIRCLE / RECTANGLE / SQUARE），以便获取它所需对象的类型
 
@@ -37,6 +35,7 @@ NewXXX 函数返回接口时就是简单工厂模式，也就是说Golang的一�
 type Shape interface {
 	Draw()
 }
+
 // 步骤二：创建实体接口的实体类
 type Rectangle struct {
 }
@@ -52,14 +51,13 @@ func (s Square) Draw() {
 	fmt.Println("Inside Square ::draw() method.")
 }
 
-
-
 type Circle struct {
 }
 
 func (c Circle) Draw() {
 	fmt.Println("Inside Circle  ::draw() method.")
 }
+
 // 步骤三：生成基于给定信息的实体类的对象
 
 type ShapeFactory struct {
@@ -95,4 +93,4 @@ Inside Circle  ::draw() method.
 Inside Rectangle::draw() method.
 Inside Square ::draw() method.
 
- */
+*/
