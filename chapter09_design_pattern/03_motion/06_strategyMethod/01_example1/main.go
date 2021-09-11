@@ -25,10 +25,12 @@ func (a *API) Recognition(name string_test){
 	//...如果有其他新的在此添加
 }
 */
+
 // ====================下面是用Strategy设计模式=====================
 
 // ==============稳定===============
-// 定义一个api接口，添加一个抽象方法 Recognition()
+
+// IAPI 定义一个api接口，添加一个抽象方法 Recognition()
 type IAPI interface {
 	Recognition()
 }
@@ -38,41 +40,53 @@ type API struct {
 	iapi IAPI
 }
 
-func (a *API) OnProgress(){
+func (a *API) OnProgress() {
 	// 运行时动态改变
 	a.iapi.Recognition()
 }
 
+func (a *API) SetRecognition(t string) {
+	switch t {
+	case "ali":
+		a.iapi = new(Ali)
+	case "baidu":
+		a.iapi = new(Bai)
+	}
+}
+
+func (a *API) GetRecognition() {
+	a.iapi.Recognition()
+}
+
 // ==============变化可扩展的==================
+
 // ali 接口
 type Ali struct {
-
 }
+
 // 实现Recognition()抽象方法
-func (a *Ali) Recognition(){
+func (a *Ali) Recognition() {
 	fmt.Println("ali api 调用")
 }
 
 // bai 接口
 type Bai struct {
-
 }
+
 // 实现Recognition()抽象方法
-func (b *Bai) Recognition(){
+func (b *Bai) Recognition() {
 	fmt.Println("baidu api 调用")
 }
 
-
-
-func main(){
+func main() {
 	// 当然如果要彻底解决if else 的问题， 还需要工厂模式进行配合使用
 	// 这里就不增加工厂模式，只是一个纯粹的strategy模式
 	api := new(API)
 	//使用阿里
-	api.iapi = new(Ali)
-	api.iapi.Recognition()
-	//使用百度
-	api.iapi = new(Bai)
-	api.iapi.Recognition()
-}
+	api.SetRecognition("ali")
+	api.GetRecognition()
 
+	//使用百度
+	api.SetRecognition("baidu")
+	api.GetRecognition()
+}
