@@ -11,6 +11,7 @@ type MockPhoneApp struct {
 	mediator ICloudMediator
 }
 
+// 客户端手机
 func NewMockPhoneApp(mediator ICloudMediator) *MockPhoneApp {
 	return &MockPhoneApp{
 		mediator,

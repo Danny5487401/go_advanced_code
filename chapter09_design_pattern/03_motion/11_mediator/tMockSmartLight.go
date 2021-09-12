@@ -17,10 +17,12 @@ func NewMockSmartLight(id int) ISmartDevice {
 	}
 }
 
+// 设备唯一号
 func (me *tMockSmartLight) ID() int {
 	return me.id
 }
 
+// 执行的操作
 func (me *tMockSmartLight) Command(cmd string) string {
 	if cmd == "light open" {
 		e := me.open()

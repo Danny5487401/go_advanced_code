@@ -14,6 +14,7 @@ func newMockCloudMediator() ICloudMediator {
 	}
 }
 
+// 注册设备
 func (me *tMockCloudMediator) Register(it ISmartDevice) {
 	me.mRWMutex.Lock()
 	defer me.mRWMutex.Unlock()
