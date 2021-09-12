@@ -2,7 +2,7 @@ package test
 
 import (
 	"fmt"
-	pt "go_advenced_code/chapter09_design_pattern/01_construction/04_prototype"
+	pt "go_advanced_code/chapter09_design_pattern/01_construction/04_prototype"
 	"testing"
 )
 

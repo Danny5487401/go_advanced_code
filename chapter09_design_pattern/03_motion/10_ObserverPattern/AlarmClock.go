@@ -9,12 +9,12 @@ import (
 
 type AlarmClock struct {
 	id         string
-	name       string
-	hour       time.Duration
-	minute     time.Duration
+	name       string        //响铃的名称
+	hour       time.Duration //具体时间
+	minute     time.Duration //具体时间
 	repeatable bool
-	next       *time.Time
-	occurs     int
+	next       *time.Time //下次响铃时间
+	occurs     int        //响铃次数
 }
 
 var gClockID int64 = 0
@@ -35,6 +35,8 @@ func NewAlarmClock(name string, hour int, minute int, repeatable bool) *AlarmClo
 		occurs:     0,
 	}
 	it.next = it.NextAlarmTime()
+
+	// 注册这个闹钟
 	GlobalTimeService.Attach(it)
 
 	return it
@@ -46,6 +48,7 @@ func (me *AlarmClock) NextAlarmTime() *time.Time {
 		fmt.Sprintf("%s 00:00:00", now.Format("2006-01-02")), time.Local)
 	t := today.Add(me.hour * time.Hour).Add(me.minute * time.Minute)
 	if t.Unix() < now.Unix() {
+		// 代表过了一天
 		t = t.Add(24 * time.Hour)
 	}
 	fmt.Printf("%s.next = %s\n", me.name, t.Format("2006-01-02 15:04:05"))
@@ -62,6 +65,7 @@ func (me *AlarmClock) TimeElapsed(now *time.Time) {
 	}
 
 	if now.Unix() >= it.Unix() {
+		// 时间过了就发生次数加一
 		me.occurs++
 		fmt.Printf("%s 时间=%s 闹铃 %s\n", time.Now().Format("2006-01-02 15:04:05"), now.Format("2006-01-02 15:04:05"), me.name)
 
@@ -70,6 +74,7 @@ func (me *AlarmClock) TimeElapsed(now *time.Time) {
 			me.next = &t
 
 		} else {
+			// 不允许多次，开始注销服务
 			GlobalTimeService.Detach(me.ID())
 		}
 	}

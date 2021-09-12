@@ -1,14 +1,12 @@
 # Golang 的汇编是基于 Plan9 汇编的
-## 汇编的简单知识
-### 寄存器
-    寄存器是CPU内部用来存放数据的一些小型存储区域，用来暂时存放参与运算的数据和运算结果。
-   
 
 ####1. 通用寄存器
 下面是通用通用寄存器的名字在 IA64 和 plan9 中的对应关系：
 
     IA64	RAX	RBX	RCX	RDX	RDI	RSI	RBP	RSP	R8	R9	R10	R11	R12	R13	R14	RIP
     Plan9	AX	BX	CX	DX	DI	SI	BP	SP	R8	R9	R10	R11	R12	R13	R14	PC
+
+
 ```html
 <tr>助记符  名字    用途</tr>
 <tr>AX  累加寄存器(AccumulatorRegister) 用于存放数据，包括算术、操作数、结果和临时存放地址</tr>
@@ -319,7 +317,7 @@ TEXT ·printnl_nosplit(SB), NOSPLIT, $8
 
 然后通过`go tool asm -S main_amd64.s`指令查看编译后的目标代码：
 
-```
+```shell
 "".printnl_nosplit STEXT nosplit size=29 args=0xffffffff80000000 locals=0x10
 0x0000 00000 (main_amd64.s:5) TEXT "".printnl_nosplit(SB), NOSPLIT	$16
 0x0000 00000 (main_amd64.s:5) SUBQ $16, SP
@@ -335,7 +333,7 @@ TEXT ·printnl_nosplit(SB), NOSPLIT, $8
 ```
 输出代码中我们删除了非指令的部分。为了便于讲述，我们将上述代码重新排版，并根据缩进表示相关的功能：
 
-```
+```shell
 TEXT "".printnl(SB), NOSPLIT, $16
 	SUBQ $16, SP
 		MOVQ BP, 8(SP)
@@ -395,8 +393,12 @@ type stack struct {
 	hi uintptr
 }
 ```
-在g结构体中的stackguard0成员是出现爆栈前的警戒线。stackguard0的偏移量是16个字节，因此上述代码中的`CMPQ SP, 16(AX)`表示将当前的真实SP和爆栈警戒线比较，如果超出警戒线则表示需要进行栈扩容，也就是跳转到L_MORE_STK。在L_MORE_STK标号处，先调用runtime·morestack_noctxt进行栈扩容，然后又跳回到函数的开始位置，此时此刻函数的栈已经调整了。然后再进行一次栈大小的检测，如果依然不足则继续扩容，直到栈足够大为止。
-
-以上是栈的扩容，但是栈的收缩是在何时处理的呢？我们知道Go运行时会定期进行垃圾回收操作，这其中包含栈的回收工作。如果栈使用到比例小于一定到阈值，则分配一个较小到栈空间，然后将栈上面到数据移动到新的栈中，栈移动的过程和栈扩容的过程类似
+	在g结构体中的stackguard0成员是出现爆栈前的警戒线。stackguard0的偏移量是16个字节，因此上述代码中的`CMPQ SP, 16(AX)`表示将当前的真实SP和爆栈警戒线比较，
+	如果超出警戒线则表示需要进行栈扩容，也就是跳转到L_MORE_STK。在L_MORE_STK标号处，先调用runtime·morestack_noctxt进行栈扩容，然后又跳回到函数的开始位置，
+	此时此刻函数的栈已经调整了。然后再进行一次栈大小的检测，如果依然不足则继续扩容，直到栈足够大为止。
+	
+	以上是栈的扩容，但是栈的收缩是在何时处理的呢？
+	我们知道Go运行时会定期进行垃圾回收操作，这其中包含栈的回收工作。如果栈使用到比例小于一定到阈值，则分配一个较小到栈空间，然后将栈上面到数据移动到新的栈中，
+	栈移动的过程和栈扩容的过程类似
 
 

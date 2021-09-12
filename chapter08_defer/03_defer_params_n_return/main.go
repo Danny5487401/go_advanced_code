@@ -1,8 +1,6 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 /*
 defer 是 Go 语言提供的一种用于注册延迟调用的机制，每一次 defer 都会把函数压入栈中，当前函数返回前再把延迟函数取出并执行.
@@ -49,44 +47,7 @@ func f1() (r int) {
 	return 0
 }
 
-//2. 闭包引用
-func f2() (r int) {
-	t := 5
-	defer func() {
-		t = t + 5
-	}()
-	return t
-}
-
-//3. 函数参数,负责参数
-func f3() (r int) {
-
-	defer func(r int) {
-		r = r + 5
-	}(r)
-	// 在有具名返回值的函数中（这里具名返回值为 1）,执行 return 的时候实际上已经将 r 的值重新赋值为 1
-	return 1
-}
-
-//4. 闭包引用,具名返回
-func f4() (r int) {
-	r = 1
-	defer func() {
-		r = r + 5
-	}()
-	// 在有具名返回值的函数中（这里具名返回值为 1）,执行 return 的时候实际上已经将 r 的值重新赋值为 2
-	return 2
-}
-
-func main() {
-	fmt.Println("第一个函数结果", f1()) // 第一个函数结果 1
-	fmt.Println("第二个函数结果", f2()) // 第二个函数结果 5
-	fmt.Println("第三个函数结果", f3()) // 第三个函数结果 1
-	fmt.Println("第四个函数结果", f4()) // 第四个函数结果 7
-
-}
-
-/* 分析
+/*
 // 第一题拆解过程
 func f1() (r int) {
 
@@ -102,6 +63,18 @@ func f1() (r int) {
     return
 }
 
+*/
+
+//2. 闭包引用
+func f2() (r int) {
+	t := 5
+	defer func() {
+		t = t + 5
+	}()
+	return t
+}
+
+/*
 // 第二题拆解过程：
 
 func f2() (r int) {
@@ -117,6 +90,19 @@ func f2() (r int) {
     // 3.空的 return
     return
 }
+*/
+
+//3. 函数参数,负责参数
+func f3() (r int) {
+
+	defer func(r int) {
+		r = r + 5
+	}(r)
+	// 在有具名返回值的函数中（这里具名返回值为 1）,执行 return 的时候实际上已经将 r 的值重新赋值为 1
+	return 1
+}
+
+/* 分析
 
 // 第三题拆解过程：
 func f3() (r int) {
@@ -135,6 +121,37 @@ func f3() (r int) {
 
 r 是作为函数参数使用，是一份复制，defer 语句里面的 r 和 外面的 r 其实是两个变量，里面变量的改变不会影响外层变量 r，所以不是返回 6 ，而是返回 1。
 */
+
+//4. 闭包引用,具名返回
+func f4() (r int) {
+	r = 1
+	defer func() {
+		r = r + 5
+	}()
+	// 在有具名返回值的函数中（这里具名返回值为 1）,执行 return 的时候实际上已经将 r 的值重新赋值为 2
+	return 2
+}
+
+/*
+func f4() (r int) {
+	r = 1
+	r = 2
+    // 2.闭包引用，但是没有修改返回值 r
+    defer func() {
+        r = r + 5
+    }()
+    return
+}
+
+*/
+
+func main() {
+	fmt.Println("第一个函数结果", f1()) // 第一个函数结果 1
+	fmt.Println("第二个函数结果", f2()) // 第二个函数结果 5
+	fmt.Println("第三个函数结果", f3()) // 第三个函数结果 1
+	fmt.Println("第四个函数结果", f4()) // 第四个函数结果 7
+
+}
 
 //Note:
 /*

@@ -8,13 +8,13 @@ import (
 
 var GlobalTimeService = NewMockTimeService(1800)
 
-// // 订阅者的数据结构
+// 订阅者的数据结构
 // 虚拟的时间服务, 自定义时间倍率以方便时钟相关的测试
 type tMockTimeService struct {
 	observers map[string]ITimeObserver //// 订阅者列表，这里是一个map结构，管理观察者
 	rwmutex   *sync.RWMutex
 	speed     int64
-	state     int64
+	state     int64 //标记开始
 }
 
 func NewMockTimeService(speed int64) ITimeService {
@@ -24,6 +24,7 @@ func NewMockTimeService(speed int64) ITimeService {
 		speed:     speed,
 		state:     0,
 	}
+	//开启服务
 	it.Start()
 	return it
 }
@@ -45,6 +46,7 @@ func (me *tMockTimeService) Start() {
 			nanos := (time.Now().UnixNano() - timeOffset) * me.speed
 			t := timeFrom.Add(time.Duration(nanos) * time.Nanosecond)
 
+			// 通知服务
 			me.NotifyAll(&t)
 		}
 	}()
@@ -67,6 +69,7 @@ func (me *tMockTimeService) Attach(it ITimeObserver) {
 	me.observers[it.ID()] = it
 }
 
+// 删除服务
 func (me *tMockTimeService) Detach(id string) {
 	me.rwmutex.Lock()
 	defer me.rwmutex.Unlock()
