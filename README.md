@@ -8,6 +8,7 @@
         1.1 os中FileInfo底层的文件描述符和相关信息
         1.2 os文件操作
         1.3 io包底层Reader和Writer接口
+            1.3.1 os,bytes,strings包
         1.4 io断点续传
         1.5 walkPath遍历目录及文件
     2. bufio缓存读写
