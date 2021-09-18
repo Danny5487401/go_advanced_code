@@ -8,7 +8,7 @@ import (
 	"net"
 )
 
-func process(conn net.Conn)  {
+func process(conn net.Conn) {
 	defer conn.Close()
 	reader := bufio.NewReader(conn)
 	for {
@@ -22,10 +22,10 @@ func process(conn net.Conn)  {
 		}
 		fmt.Println("收到client发来的数据：", msg)
 	}
-	
+
 }
 
-func main()  {
+func main() {
 	listen, err := net.Listen("tcp", "127.0.0.1:9000")
 	if err != nil {
 		fmt.Println("listen failed, err:", err)
