@@ -4,12 +4,16 @@
 	Golang运行时的内存分配算法主要源自 Google 为 C 语言开发的 TCMalloc算法，全称 Thread-CachingMalloc.核心思想就是把内存分为多级管理，
 	从而降低锁的粒度。它将可用的堆内存采用二级分配的方式进行管理：每个线程都会自行维护一个独立的内存池，进行内存分配时优先从该内存池中分配，
     当内存池不足时才会向全局内存池申请，以避免不同线程对全局内存池的频繁竞争
-![](mem.png)
+![](img/mem.png)
+
 	1.arena区域就是我们所谓的堆区，Go动态分配的内存都是在这个区域，它把内存分割成 8KB大小的页，一些页组合起来称为 mspan
 	2.bitmap区域标识 arena区域哪些地址保存了对象，并用 4bit标志位表示对象是否包含指针、 GC标记信息。 bitmap中一个 byte大小的内存对应 arena区域中4个指针大小（指针大小为 8B ）的内存，所以 bitmap区域的大小是 512GB/(4*8B)=16GB。
+![](img/bitmap.png)
+
 	3.spans区域存放 mspan（也就是一些 arena分割的页组合起来的内存管理基本单元，后文会再讲）的指针，每个指针对应一页，
 	所以 spans区域的大小就是 512GB/8KB*8B=512MB.创建 mspan的时候，按页填充对应的 spans区域，在回收 object时，根据地址很容易就能找到它所属的 mspan
 #1.内存管理单元
+![](img/mspan.png)
 ```go
 //mspan：Go中内存管理的基本单元，是由一片连续的 8KB的页组成的大块内存。注意，这里的页和操作系统本身的页并不是一回事，它一般是操作系统页大小的几倍。一句话概括： mspan是一个包含起始地址、 mspan规格、页的数量等内容的双端链表。
 //每个 mspan按照它自身的属性 SizeClass的大小分割成若干个 object，每个 object可存储一个对象。并且会使用一个位图来标记其尚未使用的 object。属性 SizeClass决定 object大小，而 mspan只会分配给和 object尺寸大小接近的对象，当然，对象的大小要小于 object大小
@@ -39,12 +43,14 @@
 #2.内存管理组件
 内存分配由内存分配器完成。分配器由3种组件构成： mcache, mcentral, mheap
 ##1.mcache：
+![](img/mcache.png)
 	每个工作线程都会绑定一个mcache，本地缓存可用的 mspan资源，这样就可以直接给Goroutine分配，因为不存在多个Goroutine竞争的情况，所以不会消耗锁资源。
 	type mcache struct{
 		alloc [numSpanClasses]*mspan
 	}
 	numSpanClasses = _NumSizeClasses << 1
-##2。mcentral：
+##2. mcentral：
+![](img/mcentral.png)
 	为所有 mcache提供切分好的 mspan资源。每个 central保存一种特定大小的全局 mspan列表，包括已分配出去的和未分配出去的。
 	每个 mcentral对应一种 mspan，而 mspan的种类导致它分割的 object大小不同。当工作线程的 mcache中没有合适（也就是特定大小的）的 mspan时就会从 mcentral获取
 	/path: /usr/local/go/src/runtime/mcentral.go
@@ -89,7 +95,7 @@ type mheap struct{
     }
 }
 ```
-![](mheap.png)
+![](img/mheap.png)
 		bitmap和arena_start指向了同一个地址，这是因为bitmap的地址是从高到低增长
 内存分配流程
 
@@ -111,4 +117,18 @@ type mheap struct{
 			b.如果mcentral没有相应规格大小的mspan，则向mheap申请
 
 			c.如果mheap中也没有合适大小的mspan，则向操作系统申请
+
+
+## 逃逸分析
+
+	1.发送指针或者是带有指针的值到channel里。编译时期没有办法知道哪个goroutine会受到channel中的数据。因此编译器无法确定这个数据什么时候不再被引用到。
+
+	2.在slice中存储指针或者是带有指针的值。这种情况的一个例子是[]*string。它总会导致slice中的内容逃逸。尽管切片底层的数组还是在堆上，但是引用的数据逃逸到堆上了。
+
+	3.slice底层数组由于append操作超过了它的容量，它会重新分片内存。如果在编译时期知道切片的初始大小，则它会在栈上分配。如果切片的底层存储必须被扩展，数据在运行时才获取到。则它将在堆上分配。
+
+	4.在接口类型上调用方法。对接口类型的方法调用是动态调用--接口的具体实现只有在运行时期才能确定。考虑一个接口类型为io.Reader的变量r。
+	对r.Read(b)的调用将导致r的值和byte slice b的底层数组都逃逸，因此在堆上进行分配
+
+	推荐文章：https://studygolang.com/articles/23010
 

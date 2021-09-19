@@ -43,7 +43,7 @@ func main() {
 	wd, _ := os.Getwd()
 	fmt.Println("获取当前工作目录的根路径:", wd)
 
-	fileName1 := "E:\\go_advanced_code\\chapter01_fileOperation\\danny.txt"
+	fileName1 := "chapter01_fileOperation\\danny.txt"
 	fileName2 := "./chapter01_fileOperation/danny.txt"
 	fmt.Println(filepath.IsAbs(fileName1)) //true
 	fmt.Println(filepath.IsAbs(fileName2)) //false
@@ -103,19 +103,19 @@ func main() {
 	)
 	第三个参数：文件的权限：文件不存在创建文件，需要指定权限
 	*/
-	//file4,err := os.OpenFile("E:\\go_advanced_code\\chapter01_fileOperation\\danny2.txt",os.O_RDONLY|os.O_WRONLY,os.ModePerm)
-	//if err != nil{
-	//	fmt.Println("err:",err)
-	//	return
-	//}
-	//fmt.Println(file4)
+	file4, err := os.OpenFile("chapter01_input_output/danny2.txt", os.O_RDONLY|os.O_WRONLY, os.ModePerm)
+	if err != nil {
+		fmt.Println("err:", err)
+		return
+	}
+	fmt.Println(file4)
 	//
 	////5关闭文件，
-	//file4.Close()
+	file4.Close()
 
 	//6.删除文件或文件夹：
 	//删除文件
-	err := os.Remove("E:\\go_advanced_code\\chapter01_fileOperation\\danny3.txt")
+	err = os.Remove("chapter01_fileOperation\\danny3.txt")
 	if err != nil {
 		fmt.Println("err:", err)
 		return

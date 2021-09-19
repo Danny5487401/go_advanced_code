@@ -8,6 +8,7 @@
         1.1 os中FileInfo底层的文件描述符和相关信息
         1.2 os文件操作
         1.3 io包底层Reader和Writer接口
+            1.3.1 os,bytes,strings包
         1.4 io断点续传
         1.5 walkPath遍历目录及文件
     2. bufio缓存读写
@@ -24,6 +25,7 @@
             2.5.1 标准包runtime/pprof及net/http/pprof
             2.5.2 第三方包pkg/profile
         2.6 Go内存结构
+    3. 多goroutine的缓存一致性
     4. 线程池
         4.1 Goroutine最大数量限制(令牌桶方式)
         4.2 百万请求处理
@@ -178,11 +180,14 @@
         3.1 Map底层结构
         3.2 String底层结构
         3.3 Struct底层结构
-## 第十二章 网络编程net
+## 第十二章 网络编程net   
+### socket介绍
+
     1. net/http高级封装演变
     2. 爬虫获取邮箱案例
     3. Tcp实现客户端及服务端
-    4. Tcp黏包分析及处理
+    4. Tcp黏包分析及处理(大小端介绍)
+    4. fastHttp
 ## 第十三章 CGO调用C语言
     1. Go调用C函数
     2. Go调用C库
@@ -211,6 +216,8 @@
     3. 非对称加密算法rsa
         3.1 分段与不分段加解密
     4. 排序分析
+        4.1 排序算法分类及图解
+        4.2 排序接口实现（反射方式）
     5. Jwt源码分析及中间件使用
 ## 第十八章 错误跟踪和panic
     1. 自定义错误类型打印错误栈

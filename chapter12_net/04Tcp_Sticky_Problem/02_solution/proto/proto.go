@@ -8,16 +8,15 @@ import (
 
 // 数据包就分为包头和包体两部分
 
-
 // Encode 消息编码
-func Encode(message string) ([]byte,error) {
+func Encode(message string) ([]byte, error) {
 
 	// 读取消息的长度，转换成int32类型（占4个字节）
 	length := int32(len(message))
 	pkg := new(bytes.Buffer)
 
 	// 写入消息头  4个字节
-	err := binary.Write(pkg,binary.LittleEndian,length)
+	err := binary.Write(pkg, binary.LittleEndian, length)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +31,7 @@ func Encode(message string) ([]byte,error) {
 
 }
 
-func Decode(reader *bufio.Reader)(string, error)  {
+func Decode(reader *bufio.Reader) (string, error) {
 
 	// 读取消息的长度
 	lengthByte, _ := reader.Peek(4) // 读取前4个字节的数据

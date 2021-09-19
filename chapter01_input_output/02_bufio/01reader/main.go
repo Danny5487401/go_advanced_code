@@ -1,24 +1,3 @@
-/*
-原因：
-	io操作本身的效率并不低，低的是频繁的访问本地磁盘的文件。
-解决：
-	所以bufio就提供了缓冲区(分配一块内存)，读和写都先在缓冲区中，最后再读写文件，来降低访问本地磁盘的次数，从而提高效率。
-
-原理：
-	把文件读取进缓冲（内存）之后再读取的时候就可以避免文件系统的io 从而提高速度。
-	同理，在进行写操作时，先把文件写入缓冲（内存），然后由缓冲写入文件系统。
-	看完以上解释有人可能会表示困惑了，直接把 内容->文件 和 内容->缓冲->文件相比， 缓冲区好像没有起到作用嘛。
-	其实缓冲区的设计是为了存储多次的写入，最后一口气把缓冲区内容写入文件
-分类：
-	主要分三部分Reader、Writer、Scanner,分别是读数据、写数据和扫描器三种数据类型
-主要读取方式
-	ReadLine和ReadString方法：buf.ReadLine()，buf.ReadString("\n")都是按行读，只不过ReadLine读出来的是[]byte，后者直接读出了string，
-	最终他们底层调用的都是ReadSlice方法
-bufio 封装了io.Reader或io.Writer接口对象，并创建另一个也实现了该接口的对象
-
-io.Reader或io.Writer 接口实现read() 和 write() 方法，对于实现这个接口的对象都是可以使用这两个方法的
-*/
-
 package main
 
 import (
@@ -30,21 +9,22 @@ import (
 	"time"
 )
 
+/*
+	bufio:高效io读写
+		buffer缓存
+		io：input/output
+
+	将io包下的Reader，Write对象进行包装，带缓存的包装，提高读写的效率
+
+		ReadBytes()--->ReadSlice()
+		ReadString()-->ReadSlice()
+		ReadLine()-->ReadSlice()
+
+*/
+
 func main() {
-	/*
-		bufio:高效io读写
-			buffer缓存
-			io：input/output
 
-		将io包下的Reader，Write对象进行包装，带缓存的包装，提高读写的效率
-
-			ReadBytes()
-			ReadString()
-			ReadLine()
-
-	*/
-
-	fileName := "./chapter01_fileOperation/dannyBufio.txt"
+	fileName := "chapter01_input_output/files/dannyBufio.txt"
 	file, err := os.Open(fileName)
 	if err != nil {
 		fmt.Println(err)
@@ -54,7 +34,7 @@ func main() {
 
 	//创建Reader对象
 	//b1 := bufio.NewReader(file) //  底层调用NewReaderSize(rd, defaultBufSize)
-	b1 := bufio.NewReaderSize(file, 200) //  底层调用NewReaderSize(rd, defaultBufSize)
+	b1 := bufio.NewReaderSize(file, 20) //  底层调用NewReaderSize(rd, defaultBufSize)
 
 	//// 1. Read()高效读取
 	//p := make([]byte, 512)
@@ -105,7 +85,8 @@ func main() {
 	//读取方式四：ReadString(),底层调用readBytes
 	s1, err := b1.ReadString('\n')
 	fmt.Println(err)
-	fmt.Println(s1)
+	fmt.Println("readString:", s1)
+	fmt.Println("------------")
 
 	// 全部读取
 	//for {
@@ -145,6 +126,7 @@ func main() {
 ReadSlice一样，返回的 []byte 只是 buffer 中的引用，在下次IO操作后会无效，可见该方法（以及ReadSlice这样的，返回buffer引用的方法）对多 goroutine 是不安全的，
 也就是在多并发环境下，不能依赖其结果
 */
+
 func Peek(reader *bufio.Reader) {
 	line, _ := reader.Peek(14)
 	fmt.Printf("%s\n", line)

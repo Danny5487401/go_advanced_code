@@ -13,6 +13,8 @@ import (
 需求：
 	计算大量整数和的程序
 */
+
+// Task 单个任务信息
 type Task struct {
 	index int   //组
 	nums  []int // 需要计算的数
@@ -20,6 +22,7 @@ type Task struct {
 	wg    *sync.WaitGroup
 }
 
+// Do 单个任务的具体操作
 func (t *Task) Do() {
 	for _, num := range t.nums {
 		t.sum += num
@@ -28,7 +31,7 @@ func (t *Task) Do() {
 	t.wg.Done()
 }
 
-// 需要执行的逻辑
+// ants需要执行的逻辑
 func taskFunc(data interface{}) {
 	task := data.(*Task)
 	task.Do()
@@ -36,8 +39,8 @@ func taskFunc(data interface{}) {
 }
 
 const (
-	DataSize    = 10000
-	DataPerTask = 100
+	DataSize    = 10000 //总的数据量
+	DataPerTask = 100   // 每次任务数据量
 )
 
 func main() {
@@ -56,6 +59,7 @@ func main() {
 
 	var wg sync.WaitGroup
 	wg.Add(DataSize / DataPerTask)
+	// 分的组数
 	tasks := make([]*Task, 0, DataSize/DataPerTask)
 	for i := 0; i < DataSize/DataPerTask; i++ {
 		task := &Task{
@@ -72,12 +76,14 @@ func main() {
 	wg.Wait()
 	fmt.Printf("running goroutines: %d\n", ants.Running())
 
-	//验证数据
+	//3.验证数据
+	//收集所有任务的数据
 	var sum int
 	for _, task := range tasks {
 		sum += task.sum
 	}
 
+	// 原始方法的数据
 	var expect int
 	for _, num := range nums {
 		expect += num

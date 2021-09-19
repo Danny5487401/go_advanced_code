@@ -13,9 +13,9 @@ import (
    1.建立与服务端的链接
    2.进行数据收发
    3.关闭链接
- */
+*/
 
-func main()  {
+func main() {
 	conn, err := net.Dial("tcp", "127.0.0.1:20000")
 	if err != nil {
 		fmt.Println("err :", err)
@@ -24,7 +24,7 @@ func main()  {
 	defer conn.Close() // 关闭连接
 
 	inputReader := bufio.NewReader(os.Stdin)
-	for  {
+	for {
 		input, _ := inputReader.ReadString('\n') // 读取用户输入
 		inputInfo := strings.Trim(input, "\r\n")
 		if strings.ToUpper(inputInfo) == "Q" { // 如果输入q就退出
