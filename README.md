@@ -25,7 +25,7 @@
             2.5.1 标准包runtime/pprof及net/http/pprof
             2.5.2 第三方包pkg/profile
         2.6 Go内存结构
-    3. 多goroutine的缓存一致性
+    3. 多goroutine的缓存一致性(涉及cpu伪共享)
     4. 线程池(池化技术)
         4.1 Goroutine最大数量限制(令牌桶方式)
         4.2 百万请求处理

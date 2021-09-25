@@ -68,7 +68,8 @@ func main() {
 
 /*
 分析
-	显然100000个goroutines处理这种cpu-bound的工作很不利，我之前go调度文章里讲过，线程上下文切换有延迟代价。io-bound处理可以在io wait的时候去切换别的线程做其他事情，但是对于cpu-bound，它会一直处理work，线程切换会损害性能。
+	显然100000个goroutines处理这种cpu-bound的工作很不利，我之前go调度文章里讲过，线程上下文切换有延迟代价。
+	io-bound处理可以在io wait的时候去切换别的线程做其他事情，但是对于cpu-bound，它会一直处理work，线程切换会损害性能。
 
 	这里还有另外一个重要因素，那就是cache伪共享(false sharing)。每个core都会去共享变量c的相同cache行，频繁操作c会导致内存抖动(cache和主存直接的换页操作)。
 
