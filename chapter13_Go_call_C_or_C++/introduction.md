@@ -73,10 +73,41 @@ import "C"
 
 CXX_FOR_TARGET, CXX_FOR_${GOOS}_${GOARCH} 以及 CXX 环境变量使用方式类似
 
-```html
-<table border="1" cellpadding="1" cellspacing="1" style="width:500px;"><tbody><tr><th> <p>C 类型名称</p> </th><th>Go 类型名称</th></tr></tbody><tbody><tr><td>char</td><td>C.char</td></tr><tr><td>signed char</td><td>C.schar</td></tr><tr><td>unsigned char</td><td>C.uchar</td></tr><tr><td>short</td><td>C.short</td></tr><tr><td>unsighed short</td><td>C.ushort</td></tr><tr><td>int</td><td>C.int</td></tr><tr><td>unsigned int</td><td>C.uint</td></tr><tr><td>long</td><td>C.long</td></tr><tr><td>unsigned long</td><td>C.ulong</td></tr><tr><td>long long</td><td>C.longlong</td></tr><tr><td>unsigned long long</td><td>C.ulonglong</td></tr><tr><td>float</td><td>C.float</td></tr><tr><td>double</td><td>C.double</td></tr><tr><td>complex float</td><td>C.complexfloat</td></tr><tr><td>complex double</td><td>C.complexdouble</td></tr><tr><td>void*</td><td>unsafe.Pointer</td></tr><tr><td>__int128_t&nbsp; &nbsp;__uint128_t</td><td>[16]byte</td></tr></tbody></table>
+##Go与C类型转换
+![](.introduction_images/transfer_between_c_n_go.png)
+为了提高C语言的可移植性，在<stdint.h>文件中，不但每个数值类型都提供了明确内存大小，而且和Go语言的类型命名更加一致。
+![](.introduction_images/stdint.h.png)
+
+CGO的C虚拟包提供了以下一组函数，用于Go语言和C语言之间数组和字符串的双向转换：
+```cgo
+// Go string to C string
+// The C string is allocated in the C heap using malloc.
+// It is the caller's responsibility to arrange for it to be
+// freed, such as by calling C.free (be sure to include stdlib.h
+// if C.free is needed).
+func C.CString(string) *C.char
+// Go []byte slice to C array
+// The C array is allocated in the C heap using malloc.
+// It is the caller's responsibility to arrange for it to be
+// freed, such as by calling C.free (be sure to include stdlib.h
+// if C.free is needed).
+func C.CBytes([]byte) unsafe.Pointer
+// C string to Go string
+func C.GoString(*C.char) string
+// C data with explicit length to Go string
+func C.GoStringN(*C.char, C.int) string
+// C data with explicit length to Go []byte
+func C.GoBytes(unsafe.Pointer, C.int) []byte
 
 ```
+解析
+    
+    其中C.CString针对输入的Go字符串，克隆一个C语言格式的字符串；返回的字符串由C语言的malloc函数分配，不使用时需要通过C语言的free函数释放。
+    C.CBytes函数的功能和C.CString类似，用于从输入的Go语言字节切片克隆一个C语言版本的字节数组，同样返回的数组需要在合适的时候释放。
+    C.GoString用于将从NULL结尾的C语言字符串克隆一个Go语言字符串。C.GoStringN是另一个字符数组克隆函数。
+    C.GoBytes用于从C语言数组，克隆一个Go语言字节切片
+
+
 一些通常在 Go 中被表示为指针类型的特殊 C 类型会被表示成 uintptr。下面的特殊场景会对此进行介绍。
 
 当直接访问 C 中的结构体、联合、或枚举类型时，在名字前面加上 struct_、union_、或 enum_，就像 C.struct_stat 这样。
