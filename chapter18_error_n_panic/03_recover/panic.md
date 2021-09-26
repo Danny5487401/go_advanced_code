@@ -29,10 +29,10 @@ type _panic struct {
 
 // goroutine 的两个重要字段
 type g struct {
-// ...
-_panic         *_panic // panic 链表，这是最里的一个
-_defer         *_defer // defer 链表，这是最里的一个；
-// ...
+    // ...
+    _panic         *_panic // panic 链表，这是最里的一个
+    _defer         *_defer // defer 链表，这是最里的一个；
+    // ...
 }
 //从这里我们看出：_defer 和 _panic 链表都是挂在 goroutine 之上的。什么时候会导致 _panic 链表上多个元素
 ```

@@ -31,3 +31,51 @@
     （1）当增加子系统和扩展子系统行为时，可能容易带来未知风险。
     （2）不符合开闭原则。
     （3）某些情况下，可能违背单一职责原则
+
+真实使用场景
+    
+    gin render
+render接口
+```go
+// Render interface is to be implemented by JSON, XML, HTML, YAML and so on.
+type Render interface {
+	// Render writes data with custom ContentType.
+	Render(http.ResponseWriter) error
+	// WriteContentType writes custom ContentType.
+	WriteContentType(w http.ResponseWriter)
+}
+
+
+```
+具体实现
+```go
+var (
+	_ Render     = JSON{}
+	_ Render     = IndentedJSON{}
+	_ Render     = SecureJSON{}
+	_ Render     = JsonpJSON{}
+	_ Render     = XML{}
+	_ Render     = String{}
+	_ Render     = Redirect{}
+	_ Render     = Data{}
+	_ Render     = HTML{}
+	_ HTMLRender = HTMLDebug{}
+	_ HTMLRender = HTMLProduction{}
+	_ Render     = YAML{}
+	_ Render     = Reader{}
+	_ Render     = AsciiJSON{}
+	_ Render     = ProtoBuf{}
+)
+
+// JSON serializes the given struct as JSON into the response body.
+// It also sets the Content-Type as "application/json".
+func (c *Context) JSON(code int, obj interface{}) {
+    c.Render(code, render.JSON{Data: obj})
+}
+
+// AsciiJSON serializes the given struct as JSON into the response body with unicode to ASCII string.
+// It also sets the Content-Type as "application/json".
+func (c *Context) AsciiJSON(code int, obj interface{}) {
+    c.Render(code, render.AsciiJSON{Data: obj})
+}
+```
