@@ -109,6 +109,7 @@
         2.4 适配器模式
         2.5 桥接模式(两个变化系统结偶)
         2.6 门面模式(外观模式)-->在gin中render应用(封装多个子服务)
+        2.7 代理模式
     3. 行为型模式
         3.1  访问者模式-->k8s中实现
         3.2  迭代器-->标准库container/ring中实现
@@ -139,7 +140,7 @@
             2.5.4 第三方对象池object pool(bytebufferpool)
         2.6 Cond条件变量及NoCopy机制
         2.7 atomic原子操作
-        2.7.0 Value的load和store
+            2.7.0 Value的load和store
             2.7.1 add
             2.7.2 cas算法和自旋锁
             2.7.3 load和store用法
