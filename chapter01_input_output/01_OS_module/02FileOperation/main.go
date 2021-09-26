@@ -6,39 +6,40 @@ import (
 	"path/filepath"
 )
 
+/*
+	文件操作：
+	1.路径：
+		func Getwd() (dir string, err error) // 获取当前工作目录的根路径
+		func Chdir(dir string) error // 将工作目录修改为dir
+		相对路径：relative
+			ab.txt
+			相对于当前工程
+		绝对路径：absolute
+			E:\go_advanced_code\chapter01_fileOperation\danny.txt
+
+		.当前目录
+		..上一层
+	2.创建文件夹，如果文件夹存在，创建失败
+		func Mkdir(name string, perm FileMode) error // 使用指定的权限和名称创建一个文件夹（对于linux的mkdir命令
+		func MkdirAll(path string, perm FileMode) error // 使用指定的权限和名称创建一个文件夹，并自动创建父级目录（对于linux的mkdir -p目录
+
+	3.创建文件，Create采用模式0666（任何人都可读写，不可执行）创建一个名为name的文件，如果文件已存在会截断它（为空文件）
+		func Create(name string) (file *File, err error) // 创建一个空文件，注意当文件已经存在时，会直接覆盖掉原文件，不会报错
+
+
+	4.打开文件：让当前的程序，和指定的文件之间建立一个连接
+		func Open(name string) (file *File, err error) // 打开一个文件,注意打开的文件只能读，不能写
+		func OpenFile(name string, flag int, perm FileMode) (file *File, err error) // 以指定的权限打开文件
+
+	5.关闭文件：程序和文件之间的链接断开。
+		file.Close()
+
+	5.删除文件或目录：慎用，慎用，再慎用
+		func Remove(name string) error // 删除指定的文件夹或者目录,不能递归删除，只能删除一个空文件夹或一个文件（对应linux的 rm命令
+		func RemoveAll(path string) error // 递归删除文件夹或者文件（对应linux的rm -rf命令）
+*/
 func main() {
-	/*
-		文件操作：
-		1.路径：
-			func Getwd() (dir string, err error) // 获取当前工作目录的根路径
-			func Chdir(dir string) error // 将工作目录修改为dir
-			相对路径：relative
-				ab.txt
-				相对于当前工程
-			绝对路径：absolute
-				E:\go_advanced_code\chapter01_fileOperation\danny.txt
 
-			.当前目录
-			..上一层
-		2.创建文件夹，如果文件夹存在，创建失败
-			func Mkdir(name string, perm FileMode) error // 使用指定的权限和名称创建一个文件夹（对于linux的mkdir命令
-			func MkdirAll(path string, perm FileMode) error // 使用指定的权限和名称创建一个文件夹，并自动创建父级目录（对于linux的mkdir -p目录
-
-		3.创建文件，Create采用模式0666（任何人都可读写，不可执行）创建一个名为name的文件，如果文件已存在会截断它（为空文件）
-			func Create(name string) (file *File, err error) // 创建一个空文件，注意当文件已经存在时，会直接覆盖掉原文件，不会报错
-
-
-		4.打开文件：让当前的程序，和指定的文件之间建立一个连接
-			func Open(name string) (file *File, err error) // 打开一个文件,注意打开的文件只能读，不能写
-			func OpenFile(name string, flag int, perm FileMode) (file *File, err error) // 以指定的权限打开文件
-
-		5.关闭文件：程序和文件之间的链接断开。
-			file.Close()
-
-		5.删除文件或目录：慎用，慎用，再慎用
-			func Remove(name string) error // 删除指定的文件夹或者目录,不能递归删除，只能删除一个空文件夹或一个文件（对应linux的 rm命令
-			func RemoveAll(path string) error // 递归删除文件夹或者文件（对应linux的rm -rf命令）
-	*/
 	//1.路径
 	wd, _ := os.Getwd()
 	fmt.Println("获取当前工作目录的根路径:", wd)
@@ -80,12 +81,12 @@ func main() {
 	//fmt.Println(file2)
 
 	//4.打开文件：
-	//file3 ,err := os.Open("E:\\go_advanced_code\\chapter01_fileOperation\\danny2.txt") //只读的
-	//if err != nil{
-	//	fmt.Println("err:",err)
-	//	return
-	//}
-	//fmt.Println(file3)
+	file3, err := os.Open("E:\\go_advanced_code\\chapter01_fileOperation\\danny2.txt") //只读的
+	if err != nil {
+		fmt.Println("err:", err)
+		return
+	}
+	fmt.Println(file3)
 	/* os.OpenFile
 	第一个参数：文件名称
 	第二个参数：文件的打开方式
