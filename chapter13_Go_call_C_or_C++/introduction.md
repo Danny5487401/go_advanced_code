@@ -130,10 +130,45 @@ Go 的结构体不能嵌入 C 的类型。
 
 Cgo 把 C 类型转换成等价的不可输出的 Go 类型。因此 Go 包不应该在它的输出接口中暴露 C 类型：同一个 C 类型，在不同包里是不一样的。
 
-任意 C 函数 (即使是 void 函数) 可能会被在多赋值场景下被调用，以获取返回值 (如果有的话)，和 C errno 值 (作为 error 值)。如果 C 函数返回类型是 void，那么相应的值可以用 _ 代替。
-```go
 
-n, err = C.sqrt(-1)
-_, err := C.voidFunc()
-var n, err = C.sqrt(1)
+
+###类型转换
+![](.introduction_images/pointer_transfer_between_go_n_c.png)
+![](.introduction_images/go_string_n_slice.png)
+实践：int32 和 C.char 指针相互转换
+![](.introduction_images/int32_to_Cchar.png)
+![](.introduction_images/int32_to_CChar_code.png)
+
+##cgo 内部机制
+###CGO生成的中间文件
+![](.introduction_images/cgo_generate_file.png)
+    
+    每个 CGO文 件会展开为一个 Go 文件和 C 文件，分别以 .cgo1.go和.cgo2.c 为后缀名。
+
+     _cgo_gotypes.go 对应 C 导入到 Go 语言中相关函数或变量的桥接代码。而_cgo_export.h 对应导出的 Go 函数和类型，_cgo_export.c 对应相关包装代码的实现
+     
+###内部调用流程 Go->C
+```cgo
+package main
+
+//int sum(int a, int b ) {return a +b;}
+import "C"
+
+func main(){
+    C.sum(2,3)
+}
+ 
 ```
+    1. C.sum -->_Cfunc_sum
+    2.runtime.cgocall
+    3.newthread:sum
+![](.introduction_images/c_sum(2,3).png)
+
+    白色的部分，是我们自己写的代码，黄色部分是 CGO 生成的代码，左边两列浅黄色是 Go 语言的空间，右边就是 C 语言运行空间。
+    在中间位置出现了两个黑的横杠隔开了，黑的横杠中间为 C 语言运行空间。
+
+###内部调用流程：C->Go    
+![](.introduction_images/c_call_go.png)
+内存调用流程
+![](.introduction_images/c_call_go_in_memory.png)
+![](.introduction_images/c_call_go_process.png)

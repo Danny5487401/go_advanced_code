@@ -11,6 +11,10 @@ package main
 void myprint(char* s) {
 	printf("%s\n", s);
 }
+
+static int add(int a,int b){
+	return a+b;
+}
 */
 import "C"
 
@@ -26,6 +30,10 @@ func main() {
 	cs := C.CString("Hello World\n")
 
 	C.myprint(cs)
+
+	//  C.add 会被转为 _Cfunc_add 调用
+	v,err := C.add(1,2)
+	fmt.Println(v,err)
 
 	// C.CString 返回的空间由C语言的malloc分配，使用完毕后需要用free释放。
 	//  C语言的free参数是void*类型，对应go语言的unsafe.Pointer。

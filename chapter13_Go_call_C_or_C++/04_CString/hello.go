@@ -2,11 +2,14 @@ package main
 
 //extern void SayHello(char* s);
 import "C"
-import "fmt"
+import (
+	"fmt"
+)
 
 
 func main()  {
 	C.SayHello(C.CString("Hello World\n"))
+
 
 }
 
