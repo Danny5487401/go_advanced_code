@@ -9,7 +9,6 @@ import (
 /* 使用缓冲channel增强并发
 场景：并发
 原理：有缓冲通道可供多个协程同时处理，在一定程度可提高并发性。
-也就是并发中的并行
 */
 
 func sendData3(ch3 chan string) {
@@ -59,5 +58,3 @@ func main() {
 
 	fmt.Println("main...over...")
 }
-
-

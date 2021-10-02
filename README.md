@@ -3,7 +3,7 @@
 ![高级go编程](./img/golang.jpeg)
 # *目录*
 ## *goVersion==1.16*
-## 第一章 I/O操作
+## [第一章 I/O操作](chapter01_input_output/io.md)
     1. os操作系统模块
         1.1 os中FileInfo底层的文件描述符和相关信息
         1.2 os文件操作
@@ -12,10 +12,11 @@
         1.4 io断点续传
         1.5 walkPath遍历目录及文件
     2. bufio缓存读写
+
 ---
 ## 第二章 协程Goroutine
     1. 线程模型分类及Goroutine切换原则
-        1.1 trace查看宏观调度流程
+        1.1 trace查看宏观调度流程(GPM模型)
     2. runtime模块和GC
         2.1 runtime核心功能及系统信息调用
         2.2 Goexit()终止线程
@@ -35,23 +36,25 @@
 ---
 ## 第三章 通道Channel
     1. 基本使用
-        1.0 channel来源
+        1.0 channel初始化
         1.1 无缓存通道
         1.2 父子通信
         1.3 死锁
-        1.4 close(ch)关闭所有下游协程
+        1.4 优雅关闭channel
         1.5 通道遍历range
         1.6 有缓冲channel增强并发
         1.7 双向通道
         1.8 单向通道
         1.9 使用channel传递channel
-    2. TimerChan模块
+        1.10 happened before
+        1.11 读取关闭的通道值
+    2. channel应用:TimerChan模块
         2.1 reset陷阱
         2.2 timerStop使用
         2.3 TimerAfter陷阱
     3. Select多路复用
     4. CSP理论中的Process/Channel
-    5. Channel内部结构(含PPT分析)
+    5. Channel内部结构及源码分析(含PPT分析)
 ---
 ## 第四章 interface和反射
     1. interface
