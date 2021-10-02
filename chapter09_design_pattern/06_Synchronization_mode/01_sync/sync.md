@@ -1,4 +1,5 @@
-#Sync同步模块
+#Sync同步模块(synchronization)
+内存同步访问控制（原文是 memory access synchronization）
 #一、互斥锁（同步)
 特点
 
