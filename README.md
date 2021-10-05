@@ -194,9 +194,13 @@
     3. Tcp实现客户端及服务端(tcp底层原理分析)
     4. Tcp黏包分析及处理(大小端介绍)
     4. fastHttp
-## 第十三章 CGO调用C语言
-    1. Go调用C函数
-    2. Go调用C库
+[## 第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
+
+    1. Go调用自定义C函数
+    2. Go调用模块化C库
+    3. Go实现C定义函数
+    4. Go获取C函数的errno
+    5. C的void返回
 ## 第十四章 Context上下文
     0. 父类EmptyCtx
     1. Context来源
