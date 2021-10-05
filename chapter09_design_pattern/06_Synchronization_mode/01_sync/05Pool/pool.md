@@ -110,11 +110,25 @@ type poolDequeue struct {
 
     我们看到 Pool 并没有直接使用 poolDequeue，原因是它的大小是固定的，而 Pool 的大小是没有限制的。因此，在 poolDequeue 之上包装了一下，变成了一个 poolChainElt 的双向链表，可以动态增长
 ###sync.Pool 的 init 函数
+    对于 Pool 而言，并不能无限扩展，否则对象占用内存太多了，会引起内存溢出。
 ```go
 func init() {
     runtime_registerPoolCleanup(poolCleanup)
 }
 func runtime_registerPoolCleanup(cleanup func())
+
+
+// src/runtime/mgc.go
+
+// Hooks for other packages
+
+var poolcleanup func()
+
+// 利用编译器标志将 sync 包中的清理注册到运行时
+//go:linkname sync_runtime_registerPoolCleanup sync.runtime_registerPoolCleanup
+func sync_runtime_registerPoolCleanup(f func()) {
+    poolcleanup = f
+}
 ```
 
     可以看到pool包在init的时候注册了一个poolCleanup函数，它会清除所有的pool里面的所有缓存的对象，该函数注册进去之后会在每次gc之前都会调用，
@@ -125,6 +139,56 @@ func runtime_registerPoolCleanup(cleanup func())
 ![](sync_pool_structure.png)
 一个goroutine固定在一个局部调度器P上，从当前 P 对应的 poolLocal 取值， 若取不到，则从对应的 shared 数组上取，若还是取不到；
 则尝试从其他 P 的 shared 中偷。 若偷不到，则调用 New 创建一个新的对象。池中所有临时对象在一次 GC 后会被全部清空。
+
+###sync.Pool的 Get 函数
+![](.pool_images/pool_get.png)
+
+```go
+
+func (p *Pool) Get() interface{} {
+    // ......
+  l, pid := p.pin()
+  x := l.private
+  l.private = nil
+  if x == nil {
+    x, _ = l.shared.popHead()
+    if x == nil {
+      x = p.getSlow(pid)
+    }
+  }
+  runtime_procUnpin()
+    // ......
+  if x == nil && p.New != nil {
+    x = p.New()
+  }
+  return x
+}
+```
+###sync.Pool的 Put 函数
+![](.pool_images/pool_put.png)
+```go
+// src/sync/pool.go
+
+// Put 将对象添加到 Pool 
+func (p *Pool) Put(x interface{}) {
+  if x == nil {
+    return
+  }
+  // ……
+  l, _ := p.pin()
+  if l.private == nil {
+    l.private = x
+    x = nil
+  }
+  if x != nil {
+    l.shared.pushHead(x)
+  }
+  runtime_procUnpin()
+    //…… 
+}
+```
+
+
 
 ##官方包fmt源码分析
 ```go
