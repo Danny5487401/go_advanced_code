@@ -6,7 +6,7 @@ map 的设计也被称为 “The dictionary problem”，它的任务是设计�
 哈希查找表用一个哈希函数将 key 分配到不同的桶（bucket，也就是数组的不同 index）。这样，开销主要在哈希函数的计算以及数组的常数访问时间。
 在很多场景下，哈希查找表的性能很高。
 
-哈希查找表一般会存在“碰撞”的问题，就是说不同的 key 被哈希到了同一个 bucket。一般有两种应对方法：链表法和 开放地址法。
+哈希查找表一般会存在“碰撞”的问题，就是说不同的 key 被哈希到了同一个 bucket。一般有两种应对方法：链表法和 开放定址法(实际开发中较少)。
 
 链表法将一个 bucket 实现成一个链表，落在同一个 bucket 中的 key 都会插入这个链表。开放地址法则是碰撞发生后，通过一定的规律，在数组的后面挑选“空位”，用来放置新的 key
 
@@ -23,8 +23,7 @@ Go 语言采用的是哈希查找表，并且使用链表解决哈希冲突。
 1. 表示 map 的结构体是 hmap，它是 hashmap 的“缩写”：
 ```go
 
-
-src/runtime/map.go
+//src/runtime/map.go
 
 type hmap struct {
   // 元素个数，调用 len(map) 时，直接返回此值
@@ -93,11 +92,11 @@ map[int64]int8
 ```go
 ageMap := make(map[string]int)
 //指定长度
-ageMap2 := make(map[string]int.8)
+ageMap2 := make(map[string]int8)
 //ageMap 为nil，不能向其添加元素，会直接panic
 var ageMap3 map[string]int
 ```
-通过汇编语言可以看到，实际上底层调用的是 makemap 函数，主要做的工作就是初始化 hmap 结构体的各种字段，例如计算 B 的大小，设置哈希种子 hash0 等等。a
+通过汇编语言可以看到，实际上底层调用的是 makemap 函数，主要做的工作就是初始化 hmap 结构体的各种字段，例如计算 B 的大小，设置哈希种子 hash0 等等。
 ```go
 func makemap(t *maptype, hint int, h *hmap) *hmap {
   //计算内存空间和判断是否内存溢出
@@ -139,93 +138,95 @@ func makemap(t *maptype, hint int, h *hmap) *hmap {
 3. 赋值mapassign
 ```go
 
-	func mapassign(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
+func mapassign(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
 
-		.....
-		//计算出hash值
-		hash :=t.hasher(key,uintptr(h.hash0))
+    .....
+    //计算出hash值
+    hash :=t.hasher(key,uintptr(h.hash0))
 
-		//更新状态为正在写入
-		h.flags ^= hashWriting
+    //更新状态为正在写入
+    h.flags ^= hashWriting
 
-	again:
-		//通过hash获取对应的桶
-		bucket := hash & bucketMask(h.B)
-		b :=(*bmap)(unsafe.Pointer(uintptr(h.buckets)+bucket*uintptr(t.bucketsize)))
-		//计算出tophash
-		top :=tophash(hash)
+again:
+    //通过hash获取对应的桶
+    bucket := hash & bucketMask(h.B)
+    b :=(*bmap)(unsafe.Pointer(uintptr(h.buckets)+bucket*uintptr(t.bucketsize)))
+    //计算出tophash
+    top :=tophash(hash)
 
-		var inserti *uint8//记录插入的tophash
-		var insertk unsafe.Pointer//记录插入的key值地址
-		var elem unsafe.Pointer//记录插入的value值地址
+    var inserti *uint8//记录插入的tophash
+    var insertk unsafe.Pointer//记录插入的key值地址
+    var elem unsafe.Pointer//记录插入的value值地址
 
-	bucketloop:
-		for{
-			for i :=uintptr(0);i < bucketCnt;i++{
-				//判断tophash是否相等
-				if b.tophash[i] != top {
-					//如果tophash不相等并且等于空,则可以插入该位置
-					if isEmpty(b.tophash[i]) && inserti == nil {
-						inserti = &b.tophash[i]
-						//获取对应插入key和value的指针地址
-						insertk = add(unsafe.Pointer(b), dataOffset+i*uintptr(t.keysize))
-						elem = add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.elemsize))
-					}
-					if b.tophash[i] == emptyRest {
-						break bucketloop
-					}
-					continue
-				}
+bucketloop:
+    for{
+        for i :=uintptr(0);i < bucketCnt;i++{
+            //判断tophash是否相等
+            if b.tophash[i] != top {
+                //如果tophash不相等并且等于空,则可以插入该位置
+                if isEmpty(b.tophash[i]) && inserti == nil {
+                    inserti = &b.tophash[i]
+                    //获取对应插入key和value的指针地址
+                    insertk = add(unsafe.Pointer(b), dataOffset+i*uintptr(t.keysize))
+                    elem = add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.elemsize))
+                }
+                if b.tophash[i] == emptyRest {
+                    break bucketloop
+                }
+                continue
+            }
 
-				//走到这里,说明已经存在,获得指定的key和value在桶得位置地址
-				k := add(unsafe.Pointer(b), dataOffset+i*uintptr(t.keysize))
-				//如果是指针，则要转化为指针
-				if t.indirectkey() {
-					k = *((*unsafe.Pointer)(k))
-				}
-				//判断key值是否相等
-				if !t.key.equal(key, k) {
-					continue
-				}
-				// already have a mapping for key. Update it.
-				//如果key值需要修改，那么修改key值
-				if t.needkeyupdate() {
-					typedmemmove(t.key, k, key)
-				}
-				//获取value元素地址
-				elem = add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.elemsize))
-				goto done
+            //走到这里,说明已经存在,获得指定的key和value在桶得位置地址
+            k := add(unsafe.Pointer(b), dataOffset+i*uintptr(t.keysize))
+            //如果是指针，则要转化为指针
+            if t.indirectkey() {
+                k = *((*unsafe.Pointer)(k))
+            }
+            //判断key值是否相等
+            if !t.key.equal(key, k) {
+                continue
+            }
+            // already have a mapping for key. Update it.
+            //如果key值需要修改，那么修改key值
+            if t.needkeyupdate() {
+                typedmemmove(t.key, k, key)
+            }
+            //获取value元素地址
+            elem = add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.elemsize))
+            goto done
 
-				//未找到可插入的位置,找一下有没溢出桶，如果有继续执行写入操作
-				ovf := b.overflow(t)
-				if ovf == nil{
-					break
-				}
-				b = ovf
-			}
-		}
+            //未找到可插入的位置,找一下有没溢出桶，如果有继续执行写入操作
+            ovf := b.overflow(t)
+            if ovf == nil{
+                break
+            }
+            b = ovf
+        }
+    }
 
-		if inserti == nil {
-			//如果在正常桶和溢出桶中都未找到插入的位置，那么得到一个新的溢出桶执行插入
-			newb := h.newoverflow(t, b)
-			inserti = &newb.tophash[0]
-			insertk = add(unsafe.Pointer(newb), dataOffset)
-			elem = add(insertk, bucketCnt*uintptr(t.keysize))
-		}
+    if inserti == nil {
+        //如果在正常桶和溢出桶中都未找到插入的位置，那么得到一个新的溢出桶执行插入
+        newb := h.newoverflow(t, b)
+        inserti = &newb.tophash[0]
+        insertk = add(unsafe.Pointer(newb), dataOffset)
+        elem = add(insertk, bucketCnt*uintptr(t.keysize))
+    }
 
-		.....
-		//将key值信息插入桶中指定位置
-		typedmemmove(t.key, insertk, key)
-		*inserti = top//更新tophash值
-		h.count++
+    .....
+    //将key值信息插入桶中指定位置
+    typedmemmove(t.key, insertk, key)
+    *inserti = top//更新tophash值
+    h.count++
 
-	done:
-		h.flags &^= hashWriting
-		if t.indirectelem() {
-			elem = *((*unsafe.Pointer)(elem))
-		}
-		return elem //返回value的指针地址
-	}
+done:
+    h.flags &^= hashWriting
+    if t.indirectelem() {
+        elem = *((*unsafe.Pointer)(elem))
+    }
+    return elem //返回value的指针地址
+}
+
+```
 
 	a. 计算key的hash值,通过hash的高八位和低B为分别确定tophash和桶的序号
 		tophash是什么?
@@ -236,24 +237,24 @@ func makemap(t *maptype, hint int, h *hmap) *hmap {
 			hash := 100011001101111001110010010110000001111010110000100101011010111
 	b. 每个桶可以存储8个tophash、8个key、8个value,遍历桶中的tophash,如果tophash不相等且是空的,说明该位置可以插入，
 		分别获取对应位置key和value的地址并更新tophash。
-```
-4. 扩容 hashGrow   
-   使用哈希表的目的就是要快速查找到目标 key，然而，随着向 map 中添加的 key 越来越多，key 发生碰撞的概率也越来越大。bucket 中的 8 个 cell 会被逐渐塞满，查找、插入、删除 key 的效率也会越来越低。   
-   最理想的情况是一个 bucket 只装一个 key，这样，就能达到 O(1) 的效率，但这样空间消耗太大，用空间换时间的代价太高。
+4. 扩容 hashGrow
 
-   Go 语言采用一个 bucket 里装载 8 个 key，定位到某个 bucket 后，还需要再定位到具体的 key，这实际上又用了时间换空间。
-   
-   当然，这样做，要有一个度，不然所有的 key 都落在了同一个 bucket 里，直接退化成了链表，各种操作的效率直接降为 O(n)，是不行的。
-   
-   因此，需要有一个指标来衡量前面描述的情况，这就是 装载因子。Go 源码里这样定义 装载因子
+    使用哈希表的目的就是要快速查找到目标 key，然而，随着向 map 中添加的 key 越来越多，key 发生碰撞的概率也越来越大。bucket 中的 8 个 cell 会被逐渐塞满，查找、插入、删除 key 的效率也会越来越低。   
+    最理想的情况是一个 bucket 只装一个 key，这样，就能达到 O(1) 的效率，但这样空间消耗太大，用空间换时间的代价太高。
+    
+    Go 语言采用一个 bucket 里装载 8 个 key，定位到某个 bucket 后，还需要再定位到具体的 key，这实际上又用了时间换空间。
+    
+    当然，这样做，要有一个度，不然所有的 key 都落在了同一个 bucket 里，直接退化成了链表，各种操作的效率直接降为 O(n)，是不行的。
+    
+    因此，需要有一个指标来衡量前面描述的情况，这就是 装载因子。Go 源码里这样定义 装载因子
 ```go
 loadFactor := count/(2^B)
 //count 就是 map 的元素个数，2^B 表示 bucket 数量。
 ```
-//判断是否扩容的条件
-  哈希表不是正在扩容的状态
-  元素的数量 > 2^B次方(桶的数量) * 6.5,6.5表示为装载因子,很容易理解装载因子最大为8(一个桶能装载的元素数量)
-  溢出桶过多,当前已经使用的溢出桶数量 >=2^B次方(桶的数量) ,B最大为15
+判断是否扩容的条件
+  a.哈希表不是正在扩容的状态
+  b.元素的数量 > 2^B次方(桶的数量) * 6.5,6.5表示为装载因子,很容易理解装载因子最大为8(一个桶能装载的元素数量)
+  c.溢出桶过多,当前已经使用的溢出桶数量 >=2^B次方(桶的数量) ,B最大为15
 ```go
 if !h.growing() && (overLoadFactor(h.count+1, h.B) || tooManyOverflowBuckets(h.noverflow, h.B)) {
   hashGrow(t, h)
@@ -261,11 +262,11 @@ if !h.growing() && (overLoadFactor(h.count+1, h.B) || tooManyOverflowBuckets(h.n
 }
 ```
 
-hashGrow() 函数实际上并没有真正地“搬迁”，它只是分配好了新的 buckets，并将老的 buckets 挂到了 oldbuckets 字段上。真正搬迁 buckets 的动作在 growWork() 函数中，
-而调用 growWork() 函数的动作是在 mapassign 和 mapdelete 函数中
-扩容分为两种，一种是等量扩容和2倍扩容：
-
-a. 扩容时，会将原来的buckets搬到oldbuckets
+    hashGrow() 函数实际上并没有真正地“搬迁”，它只是分配好了新的 buckets，并将老的 buckets 挂到了 oldbuckets 字段上。真正搬迁 buckets 的动作在 growWork() 函数中，
+    而调用 growWork() 函数的动作是在 mapassign 和 mapdelete 函数中
+    扩容分为两种，一种是等量扩容和2倍扩容：
+    
+    a. 扩容时，会将原来的buckets搬到oldbuckets
 
 5. 读取mapaccess
 ![](./search_value.png)
