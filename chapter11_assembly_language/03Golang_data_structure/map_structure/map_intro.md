@@ -215,11 +215,11 @@ func strequal(p, q unsafe.Pointer) bool {
 ```
 
 ###3. 赋值mapassign
+函数并没有传入 value 值，赋值操作是汇编语言中寻找。mapassign 函数返回的指针就是指向的 key 所对应的 value 值位置，有了地址，就很好操作赋值了
 ```go
-
 func mapassign(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
 
-    .....
+    //.....
     //计算出hash值
     hash :=t.hasher(key,uintptr(h.hash0))
 
@@ -286,15 +286,18 @@ bucketloop:
     if inserti == nil {
         //如果在正常桶和溢出桶中都未找到插入的位置，那么得到一个新的溢出桶执行插入
         newb := h.newoverflow(t, b)
+        // 准备两个指针，一个（ inserti）指向 key 的 hash 值在 tophash 数组所处的位置，另一个( insertk)指向 cell 的位置（也就是 key 最终放置的地址）
         inserti = &newb.tophash[0]
         insertk = add(unsafe.Pointer(newb), dataOffset)
+        // 对应 value 的位置就很容易定位出来，value 的位置需要“跨过” 8 个 key 的长度
         elem = add(insertk, bucketCnt*uintptr(t.keysize))
     }
 
-    .....
+    //.....
     //将key值信息插入桶中指定位置
     typedmemmove(t.key, insertk, key)
     *inserti = top//更新tophash值
+    //ap 的元素数量字段 count 值会加 1
     h.count++
 
 done:
@@ -859,6 +862,7 @@ func evacuated(b *bmap) bool {
 	return h > emptyOne && h < minTopHash
 }
 ```
+
 ###6. 遍历
 
     本来 map 的遍历过程比较简单：遍历所有的 bucket 以及它后面挂的 overflow bucket，然后挨个遍历 bucket 中的所有 cell。
@@ -1000,8 +1004,123 @@ func mapiterinit(t *maptype, h *hmap, it *hiter) {
 
     最后，继续遍历到新 3 号 bucket 时，发现所有的 bucket 都已经遍历完毕，整个迭代过程执行完毕
 ![](.map_intro_images/mapiter_result.png)
-###7. 删除mapdelete
 
+###7. 删除mapdelete
+```go
+func mapdelete(t *maptype, h *hmap, key unsafe.Pointer) {
+	if raceenabled && h != nil {
+		callerpc := getcallerpc()
+		pc := funcPC(mapdelete)
+		racewritepc(unsafe.Pointer(h), callerpc, pc)
+		raceReadObjectPC(t.key, key, callerpc, pc)
+	}
+	if msanenabled && h != nil {
+		msanread(key, t.key.size)
+	}
+	if h == nil || h.count == 0 {
+		if t.hashMightPanic() {
+			t.hasher(key, 0) // see issue 23734
+		}
+		return
+	}
+	// 如果发现写标位是 1，直接 panic，因为这表明有其他协程同时在进行写操作。
+	if h.flags&hashWriting != 0 {
+		throw("concurrent map writes")
+	}
+
+	// 计算 key 的哈希，找到落入的 bucket。
+	hash := t.hasher(key, uintptr(h.hash0))
+
+	// Set hashWriting after calling t.hasher, since t.hasher may panic,
+	// in which case we have not actually done a write (delete).
+	h.flags ^= hashWriting
+
+	bucket := hash & bucketMask(h.B)
+	// 检查此 map 如果正在扩容的过程中，直接触发一次搬迁操作
+	if h.growing() {
+		growWork(t, h, bucket)
+	}
+	b := (*bmap)(add(h.buckets, bucket*uintptr(t.bucketsize)))
+	bOrig := b
+	top := tophash(hash)
+search:
+	for ; b != nil; b = b.overflow(t) {
+		for i := uintptr(0); i < bucketCnt; i++ {
+			if b.tophash[i] != top {
+				if b.tophash[i] == emptyRest {
+					break search
+				}
+				continue
+			}
+			k := add(unsafe.Pointer(b), dataOffset+i*uintptr(t.keysize))
+			k2 := k
+			if t.indirectkey() {
+				k2 = *((*unsafe.Pointer)(k2))
+			}
+			if !t.key.equal(key, k2) {
+				continue
+			}
+            // 对 key 清零
+			// Only clear key if there are pointers in it.
+			if t.indirectkey() {
+				*(*unsafe.Pointer)(k) = nil
+			} else if t.key.ptrdata != 0 {
+				memclrHasPointers(k, t.key.size)
+			}
+			e := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.elemsize))
+			// /对 value 清零
+			if t.indirectelem() {
+				*(*unsafe.Pointer)(e) = nil
+			} else if t.elem.ptrdata != 0 {
+				memclrHasPointers(e, t.elem.size)
+			} else {
+				memclrNoHeapPointers(e, t.elem.size)
+			}
+			b.tophash[i] = emptyOne
+			// If the bucket now ends in a bunch of emptyOne states,
+			// change those to emptyRest states.
+			// It would be nice to make this a separate function, but
+			// for loops are not currently inlineable.
+			if i == bucketCnt-1 {
+				if b.overflow(t) != nil && b.overflow(t).tophash[0] != emptyRest {
+					goto notLast
+				}
+			} else {
+				if b.tophash[i+1] != emptyRest {
+					goto notLast
+				}
+			}
+			for {
+				b.tophash[i] = emptyRest
+				if i == 0 {
+					if b == bOrig {
+						break // beginning of initial bucket, we're done.
+					}
+					// Find previous bucket, continue at its last entry.
+					c := b
+					for b = bOrig; b.overflow(t) != c; b = b.overflow(t) {
+					}
+					i = bucketCnt - 1
+				} else {
+					i--
+				}
+				if b.tophash[i] != emptyOne {
+					break
+				}
+			}
+		notLast:
+		    //将 count 值减 1
+			h.count--
+			break search
+		}
+	}
+
+	if h.flags&hashWriting == 0 {
+		throw("concurrent map writes")
+	}
+	h.flags &^= hashWriting
+}
+```
 
     它首先会检查 h.flags 标志，如果发现写标位是 1，直接 panic，因为这表明有其他协程同时在进行写操作。
     
