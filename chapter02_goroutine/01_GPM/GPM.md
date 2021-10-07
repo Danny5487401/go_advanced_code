@@ -34,9 +34,21 @@
 		用户空间也可以使用非阻塞而 I/O，但是不能避免性能及复杂度问题
 
 ###3.两级线程模型
-![](.GPM_images/GPM_in_go.png)
 
-	Go语言中支撑整个scheduler实现的主要有4个重要结构，分别是M、G、P、Sched， 前三个定义在runtime.h中，Sched定义在proc.c中
+####GM模型
+早期(Go1.0)的实现中并没有P的概念：Go中的调度器直接将G分配到合适的M上运行
+![](.GPM_images/GM_model.png)
+
+	问题：不同的G在不同的M上并发运行时可能都需向系统申请资源（如堆内存），由于资源是全局的，将会由于资源竞争造成很多系统性能损耗
+	解决：后面的Go（Go1.1）运行时系统加入了P，让P去管理G对象，M要想运行G必须先与一个P绑定，然后才能运行该P管理的G。
+        P对象中预先申请一些系统资源（本地资源），G需要的时候先向自己的本地P申请（无需锁保护），
+        如果不够用或没有再向全局申请，而且从全局拿的时候会多拿一部分，以供后面高效的使用。
+        就像现在我们去政府办事情一样，先去本地政府看能搞定不，如果搞不定再去中央，从而提供办事效率。
+####GPM模型
+![](.GPM_images/GPM_model.png)
+
+Go语言中支撑整个scheduler实现的主要有4个重要结构，分别是M、G、P、Sched， 前三个定义在runtime.h中，Sched定义在proc.c中
+
 	1. Sched结构就是调度器，它维护有存储M和G的队列以及调度器的一些状态信息等
 	2. M结构是Machine，系统线程，它由操作系统管理的，goroutine就是跑在M之上的；
 		M是一个很大的结构，里面维护小对象内存cache（mcache）、当前执行的goroutine、随机数发生器等等非常多的信息
@@ -44,35 +56,102 @@
 		Processor是让我们从N:1调度到M:N调度的重要部分. 也是 context，保存 goroutine 运行所需要的上下文
 	4. G是goroutine实现的核心结构，主要保存 goroutine 的一些状态信息以及 CPU 的一些寄存器的值，
         例如 IP 寄存器，以便在轮到本 goroutine 执行时，CPU 知道要从哪一条指令处开始执行。
+特点
+
+	当G因为网络或者锁切换, 那么G和M分离, M通过调度执行新的G.
+
+	当M因为系统调用阻塞或cgo运行一段时间后, sysmon协程会将P与M分离. 由其他的M来结合P进行调度.
 
 
-早期(Go1.0)的实现中并没有P的概念：Go中的调度器直接将G分配到合适的M上运行
-
-	问题：不同的G在不同的M上并发运行时可能都需向系统申请资源（如堆内存），由于资源是全局的，将会由于资源竞争造成很多系统性能损耗
-	解决：后面的Go（Go1.1）运行时系统加入了P，让P去管理G对象，M要想运行G必须先与一个P绑定，然后才能运行该P管理的G。
-			P对象中预先申请一些系统资源（本地资源），G需要的时候先向自己的本地P申请（无需锁保护），
-			如果不够用或没有再向全局申请，而且从全局拿的时候会多拿一部分，以供后面高效的使用。
-			就像现在我们去政府办事情一样，先去本地政府看能搞定不，如果搞不定再去中央，从而提供办事效率。
 ##四。goroutine切换
-![](g_struct.png)
-![](save_context.png)
+golang调度的职责就是为需要执行的Go代码(G)寻找执行者(M)以及执行的准许和资源(P). 并没有一个调度器的实体, 调度是需要发生调度时由m执行runtime.schedule方法进行的.
 
-goroutine在go代码中无处不在，go程序会根据不同的情况去调度不同的goroutine，一个goroutine在某个时刻要么在运行，要么在等待，或者死亡
-goroutine的切换一般会在以下几种情况下发生：
+调度在计算机中是分配工作所需资源的方法. linux的调度为CPU找到可运行的线程. 而Go的调度是为M(线程)找到P(内存, 执行 票据)和可运行的G.
+![](.GPM_images/schedule.png)
+
+	goroutine在go代码中无处不在，go程序会根据不同的情况去调度不同的goroutine，一个goroutine在某个时刻要么在运行，要么在等待，或者死亡
+	goroutine的切换一般会在以下几种情况下发生：
 
 	1。基于信号抢占式的调度，一个goroutine如果运行很长，会被踢掉
 	2。发生系统调用，系统调用会陷入内核，开销不小，暂时解除当前goroutine
 	3。channel阻塞，当从channel读不到或者写不进的时候，会切换goroutine
+
+调度流程
+
+	如果有分配到gc mark的工作需要做gc mark. local runq有就运行local的, 没有再看全局的runq是否有, 再看能否从net中poll出来, 从其他P steal一部分过来. ....
+	实在没有就stopm
+
+##五. sysmon协程
+P的数量影响了同时运行go代码的协程数. 如果P被占用很久, 就会影响调度. sysmon协程的一个功能就是进行抢占.
+
+sysmon协程是在go runtime初始化之后, 执行用户编写的代码之前, 由runtime启动的不与任何P绑定, 直接由一个M执行的协程. 类似于 linux中的执行一些系统任务的内核线程.
+
+可认为是10ms执行一次. (初始运行间隔为20us, sysmon运行1ms后逐渐翻倍, 最终每10ms运行一次. 如果有发生过抢占成功, 则又恢复成 初始20us的运行间隔, 如此循环)
+
 ##五。管理员-g0
 	go程序中，每个M都会绑定一个叫g0的初代goroutine，它在M的创建的时候创建，g0的主要工作就是goroutine的调度、垃圾回收等。
 	g0和我们常规的goroutine的任务不同，g0的栈是在主线程栈上分配的，并且它的栈空间有64k，m0是runtime创建第一个线程，然后m0关联一个本地的p，
 	就可以运行g0了。在g0的栈上不断的调度goroutine来执行，当有新的goroutine关联p准备运行发现没有m的时候，就会去创建一个m，m再关联一个g0，
 	g0再去调度.
+
+
 ##源码分析
 ###G
     当 goroutine 被调离 CPU 时，调度器负责把 CPU 寄存器的值保存在 g 对象的成员变量之中。
     当 goroutine 被调度起来运行时，调度器又负责把 g 对象的成员变量所保存的寄存器值恢复到 CPU 的寄存器。
 
+G的几种状态
+```go
+const (
+	// G status
+	
+	// 刚刚被分配, 还没有初始化
+	_Gidle = iota // 0
+
+	//  表示在runqueue上, 还没有被运行
+	_Grunnable // 1
+
+	//  go协程可能在执行go代码, 不在runqueue上, 与M, P已绑定
+	_Grunning // 2
+
+	//  go协程在执行系统调用, 没执行go代码, 没有在runqueue上, 只与M绑定
+	_Gsyscall // 3
+
+	// go协程被阻塞(IO, GC, chan阻塞, 锁等). 不在runqueue上, 但是一定在某个地 方, 比如channel中, 锁排队中等.
+	_Gwaiting // 4
+
+	// _Gmoribund_unused is currently unused, but hardcoded in gdb
+	// scripts.
+	_Gmoribund_unused // 5
+
+	//  协程现在没有在使用, 也许执行完, 或者在free list中, 或者正在被初始化. 可能 有stack或者没有
+	_Gdead // 6
+
+	// _Genqueue_unused is currently unused.
+	_Genqueue_unused // 7
+
+	//  栈正在复制, 此时没有go代码, 也不在runqueue上
+	_Gcopystack // 8
+
+	// _Gpreempted means this goroutine stopped itself for a
+	// suspendG preemption. It is like _Gwaiting, but nothing is
+	// yet responsible for ready()ing it. Some suspendG must CAS
+	// the status to _Gwaiting to take responsibility for
+	// ready()ing this G.
+	_Gpreempted // 9
+
+    // 与runnable, running, syscall, waiting等状态结合, 表示GC正在扫描这个G的 栈
+	_Gscan          = 0x1000
+	_Gscanrunnable  = _Gscan + _Grunnable  // 0x1001
+	_Gscanrunning   = _Gscan + _Grunning   // 0x1002
+	_Gscansyscall   = _Gscan + _Gsyscall   // 0x1003
+	_Gscanwaiting   = _Gscan + _Gwaiting   // 0x1004
+	_Gscanpreempted = _Gscan + _Gpreempted // 0x1009
+)
+```
+G结构体
+
+![](.GPM_images/G_struct.png)
 ```go
 // runtime/runtime2.go
 type g struct {
@@ -171,6 +250,7 @@ type g struct {
 	gcAssistBytes int64
 }
 ```
+
 g 结构体关联了两个比较简单的结构体，stack 表示 goroutine 运行时的栈：
 ```go
 type stack struct {
@@ -184,6 +264,7 @@ type stack struct {
 ```
 
 Goroutine 运行时，光有栈还不行，至少还得包括 PC，SP 等寄存器，gobuf 就保存了这些值：
+![](save_context.png)
 ```go
 type gobuf struct {
 	// 存储 rsp 寄存器的值
@@ -206,6 +287,7 @@ type gobuf struct {
 ###M
 当 M 没有工作可做的时候，在它休眠前，会“自旋”地来找工作：检查全局队列，查看 network poller，试图执行 gc 任务，或者“偷”工作
 ```go
+![](.GPM_images/M_struct.png)
 // m 代表工作线程，保存了自身使用的栈信息
 type m struct {
     // 记录工作线程（也就是内核线程）使用的栈信息。在执行调度代码时需要使用
@@ -318,6 +400,7 @@ type m struct {
 }
 ```
 ###P
+![](.GPM_images/P_struct.png)
 ```go
 // p 保存 go 运行时所必须的资源
 type p struct {
@@ -357,10 +440,8 @@ type p struct {
     // 如果当前 G 还有剩余的可用时间，那么就应该运行这个 G
     // 运行之后，该 G 会继承当前 G 的剩余时间
 	runnext guintptr
-
-
-    // Available G's (status == Gdead)
-    // 空闲的 g
+	
+    // 运行完状态为Gdead的状态，可用于复用
 	gFree struct {
 		gList
 		n int32
@@ -454,6 +535,10 @@ type p struct {
 	pad cpu.CacheLinePad
 }
 ```
+
+###schedt
+![](.GPM_images/shedt_struct.png)
+
 ##参考链接
 	https://studygolang.com/articles/35104
 
