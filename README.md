@@ -1,5 +1,5 @@
-# *高级Goland学习代码*
-# go_advanced_code
+# ***高级Goland学习代码*** _go_advanced_code_
+
 ![高级go编程](./img/golang.jpeg)
 # *目录*
 ## *goVersion==1.16*
@@ -12,7 +12,6 @@
         1.4 io断点续传
         1.5 walkPath遍历目录及文件
     2. bufio缓存读写
-
 ---
 ## 第二章 协程Goroutine
     1. 线程模型分类及Goroutine切换原则
@@ -131,27 +130,26 @@
         4.2 区分必填项和选项
         4.3 带参数的选项模式
     5. 插件式编程-->grpc中实现
-    6. 同步模式
-        sync同步原语以及扩展原语
-        2.1 waitGroup同步等待组对象
-        2.2 互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比
-        2.3 Once单例对象
-        2.4 并发安全Map
-        2.5 Pool对象池模式( *非连接池* !）-->官方包对象池fmt
-            2.5.1 未使用newFunc
-            2.5.2 newFunc与GC（附源码分析）
-            2.5.3 何时使用对象缓存
-            2.5.4 第三方对象池object pool(bytebufferpool)
-        2.6 Cond条件变量及NoCopy机制
-        2.7 atomic原子操作
-            2.7.0 Value的load和store
-            2.7.1 add
-            2.7.2 cas算法和自旋锁
-            2.7.3 load和store用法
-            2.7.4 swap交换
-        2.8 ErrorGroup获取协程中error
-        2.9 信号量Semaphore
-        2.10 SingleFlight避免缓存击穿
+    6. 同步模式(sync同步原语以及扩展原语)
+        6.1 waitGroup同步等待组对象
+        6.2 互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比
+        6.3 Once单例对象
+        6.4 并发安全Map(读多写少)
+        6.5 Pool对象池模式( *非连接池* !）-->官方包对象池fmt
+            6.5.1 未使用newFunc
+            6.5.2 newFunc与GC（附源码分析）
+            6.5.3 何时使用对象缓存
+            6.5.4 第三方对象池object pool(bytebufferpool)
+        6.6 Cond条件变量及NoCopy机制
+        6.7 atomic原子操作
+            6.7.0 Value的load和store
+            6.7.1 add
+            6.7.2 cas算法和自旋锁
+            6.7.3 load和store用法
+            6.7.4 swap交换
+        6.8 ErrorGroup获取协程中error
+        6.9 信号量Semaphore
+        6.10 SingleFlight避免缓存击穿
 ## 第十章 函数式编程
     1. 函数介绍
     2. 高级函数
@@ -183,7 +181,7 @@
     2.12 结构体方法
     2.13 递归函数
     2.14 闭包函数
-[3. Golang底层数据结构](chapter11_assembly_language/03Golang_data_structure/data.md)
+[3. Golang底层数据结构](chapter11_assembly_language/03Golang_data_structure/data.md)                   
 
     3.1 Map底层结构
     3.2 String底层结构
@@ -195,8 +193,7 @@
     3. Tcp实现客户端及服务端(tcp底层原理分析)
     4. Tcp黏包分析及处理(大小端介绍)
     4. fastHttp
-## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
-
+## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)      
     1. Go调用自定义C函数
     2. Go调用模块化C库
     3. Go实现C定义函数
@@ -240,3 +237,6 @@
     2. 不同类型与nil的比较
     3. 不同类型nil时的特点
 ## 第二十章 for-range源码分析
+    1. 遍历数组和切片
+    2. 遍历Goroutine
+    3. 遍历Map

@@ -5,38 +5,7 @@ import (
 	"sync"
 )
 
-/*
-背景：
-	Go语言中的 map 在并发情况下，只读是线程安全的，同时读写是线程不安全的。
-做法：
-	Go语言在 1.9 版本中提供了一种效率较高的并发安全的 sync.Map，sync.Map 和 map 不同，不是以语言原生形态提供，而是在 sync 包下的特殊结构。
-结构：
-	type Map struct {
-    mu Mutex
 
-  	// 后面是readOnly结构体，依靠map实现，仅仅只用来读
-    read atomic.Value // readOnly
-
-    // 这个map主要用来写的，部分时候也承担读的能力
-    dirty map[interface{}]*entry
-
-    // 记录自从上次更新了read之后，从read读取key失败的次数
-    misses int
-}
-使用：
-	1. 使用Store(interface {}，interface {})添加元素。
-	2. 使用Load(interface {}) interface {}检索元素。
-	3. 使用Delete(interface {})删除元素。
-	4. 使用LoadOrStore(interface {}，interface {}) (interface {}，bool)检索或添加之前不存在的元素。
-		如果键之前在map中存在，则返回的布尔值为true。
-	5. 使用Range遍历元素。
-sync.Map特性：
-
-	1.无须初始化，直接声明即可。
-	2.sync.Map 不能使用 map 的方式进行取值和设置等操作，而是使用 sync.Map 的方法进行调用，Store 表示存储，Load 表示获取，Delete 表示删除。
-	3.使用 Range 配合一个回调函数进行遍历操作，通过回调函数返回内部遍历出来的值，Range 参数中回调函数的返回值在需要继续迭代遍历时，返回 true，终止迭代遍历时，返回 false。
-
-*/
 
 func main() {
 
@@ -46,25 +15,41 @@ func main() {
 	m.Store(1, "one")
 	m.Store(2, "two")
 
+	// 再次添加相同元素
+	m.Store(1, "onePlus")
+
 	// 获取元素1
 	value, contains := m.Load(1)
 	if contains {
-		fmt.Printf("%s\n", value.(string))
+		fmt.Printf("获取的结果%s\n", value.(string))
 	}
 
 	// 返回已存value，否则把指定的键值存储到map中
 	value, loaded := m.LoadOrStore(3, "three")
 	if !loaded {
-		fmt.Printf("%s\n", value.(string))
+		fmt.Printf("第一次写入%s\n", value.(string))
+	}
+	// 再次读取或写入 "3"，因为这个 key 已经存在，因此写入不成功，并且读出原值。
+	value, loaded = m.LoadOrStore(3, "threePlus")
+	if loaded {
+		//已经加载成功
+		fmt.Printf("已存在:%s\n", value.(string))
+	}
+	// 获取元素3
+	value, contains = m.Load(3)
+	if contains {
+		fmt.Printf("最终存的数值%s\n", value.(string))
 	}
 
+	// 删除元素
 	m.Delete(3)
 
+
 	// 迭代所有元素
+	fmt.Println("-----开始遍历------")
 	m.Range(func(key, value interface{}) bool {
 		fmt.Printf("%d: %s\n", key.(int), value.(string))
 		return true
-
 	})
 }
 
