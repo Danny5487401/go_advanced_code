@@ -5,6 +5,7 @@ import (
 )
 
 func Test_MementoPattern(t *testing.T) {
+	// 创建一个发起人并设置初始状态
 	editor := NewMockEditor()
 
 	// test save()

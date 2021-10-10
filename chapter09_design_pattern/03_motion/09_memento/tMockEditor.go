@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// 发起人
 // 虚拟的编辑器类, 实现IEditor接口
 type tMockEditor struct {
 	title    string
