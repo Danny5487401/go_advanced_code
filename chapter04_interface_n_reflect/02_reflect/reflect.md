@@ -140,6 +140,7 @@ reflect.Value 则结合 _type 和 data 两者，因此程序员可以获取甚�
 	接口变量，实际上都是由一 pair 对（type 和 data）组合而成，pair 对中记录着实际变量的值和类型。也就是说在真实世界里，type 和 value 是合并在一起组成 接口变量的。
     而在反射的世界里，type 和 data 却是分开的，他们分别由 reflect.Type 和 reflect.Value 来表现
 
+####1.type
 ```go
 //reflect/type.go
 //type定义了接口，rtype实现了接口
@@ -157,6 +158,241 @@ type emptyInterface struct {
 }
 ```
 
+type接口
+```go
+type Type interface {
+    // 所有的类型都可以调用下面这些函数
+
+
+    // 此类型的变量对齐后所占用的字节数
+	Align() int
+
+
+    // 如果是 struct 的字段，对齐后占用的字节数
+	FieldAlign() int
+
+	// Method returns the i'th method in the type's method set.
+	// It panics if i is not in the range [0, NumMethod()).
+	//
+	// For a non-interface type T or *T, the returned Method's Type and Func
+	// fields describe a function whose first argument is the receiver.
+	//
+	// For an interface type, the returned Method's Type field gives the
+	// method signature, without a receiver, and the Func field is nil.
+	//
+	// Only exported methods are accessible and they are sorted in
+	// lexicographic order.
+    // 返回类型方法集里的第 `i` (传入的参数)个方法
+	Method(int) Method
+
+	// MethodByName returns the method with that name in the type's
+	// method set and a boolean indicating if the method was found.
+	//
+	// For a non-interface type T or *T, the returned Method's Type and Func
+	// fields describe a function whose first argument is the receiver.
+	//
+	// For an interface type, the returned Method's Type field gives the
+	// method signature, without a receiver, and the Func field is nil.
+    // 通过名称获取方法
+	MethodByName(string) (Method, bool)
+
+
+    // 获取类型方法集里导出的方法个数
+	NumMethod() int
+
+	// Name returns the type's name within its package for a defined type.
+	// For other (non-defined) types it returns the empty string.
+    // 类型名称
+	Name() string
+
+	// PkgPath returns a defined type's package path, that is, the import path
+	// that uniquely identifies the package, such as "encoding/base64".
+	// If the type was predeclared (string, error) or not defined (*T, struct{},
+	// []int, or A where A is an alias for a non-defined type), the package path
+	// will be the empty string.
+    // 返回类型所在的路径，如：encoding/base64
+	PkgPath() string
+
+	// 返回类型的大小，和 unsafe.Sizeof 功能类似
+	Size() uintptr
+
+
+    // 返回类型的字符串表示形式.
+	String() string
+
+
+    // 返回类型的类型值
+	Kind() Kind
+
+	
+    // 类型是否实现了接口 u
+	Implements(u Type) bool
+
+	// 是否可以赋值给 u
+	AssignableTo(u Type) bool
+
+	// 是否可以类型转换成 u
+	ConvertibleTo(u Type) bool
+
+	// 类型是否可以比较
+	Comparable() bool
+
+    // 下面这些函数只有特定类型可以调用
+    //如：Key, Elem 两个方法就只能是 Map 类型才能调用
+	//
+	//	Int*, Uint*, Float*, Complex*: Bits
+	//	Array: Elem, Len
+	//	Chan: ChanDir, Elem
+	//	Func: In, NumIn, Out, NumOut, IsVariadic.
+	//	Map: Key, Elem
+	//	Ptr: Elem
+	//	Slice: Elem
+	//	Struct: Field, FieldByIndex, FieldByName, FieldByNameFunc, NumField
+
+	// 类型所占据的位数
+	Bits() int
+
+	
+    // 返回通道的方向，只能是 chan 类型调用
+	ChanDir() ChanDir
+
+	// IsVariadic reports whether a function type's final input parameter
+	// is a "..." parameter. If so, t.In(t.NumIn() - 1) returns the parameter's
+	// implicit actual type []T.
+	//
+	// For concreteness, if t represents func(x int, y ... float64), then
+	//
+	//	t.NumIn() == 2
+	//	t.In(0) is the reflect.Type for "int"
+	//	t.In(1) is the reflect.Type for "[]float64"
+	//	t.IsVariadic() == true
+	//
+    //  入参类型是否是可变参数，只能是 func 类型调用
+    // 比如 t 是类型 func(x int, y ... float64)
+    // 那么 t.IsVariadic() == true
+	IsVariadic() bool
+
+
+    // 返回内部子元素类型，只能由类型 Array, Chan, Map, Ptr, or Slice 调用
+	Elem() Type
+
+
+    // 返回结构体类型的第 i 个字段，只能是结构体类型调用
+    // 如果 i 超过了总字段数，就会 panic
+	Field(i int) StructField
+
+	// FieldByIndex returns the nested field corresponding
+	// to the index sequence. It is equivalent to calling Field
+	// successively for each index i.
+	 // 返回嵌套的结构体的字段
+	FieldByIndex(index []int) StructField
+
+	// FieldByName returns the struct field with the given name
+	// and a boolean indicating if the field was found.
+
+    // 通过字段名称获取字段
+	FieldByName(name string) (StructField, bool)
+
+	// FieldByNameFunc returns the struct field with a name
+	// that satisfies the match function and a boolean indicating if
+	// the field was found.
+	//
+	// FieldByNameFunc considers the fields in the struct itself
+	// and then the fields in any embedded structs, in breadth first order,
+	// stopping at the shallowest nesting depth containing one or more
+	// fields satisfying the match function. If multiple fields at that depth
+	// satisfy the match function, they cancel each other
+	// and FieldByNameFunc returns no match.
+	// This behavior mirrors Go's handling of name lookup in
+	// structs containing embedded fields.
+    // 返回名称符合 func 函数的字段
+	FieldByNameFunc(match func(string) bool) (StructField, bool)
+
+	// In returns the type of a function type's i'th input parameter.
+    // 获取函数类型的第 i 个参数的类型
+	In(i int) Type
+
+	// 返回 map 的 key 类型，只能由类型 map 调用
+	Key() Type
+
+	// 返回 Array 的长度，只能由类型 Array 调用
+	Len() int
+
+    // 返回类型字段的数量，只能由类型 Struct 调用
+	NumField() int
+
+	// 返回函数类型的输入参数个数
+	NumIn() int
+
+	// 返回函数类型的返回值个数
+	NumOut() int
+
+	// 返回函数类型的第 i 个值的类型
+	Out(i int) Type
+
+    // 返回类型结构体的相同部分
+	common() *rtype
+
+    // 返回类型结构体的不同部分
+	uncommon() *uncommonType
+}
+```
+具体实现rtype:所有的类型都会包含 rtype 这个字段,表示各种类型的公共信息；另外，不同类型包含自己的一些独特的部分。
+```go
+// rtype is the common implementation of most values.
+// It is embedded in other struct types.
+//
+// rtype must be kept in sync with ../runtime/type.go:/^type._type.
+type rtype struct {
+	size       uintptr
+	ptrdata    uintptr // number of bytes in the type that can contain pointers
+	hash       uint32  // hash of type; avoids computation in hash tables
+	tflag      tflag   // extra type information flags
+	align      uint8   // alignment of variable with this type
+	fieldAlign uint8   // alignment of struct field with this type
+	kind       uint8   // enumeration for C
+	// function for comparing objects of this type
+	// (ptr to object A, ptr to object B) -> ==?
+	equal     func(unsafe.Pointer, unsafe.Pointer) bool
+	gcdata    *byte   // garbage collection data
+	str       nameOff // string form
+	ptrToThis typeOff // type for pointer to this type, may be zero
+}
+```
+举例
+比如下面的 arrayType 和 chanType 都包含 rytpe，而前者还包含 slice，len 等和数组相关的信息；后者则包含 dir 表示通道方向的信息。
+```go
+// arrayType represents a fixed array type.
+type arrayType struct {
+	rtype
+	elem  *rtype // array element type
+	slice *rtype // slice type
+	len   uintptr
+}
+
+// chanType represents a channel type.
+type chanType struct {
+	rtype
+	elem *rtype  // channel element type
+	dir  uintptr // channel direction (ChanDir)
+}
+```
+rtype实现了string()方法,满足 fmt.Stringer 接口
+```go
+func (t *rtype) String() string {
+	s := t.nameOff(t.str).name()
+	if t.tflag&tflagExtraStar != 0 {
+		return s[1:]
+	}
+	return s
+}
+```
+
+####2. value
+reflect.Value 表示 interface{} 里存储的实际变量，它能提供实际变量的各种信息。相关的方法常常是需要结合类型信息和值信息。
+例如，如果要提取一个结构体的字段信息，那就需要用到 _type (具体到这里是指 structType) 类型持有的关于结构体的字段信息、偏移信息，以及 *data 所指向的内容 —— 结构体的实际值。
+
+Value结构体
 ```go
 // reflect/value.go
 type Value struct {
@@ -165,4 +401,67 @@ type Value struct {
 	flag  //元信息
 }
 ```
+Valueof函数
+```go
+func ValueOf(i interface{}) Value {
+	if i == nil {
+		return Value{}
+	}
+
+	// TODO: Maybe allow contents of a Value to live on the stack.
+	// For now we make the contents always escape to the heap. It
+	// makes life easier in a few places (see chanrecv/mapassign
+	// comment below).
+	escapes(i)
+
+	return unpackEface(i)
+}
+// unpackEface converts the empty interface i to a Value.
+func unpackEface(i interface{}) Value {
+    //先将 i 转换成 *emptyInterface 类型
+    e := (*emptyInterface)(unsafe.Pointer(&i))
+    
+    // NOTE: don't read e.word until we know whether it is really a pointer or not.
+    // 再将它的 typ 字段和 word 字段以及一个标志位字段组装成一个 Value 结构体，
+    t := e.typ
+    if t == nil {
+        return Value{}
+    }
+    f := flag(t.Kind())
+    if ifaceIndir(t) {
+        f |= flagIndir
+    }
+    return Value{t, e.word, f}
+}
+```
+
+Value 结构体定义了很多方法，通过这些方法可以直接操作 Value 字段 ptr 所指向的实际数据：
+```go
+// 设置切片的 len 字段，如果类型不是切片，就会panic
+func (v Value) SetLen(n int)
+
+
+// 设置切片的 cap 字段
+func (v Value) SetCap(n int)
+
+
+// 设置字典的 kv
+func (v Value) SetMapIndex(key, elem Value)
+
+
+// 返回切片、字符串、数组的索引 i 处的值
+func (v Value) Index(i int) Value
+
+
+// 根据名称获取结构体的内部字段值
+func (v Value) FieldByName(name string) Value
+
+```
+
+总结:
+![](.reflect_images/rtype_emptyface_value_relation.png)
+
+    rtye 实现了 Type 接口，是所有类型的公共部分。emptyface 结构体和 eface 其实是一个东西，
+    而 rtype 其实和 _type 是一个东西，只是一些字段稍微有点差别，
+    比如 emptyface 的 word 字段和 eface 的 data 字段名称不同，但是数据型是一样的。
 

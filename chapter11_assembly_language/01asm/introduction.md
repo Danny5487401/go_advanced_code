@@ -66,6 +66,11 @@ cpu对存储器(内存)的读写操作过程
 
 控制总线：读和写
 ![](.introduction_images/control_bus.png)
+
+##存储器
+![](.introduction_images/rom_n_ram.png)
+从读写属性上分：随机存储器(ram)和只读存储器(rom)
+功能上分：bios(BASIC INPUT/OUTPUT SYSTEM)基本输入输出系统上的rom
 ##寄存器
 
     CPU 本身只负责运算，不负责储存数据。数据一般都储存在内存之中，CPU 要用的时候就去内存读写数据。但是，CPU的运算速度远高于内存的读写速度，
