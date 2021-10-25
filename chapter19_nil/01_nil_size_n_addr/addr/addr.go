@@ -21,12 +21,12 @@ nil介绍
 
 func main() {
 	// 1. 各类型为nil时的地址
-	var p *int = nil
-	var c chan int = nil
-	var f func() = nil
-	var m map[int]int = nil
-	var s []int = nil
-	var i interface{} = nil
+	var p *int
+	var c chan int
+	var f func()
+	var m map[int]int
+	var s []int
+	var i interface{}
 	fmt.Printf("*int地址是%p\n", p)      // 0x0
 	fmt.Printf("chan int地址是%p\n", c)  // 0x0
 	fmt.Printf("函数地址是%p\n", f)        // 0x0
@@ -43,9 +43,11 @@ func main() {
 	//实例化是有地址的
 	var p1 = &People{}
 	var p2 = People{}
-	fmt.Printf("地址%p\n", p1) // 0xc00000c060
-	fmt.Printf("%p\n", &p2)  // 0xc00000c080
-	//fmt.Println(p1 == nil, &p2 == nil) // false false
+	var p3 *People
+	fmt.Printf("p1地址%p\n", p1)                    // 0xc00000c060
+	fmt.Printf("p2地址%p\n", &p2)                   // 0xc00000c080
+	fmt.Printf("p3地址%p\n", &p3)                   // 0xc00000e030
+	fmt.Println(p1 == nil, &p2 == nil, p3 == nil) // false false true
 
 }
 
