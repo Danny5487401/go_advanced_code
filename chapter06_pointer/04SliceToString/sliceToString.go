@@ -24,12 +24,13 @@ type SliceHeader struct{
 */
 
 func main() {
-	fmt.Println("方式一")
+	//"转换方式一"
 	bytes := []byte{104, 101, 108, 108, 111}
 	g := unsafe.Pointer(&bytes) //强制转换成unsafe.Pointer，编译器不会报错
 	str := *(*string)(g)        //然后强制转换成string类型的指针，再将这个指针的值当做string类型取出来
 	fmt.Println(str)            //输出 "hello"
-	fmt.Println("反射方式二")
+
+	//"转换方式二"
 	fmt.Println("字符串转bytes", String2bytes("Danny"))
 	fmt.Println("bytes转字符串", Bytes2string([]byte{104, 101, 108, 108, 111}))
 }

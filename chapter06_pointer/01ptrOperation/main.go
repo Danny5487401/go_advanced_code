@@ -19,12 +19,16 @@ func double(x *int) {
 	*x += *x
 	x = nil
 }
+
+// 通过指针修改值
 func main() {
-	// 通过指针修改值
+
 	var a = 30
 	double(&a)
 	fmt.Println(a) //60
 
+	// 复制指针
+	fmt.Println("-----------")
 	p := &a
 	double(p)
 	fmt.Println(a, p == nil) //120 false
@@ -32,16 +36,16 @@ func main() {
 	// 指针类型转换
 	fmt.Println("-----------")
 	v1 := uint(12)
-	v2 := int(13)
+	var v2 int = 13
 
 	fmt.Println("指针")
 	fmt.Println(reflect.TypeOf(&v1)) //*uint
 	fmt.Println(reflect.TypeOf(&v2)) //*int
 
 	//使用unsafe.Pointer进行类型的转换
-	q := (*uint)(unsafe.Pointer(&v2)) // &v2 *int-->*unit转换
-
-	fmt.Println(reflect.TypeOf(q)) // *unit
-	fmt.Println(*q)                //13值不变
+	q := (*uint)(unsafe.Pointer(&v2))           // &v2 *int-->*unit转换
+	fmt.Printf("转换前指针地址%p,转换后指针地址%p\n", &v2, q) // 转换前指针地址0xc0000180b0,转换后指针地址0xc0000180b0
+	fmt.Println(reflect.TypeOf(q))              // *unit
+	fmt.Println(*q)                             //13值不变
 
 }
