@@ -21,7 +21,7 @@
         2.2 Goexit()终止线程
         2.3 资源竞争一致性问题分析
         2.4 垃圾回收机制(trace查看map垃圾回收）
-        2.5 监控代码pprof
+        2.5 监控代码性能pprof
             2.5.1 标准包runtime/pprof及net/http/pprof
             2.5.2 第三方包pkg/profile
         2.6 Go内存结构
@@ -238,5 +238,5 @@
     3. 不同类型nil时的特点
 ## 第二十章 for-range源码分析
     1. 遍历数组和切片
-    2. 遍历Goroutine
+    2. 遍历Goroutine(协程启动时间)
     3. 遍历Map
