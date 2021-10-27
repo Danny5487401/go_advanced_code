@@ -6,39 +6,43 @@ import (
 )
 
 /*
-装饰器模式：
-	装饰器模式创建了一个装饰类，用来包装原有的类，并在保持类方法签名完整的前提下，提供了额外的功能。
-优点
-	装饰器类和被装饰类可以独立发展，不会互相耦合
-缺点
-	多层装饰比较复杂
-
 实现：
 	通过反射实现装饰任意的函数
 */
 
-// 需要装饰的函数1
+// 需要装饰的函数1--一个参数
 func help1(name string) {
 	fmt.Println("help1():", name)
 }
 
-// 需要装饰的函数2
+// 需要装饰的函数2--两个参数
 func help2(age int, name string) {
 	fmt.Printf("help2():name:%v,age:%v\n", name, age)
 }
 
 // 反射实现装饰器
+// 第一个是出参 decoPtr ，就是完成修饰后的函数；
+// 第二个是入参 fn ，就是需要修饰的函数。
 func decorator(decoP, fn interface{}) {
 	var decoratedFunc, targetFunc reflect.Value
-	decoratedFunc = reflect.ValueOf(decoP).Elem() // 1.作为输出的装饰完毕后的函数
-	targetFunc = reflect.ValueOf(fn)              //2.获取将要装饰的函数
+
+	// 1.作为输出的装饰完毕后的函数
+	decoratedFunc = reflect.ValueOf(decoP).Elem()
+
+	//2.获取将要装饰的函数
+	targetFunc = reflect.ValueOf(fn)
+
 	// 3.通过反射生成函数
 	v := reflect.MakeFunc(targetFunc.Type(), func(in []reflect.Value) (out []reflect.Value) {
-		fmt.Println("decorate self-code") //添加的逻辑
-		out = targetFunc.Call(in)         //调用被装饰函数
+		fmt.Println("start decorate self-code") //添加的逻辑
+		out = targetFunc.Call(in)               //调用被装饰函数
+		fmt.Println("end decorate self-code")   //添加的逻辑
+
 		return
 	})
-	decoratedFunc.Set(v) // 4.将装饰过的存储在输出函数中
+
+	// 4.将装饰过的存储在输出函数中
+	decoratedFunc.Set(v)
 	return
 }
 
