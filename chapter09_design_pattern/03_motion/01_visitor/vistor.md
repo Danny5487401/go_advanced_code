@@ -2,7 +2,7 @@
 
 定义：
 
-    表示一个作用于某对象结构中的各元素的操作。它使你可以在不改变各元素的类的前提下定义作用于这些元素的新操作
+    将算法与操作对象的结构分离的一种方法。这种分离的实际结果是能够在不修改结构的情况下向现有对象结构添加新操作
 示意图
 
 ```css
@@ -54,6 +54,8 @@
 	5.结构容器: (非必须) 保存元素列表，可以放置访问者.一个元素的容器，一般包含一个容纳多个不同类、不同接口的容器，如List、Set、Map等，在项目中一般很少抽象出这个角色
 
 ##源码参考：k8s
+kubectl 的代码比较复杂，不过，简单来说，基本原理就是它从命令行和 YAML 文件中获取信息， 通过 Builder 模式并把其转成一系列的资源，最后用 Visitor 模式来迭代处理这些 Reource
+###Visitor 模式定义
 ```go
 //k8s.io/cli-runtime/pkg/resource/interfaces.go
 
@@ -63,6 +65,152 @@ type Visitor interface {
 }
 // VisitorFunc对应这个对象的方法，也就是定义中的“操作”
 type VisitorFunc func(*Info, error) error
+
+type Info struct {
+    Namespace   string
+    Name        string
+    OtherThings string
+}
+
+func (info *Info) Visit(fn VisitorFunc) error { 
+	return fn(info, nil)
+}
+
+```
+###Name Visitor
+这个 Visitor 主要是用来访问 Info 结构中的 Name 和 NameSpace 成员：
+```go
+
+type NameVisitor struct {
+    visitor Visitor
+}
+
+func (v NameVisitor) Visit(fn VisitorFunc) error {
+    return v.visitor.Visit(func(info *Info, err error) error {
+        fmt.Println("NameVisitor() before call function")
+        err = fn(info, err)
+        if err == nil {
+            fmt.Printf("==> Name=%s, NameSpace=%s\n", info.Name, info.Namespace)
+        }
+        fmt.Println("NameVisitor() after call function")
+        return err
+    })
+}
+// 在实现 Visit() 方法时，调用了自己结构体内的那个 Visitor的 Visitor() 方法，这其实是一种修饰器的模式，用另一个 Visitor 修饰了自己
+```
+
+###OtherVisitor
+这个 Visitor 主要用来访问 Info 结构中的 OtherThings 成员：
+```go
+
+type OtherThingsVisitor struct {
+  visitor Visitor
+}
+
+func (v OtherThingsVisitor) Visit(fn VisitorFunc) error {
+  return v.visitor.Visit(func(info *Info, err error) error {
+    fmt.Println("OtherThingsVisitor() before call function")
+    err = fn(info, err)
+    if err == nil {
+      fmt.Printf("==> OtherThings=%s\n", info.OtherThings)
+    }
+    fmt.Println("OtherThingsVisitor() after call function")
+    return err
+  })
+}
+```
+###LogVisitor
+```go
+
+type LogVisitor struct {
+  visitor Visitor
+}
+
+func (v LogVisitor) Visit(fn VisitorFunc) error {
+  return v.visitor.Visit(func(info *Info, err error) error {
+    fmt.Println("LogVisitor() before call function")
+    err = fn(info, err)
+    fmt.Println("LogVisitor() after call function")
+    return err
+  })
+}
+```
+
+使用时
+```go
+
+func main() {
+  info := Info{}
+  var v Visitor = &info
+  v = LogVisitor{v}
+  v = NameVisitor{v}
+  v = OtherThingsVisitor{v}
+
+  loadFile := func(info *Info, err error) error {
+    info.Name = "Hao Chen"
+    info.Namespace = "MegaEase"
+    info.OtherThings = "We are running as remote team."
+    return nil
+  }
+  v.Visit(loadFile)
+}
+```
+打印结果
+```go
+
+LogVisitor() before call function
+NameVisitor() before call function
+OtherThingsVisitor() before call function
+==> OtherThings=We are running as remote team.
+OtherThingsVisitor() after call function
+==> Name=Hao Chen, NameSpace=MegaEase
+NameVisitor() after call function
+LogVisitor() after call function
+```
+
+
+Visitor 修饰器
+```go
+
+type DecoratedVisitor struct {
+  visitor    Visitor
+  decorators []VisitorFunc
+}
+
+func NewDecoratedVisitor(v Visitor, fn ...VisitorFunc) Visitor {
+  if len(fn) == 0 {
+    return v
+  }
+  return DecoratedVisitor{v, fn}
+}
+
+// Visit implements Visitor
+func (v DecoratedVisitor) Visit(fn VisitorFunc) error {
+  return v.visitor.Visit(func(info *Info, err error) error {
+    if err != nil {
+      return err
+    }
+    if err := fn(info, nil); err != nil {
+      return err
+    }
+    for i := range v.decorators {
+      if err := v.decorators[i](info, nil); err != nil {
+        return err
+      }
+    }
+    return nil
+  })
+}
+```
+
+上面方法简化使用
+```go
+
+info := Info{}
+var v Visitor = &info
+v = NewDecoratedVisitor(v, NameVisitor, OtherVisitor)
+
+v.Visit(LoadFile)
 ```
 
 ###Visitor的链式处理
