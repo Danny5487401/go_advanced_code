@@ -10,7 +10,9 @@
         1.3 io包底层Reader和Writer接口
             1.3.1 os,bytes,strings包
         1.4 io断点续传
-        1.5 walkPath遍历目录及文件
+        1.5 FilePath包
+            1.5.1 walkPath遍历目录及文件
+            1.5.2 匹配文件名
     2. bufio缓存读写
 ---
 ## 第二章 协程Goroutine
