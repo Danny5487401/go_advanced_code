@@ -46,7 +46,7 @@ func main() {
 	var p3 *People
 	fmt.Printf("p1地址%p\n", p1)                    // 0xc00000c060
 	fmt.Printf("p2地址%p\n", &p2)                   // 0xc00000c080
-	fmt.Printf("p3地址%p\n", &p3)                   // 0xc00000e030
+	fmt.Printf("p3地址%p\n", p3)                    // 0x0
 	fmt.Println(p1 == nil, &p2 == nil, p3 == nil) // false false true
 
 }
