@@ -65,41 +65,4 @@ func CheckGoroutineErr(errContext context.Context) error {
 	}
 }
 
-/*
-源码分析
-	type Group struct {
-	  cancel  func()             //context cancel()
-		wg      sync.WaitGroup
-		errOnce sync.Once          //只会传递第一个出现错的协程的 error
-		err     error              //传递子协程错误
-	}
 
-
-	func (g *Group) Go(f func() error) {
-		g.wg.Add(1)
-
-		go func() {
-			defer g.wg.Done()
-			if err := f(); err != nil {
-				g.errOnce.Do(func() {
-					g.err = err             //记录子协程中的错误
-					if g.cancel != nil {
-						g.cancel()
-					}
-				})
-			}
-		}()
-	}
-	// errgroup 可以捕获和记录子协程的错误(只能记录最先出错的协程的错误
-
-	// Wait blocks until all function calls from the Go method have returned, then
-	// returns the first non-nil error (if any) from them.
-	func (g *Group) Wait() error {
-		g.wg.Wait()
-		if g.cancel != nil {
-			g.cancel()
-		}
-		return g.err
-	}
-	errgroup 可以控制协程并发顺序。确保子协程执行完成后再执行主协程
-*/
