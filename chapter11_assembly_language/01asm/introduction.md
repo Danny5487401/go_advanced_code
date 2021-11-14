@@ -257,6 +257,10 @@ leave指令没有操作数，它一般放在函数的尾部ret指令之前，用
 
     mov %rbp,%rsp
     pop %rbp
+    
+####loop指令
+![](.introduction_images/loop.png)
+cx存储循环的次数,s为标号
 
 ##案例
 go语言编写
