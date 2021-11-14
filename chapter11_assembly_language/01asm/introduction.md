@@ -63,18 +63,23 @@
     8. 输入输出指令: 这部分指令用于同外围设备交换数据，包括端口输入指令IN/INS、端口输出指令OUT/OUTS
 
 cpu对存储器(内存)的读写操作过程
+
 ![](.introduction_images/asm_process.png)
 
 地址总线：64位cpu，代表查找能力
+
 ![](.introduction_images/address_bus.png)
 
 数据总线:宽度决定与外界的数据传输速度
+
 ![](.introduction_images/data_address.png)
 
 控制总线：读和写
+
 ![](.introduction_images/control_bus.png)
 
 ##存储器
+
 ![](.introduction_images/rom_n_ram.png)
 从读写属性上分：随机存储器(ram)和只读存储器(rom)
 功能上分：bios(BASIC INPUT/OUTPUT SYSTEM)基本输入输出系统上的rom
@@ -227,12 +232,12 @@ ret
 ###jmp/je/jle/jg/jge等等j开头的指令--转移指令，例如可以修改8086cpu的cs段寄存器，ip指令寄存器
 这些都属于跳转指令，操作码后面直接跟要跳转到的地址或存有地址的寄存器，这些指令与高级编程语言中的 goto 和 if 等语句对应。用法示例：
 ```shell
-jmp    0x4005f2-->相当于jmp IP  0x4005f2,仅仅修改ip指令寄存器
+jmp    0x4005f2 #-->相当于jmp IP  0x4005f2,仅仅修改ip指令寄存器
 jle    0x4005ee
 jl     0x4005b8
 ```
 
-###push/pop指令
+###push/pop指令-可以直接操作段寄存器
 ```shell
 push 源操作数
 pop 目的操作数

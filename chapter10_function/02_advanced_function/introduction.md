@@ -1,6 +1,5 @@
-package main
-
-/* -映射Map、归约reduce与过滤filter
+# 映射Map、归约reduce与过滤filter
+![](map-reduce.png)
 介绍
 	Map 是一对一的场景，是 循环中对数据加工处理
 	Reduce 是多对一，是 数据聚合处理
@@ -11,4 +10,3 @@ package main
 	统计本月 - Filter
 	费用转化为美金 - Map
 
-*/

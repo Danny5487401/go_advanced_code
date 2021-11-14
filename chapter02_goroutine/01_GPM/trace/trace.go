@@ -6,6 +6,7 @@ import (
 	"runtime/trace"
 )
 
+// trace侧重于分析goroutine的调度
 func main() {
 	// 创建trace文件
 	f, err := os.Create("trace.out")

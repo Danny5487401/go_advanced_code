@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	Goroutine3()
+	Goroutine2()
+	//Goroutine3()
 }
 
 func Goroutine1() {
@@ -32,17 +33,16 @@ func Goroutine2() {
 		go func() {
 			fmt.Println(i, v)
 		}()
-		if i == 0 {
-			time.Sleep(time.Second * 1)
-		}
+
+		time.Sleep(time.Microsecond * 50)
+
 	}
 	time.Sleep(time.Second * 3)
 }
 
 /*
 第二种情况
-	第一次遍历后 sleep 了1秒,所以第一次循环中的协程有时间执行了，开始执行时当前上下文中 i 和 v 的值还是第一次遍历的0和1，
-	后面的没 sleep 就是最后循环结束时的2和3了。
+	一次goroutine的启动准备时间在数十微秒左右。当然该值在不同的操作系统和硬件设备上肯定会存在一些差异。
 
 	这里只是为了讲明白环境上下文，其实我们平时不会这么用的，协程本来就是为了提升并发特性的，如果每次都 sleep 那还有什么意义呐
 */
@@ -76,3 +76,6 @@ func Goroutine4() {
 	time.Sleep(time.Second * 3)
 
 }
+
+//Note:小菜刀在线上遇到该bug时，虽然已经知道通过入参的方式进行修改，但当时没有过多思考，以为问题是出在了for...range的值拷贝上面。
+//通过后续和同事的讨论与自己多次不同尝试之后，才意识到原来是goroutine的启动时间在捣鬼
