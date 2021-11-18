@@ -40,8 +40,6 @@ tcp        0     60 172.22.66.69:22         122.14.220.252:59889    ESTABLISHED
     还有Send-Q 是发送缓冲区，下面的数字60是指，当前还有60 Byte在发送缓冲区中未发送。而 Recv-Q 代表接收缓冲区，此时是空的，数据都被应用进程接收干净了
 
 ##tcp四次握手
-![](.socket_images/Four-Way_Wavehand.png)
-
 ##执行 send 发送的字节，会立马发送吗
 ![](.socket_images/socket_send.png)
 

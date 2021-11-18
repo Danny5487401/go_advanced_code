@@ -108,6 +108,7 @@ func (g greeting) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, g)
 }
 
+// 装饰器模式添加中间件
 func applyMiddlewares(handler http.Handler, middlewares ...Middleware) http.Handler {
 	for i := len(middlewares) - 1; i >= 0; i-- {
 		handler = middlewares[i](handler)

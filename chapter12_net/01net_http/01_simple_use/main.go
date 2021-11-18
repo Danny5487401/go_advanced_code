@@ -6,9 +6,8 @@ import (
 )
 
 /*
-net/http代码块分为客户端和服务端两个部分。以下是net/http标准库的各个组成部分在客户端/服务中的划分：见structure.png
+net/http代码块分为客户端和服务端两个部分。
 
-执行流程：sender_process_diagram.png
 服务端和服务端通信的过程：
 
 1. 服务端创建socket，绑定/监听指定的ip地址和端口，即Listen Socket
