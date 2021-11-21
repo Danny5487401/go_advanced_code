@@ -195,7 +195,8 @@
     2. 爬虫获取邮箱案例(http客户端源码分析)
     3. Tcp实现客户端及服务端(tcp底层原理分析)
     4. Tcp黏包分析及处理(大小端介绍)
-    4. fastHttp
+    5. fastHttp
+    6. 优雅退出原理分析（go-zero实践）
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)      
     1. Go调用自定义C函数
     2. Go调用模块化C库

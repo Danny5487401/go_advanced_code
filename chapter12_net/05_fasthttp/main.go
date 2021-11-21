@@ -1,40 +1,37 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net/http"
-	"runtime"
-	"time"
-
 	_ "expvar"
+	"fmt"
+	"github.com/valyala/fasthttp"
 
 	_ "net/http/pprof"
-
-	"github.com/valyala/fasthttp"
 )
 
-type HelloGoHandler struct {
+type MyHandler struct {
+	foobar string
 }
 
+// request handler in net/http style, i.e. method bound to MyHandler struct.
+func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
+	// notice that we may access MyHandler properties here - see h.foobar.
+	fmt.Fprintf(ctx, "Hello, world! Requested path is %q. Foobar is %q",
+		ctx.Path(), h.foobar)
+}
+
+// request handler in fasthttp style, i.e. just plain function.
 func fastHTTPHandler(ctx *fasthttp.RequestCtx) {
-	fmt.Fprintln(ctx, "Hello, Go!")
+	fmt.Fprintf(ctx, "Hi there! RequestURI is %q", ctx.RequestURI())
 }
 
-func main() {
-	go func() {
-		http.ListenAndServe(":6060", nil)
-	}()
+func main(){
+	// pass bound struct method to fasthttp
+	//myHandler := &MyHandler{
+	//	foobar: "foobar",
+	//}
+	//fasthttp.ListenAndServe(":8080", myHandler.HandleFastHTTP)
 
-	go func() {
-		for {
-			log.Println("当前routine数量:", runtime.NumGoroutine())
-			time.Sleep(time.Second)
-		}
-	}()
-
-	s := &fasthttp.Server{
-		Handler: fastHTTPHandler,
-	}
-	s.ListenAndServe(":8081")
+	// pass plain function to fasthttp
+	fasthttp.ListenAndServe(":8081", fastHTTPHandler)
 }
+
