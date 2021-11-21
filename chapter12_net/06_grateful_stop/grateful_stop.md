@@ -10,6 +10,53 @@
 ##思路
 对 http 服务来说，一般的思路就是关闭对 fd 的 listen , 确保不会有新的请求进来的情况下处理完已经进入的请求, 然后退出。
 
+###连接的状态
+```go
+type ConnState int
+
+const (
+	// 新的连接，并且马上准备发送请求了. Connections begin at this
+	// state and then transition to either StateActive or
+	// StateClosed.
+	StateNew ConnState = iota
+
+	// 表明一个connection已经接收到一个或者多个字节的请求数据. The Server.ConnState hook for
+	// StateActive fires before the request has entered a handler
+	// and doesn't fire again until the request has been
+	// handled. After the request is handled, the state
+	// transitions to StateClosed, StateHijacked, or StateIdle.
+	// For HTTP/2, StateActive fires on the transition from zero
+	// to one active request, and only transitions away once all
+	// active requests are complete. That means that ConnState
+	// cannot be used to do per-request work; ConnState only notes
+	// the overall state of the connection.
+	StateActive
+
+	// 表明一个connection已经处理完成一次请求，但因为是keepalived的，所以不会close，继续等待下一次请求.
+	// Connections transition from StateIdle
+	// to either StateActive or StateClosed.
+	StateIdle
+
+	// 表明外部调用了hijack，最终状态.
+	// This is a terminal state. It does not transition to StateClosed.
+	StateHijacked
+
+	// 表明connection已经结束掉了.
+	// This is a terminal state. Hijacked connections do not
+	// transition to StateClosed.
+	StateClosed
+)
+
+var stateName = map[ConnState]string{
+	StateNew:      "new",
+	StateActive:   "active",
+	StateIdle:     "idle",
+	StateHijacked: "hijacked",
+	StateClosed:   "closed",
+}
+```
+
+
 ###源码分析:http 中提供了 server.ShutDown()
 
 启动
@@ -95,6 +142,7 @@ gracefulStop 的流程如下
 	* shutdown ，通知退出
 	* 如果主goroutine还没有退出，则主动发送 SIGKILL 退出进程
 
+源码分析:go-zero/core/proc/signals.go
 ```
 
 //go:build linux || darwin
@@ -110,10 +158,6 @@ import (
 
 	"github.com/tal-tech/go-zero/core/logx"
 )
-// 参考Go-zero关闭流程
-
-
-
 
 const timeFormat = "0102150405"
 
@@ -202,3 +246,11 @@ func gracefulStop(signals chan os.Signal) {
 ![](.grateful_stop_images/graceful_stop.png)
 
 我们目前 go 程序都是在 docker 容器中运行，所以在服务发布过程中，k8s 会向容器发送一个 SIGTERM 信号，然后容器中程序接收到信号，开始执行 ShutDown
+
+但是还有平滑重启，这个就依赖 k8s 了，基本流程如下：
+
+    * old pod 未退出之前，先启动 new pod
+    * old pod 继续处理完已经接受的请求，并且不再接受新请求
+    * new pod接受并处理新请求的方式
+    * old pod 退出
+这样整个服务重启就算成功了，如果 new pod 没有启动成功，old pod 也可以提供服务，不会对目前线上的服务造成影响。
