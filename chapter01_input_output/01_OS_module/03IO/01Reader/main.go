@@ -25,7 +25,7 @@ func main() {
 }
 
 /*
-源码分析
+bytes.Buffer源码分析
 	type Buffer struct {
 		buf      []byte // contents are the bytes buf[off : len(buf)]   缓冲区
 		off      int    // 写的索引值，指针偏移量
