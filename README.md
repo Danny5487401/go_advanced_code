@@ -1,4 +1,5 @@
 # ***高级Goland学习代码*** _go_advanced_code_
+![](https://changkun.de/urlstat?mode=github&repo=Danny5487401/go_advanced_code)
 
 ![高级go编程](./img/golang.jpeg)
 
