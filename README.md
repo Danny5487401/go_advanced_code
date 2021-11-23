@@ -1,5 +1,13 @@
 # ***高级Goland学习代码*** _go_advanced_code_
+![](https://changkun.de/urlstat?mode=github&repo=)
+[![Go Report Card](https://goreportcard.com/badge/github.com/talkgo/night?style=flat-square)](https://goreportcard.com/report/github.com/Danny5487401/go_advanced_code)
+[![GitHub stars](https://img.shields.io/github/stars/talkgo/night.svg?label=Stars&style=flat-square)](https://github.com/Danny5487401/go_advanced_code)
+[![GitHub forks](https://img.shields.io/github/forks/talkgo/night.svg?label=Fork&style=flat-square)](https://github.com/Danny5487401/go_advanced_code)
+![](https://img.shields.io/github/contributors/talkgo/night.svg?style=flat-square&color=orange&label=all%20contributors)
+[![Documentation](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](http://godoc.org/github.com/Danny5487401/go_advanced_code)
+[![GitHub issues](https://img.shields.io/github/issues/talkgo/night.svg?label=Issue&style=flat-square)](https://github.com/Danny5487401/go_advanced_code/issues)
 ![](https://changkun.de/urlstat?mode=github&repo=Danny5487401/go_advanced_code)
+[![license](https://img.shields.io/github/license/talkgo/night.svg?style=flat-square)](https://github.com/Danny5487401/go_advanced_code/blob/master/LICENSE)
 
 ![高级go编程](./img/golang.jpeg)
 
