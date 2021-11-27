@@ -113,7 +113,7 @@
 
 ---
 
-## 第七章 系统调用
+## [第七章 系统调用](chapter07_system_call/Syscall.md)
 
 1. 获取当前进程 PID
 
