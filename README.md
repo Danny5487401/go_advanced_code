@@ -37,17 +37,17 @@
     - 2.1 runtime核心功能及系统信息调用
     - 2.2 Goexit()终止线程
     - 2.3 资源竞争一致性问题分析
-    - 2.4 垃圾回收机制(trace查看map垃圾回收）
+    - [2.4 垃圾回收机制(trace查看map垃圾回收）](chapter02_goroutine/02_runtime/04GC/gc.md)
     - 2.5 监控代码性能pprof
         - 2.5.1 标准包runtime/pprof及net/http/pprof
         - 2.5.2 第三方包pkg/profile
-    - 2.6 Go内存结构
+    - [2.6 Go内存结构](chapter02_goroutine/02_runtime/06memory/mem.md)
 - 3 多goroutine的缓存一致性(涉及cpu伪共享)
-- 4 线程池(池化技术)
+- 4 [线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
     - 4.1 Goroutine最大数量限制(令牌桶方式)
     - 4.2 百万请求处理
-    - 4.3 第三方包线程池ants
-    - 4.4 标准库连接池sql实现
+    - [4.3 第三方包线程池ants](chapter02_goroutine/04_concurrent_pool/03_antsPool/ants.md)
+    - [4.4 标准库连接池sql实现](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
 - 5 goroutine泄漏分析及处理
 
 ---
@@ -232,6 +232,7 @@
 
 - [socket介绍](chapter12_net/socket.md)
 - [tcp介绍](chapter12_net/tcp.md)
+- [多路复用](chapter12_net/io_multiplexing.md)
 
 - 1 net/http高级封装演变
 - 2 爬虫获取邮箱案例(http客户端源码分析)
@@ -277,19 +278,20 @@
 - 1 queue队列
 - 2 哈希函数
     - 2.1 hash函数分类及算法md5使用
-- 3 非对称加密算法rsa
+- [3 非对称加密算法rsa](chapter17_dataStructure_n_algrithm/03_rsa/rsa.md)
     - 3.1 分段与不分段加解密
-- 4 排序分析
+- [4 排序分析](chapter17_dataStructure_n_algrithm/04_sort/sort.md)
     - 4.1 排序算法分类及图解
     - 4.2 排序接口实现（反射方式）
 - 5 Jwt源码分析及中间件使用
+- 6 Privacy Enhanced Mail Certificate (pem文件)生成
 
 ## 第十八章 错误跟踪和panic
-
+- 0 err和exception区别
 - 1 自定义错误类型打印错误栈
 - 2 扩展包pkg.error
-- 3 Gin的错误recover分析(panic和recover源码分析)
-- 4 errCode自动化生成
+- [3 Gin的错误recover分析(panic和recover源码分析)](chapter18_error_n_panic/03_recover/panic.md)
+- [4 errCode错误码自动化生成](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
 
 ## 第十九章 nil预定义标识
 
@@ -297,7 +299,7 @@
 - 2 不同类型与nil的比较
 - 3 不同类型nil时的特点
 
-## 第二十章 for-range源码分析
+## [第二十章 for-range源码分析](chapter20_for_range/for_range.md)
 
 - 1 遍历数组和切片
 - 2 遍历Goroutine(协程启动时间)

@@ -1,7 +1,7 @@
-#I/O 多路复用(I/O multiplexing)
+# I/O 多路复用(I/O multiplexing)
 
 在神作《UNIX 网络编程》里，总结归纳了 5 种 I/O 模型，包括同步和异步 I/O：
-![](../.net_images/five_io_models.png)
+![](.net_images/five_io_models.png)
 - 阻塞 I/O (Blocking I/O)
 - 非阻塞 I/O (Nonblocking I/O)
 - I/O 多路复用 (I/O multiplexing)
@@ -19,8 +19,8 @@
 所谓 I/O 多路复用指的就是 select/poll/epoll 这一系列的多路选择器：支持单一线程同时监听多个文件描述符（I/O 事件），阻塞等待，并在其中某个文件描述符可读写时收到通知。
 I/O 复用其实复用的不是 I/O 连接，而是复用线程，让一个 thread of control 能够处理多个连接（I/O 事件）。
 
-##select & poll
-###select
+## select & poll
+### select
 ```cgo
 #include <sys/select.h>
 
@@ -67,7 +67,7 @@ poll 的实现和 select 非常相似，只是描述 fd 集合的方式不同，
 但是同样需要从用户态拷贝所有的 fd 到内核态，也需要线性遍历所有的 fd 集合，
 
 ###epoll
-![](../.net_images/epoll.png)
+![](.net_images/epoll.png)
 
 epoll 是 linux kernel 2.6 之后引入的新 I/O 事件驱动技术，I/O 多路复用的核心设计是 1 个线程处理所有连接的等待消息准备好I/O 事件，
 这一点上 epoll 和 select&poll 是大同小异的。但 select&poll 预估错误了一件事，当数十万并发连接存在时，可能每一毫秒只有数百个活跃的连接，同时其余数十万连接在这一毫秒是非活跃的。
@@ -202,7 +202,7 @@ static__poll_t ep_send_events_proc(struct eventpoll *ep, struct list_head *head,
 从do_epoll_wait开始层层跳转，我们可以很清楚地看到最后内核是通过__put_user函数把就绪 fd 列表和事件返回到用户空间，而__put_user正是内核用来拷贝数据到用户空间的标准函数
 
 ###Non-block io
-![](../.net_images/non-block.png)
+![](.net_images/non-block.png)
 当用户进程发出 read 操作时，如果 kernel 中的数据还没有准备好，那么它并不会 block 用户进程，而是立刻返回一个 EAGAIN error。
 从用户进程角度讲 ，它发起一个 read 操作后，并不需要等待，而是马上就得到了一个结果。用户进程判断结果是一个 error 时，它就知道数据还没有准备好，于是它可以再次发送 read 操作。
 一旦 kernel 中的数据准备好了，并且又再次收到了用户进程的 system call，那么它马上就将数据拷贝到了用户内存，然后返回。
