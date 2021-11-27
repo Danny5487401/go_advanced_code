@@ -1,7 +1,7 @@
 # **#TCP**
-![](.tcp_images/http_tcp.png)
+![](03tcp/.tcp_images/http_tcp.png)
 ## 定义
-![](.tcp_images/tcp_udp_service.png)
+![](03tcp/.tcp_images/tcp_udp_service.png)
 
     网络传输层中，TCP是面向连接、可靠的、字节流传输。
     
@@ -44,7 +44,7 @@
     另一方面，TCP是一个字节流协议，绝不会以杂乱的次序给上层程序发送数据。因此TCP接收端会被迫先保持大序列号的数据不交给应用程序，直到缺失的小序列号的报文段被填满。
     
 ##TCP头部
-![](.tcp_images/tcp_header.png)
+![](03tcp/.tcp_images/tcp_header.png)
 
     16位端口号：告知主机该报文段是来自哪里（源端口Source Port）以及传给哪个上层协议或应用程序（目的端口Destination Port）的。
     进行TCP通信时，客户端通常使用系统自动选择的临时端口号，而服务器则使用知名服务端口号（比如DNS协议对应端口53，HTTP协议对应80，这些端口号可在/etc/services文件中找到）。
@@ -78,10 +78,10 @@
     16位校验和（TCP check sum）：由发送端填充，接收端对TCP报文段执行CRC算法以检验TCP报文段在传输过程中是否损坏。注意，这个校验不仅包括TCP头部，也包括数据部分。这也是TCP可靠传输的一个重要保障。
     
     16位紧急指针（urgent pointer）：是一个正的偏移量。它和序号字段的值相加表示最后一个紧急数据的下一字节的序号。因此，确切地说，这个字段是紧急指针相对当前序号的偏移，不妨称之为紧急偏移。TCP的紧急指针是发送端向接收端发送紧急数据的方法。
-![](.tcp_images/tcp_kind_option_structure.png)
+![](03tcp/.tcp_images/tcp_kind_option_structure.png)
 
     TCP头部选项：TCP头部的最后一个选项字段（options）是可变长的可选信息。这部分最多包含40字节，因为TCP头部最长是60字节（其中还包含前面讨论的20字节的固定部分）。典型的TCP头部选项结构如下图所示
-![](.tcp_images/seven_kind_options.png)
+![](03tcp/.tcp_images/seven_kind_options.png)
     
     kind=0是选项表结束选项。
     
@@ -102,7 +102,7 @@
     kind=8是时间戳选项。该选项提供了较为准确的计算通信双方之间的回路时间（Round Trip Time，RTT）的方法，从而为TCP流量控制提供重要信息。我们可以通过修改/proc/sys/net/ipv4/tcp_timestamps内核变量来启用或关闭时间戳选项。
     
 ##状态转换
-![](.tcp_images/state_trasfer.png)
+![](03tcp/.tcp_images/state_trasfer.png)
 ###三次握手
 “3次握手”的作用就是双方都能明确自己和对方的收、发能力是正常的。
 
