@@ -242,7 +242,7 @@
 - [6 优雅退出原理分析（go-zero实践）](chapter12_net/06_grateful_stop/grateful_stop.md)
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
-
+待更新：cgo在confluent-kafka-go源码使用
 - 1 Go调用自定义C函数
 - 2 Go调用模块化C库
 - 3 Go实现C定义函数

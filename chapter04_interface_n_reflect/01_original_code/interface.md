@@ -8,11 +8,11 @@
     例如动物这个对象可以向下细分为狗和猫，它们有共同的行为可以跑。
     横向
     再或者数据库的连接可以抽象为接口，可以支持mysql、oracle等
-# 源码：
-##分类：
+
+## 源码分类：
 
     interface的定义在1.15.3源码包runtime中,interface的定义分为两种，一种是不带方法的runtime.eface和带方法的runtime.iface。
-###1。runtime.eface表示不含方法的interface{}类型,结构体包含可以表示任意数据类型的_type和存储指定的数据data,data用指针来表示
+### 1. runtime.eface表示不含方法的interface{}类型,结构体包含可以表示任意数据类型的_type和存储指定的数据data,data用指针来表示
 ```go
 type eface struct {
     _type *_type
@@ -34,7 +34,7 @@ type _type struct {
 }
 ```
 
-###2。runtime.iface表示包含方法的接口,结构体包含itab和data数据,itab包含的是接口类型interfacetype
+### 2. runtime.iface表示包含方法的接口,结构体包含itab和data数据,itab包含的是接口类型interfacetype
 和装载实体的任意类型_type以及实现接口的方法fun,fun是可变大小,go在编译期间就会对接口实现校验检查,并将对应的方法存储fun。
 ```go
 type iface struct {
@@ -43,7 +43,7 @@ type iface struct {
 }
 ```
 
-###接口类型和 nil 作比较
+### 接口类型和 nil 作比较
 接口值的零值是指动态类型和动态值都为 nil。当仅且当这两部分的值都为 nil 的情况下，这个接口值就才会被认为 接口值 == nil
 ```go
 type itab struct {
