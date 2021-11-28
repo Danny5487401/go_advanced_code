@@ -1,8 +1,8 @@
-#Map介绍
+# Map介绍
 map 的设计也被称为 “The dictionary problem”，它的任务是设计一种数据结构用来维护一个集合的数据，并且可以同时对集合进行增删查改的操作。
 
 最主要的数据结构有两种：哈希查找表（Hashtable）、 搜索树（Searchtree）
-##哈希查找表（Hashtable）
+## 哈希查找表（Hashtable）
 哈希查找表用一个哈希函数将 key 分配到不同的桶（bucket，也就是数组的不同 index）。这样，开销主要在哈希函数的计算以及数组的常数访问时间。
 在很多场景下，哈希查找表的性能很高。
 
@@ -11,18 +11,18 @@ map 的设计也被称为 “The dictionary problem”，它的任务是设计�
 链表法将一个 bucket 实现成一个链表，落在同一个 bucket 中的 key 都会插入这个链表。
 开放定址法则是碰撞发生后，通过一定的规律，在数组的后面挑选“空位”，用来放置新的 key。
 
-##搜索树法
+## 搜索树法
 一般采用自平衡搜索树，包括：AVL 树，红黑树。
 
-##对比：
+## 对比：
 自平衡搜索树法的最差搜索效率是 O(logN)，而哈希查找表最差是 O(N)。当然，哈希查找表的平均查找效率是 O(1)，
 如果哈希函数设计的很好，最坏的情况基本不会出现。
 还有一点，遍历自平衡搜索树，返回的 key 序列，一般会按照从小到大的顺序；而哈希查找表则是乱序的。
 
-##map哈希表源码解析(1.9)
+## map哈希表源码解析(1.9)
 Go 语言采用的是哈希查找表，并且使用链表解决哈希冲突。  
 ![](.map_intro_images/hashmap_structure.png)
-###1. 表示 map 的结构体是 hmap，它是 hashmap 的“缩写”：
+### 1. 表示 map 的结构体是 hmap，它是 hashmap 的“缩写”：
 ```go
 
 //src/runtime/map.go
@@ -115,7 +115,7 @@ map[int64]int8
 
 每个 bucket 设计成最多只能放 8 个 key-value 对，如果有第 9 个 key-value 落入当前的 bucket，那就需要再构建一个 bucket ，通过 overflow 指针连接起来
 
-###2. 初始化 makemap
+### 2. 初始化 makemap
 从语法层面上来说，创建 map 很简单
 ```go
 ageMap := make(map[string]int)
@@ -214,7 +214,7 @@ func strequal(p, q unsafe.Pointer) bool {
 }
 ```
 
-###3. 赋值mapassign
+### 3. 赋值mapassign
 函数并没有传入 value 值，赋值操作是汇编语言中寻找。mapassign 函数返回的指针就是指向的 key 所对应的 value 值位置，有了地址，就很好操作赋值了
 ```go
 func mapassign(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
@@ -320,7 +320,7 @@ done:
 	b. 每个桶可以存储8个tophash、8个key、8个value,遍历桶中的tophash,如果tophash不相等且是空的,说明该位置可以插入，
 		分别获取对应位置key和value的地址并更新tophash。
 
-###4. 扩容 hashGrow
+### 4. 扩容 hashGrow
 
     使用哈希表的目的就是要快速查找到目标 key，然而，随着向 map 中添加的 key 越来越多，key 发生碰撞的概率也越来越大。
     bucket 中的 8 个 cell 会被逐渐塞满，查找、插入、删除 key 的效率也会越来越低。   
@@ -863,7 +863,7 @@ func evacuated(b *bmap) bool {
 }
 ```
 
-###6. 遍历
+### 6. 遍历
 
     本来 map 的遍历过程比较简单：遍历所有的 bucket 以及它后面挂的 overflow bucket，然后挨个遍历 bucket 中的所有 cell。
     每个 bucket 中包含 8 个 cell，从有 key 的 cell 中取出 key 和 value，这个过程就完成了。
@@ -1005,7 +1005,7 @@ func mapiterinit(t *maptype, h *hmap, it *hiter) {
     最后，继续遍历到新 3 号 bucket 时，发现所有的 bucket 都已经遍历完毕，整个迭代过程执行完毕
 ![](.map_intro_images/mapiter_result.png)
 
-###7. 删除mapdelete
+### 7. 删除mapdelete
 ```go
 func mapdelete(t *maptype, h *hmap, key unsafe.Pointer) {
 	if raceenabled && h != nil {

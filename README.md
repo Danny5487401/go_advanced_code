@@ -161,7 +161,7 @@
     - 4.1 未使用的现状
     - 4.2 区分必填项和选项
     - 4.3 带参数的选项模式
-- 5 插件式编程-->grpc中实现
+- 5 [插件式编程-->grpc中实现](chapter09_design_pattern/05_plugin_programming/plugin.md)
 - 6 同步模式(sync同步原语以及扩展原语)
     - 6.1 waitGroup同步等待组对象
     - 6.2 互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比
@@ -224,7 +224,7 @@
 
 - 3 [ Golang底层数据结构](chapter11_assembly_language/03Golang_data_structure/data.md)
 
-    - 3.1 Map底层结构
+    - [3.1 Map底层结构](chapter11_assembly_language/03Golang_data_structure/map_structure/map_intro.md)
     - 3.2 String底层结构
     - 3.3 Struct底层结构
 
@@ -236,9 +236,14 @@
 
 - 1 net/http高级封装演变
 - 2 爬虫获取邮箱案例(http客户端源码分析)
+  - [2.1 request源码](chapter12_net/02http_client/http_request.md)
+  - [2.2 response源码](chapter12_net/02http_client/http_response.md)
+  - [2.3 transport源码](chapter12_net/02http_client/http_transport.md)
 - 3 Tcp实现客户端及服务端(tcp底层原理分析)
 - 4 Tcp黏包分析及处理(大小端介绍)
-- 5 fastHttp
+- 5 [fastHttp(源码分析)](chapter12_net/05_fasthttp/fasthttp.md)
+  - 5.1 服务端
+  - 5.2 客户端
 - [6 优雅退出原理分析（go-zero实践）](chapter12_net/06_grateful_stop/grateful_stop.md)
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)

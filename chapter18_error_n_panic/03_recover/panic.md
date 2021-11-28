@@ -1,4 +1,4 @@
-#Panic产生方式
+# Panic产生方式
 ![](./three_ways_of_panic.png) 
 
 主动方式：
@@ -15,9 +15,9 @@
     1.panic( ) 函数内部会产生一个关键的数据结构体 _panic ，并且挂接到 goroutine 之上；
     2.panic( ) 函数内部会执行 _defer 函数链条，并针对 _panic 的状态进行对应的处理
 
-#Go 1.13.5
+# Go 1.13.5
 
-##_panic 数据结构
+## _panic 数据结构
 ```go
 type _panic struct {
     argp      unsafe.Pointer
