@@ -115,12 +115,13 @@
 
 1. 获取当前进程 PID
 
-## 第八章 defer函数及汇编语言理解
+## [第八章 defer函数及汇编语言理解](chapter08_defer/defer.md)
 
 - 1 注册延迟调用机制定义及使用
 - 2 defer陷阱
 - 3 分解defer函数
 - 4 defer循环性能问题
+- 5 汇编理解defer函数
 
 ## [第九章 设计模式](chapter09_design_pattern/introduction.md)
 
