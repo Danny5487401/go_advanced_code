@@ -24,7 +24,7 @@ func GenRsaKey(bits int) error {
 		Type:  "RSA PRIVATE KEY",
 		Bytes: derStream,
 	}
-	file, err := os.Create("chapter17_dataStructure_n_algrithm/06pem_generate/pem/private.pem")
+	file, err := os.Create("chapter17_dataStructure_n_algorithm/06pem_generate/pem/private.pem")
 	if err != nil {
 	}
 	err = pem.Encode(file, block)
@@ -42,7 +42,7 @@ func GenRsaKey(bits int) error {
 		Type:  "PUBLIC KEY",
 		Bytes: derPkix,
 	}
-	file, err = os.Create("chapter17_dataStructure_n_algrithm/06pem_generate/pem/public.pem")
+	file, err = os.Create("chapter17_dataStructure_n_algorithm/06pem_generate/pem/public.pem")
 	if err != nil {
 		return err
 	}

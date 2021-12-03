@@ -269,12 +269,13 @@
 - 1 queue队列
 - 2 哈希函数
     - 2.1 hash函数分类及算法md5使用
-- 3 非对称加密算法rsa
+- 3 [非对称加密算法rsa](chapter17_dataStructure_n_algorithm/03_rsa/rsa.md)
     - 3.1 分段与不分段加解密
 - 4 排序分析
     - 4.1 排序算法分类及图解
     - 4.2 排序接口实现（反射方式）
-- 5 Jwt源码分析及中间件使用
+- 5 [Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.go)
+- 6 pem文件生成
 
 ## 第十八章 错误跟踪和panic
 
