@@ -1,4 +1,4 @@
-#socket
+# socket
 ![](.socket_images/socket_buffer.png)
 
     socket 在操作系统层面，可以理解为一个文件。
@@ -10,7 +10,7 @@
     用connect，可以作为客户端连接服务器。
     
     用send或write可以发送数据，recv或read可以接收数据
-#socket缓冲区
+# socket缓冲区
 
     在建立好连接之后，这个 socket 文件就像是远端机器的 "代理人" 一样。比如，如果我们想给远端服务发点什么东西，那就只需要对这个文件执行写操作就行了
     
@@ -25,7 +25,7 @@
     用户接收消息的时候写给 recv buffer（接收缓冲区）
     
     也就是说一个socket ，会带有两个缓冲区，一个用于发送，一个用于接收。因为这是个先进先出的结构，有时候也叫它们发送、接收队列
-##观察 socket 缓冲区
+## 观察 socket 缓冲区
 
     在linux环境下执行 netstat -nt 
 ```shell
@@ -39,22 +39,22 @@ tcp        0     60 172.22.66.69:22         122.14.220.252:59889    ESTABLISHED
 
     还有Send-Q 是发送缓冲区，下面的数字60是指，当前还有60 Byte在发送缓冲区中未发送。而 Recv-Q 代表接收缓冲区，此时是空的，数据都被应用进程接收干净了
 
-##tcp四次握手
-##执行 send 发送的字节，会立马发送吗
+## tcp四次握手
+## 执行 send 发送的字节，会立马发送吗
 ![](.socket_images/socket_send.png)
 
     答案是不确定！执行 send 之后，数据只是拷贝到了socket 缓冲区。至 于什么时候会发数据，发多少数据，全听操作系统安排
-##如果缓冲区满了会怎么办
+## 如果缓冲区满了会怎么办
 首先，socket在创建的时候，是可以设置是阻塞的还是非阻塞的。
 ![](.socket_images/send_block.png)
 ![](.socket_images/send_nonblock.png)
 
-##如果接收缓冲区为空，执行 recv 会怎么样？
+## 如果接收缓冲区为空，执行 recv 会怎么样？
 如果此时 socket 是阻塞的，那么程序会在那干等，直到接收缓冲区有数据，就会把数据从接收缓冲区拷贝到用户缓冲区，然后返回
 ![](.socket_images/recv_block.png)
 ![](.socket_images/recv_nonblock.png)
 
-##如果接收缓冲区有数据时，执行close了，会怎么样？
+## 如果接收缓冲区有数据时，执行close了，会怎么样？
 ![](.socket_images/recvbuf_nonEmpty.png)
 socket close 时，主要的逻辑在 tcp_close() 里实现。
 
@@ -86,7 +86,7 @@ void tcp_close(struct sock *sk, long timeout)
     sk_stream_wait_close(sk, timeout);
 }
 ```
-##如果发送缓冲区有数据时，执行close了，会怎么样？
+## 如果发送缓冲区有数据时，执行close了，会怎么样？
 ![](.socket_images/sendbuf_nonEmpty.png)
 ```c
 void tcp_send_fin(struct sock *sk)

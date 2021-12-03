@@ -1,55 +1,66 @@
-package main
+#select
 
-/*
+## 基本使用
+```go
+
 // 阻塞读，对应channel的 chanrecv1函数
 select {
-case <-c0:
-    return
+    case <-c0:
+        return
 }
 
 // 非阻塞读，对应channel的 selectnbrecv 函数
 select {
-case <-c0:
-    return
-default:
-    return
+    case <-c0:
+        return
+    default:
+        return
 }
 
 // 多路复用
 select {
-case <-c0:
-    return
-case <-c1:
-    return
-default:
-    return
+    case <-c0:
+        return
+    case <-c1:
+        return
+    default:
+        return
 }
+
+```
 从上面的代码中可以看出select的三种机制
-1：只有一个case，并且没有default，相当于 <- c0的写法，阻塞读写数据
-2：一个case，一个default，就会直接对应channel的非阻塞读写数据
-3：有多个case，对应了真正的select多路复用机制，case随机执行
+1. 只有一个case，并且没有default，相当于 <- c0的写法，阻塞读写数据
+2. 一个case，一个default，就会直接对应channel的非阻塞读写数据
+3. 有多个case，对应了真正的select多路复用机制，case随机执行
 
-源码runtime/select.go
-	const (
-		caseNil = iota
-		caseRecv
-		caseSend
-		caseDefault
-	)
+## 源码分析runtime/select.go
+```go
+const (
+    caseNil = iota
+    caseRecv
+    caseSend
+    caseDefault
+)
 
-	type scase struct {
-		c    *hchan         // channel
-		elem unsafe.Pointer // 发送或者接受数据的变量地址
-		kind uint16         // case类型，nil,接收，发送，default,对应上方常量
-		//...
-	}由于非 default 的 case 中都与 Channel 的发送和接收数据有关，所以在 scase 结构体中也包含一个 c 字段用于存储 case 中使用的 Channel，
-	elem 是用于接收或者发送数据的变量地址、kind 表示当前 case 的种类
+type scase struct {
+    c    *hchan         // channel
+    elem unsafe.Pointer // 发送或者接受数据的变量地址
+    kind uint16         // case类型，nil,接收，发送，default,对应上方常量
+    //...
+}
+// 由于非 default 的 case 中都与 Channel 的发送和接收数据有关，所以在 scase 结构体中也包含一个 c 字段用于存储 case 中使用的 Channel，
+//elem 是用于接收或者发送数据的变量地址、kind 表示当前 case 的种类
+```
 
-运行时
-	代码执行流程：/reflect/value.go/Select -> /runtime/select.go/reflect_rselect -> /runtime/select.go/selectgo
 
-主要讲解两个函数
-一。func reflect_rselect(cases []runtimeSelect) (int, bool) {
+###运行时
+![](runtime_select.png)
+代码执行流程：/reflect/value.go/Select -> /runtime/select.go/reflect_rselect -> /runtime/select.go/selectgo
+
+###主要讲解两个函数
+1. 第一个函数
+```go
+func reflect_rselect(cases []runtimeSelect) (int, bool) {
     //判断case数量
     if len(cases) == 0 {
         block()
@@ -79,7 +90,10 @@ default:
 
     return selectgo(&sel[0], &order[0], len(cases))
 }
-二。selectgo函数 参考图selectgo_process.png
+```
+2. 第二个函数
+![](selectgo_process.png)
+selectgo函数 参考图
 	1、打乱数组顺序（随机获取case）
 	2、锁定所有channel
 	3、遍历所有channel，判断是否有可读或者可写的，如果有，解锁channel,返回对应数据
@@ -89,6 +103,8 @@ default:
 	7、遍历所有channel，把g从channel等待队列中移除，并找到可操作的channel
 	8、如果对应的scase不为空，直接返回对应的值
 	9、否则循环此过程
+```go
+
 func selectgo(cas0 *scase, order0 *uint16, ncases int) (int, bool) {
     //...
     // 使用fastrandn随机算法，设置pollorder数组，后面会根据这个数组进行循环，以达到随机case
@@ -436,8 +452,7 @@ sclose:
     selunlock(scases, lockorder)
     panic(plainError("send on closed channel"))
 }
-*/
+```
 
-func main() {
 
-}
+

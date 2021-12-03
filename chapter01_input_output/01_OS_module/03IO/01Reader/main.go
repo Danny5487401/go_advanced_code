@@ -118,9 +118,12 @@ func osRead() {
 	fileName := "chapter01_input_output/danny.txt"
 	// os库主要是处理操作系统操作的，它作为Go程序和操作系统交互的桥梁。创建文件、打开或者关闭文件、Socket等等这些操作和都是和操作系统挂钩的，
 	//	所以都通过os库来执行
-	file, err := os.Open(fileName)
+	//file, err := os.Open(fileName) 实际调用如下
+	file, err := os.OpenFile(fileName, os.O_RDONLY, 0)
 	if err != nil {
-		fmt.Println("err:", err)
+		// 根据错误，判断 文件或目录是否存在
+		emptyErr := os.IsExist(err)
+		fmt.Println("文件存在情况",emptyErr, "\n", err)
 		return
 	}
 	//step3：关闭文件
@@ -166,3 +169,45 @@ func osRead() {
 		fmt.Println(string(bs[:n]))
 	}
 }
+/*
+OpenFile函数:OpenFile(name string, flag int, perm FileMode) (*File, error)
+打开方式flag:
+	const (
+		//只读模式
+		O_RDONLY int = syscall.O_RDONLY // open the file read-only.
+		//只写模式
+		O_WRONLY int = syscall.O_WRONLY // open the file write-only.
+		//可读可写
+		O_RDWR int = syscall.O_RDWR // open the file read-write.
+		//追加内容
+		O_APPEND int = syscall.O_APPEND // append data to the file when writing.
+		//创建文件,如果文件不存在
+		O_CREATE int = syscall.O_CREAT // create a new file if none exists.
+		//与创建文件一同使用,文件必须存在
+		O_EXCL int = syscall.O_EXCL // used with O_CREATE, file must not exist
+		//打开一个同步的文件流
+		O_SYNC int = syscall.O_SYNC // open for synchronous I/O.
+		//如果可能,打开时缩短文件
+		O_TRUNC int = syscall.O_TRUNC // if possible, truncate file when opened.
+	)
+打开模式perm:
+	const (
+		// 单字符是被String方法用于格式化的属性缩写。
+		ModeDir        FileMode = 1 << (32 - 1 - iota) // d: 目录
+		ModeAppend                                     // a: 只能写入，且只能写入到末尾
+		ModeExclusive                                  // l: 用于执行
+		ModeTemporary                                  // T: 临时文件（非备份文件）
+		ModeSymlink                                    // L: 符号链接（不是快捷方式文件）
+		ModeDevice                                     // D: 设备
+		ModeNamedPipe                                  // p: 命名管道（FIFO）
+		ModeSocket                                     // S: Unix域socket
+		ModeSetuid                                     // u: 表示文件具有其创建者用户id权限
+		ModeSetgid                                     // g: 表示文件具有其创建者组id的权限
+		ModeCharDevice                                 // c: 字符设备，需已设置ModeDevice
+		ModeSticky                                     // t: 只有root/创建者能删除/移动文件
+		// 覆盖所有类型位（用于通过&获取类型位），对普通文件，所有这些位都不应被设置
+		ModeType = ModeDir | ModeSymlink | ModeNamedPipe | ModeSocket | ModeDevice
+		ModePerm FileMode = 0777 // 覆盖所有Unix权限位（用于通过&获取类型位）
+	)
+
+ */

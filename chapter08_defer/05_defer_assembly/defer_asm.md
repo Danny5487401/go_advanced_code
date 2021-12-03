@@ -1,4 +1,4 @@
-##案例
+## 案例
 ```go
 package main
 
@@ -20,7 +20,7 @@ func main() {
 	f(a, b)
 }
 ```
-###deferproc 函数
+### deferproc 函数
 runtime/panic.go
 ```go
 // Create a new deferred function fn with siz bytes of arguments.

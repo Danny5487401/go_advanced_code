@@ -1,9 +1,9 @@
-#系统调用
+# 系统调用
 系统调用是操作系统内核提供给用户空间程序的一套标准接口。通过这套接口，用户态程序可以受限地访问硬件设备，从而实现申请系统资源，读写设备，创建新进程等操作。
 事实上，我们常用的 C 语言标准库中不少都是对操作系统提供的系统调用的封装，比如大家耳熟能详的 printf, gets, fopen 等，就分别是对 read, write, open 这些系统调用的封装。
 
 
-##历史
+## 历史
     历史上，x86(-64) 上共有int 80, sysenter, syscall三种方式来实现系统调用。
 
     int 80 是最传统的调用方式，其通过中断/异常来实现。
@@ -135,3 +135,29 @@ ok2:
 
 Syscall 和 RawSyscall 在源代码上的区别就是有没有调用 runtime 包提供的两个函数。这意味着前者在发生阻塞时可以通知运行时并继续运行其他协 程，而后者只会卡掉整个程序。
 我们在自己封装自定义调用时应当尽量使用 Syscall
+
+###案例分析fmt.Println("hello world")
+```go
+func Println(a ...interface{}) (n int, err error) {
+	return Fprintln(os.Stdout, a...)
+}
+
+Stdout = NewFile(uintptr(syscall.Stdout), "/dev/stdout")
+
+func Fprintln(w io.Writer, a ...interface{}) (n int, err error) {
+	p := newPrinter()
+	p.doPrintln(a)
+	n, err = w.Write(p.buf)
+	p.free()
+	return
+}
+
+// os/file_plan9.go
+func (f *File) write(b []byte) (n int, err error) {
+    if len(b) == 0 {
+        return 0, nil
+    }
+    // 实际的write方法，就是调用syscall.Write()
+    return fixCount(syscall.Write(f.fd, b))
+}
+```

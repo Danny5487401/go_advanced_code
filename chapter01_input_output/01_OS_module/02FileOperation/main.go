@@ -44,12 +44,12 @@ func main() {
 	wd, _ := os.Getwd()
 	fmt.Println("获取当前工作目录的根路径:", wd)
 
-	fileName1 := "chapter01_fileOperation\\danny.txt"
+	fileName1 := "chapter01_fileOperation/danny.txt"
 	fileName2 := "./chapter01_fileOperation/danny.txt"
-	fmt.Println(filepath.IsAbs(fileName1)) //true
-	fmt.Println(filepath.IsAbs(fileName2)) //false
-	fmt.Println(filepath.Abs(fileName1))
-	fmt.Println(filepath.Abs(fileName2)) // /Users/ruby/go/src/l_file/bb.txt
+	fmt.Println("绝对目录情况",filepath.IsAbs(fileName1)) //true
+	fmt.Println("绝对目录情况",filepath.IsAbs(fileName2)) //false
+	fmt.Println(filepath.Abs(fileName1)) // /Users/python/Desktop/go_advanced_code/chapter01_fileOperation/danny.txt <nil>
+	fmt.Println(filepath.Abs(fileName2)) // /Users/python/Desktop/go_advanced_code/chapter01_fileOperation/danny.txt <nil>
 
 	//2.创建目录
 	//err := os.Mkdir("E:\\go_advanced_code\\chapter01_fileOperation\\testDir",os.ModePerm)

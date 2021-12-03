@@ -1,4 +1,4 @@
-#Chan关闭
+# Channel关闭
 
 关于 channel 的使用，有几点不方便的地方：
 
@@ -8,13 +8,13 @@
 
 	3.向一个 closed channel 发送数据会导致 panic。所以，如果向 channel 发送数据的一方不知道 channel 是否处于关闭状态时就去贸然向 channel 发送数据是很危险的事情。
 
-##关闭 channel 的原则：
+## 关闭 channel 的原则：
     don't close a channel from the receiver side and don't close a channel if the channel has multiple concurrent senders.
     不要从一个 receiver 侧关闭 channel，也不要在有多个 sender 时，关闭 channel。
     解释
     向 channel 发送元素的就是 sender，因此 sender 可以决定何时不发送数据，并且关闭 channel。但是如果有多个 sender，某个 sender 同样没法确定其他 sender 的情况，
     这时也不能贸然关闭 channel。
-##如何关闭
+## 如何关闭
 有两个不那么优雅地关闭 channel 的方法：
 
     1.使用 defer-recover 机制，放心大胆地关闭 channel 或者向 channel 发送数据。即使发生了 panic，有 defer-recover 在兜底。

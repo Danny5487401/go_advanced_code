@@ -1,9 +1,11 @@
-#背景：
+# CGO站在前人(C语言库)的肩膀
+## 背景
+
     部门产品业务功能采用Golang开发，但是有些功能是用c写的，比如说net-snmp，bfd协议等等，
 	像这些如果使用GO语言重编的话，既有实现的复杂度也需要相当长的时间，好在GO语言提供了CGO机制，使得能够在go代码中直接调用C的库函数，
 	大大提高了效率，减少了重复开发工作,此外还支持在C语言中调用GO函数，这一点还是蛮强大的
 
-# go 命令使用 cgo  
+## go 命令使用 cgo  
 为了使用 cgo，你需要在普通的 Go 代码中导入一个伪包 "C"。这样 Go 代码就可以引用一些 C 的类型 (如 C.size_t)、变量 (如 C.stdout)、或函数 (如 C.putchar)
 如果对 "C" 的导入语句之前紧贴着是一段注释，那么这段注释被称为前言，它被用作编译 C 部分的头文件。如下面例子所示：
 ```shell script
@@ -14,11 +16,11 @@ import "C"
 前言中可以包含任意 C 代码，包括函数和变量的声明和定义。虽然他们是在 "C" 包里定义的，但是在 Go 代码里面依然可以访问它们。
 所有在前言中声明的名字都可以被 Go 代码使用，即使名字的首字母是小写的。static 变量是个例外：它不能在 Go 代码中被访问。但是 static 函数可以在 Go 代码中访问
 
-# 标准库案例
+## 标准库案例
 $GOROOT/misc/cgo/stdio 和 $GOROOT/misc/cgo/gmp
 多个指令定义的值会被串联到一起。这些指令可以包括一系列构建约束，用以限制对满足其中一个约束的系统的影响
 
-##cgo语句
+## cgo语句
 在import "C"语句前的注释中可以通过#cgo语句设置编译阶段和链接阶段的相关参数。
 编译阶段的参数主要用于定义相关宏和指定头文件检索路径。链接阶段的参数主要是指定库文件检索路径和要链接的库文件
 ```shell script
@@ -62,11 +64,11 @@ import "C"
 
 当 Go tools 发现一个或多个 Go 文件使用特殊的引用 "C" 时，它会寻找当前路径中的非 Go 文件，并把这些文件编译为 Go 包的一部分。
 
-    任意 .c, .s, 或 .S 文件都会被 C 编译器编译。
-    任意 .cc, .cpp, 或 .cxx 文件都会被 C++ 编译器编译。
-    任意 .f, .F, .for 或 .f90 文件都会被 fortran 编译器编译。
-    任意 .h, .hh, .hpp 或 .hxx 文件都不会被分别编译，但是如果这些头文件被修改了，那么 C 和 C++ 文件会被重新编译。
-    默认的 C 和 C++ 编译器都可以分别通过设置 CC 和 CXX 环境变量来修改。这些环境变量可能包括命令行选项。
+* 任意 .c, .s, 或 .S 文件都会被 C 编译器编译。
+* 任意 .cc, .cpp, 或 .cxx 文件都会被 C++ 编译器编译。
+* 任意 .f, .F, .for 或 .f90 文件都会被 fortran 编译器编译。
+* 任意 .h, .hh, .hpp 或 .hxx 文件都不会被分别编译，但是如果这些头文件被修改了，那么 C 和 C++ 文件会被重新编译。
+* 默认的 C 和 C++ 编译器都可以分别通过设置 CC 和 CXX 环境变量来修改。这些环境变量可能包括命令行选项。
 
 当在被期望的系统上构建 Go 时，cgo tool 默认是开启的。在交叉编译时，它默认是关闭的。
 你可以通过设置 CGO_ENABLED 环境变量来控制开启和关闭：设置为 1 表示启用 cgo，设置为 0 表示不启用 cgo。如果 cgo 被启用，则 go tool 会设置构建约束“cgo”。
@@ -76,7 +78,7 @@ import "C"
 
 CXX_FOR_TARGET, CXX_FOR_${GOOS}_${GOARCH} 以及 CXX 环境变量使用方式类似
 
-##Go与C类型转换
+## Go与C类型转换
 ![](.introduction_images/transfer_between_c_n_go.png)
 为了提高C语言的可移植性，在<stdint.h>文件中，不但每个数值类型都提供了明确内存大小，而且和Go语言的类型命名更加一致。
 ![](.introduction_images/stdint.h.png)
@@ -105,10 +107,10 @@ func C.GoBytes(unsafe.Pointer, C.int) []byte
 ```
 解析
     
-    其中C.CString针对输入的Go字符串，克隆一个C语言格式的字符串；返回的字符串由C语言的malloc函数分配，不使用时需要通过C语言的free函数释放。
-    C.CBytes函数的功能和C.CString类似，用于从输入的Go语言字节切片克隆一个C语言版本的字节数组，同样返回的数组需要在合适的时候释放。
-    C.GoString用于将从NULL结尾的C语言字符串克隆一个Go语言字符串。C.GoStringN是另一个字符数组克隆函数。
-    C.GoBytes用于从C语言数组，克隆一个Go语言字节切片
+* 其中C.CString针对输入的Go字符串，克隆一个C语言格式的字符串；返回的字符串由C语言的malloc函数分配，不使用时需要通过C语言的free函数释放。
+* C.CBytes函数的功能和C.CString类似，用于从输入的Go语言字节切片克隆一个C语言版本的字节数组，同样返回的数组需要在合适的时候释放。
+* C.GoString用于将从NULL结尾的C语言字符串克隆一个Go语言字符串。C.GoStringN是另一个字符数组克隆函数。
+* C.GoBytes用于从C语言数组，克隆一个Go语言字节切片
 
 
 一些通常在 Go 中被表示为指针类型的特殊 C 类型会被表示成 uintptr。下面的特殊场景会对此进行介绍。
@@ -134,22 +136,23 @@ const char *_GoStringPtr(_GoString_ s);
     Cgo 把 C 类型转换成等价的不可输出的 Go 类型。因此 Go 包不应该在它的输出接口中暴露 C 类型：同一个 C 类型，在不同包里是不一样的。
 
 
-###类型转换
+### 类型转换
 ![](.introduction_images/pointer_transfer_between_go_n_c.png)
 ![](.introduction_images/go_string_n_slice.png)
+
 实践：int32 和 C.char 指针相互转换
 ![](.introduction_images/int32_to_Cchar.png)
 ![](.introduction_images/int32_to_CChar_code.png)
 
-##cgo 内部机制
-###CGO生成的中间文件
+## cgo 内部机制
+### CGO生成的中间文件
 ![](.introduction_images/cgo_generate_file.png)
     
     每个 CGO文 件会展开为一个 Go 文件和 C 文件，分别以 .cgo1.go和.cgo2.c 为后缀名。
 
      _cgo_gotypes.go 对应 C 导入到 Go 语言中相关函数或变量的桥接代码。而_cgo_export.h 对应导出的 Go 函数和类型，_cgo_export.c 对应相关包装代码的实现
      
-###内部调用流程 Go->C
+### 内部调用流程 Go->C
 ```cgo
 package main
 
@@ -169,7 +172,7 @@ func main(){
     白色的部分，是我们自己写的代码，黄色部分是 CGO 生成的代码，左边两列浅黄色是 Go 语言的空间，右边就是 C 语言运行空间。
     在中间位置出现了两个黑的横杠隔开了，黑的横杠中间为 C 语言运行空间。
 
-###内部调用流程：C->Go    
+### 内部调用流程：C->Go    
 ![](.introduction_images/c_call_go.png)
 
 内存调用流程

@@ -1,4 +1,4 @@
-#defer 源码分析
+# defer 源码分析
 ![](.defer_images/defer.png)
 
 在编译器的加持下，defer 语句会先调用 deferporc 函数，new 一个 _defer 结构体，挂到 g 上。当然，这里的 new 会优先从当前绑定的 P 的 defer pool 里取，
@@ -10,7 +10,7 @@
 
 答案就是控制权会再次交给 runtime，并再次执行 deferreturn 函数，完成 defer 链表的遍历。
 
-##汇编函数的声明
+## 汇编函数的声明
 
 ```shell
 
@@ -18,7 +18,7 @@ TEXT runtime·gogo(SB), NOSPLIT, $16-8
 #1。最后两个数字表示 gogo 函数的栈帧大小为 16B，即函数的局部变量和为调用子函数准备的参数和返回值需要 16B 的栈空间；
 #2。参数和返回值的大小加起来是 8B
 ```
-##实际上 gogo 函数的声明
+## 实际上 gogo 函数的声明
 
 ```go
 
