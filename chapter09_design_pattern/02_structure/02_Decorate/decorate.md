@@ -1,5 +1,4 @@
-
-#装饰模式：
+# 装饰模式：
 一种动态地往一个类中添加新的行为的设计模式.
 ![](img/process.png)
 ![](img/process2.png)
@@ -16,11 +15,11 @@
 1. 对于多次装饰的对象，易于出错，排错也很困难
 2. 对于产生很多具体装饰类 ，增加系统的复杂度以及理解成本
 
-##使用场景：
+## 使用场景：
 1.需要给一个对象增加功能，这些功能可以动态地撤销，例如：在不影响其他对象的情况下，动态、透明的方式给单个对象添加职责，处理那些可以撤销的职责
 2.需要给一批兄弟类增加或者改装功能
 
-##举例
+## 举例
 ![](img/example.png)
 
 1. Component(抽象构建)：具体构建和抽象装饰类的基类，声明了在具体构建中实现的业务方法，UML类图中的Component
@@ -29,7 +28,7 @@
 4. ConcreteDecorator(具体装饰类)：抽象装饰类的子类，负责向构建添加新的职责，UML类图中的ScrollBarDecorator、BlackBorderDecorator
 
 
-##装饰器在第三方应用->Grpc源码分析
+## 装饰器在第三方应用->Grpc源码分析
 首先创建一个resolver接口，并设计一些具体的resolver实现类
 ![](.decorate_images/resolver_interface.png)
 然后我们还需要一个resolver的包装器，里面包含了真正的resolver。
@@ -41,7 +40,7 @@
 google.golang.org/grpc@v1.39.0/clientconn.go调用newCCResolverWrapper
 gRPC的ClientConn通过调用ccResolverWrapper来进行域名解析，而具体的解析过程则由开发者自己决定。在解析完毕后，将解析的结果返回给ccResolverWrapper
 
-###Resolver解析器
+### Resolver解析器
     当我们的服务刚刚成型时，可能一个服务只有一台实例，这时候client要建立grpc连接很简单，只需要指定server的ip就可以了。
 
     但是，当服务成熟了，业务量大了，这个时候，一个实例就就不够用了，我们需要部署一个服务集群。
@@ -51,7 +50,7 @@ gRPC的ClientConn通过调用ccResolverWrapper来进行域名解析，而具体�
     这个问题有很多种解决方案，我们可以使用一些成熟的服务发现组件，例如consul或者zookeeper，也可以我们自己实现一个解析服务器；
 
     第二个问题，如何将我们选择的服务解析方式应用到grpc的连接建立中去？这个也不难，因为grpc的resolver，就是帮我们解决这个问题的。
-####resolver的工作原理
+#### resolver的工作原理
 关于resolver，我们主要有两个问题：
 
 1.程序启动时，客户端是如何从一个域名/服务名，获取到其对应的实例ip，然后与之建立连接的呢？

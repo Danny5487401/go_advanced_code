@@ -1,4 +1,4 @@
-#扩大原子操作的适用范围：atomic.Value
+# 扩大原子操作的适用范围：atomic.Value
 
     在 Go 语言标准库中，sync/atomic包将底层硬件提供的原子操作封装成了 Go 的函数。但这些操作只支持几种基本数据类型，因此为了扩大原子操作的适用范围，
     Go 语言在 1.4 版本的时候向sync/atomic包中添加了一个新的类型Value。此类型的值相当于一个容器，可以被用来“原子地"存储（Store）和加载（Load）任意类型的值
@@ -69,7 +69,7 @@ return true
 return false
 ```
 
-atomic.Value源码分析
+## atomic.Value源码分析
 
 ```go
 

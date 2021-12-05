@@ -1,4 +1,4 @@
-#golang的读写锁的实现
+# golang的读写锁的实现
 
 ![](.mutex_images/lock_member.png)
 
@@ -14,13 +14,13 @@ type RWMutex struct {
 }
 ```
 
-##写锁计数
+## 写锁计数
 
 读写锁中允许加读锁的最大数量是4294967296，在go里面对写锁的计数采用了负值进行，通过递减最大允许加读锁的数量从而进行写锁对读锁的抢占
 ```go
 const rwmutexMaxReaders = 1 << 30
 ```
-##读锁加锁实现
+## 读锁加锁实现
 ![](.mutex_images/readerMutex_lock.png)
 
 ```go
@@ -40,7 +40,7 @@ func (rw *RWMutex) RLock() {
     }
 }
 ```
-##读锁释放实现
+## 读锁释放实现
 ![](.mutex_images/readerMutex_release.png)
 
 ```go
@@ -70,7 +70,7 @@ func (rw *RWMutex) RUnlock() {
 ```
 
 
-##写锁加锁实现
+## 写锁加锁实现
 ![](.mutex_images/writerMutex_lock.png)
 ```go
 func (rw *RWMutex) Lock() {
@@ -98,7 +98,7 @@ func (rw *RWMutex) Lock() {
 
 ```
 
-##写锁释放实现
+## 写锁释放实现
 ![](.mutex_images/writer_mutex_release.png)
 ```go
 func (rw *RWMutex) Unlock() {
@@ -126,10 +126,10 @@ func (rw *RWMutex) Unlock() {
 }
 ```
 
-#写锁与读锁的公平性
+# 写锁与读锁的公平性
 
     在加读锁和写锁的工程中都使用atomic.AddInt32来进行递增，而该指令在底层是会通过LOCK来进行CPU总线加锁的，
     因此多个CPU同时执行readerCount其实只会有一个成功，从这上面看其实是写锁与读锁之间是相对公平的，
     谁先达到谁先被CPU调度执行，进行LOCK锁cache line成功，谁就加成功锁
 
-#底层实现的CPU指令
+# 底层实现的CPU指令

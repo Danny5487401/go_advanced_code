@@ -30,9 +30,8 @@
 ---
 
 ## 第二章 协程Goroutine
-
 - 1 线程模型分类及Goroutine切换原则
-    - 1.1 trace查看宏观调度流程(GPM模型)
+    - 1.1 [trace查看宏观调度流程(GPM模型)](chapter02_goroutine/01_GPM/GPM.md)
 - 2 runtime模块和GC
     - 2.1 runtime核心功能及系统信息调用
     - 2.2 Goexit()终止线程
@@ -116,17 +115,15 @@
 1. 获取当前进程 PID
 
 ## [第八章 defer函数及汇编语言理解](chapter08_defer/defer.md)
-
 - 1 注册延迟调用机制定义及使用
 - 2 defer陷阱
 - 3 分解defer函数
 - 4 defer循环性能问题
-- 5 汇编理解defer函数
+- 5 [汇编理解defer函数](chapter08_defer/05_defer_assembly/defer_asm.md)
 
 ## [第九章 设计模式](chapter09_design_pattern/introduction.md)
 
 ### OOP七大准则
-
 - 1 创建型模式
     - [1.1 静态工厂模式-->new关键字函数实现简单工厂](chapter09_design_pattern/01_construction/01_StaticFactoryMethod/static_factory.md)
     - 1.2 工厂方法模式-->k8s中实现
@@ -137,19 +134,19 @@
     - 2.1 组合模式
         - 2.1.1 修改前：使用面向对象处理
         - 2.1.2 修改后：使用组合模式处理
-    - 2.2 装饰模式-->grpc源码体现
+    - 2.2 [装饰模式-->grpc源码体现](chapter09_design_pattern/02_structure/02_Decorate/decorate.md)
         - 2.2.1 闭包实现--多个装饰器同时使用
         - 2.2.2 结构体装饰
         - 2.2.3 反射实现--泛型装饰器
-    - 2.3 享元模式-->线程池,缓存思想
+    - 2.3 [享元模式-->线程池,缓存思想](chapter09_design_pattern/02_structure/03_FlyweightPattern/flyWeightPattern.md)
     - 2.4 适配器模式
     - 2.5 桥接模式(两个变化系统结偶)
-    - 2.6 门面模式(外观模式)-->在gin中render应用(封装多个子服务)
-    - 2.7 代理模式
+    - 2.6 [门面模式(外观模式)-->在gin中render应用(封装多个子服务)](chapter09_design_pattern/02_structure/06_facade_pattern/facade.md)
+    - 2.7 [代理模式](chapter09_design_pattern/02_structure/07_proxy/proxy.md)
 - 3 行为型模式
-    - 3.1  访问者模式-->k8s中kubectl实现
+    - 3.1  [访问者模式-->k8s中kubectl实现](chapter09_design_pattern/03_motion/01_visitor/vistor.md)
     - 3.2  迭代器-->标准库container/ring中实现
-    - 3.3  状态模式
+    - 3.3  [状态模式](chapter09_design_pattern/03_motion/03_State/introduction.md)
     - 3.4  责任链模式
     - 3.5  模版模式
     - 3.6  策略模式-->if-else的另类写法(内部算法封装)
@@ -163,29 +160,28 @@
     - 4.2 区分必填项和选项
     - 4.3 带参数的选项模式
 - 5 [插件式编程-->grpc中实现](chapter09_design_pattern/05_plugin_programming/plugin.md)
-- 6 同步模式(sync同步原语以及扩展原语)
+- 6 [同步模式(sync同步原语以及扩展原语)](chapter09_design_pattern/06_Synchronization_mode/01_sync/sync.md)
     - 6.1 waitGroup同步等待组对象
-    - 6.2 互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比
+    - 6.2 [互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比](chapter09_design_pattern/06_Synchronization_mode/01_sync/02RWMutex_vs_mutex/mutex.md)
     - 6.3 Once单例对象
-    - 6.4 并发安全Map(读多写少)
-    - 6.5 Pool对象池模式( *非连接池* !）-->官方包对象池fmt
+    - 6.4 [并发安全Map(读多写少)](chapter09_design_pattern/06_Synchronization_mode/01_sync/04map/sync_map.md)
+    - 6.5 [Pool对象池模式( *非连接池* !）-->官方包对象池fmt](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/pool.md)
         - 6.5.1 未使用newFunc
         - 6.5.2 newFunc与GC（附源码分析）
         - 6.5.3 何时使用对象缓存
         - 6.5.4 第三方对象池object pool(bytebufferpool)
-    - 6.6 Cond条件变量及NoCopy机制
-    - 6.7 atomic原子操作
+    - 6.6 [Cond条件变量及NoCopy机制](chapter09_design_pattern/06_Synchronization_mode/01_sync/06Cond/Cond.md)
+    - 6.7 [atomic原子操作](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/atomic.md)
         - 6.7.0 Value的load和store
         - 6.7.1 add
         - 6.7.2 cas算法和自旋锁
         - 6.7.3 load和store用法
         - 6.7.4 swap交换
-    - 6.8 ErrorGroup获取协程中error
-    - 6.9 信号量Semaphore
+    - 6.8 [ErrorGroup获取协程中error](chapter09_design_pattern/06_Synchronization_mode/01_sync/08ErrorGroup/errGroup.md)
+    - 6.9 [信号量Semaphore](chapter09_design_pattern/06_Synchronization_mode/01_sync/09Semaphore/semaphore.md)
     - 6.10 SingleFlight避免缓存击穿
 
 ## [第十章 函数式编程](chapter10_function/func.md)
-
 - 1 闭包
     - 1.1 闭包理论
     - 1.2 匿名函数
@@ -293,15 +289,13 @@
 - [4 errCode错误码自动化生成](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
 
 ## 第十九章 nil预定义标识
-
 - 1 不同类型为nil时的地址和大小
 - 2 不同类型与nil的比较
 - 3 不同类型nil时的特点
 
 ## [第二十章 for-range源码分析](chapter20_for_range/for_range.md)
-
 - 1 遍历数组和切片
 - 2 遍历Goroutine(协程启动时间)
 - 3 遍历Map
 
-## [第二十一章 time源码分析](chapter21_time/time.md)
+## [第二十一章 time标准包源码分析](chapter21_time/time.md)

@@ -1,6 +1,8 @@
-#sync.Map
+# sync.Map
+
 背景：
 	Go语言中的 map 在并发情况下，只读是线程安全的，同时读写是线程不安全的。
+
 做法：
 
     一般情况下解决并发读写 map 的思路是加一把大锁，或者把一个 map 分成若干个小 map，对 key 进行哈希，只操作相应的小 map。前者锁的粒度比较大，影响效率；后者实现起来比较复杂，容易出错。
@@ -8,16 +10,17 @@
     而使用 sync.map 之后，对 map 的读写，不需要加锁。并且它通过空间换时间的方式，使用 read 和 dirty 两个 map 来进行读写分离，降低锁时间来提高效率
     
 	Go语言在 1.9 版本中提供了一种效率较高的并发安全的 sync.Map，sync.Map 和 map 不同，不是以语言原生形态提供，而是在 sync 包下的特殊结构。
-使用：
 
-	1. 使用Store(interface {}，interface {})添加元素。
-	2. 使用Load(interface {}) interface {}检索元素。
-	3. 使用Delete(interface {})删除元素。
-	4. 使用LoadOrStore(interface {}，interface {}) (interface {}，bool)检索或添加之前不存在的元素。
-		如果键之前在map中存在，则返回的布尔值为true。
-	5. 使用Range遍历元素。	
-##源码结构：
-###1。结构体
+使用：
+1. 使用Store(interface {}，interface {})添加元素。
+2. 使用Load(interface {}) interface {}检索元素。
+3. 使用Delete(interface {})删除元素。
+4. 使用LoadOrStore(interface {}，interface {}) (interface {}，bool)检索或添加之前不存在的元素。
+    如果键之前在map中存在，则返回的布尔值为true。
+5. 使用Range遍历元素。	
+
+## 源码结构：
+### 1. 结构体
 ![](sync_nmap_structure.png)
 ```go
 type Map struct {
@@ -44,6 +47,7 @@ type Map struct {
     如果 dirty 为 nil，那么下一次写入时，会新建一个新的 dirty，这个初始的 dirty 是 read 的一个拷贝，但除掉了其中已被删除的 key
     
     每当从 read 中读取失败，都会将 misses 的计数值加 1，当加到一定阈值以后，需要将 dirty 提升为 read，以期减少 miss 的情形。
+
 简单来说
 
     read map 和 dirty map 的存储方式是不一致的。
@@ -80,7 +84,7 @@ type entry struct {
     
     如果 p 不为 expunged，和 entry 相关联的这个 value 可以被原子地更新；如果 p == expunged，那么仅当它初次被设置到 m.dirty 之后，才可以被更新
 
-###存储store
+### 存储store
 看 expunged(抹去):它是一个指向任意类型的指针，用来标记从 dirty map 中删除的 entry
 ```go
 var expunged = unsafe.Pointer(new(interface{}))

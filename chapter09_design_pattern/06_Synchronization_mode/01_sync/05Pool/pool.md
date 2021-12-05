@@ -1,6 +1,6 @@
-#sync.Pool 
+# sync.Pool 
     定位不是做类似连接池的东西，它的用途仅仅是增加对象重用的几率，减少gc的负担
-##背景：
+## 背景：
     Go是自动垃圾回收的(garbage collector)，这大大减少了程序编程负担。但gc是一把双刃剑，带来了编程的方便但同时也增加了运行时开销，
     使用不当甚至会严重影响程序的性能。因此性能要求高的场景不能任意产生太多的垃圾（有gc但又不能完全依赖它挺恶心的），如何解决呢？
     那就是要重用对象了，我们可以简单的使用一个chan把这些可重用的对象缓存起来，但如果很多goroutine竞争一个chan性能肯定是问题
@@ -9,8 +9,8 @@
     上面我们可以看到pool创建的时候是不能指定大小的，所有sync.Pool的缓存对象数量是没有限制的（只受限于内存），
     因此使用sync.pool是没办法做到控制缓存对象数量的个数的。另外sync.pool缓存对象的期限是很诡异的，这是很多人错误理解的地方，
 
-##源码分析
-###Pool结构体
+## 源码分析
+### Pool结构体
 ![](.pool_images/pool_structure.png)
 ```go
 type Pool struct {
@@ -109,7 +109,7 @@ type poolDequeue struct {
     headTail 指向队列的头和尾，通过位运算将 head 和 tail 存入 headTail 变量中。
 
     我们看到 Pool 并没有直接使用 poolDequeue，原因是它的大小是固定的，而 Pool 的大小是没有限制的。因此，在 poolDequeue 之上包装了一下，变成了一个 poolChainElt 的双向链表，可以动态增长
-###sync.Pool 的 init 函数
+### sync.Pool 的 init 函数
     对于 Pool 而言，并不能无限扩展，否则对象占用内存太多了，会引起内存溢出。
 ```go
 func init() {
@@ -140,7 +140,7 @@ func sync_runtime_registerPoolCleanup(f func()) {
 一个goroutine固定在一个局部调度器P上，从当前 P 对应的 poolLocal 取值， 若取不到，则从对应的 shared 数组上取，若还是取不到；
 则尝试从其他 P 的 shared 中偷。 若偷不到，则调用 New 创建一个新的对象。池中所有临时对象在一次 GC 后会被全部清空。
 
-###sync.Pool的 Get 函数
+### sync.Pool的 Get 函数
 ![](.pool_images/pool_get.png)
 
 ```go
@@ -164,7 +164,7 @@ func (p *Pool) Get() interface{} {
   return x
 }
 ```
-###sync.Pool的 Put 函数
+### sync.Pool的 Put 函数
 ![](.pool_images/pool_put.png)
 ```go
 // src/sync/pool.go
@@ -190,7 +190,7 @@ func (p *Pool) Put(x interface{}) {
 
 
 
-##官方包fmt源码分析
+## 官方包fmt源码分析
 ```go
 func Printf(format string, a ...interface{}) (n int, err error) {
 	return Fprintf(os.Stdout, format, a...)
