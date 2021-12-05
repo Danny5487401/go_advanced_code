@@ -203,11 +203,8 @@
         - 3.3 通过通信(函数)共享内存
 
 ## 第十一章 汇编理解go语言底层源码
-
 - 1 [汇编基本指令](chapter11_assembly_language/01asm/introduction.md)
-
 - 2 [ plan9汇编](chapter11_assembly_language/02plan9/introduction.md)
-
     - 2.1  常量constant
     - 2.2  array类型
     - 2.3  bool类型
@@ -224,13 +221,11 @@
     - 2.14 闭包函数
 
 - 3 [ Golang底层数据结构](chapter11_assembly_language/03Golang_data_structure/data.md)
-
     - [3.1 Map底层结构](chapter11_assembly_language/03Golang_data_structure/map_structure/map_intro.md)
     - 3.2 String底层结构
     - 3.3 Struct底层结构
 
 ## 第十二章 网络编程net
-
 - [socket介绍](chapter12_net/socket.md)
 - [tcp介绍](chapter12_net/tcp.md)
 - [多路复用](chapter12_net/io_multiplexing.md)
@@ -248,7 +243,7 @@
 - [6 优雅退出原理分析（go-zero实践）](chapter12_net/06_grateful_stop/grateful_stop.md)
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
-待更新：cgo在confluent-kafka-go源码使用
+[cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)
 - 1 Go调用自定义C函数
 - 2 Go调用模块化C库
 - 3 Go实现C定义函数
@@ -269,18 +264,15 @@
 - 5 WithTimeout源码及使用
 
 ## 第十五章 接口编程
-
 - 1 冗余代码写法
 - 2 简单优化
 - 3 更优方式
 
 ## 第十六章 并发编程
-
 - 1 简单流水线模型
 - 2 FAN-IN和FAN-OUT模型
 
 ## 第十七章 数据结构及算法
-
 - 1 queue队列
 - 2 哈希函数
     - 2.1 hash函数分类及算法md5使用
@@ -294,7 +286,7 @@
 
 
 ## 第十八章 错误跟踪和panic
-- 0 err和exception区别
+- 0 错误(err)和异常（exception）区别及处理方式
 - 1 自定义错误类型打印错误栈
 - 2 扩展包pkg.error
 - [3 Gin的错误recover分析(panic和recover源码分析)](chapter18_error_n_panic/03_recover/panic.md)
@@ -311,3 +303,5 @@
 - 1 遍历数组和切片
 - 2 遍历Goroutine(协程启动时间)
 - 3 遍历Map
+
+## [第二十一章 time源码分析](chapter21_time/time.md)

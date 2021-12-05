@@ -1,11 +1,9 @@
 package main
 
-import (
-	"fmt"
-	//"strconv"
-)
+import "fmt"
 
 // 错误和异常处理
+
 // go语言认为错误就要自己处理，
 
 func div(a, b int) (int, error) {
@@ -29,6 +27,11 @@ func main() {
 	//}
 	//fmt.Println(i)
 
+	// 异常情况
+	panicSituation()
+
+}
+func panicSituation() {
 	/*
 		异常情况 ：在这个启示下，我们给出异常处理的作用域（场景）：
 		1. 空指针引用
