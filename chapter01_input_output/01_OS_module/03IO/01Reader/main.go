@@ -1,8 +1,7 @@
-// io 包这些接口和原始的操作以不同的实现包装了低级操作，客户不应假定它们对于并行执行是安全的
-// 在io包中最重要的是两个接口：Reader和Writer接口
-
 package main
 
+// io 包这些接口和原始的操作以不同的实现包装了低级操作，客户不应假定它们对于并行执行是安全的
+// 在io包中最重要的是两个接口：Reader和Writer接口
 import (
 	"bytes"
 	"fmt"
@@ -10,16 +9,16 @@ import (
 	"os"
 )
 
+/*
+	读取数据(Reader接口)：
+		Read(p []byte)(n int, error)
+*/
 func main() {
-	/*
-		读取数据：
-			Reader接口：
-				Read(p []byte)(n int, error)
-	*/
-	//1.os库用法：读取本地aa.txt文件中的数据
+
+	//1. os库用法：读取本地aa.txt文件中的数据
 	osRead()
 
-	// 2。bytes库用法
+	// 2. bytes库用法
 	byteRead()
 
 }
@@ -123,7 +122,7 @@ func osRead() {
 	if err != nil {
 		// 根据错误，判断 文件或目录是否存在
 		emptyErr := os.IsExist(err)
-		fmt.Println("文件存在情况",emptyErr, "\n", err)
+		fmt.Println("文件存在情况", emptyErr, "\n", err)
 		return
 	}
 	//step3：关闭文件
@@ -169,6 +168,7 @@ func osRead() {
 		fmt.Println(string(bs[:n]))
 	}
 }
+
 /*
 OpenFile函数:OpenFile(name string, flag int, perm FileMode) (*File, error)
 打开方式flag:
@@ -210,4 +210,4 @@ OpenFile函数:OpenFile(name string, flag int, perm FileMode) (*File, error)
 		ModePerm FileMode = 0777 // 覆盖所有Unix权限位（用于通过&获取类型位）
 	)
 
- */
+*/

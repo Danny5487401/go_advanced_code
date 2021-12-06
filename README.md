@@ -25,7 +25,7 @@
     - 1.5 FilePath包     
         - 1.5.1 walkPath遍历目录及文件  
         - 1.5.2 匹配文件名  
-- 2 bufio缓存读写
+- 2 [bufio缓存读写](chapter01_input_output/02_bufio/bufio.md)
 
 ---
 
