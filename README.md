@@ -299,3 +299,4 @@
 - 3 遍历Map
 
 ## [第二十一章 time标准包源码分析](chapter21_time/time.md)
+- 1 比time.Now()更优雅获取时间戳（go:link技术）
