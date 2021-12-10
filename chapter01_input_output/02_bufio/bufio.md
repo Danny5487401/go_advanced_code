@@ -1,4 +1,4 @@
-#bufio
+# bufio
     bufio实现了带缓冲的IO功能，它是在io.Reader和io.Writer接口对象上提供了进一步的封装
 
 设计原因：
@@ -22,7 +22,7 @@
     ReadLine和ReadString方法：buf.ReadLine()，buf.ReadString("\n")都是按行读，只不过ReadLine读出来的是[]byte，后者直接读出了string，
     最终他们底层调用的都是ReadSlice方法
 
-# 源码分析
+## 源码分析
 
 ```go
 //结构体

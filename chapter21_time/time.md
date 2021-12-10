@@ -31,12 +31,13 @@ type Time struct {
     // wall =>  | 1 (hasMonotonic) | 33 (second)  |  30 (nanosecond)   |
     //          +------------------+--------------+--------------------+
     // 
+	// 
     // 所以 wall 字段会有两种情况，分别为
     // 1. 当 wall 字段的 hasMonotonic 为 0 时，second 位也全部为 0，ext 字段会存储
-    //    从 1-1-1 开始的秒级精度时间作为 wall time 。
+    //    自1年1月1日以来开始的秒级精度时间作为 wall time 。
     // 2. 当 wall 字段的 hasMonotonic 为 1 时，second 位会存储从 1885-1-1 开始的秒
     //    级精度时间作为 wall time，并且 ext 字段会存储从操作系统启动后的纳秒级精度时间
-    //    作为 monotonic time 。
+    //    作为 monotonic time ,这是大部分情况
     wall uint64
     ext  int64
     
@@ -47,10 +48,19 @@ type Time struct {
     loc *Location
 }
 ```
+
+首先要wall提供一个简单的“挂钟”读数值，并以单调时钟的形式ext提供此扩展信息。
+
+wall它: hasMonotonic的最高位包含一个1位标志。然后是33位用于跟踪秒数；最后是30位，用于跟踪纳秒，范围为[0，999999999]
+
+对于Go> = 1.9，该hasMonotonic标志始终处于启用状态，其日期介于1885年至2157年之间，但是由于兼容性承诺以及极端情况，Go还要确保正确处理这些时间值
+
+
 存储机制
 ```go
 // src/time/time.go
 
+// 定义的一些常量
 const (
     // 代表无符号64位整数的首位
     hasMonotonic = 1 << 63
@@ -150,7 +160,6 @@ func (t Time) Equal(u Time) bool {
 const (
     // unix 时间戳为从 1970-01-01 00:00:00 开始到当前的秒数
     // time 包的 internal 时间为从 0000-00-00 00:00:00 开始的秒数
-    //
     // 以下两个常量用于在 internal 与 unix 时间戳之间转换的辅助常量
     unixToInternal int64 = (1969*365 + 1969/4 - 1969/100 + 1969/400) * secondsPerDay
     internalToUnix int64 = -unixToInternal
@@ -160,10 +169,31 @@ const (
     internalToWall int64 = -wallToInternal
 )
 
-// Provided by package runtime.
+// Provided by package runtime.  
+// runtime包定义
 func now() (sec int64, nsec int32, mono uint64)
 // darwin,amd64 darwin,386 windows => src/runtime/timeasm.go
 // other                           => src/runtime/timestub.go
+
+//go:linkname time_now time.now
+func time_now() (sec int64, nsec int32, mono int64) {
+    sec, nsec = walltime()
+    return sec, nsec, nanotime()
+}
+
+
+// runtime/time_nofake.go
+//go:nosplit
+func nanotime() int64 {
+    return nanotime1()
+}
+
+func walltime() (sec int64, nsec int32) {
+    return walltime1()
+}
+
+// 两者nanotime1和walltime1分别为几种 不同的 平台 和体系结构定义 
+
 
 // 返回当前本机时间
 func Now() Time {
@@ -180,7 +210,84 @@ func Now() Time {
 }
 ```
 
-函数获取 time.Time 
+walltime是如何计算的: AMD64的Linux这里
+```assembly
+// func walltime1() (sec int64, nsec int32)
+// non-zero frame-size means bp is saved and restored
+TEXT runtime·walltime1(SB),NOSPLIT,$16-12
+	// 由于我们不知道代码需要多少堆栈空间，因此我们切换到g0
+	
+	// In particular, a kernel configured with CONFIG_OPTIMIZE_INLINING=n
+	// and hardening can use a full page of stack space in gettime_sym
+	// due to stack probes inserted to avoid stack/heap collisions.
+	// See issue #20427.
+
+	MOVQ	SP, R12	// Save old SP; R12 unchanged by C code.
+
+	get_tls(CX)
+	MOVQ	g(CX), AX
+	MOVQ	g_m(AX), BX // BX unchanged by C code.
+
+	// Set vdsoPC and vdsoSP for SIGPROF traceback.
+	// Save the old values on stack and restore them on exit,
+	// so this function is reentrant.
+	// 把 vdsoPC and vdsoSP（程序计数器和堆栈指针）压栈
+	MOVQ	m_vdsoPC(BX), CX
+	MOVQ	m_vdsoSP(BX), DX
+	MOVQ	CX, 0(SP)
+	MOVQ	DX, 8(SP)
+
+	LEAQ	sec+0(FP), DX
+	MOVQ	-8(DX), CX
+	MOVQ	CX, m_vdsoPC(BX)
+	MOVQ	DX, m_vdsoSP(BX)
+
+    // 检查它是否已经打开
+	CMPQ	AX, m_curg(BX)	// Only switch if on curg.
+	JNE	noswitch
+
+	MOVQ	m_g0(BX), DX
+	MOVQ	(g_sched+gobuf_sp)(DX), SP	// Set SP to g0 stack
+
+noswitch:
+	SUBQ	$16, SP		// 让出空间
+	ANDQ	$~15, SP	// Align for C code
+
+	MOVL	$0, DI // CLOCK_REALTIME
+	LEAQ	0(SP), SI
+	MOVQ	runtime·vdsoClockgettimeSym(SB), AX
+	CMPQ	AX, $0
+	JEQ	fallback
+	CALL	AX
+ret:
+	MOVQ	0(SP), AX	// sec
+	MOVQ	8(SP), DX	// nsec
+	MOVQ	R12, SP		// Restore real SP
+	// 还原 vdsoPC, vdsoSP
+	// We don't worry about being signaled between the two stores.
+	// If we are not in a signal handler, we'll restore vdsoSP to 0,
+	// and no one will care about vdsoPC. If we are in a signal handler,
+	// we cannot receive another signal.
+	MOVQ	8(SP), CX
+	MOVQ	CX, m_vdsoSP(BX)
+	MOVQ	0(SP), CX
+	MOVQ	CX, m_vdsoPC(BX)
+	MOVQ	AX, sec+0(FP)
+	MOVL	DX, nsec+8(FP)
+	RET
+fallback:
+	MOVQ	$SYS_clock_gettime, AX
+	SYSCALL
+	JMP ret
+
+```
+
+为什么__vdso_clock_gettime优先选择而不是__x64_sys_clock_gettime，它们之间有什么区别？
+
+vDSO代表虚拟动态共享对象，是一种内核机制，用于将内核空间例程的子集导出到用户空间应用程序，以便可以在进程内调用这些内核空间例程，而不会造成从用户模式切换到内核模式的性能损失。
+
+
+函数通过时间戳获取 time.Time对象 
 
 time.Unix(sec, nsec) 函数通过传入 unix timestamp 获取 time.Time 结构，默认返回的是 UTC 时区。
 ```go
@@ -203,3 +310,23 @@ func unixTime(sec int64, nsec int32) Time {
 ```
 
 Note:如果想获取带有 单调时钟 的时间只能通过 time.Now() 获取，而由于 wall 的 second 有 33 位，所以只要我们在 2157-01-01 00:00:00 UTC 前调用 time.Now() 获取到的时间都是带有 单调时钟 的
+
+获取local
+
+```go
+var Local *Location = &localLoc
+
+var localLoc Location
+var localOnce sync.Once
+
+func (l *Location) get() *Location {
+    if l == nil {
+        return &utcLoc
+    }
+    if l == &localLoc {
+        localOnce.Do(initLocal)
+    }
+    return l
+}
+```
+该initLocal()函数查找的内容$TZ以找到要使用的时区。

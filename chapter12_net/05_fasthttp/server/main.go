@@ -20,11 +20,16 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 }
 
 // request handler in fasthttp style, i.e. just plain function.
-func fastHTTPHandler(ctx *fasthttp.RequestCtx) {
+func fooHandler(ctx *fasthttp.RequestCtx) {
 	fmt.Fprintf(ctx, "Hi there! RequestURI is %q", ctx.RequestURI())
 }
 
-func main(){
+func barHandler(ctx *fasthttp.RequestCtx) {
+	fmt.Fprintf(ctx, "Hi there! RequestURI is %q", ctx.RequestURI())
+}
+
+func main() {
+	// 注释第一个，否则会阻塞
 	// pass bound struct method to fasthttp
 	//myHandler := &MyHandler{
 	//	foobar: "foobar",
@@ -32,6 +37,17 @@ func main(){
 	//fasthttp.ListenAndServe(":8080", myHandler.HandleFastHTTP)
 
 	// pass plain function to fasthttp
-	fasthttp.ListenAndServe(":8081", fastHTTPHandler)
+	fasthttp.ListenAndServe(":8081", requestHandler)
 }
 
+var requestHandler = func(ctx *fasthttp.RequestCtx) {
+	switch string(ctx.Path()) {
+	case "/foo":
+		fooHandler(ctx)
+	case "/bar":
+		barHandler(ctx)
+	default:
+		ctx.Error("不支持的路由", fasthttp.StatusNotFound)
+	}
+
+}
