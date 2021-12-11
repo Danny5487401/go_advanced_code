@@ -1,57 +1,60 @@
-#反射
+# 反射
 	在计算机科学中，反射是指计算机程序在运行时（Run time）可以访问、检测和修改它本身状态或行为的一种能力。用比喻来说，反射就是程序在运行的时候能够“观察”并且修改自己的行为。
 
 ## 一. 背景
-###为什么要用反射?
+### 为什么要用反射?
 1. 有时你需要编写一个函数，但是并不知道传给你的参数类型是什么，可能是没约定好；也可能是传入的类型很多，这些类型并不能统一表示。这时反射就会用的上了
 2. 有时候需要根据某些条件决定调用哪个函数，比如根据用户的输入来决定。这时就需要对函数和函数的参数进行反射，在运行期间动态地执行函数。
 
-###不建议使用反射的原因：
+### 不建议使用反射的原因：
 1。与反射相关的代码，经常是难以阅读的。在软件工程中，代码可读性也是一个非常重要的指标
 2. Go 语言作为一门静态语言，编码过程中，编译器能提前发现一些类型错误，但是对于反射代码是无能为力的。
 所以包含反射相关的代码，很可能会运行很久，才会出错，这时候经常是直接 panic，可能会造成严重的后果
 3. 反射对性能影响还是比较大的，比正常代码运行速度慢一到两个数量级。所以，对于一个项目中处于运行效率关键位置的代码，尽量避免使用反射特性
 
-```go
-/*
-
 反射实现原理：
-	1.当向接口变量赋予一个实体类型的时候，接口会存储实体的类型信息，反射就是通过接口的类型信息实现的，反射建立在类型的基础上。
-	2. Go 语言在 reflect 包里定义了各种类型，实现了反射的各种函数，通过它们可以在运行时检测类型的信息、改变类型的值
+
+ 1. 当向接口变量赋予一个实体类型的时候，接口会存储实体的类型信息，反射就是通过接口的类型信息实现的，反射建立在类型的基础上。
+ 2. Go 语言在 reflect 包里定义了各种类型，实现了反射的各种函数，通过它们可以在运行时检测类型的信息、改变类型的值
 
 Go语言的类型:
-	1.变量包括（type, value）两部分,这一点就知道为什么nil != nil了
-	2. type 包括 static type和concrete type. 简单来说 static type是你在编码是看见的类型(如int、string_test)，
-		concrete type是runtime系统看见的类型
-	3. 类型断言能否成功，取决于变量的concrete type，而不是static type。
-		因此，一个 reader变量如果它的concrete type也实现了write方法的话，它也可以被类型断言为writer
+
+ 1. 变量包括（type, value）两部分,这一点就知道为什么nil != nil了
+ 2. type 包括 static type和concrete type. 简单来说 static type是你在编码是看见的类型(如int、string_test)，
+     concrete type是runtime系统看见的类型
+ 3. 类型断言能否成功，取决于变量的concrete type，而不是static type。
+     因此，一个 reader变量如果它的concrete type也实现了write方法的话，它也可以被类型断言为writer
 
 在反射的概念中， 编译时就知道变量类型的是静态类型；运行时才知道一个变量类型的叫做动态类型。
-	静态类型
-		//静态类型就是变量声明时的赋予的类型。比如：
-		type MyInt int // int 就是静态类型
+1. 静态类型
+```go
+//静态类型就是变量声明时的赋予的类型。比如：
+type MyInt int // int 就是静态类型
 
-		type A struct{
-			Name string_test  // string就是静态
-		}
-		var i *int  // *int就是静态类型
-	动态类型
-		//动态类型：运行时给这个变量赋值时，这个值的类型(如果值为nil的时候没有动态类型)。
-		//一个变量的动态类型在运行时可能改变，这主要依赖于它的赋值（前提是这个变量是接口类型）
-		var A interface{} // 静态类型interface{}
-		A = 10            // 静态类型为interface{}  动态为int
-		A = "String"      // 静态类型为interface{}  动态为string
-		var M *int
-		A = M             // A的值可以改变
+type A struct{
+   Name string_test  // string就是静态
+}
+var i *int  // *int就是静态类型
+```
 
-		Noted:
-		Go语言的反射就是建立在类型之上的，Golang的指定类型的变量的类型是静态的（也就是指定int、string这些的变量，它的type是static type），
-		在创建变量的时候就已经确定，反射主要与Golang的interface类型相关（它的type是concrete type），只有interface类型才有反射一说
+2. 动态类型
+```go
+//动态类型：运行时给这个变量赋值时，这个值的类型(如果值为nil的时候没有动态类型)。
+//一个变量的动态类型在运行时可能改变，这主要依赖于它的赋值（前提是这个变量是接口类型）
+var A interface{} // 静态类型interface{}
+A = 10            // 静态类型为interface{}  动态为int
+A = "String"      // 静态类型为interface{}  动态为string
+var M *int
+A = M             // A的值可以改变
+```
+Noted:   
+Go语言的反射就是建立在类型之上的，Golang的指定类型的变量的类型是静态的（也就是指定int、string这些的变量，它的type是static type），
+在创建变量的时候就已经确定，反射主要与Golang的interface类型相关（它的type是concrete type），只有interface类型才有反射一说
+
 在Golang的实现中，每个interface变量都有一个对应pair，pair中记录了实际变量的值和类型:(value, type)
 	value是实际变量值，type是实际变量的类型。一个interface{}类型的变量包含了2个指针，
-	1.一个指针指向值的类型【对应concrete type】，2.另外一个指针指向实际的值【对应value】。
-*/
-```
+1. 一个指针指向值的类型【对应concrete type】，
+2. 另外一个指针指向实际的值【对应value】。
 
 ## 二. 用到反射的包：
    官方包：sort swapper,sql convertValue ,Json反序列化
@@ -89,7 +92,7 @@ type eface struct
 }
 ```
 
-举例
+### 举例
 ```go
 var r io.Reader
 ```
@@ -127,9 +130,7 @@ w 也可以表示成 <tty, *os.File>，仅管它和 r 一样，但是 w 可调�
 由于 empty 是一个空接口，因此所有的类型都实现了它，w 可以直接赋给它，不需要执行断言操作
 
 
-
-
-###反射的基本函数
+### 反射的基本函数
 reflect 包里定义了一个接口和一个结构体，即 reflect.Type 和 reflect.Value，它们提供很多函数来获取存储在接口里的类型信息。
 
 reflect.Type 主要提供关于类型相关的信息，所以它和 _type 关联比较紧密； 
@@ -140,7 +141,7 @@ reflect.Value 则结合 _type 和 data 两者，因此程序员可以获取甚�
 	接口变量，实际上都是由一 pair 对（type 和 data）组合而成，pair 对中记录着实际变量的值和类型。也就是说在真实世界里，type 和 value 是合并在一起组成 接口变量的。
     而在反射的世界里，type 和 data 却是分开的，他们分别由 reflect.Type 和 reflect.Value 来表现
 
-####1.type
+#### 1.type
 ```go
 //reflect/type.go
 //type定义了接口，rtype实现了接口
@@ -158,7 +159,7 @@ type emptyInterface struct {
 }
 ```
 
-type接口
+Type接口
 ```go
 type Type interface {
     // 所有的类型都可以调用下面这些函数
@@ -337,7 +338,7 @@ type Type interface {
 	uncommon() *uncommonType
 }
 ```
-具体实现rtype:所有的类型都会包含 rtype 这个字段,表示各种类型的公共信息；另外，不同类型包含自己的一些独特的部分。
+具体实现rtype: 所有的类型都会包含 rtype 这个字段,表示各种类型的公共信息；另外，不同类型包含自己的一些独特的部分。
 ```go
 // rtype is the common implementation of most values.
 // It is embedded in other struct types.
@@ -359,7 +360,7 @@ type rtype struct {
 	ptrToThis typeOff // type for pointer to this type, may be zero
 }
 ```
-举例
+举例：  
 比如下面的 arrayType 和 chanType 都包含 rytpe，而前者还包含 slice，len 等和数组相关的信息；后者则包含 dir 表示通道方向的信息。
 ```go
 // arrayType represents a fixed array type.
@@ -388,7 +389,7 @@ func (t *rtype) String() string {
 }
 ```
 
-####2. value
+#### 2. value
 reflect.Value 表示 interface{} 里存储的实际变量，它能提供实际变量的各种信息。相关的方法常常是需要结合类型信息和值信息。
 例如，如果要提取一个结构体的字段信息，那就需要用到 _type (具体到这里是指 structType) 类型持有的关于结构体的字段信息、偏移信息，以及 *data 所指向的内容 —— 结构体的实际值。
 
