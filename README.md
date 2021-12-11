@@ -72,10 +72,10 @@
 - 5 [Channel内部结构及源码分析(含PPT分析)](chapter03_channel/05_original_code/original_code.md)
 ---
 
-## [第四章 interface和反射](chapter04_interface_n_reflect/02_reflect/reflect.md)   
+## 第四章 interface和反射 
 - 1 interface
-    - [1.1 源码分析](chapter04_interface_n_reflect/01_original_code/interface.md)
-- 2 反射
+    - [1.1 interface源码分析](chapter04_interface_n_reflect/01_original_code/interface.md)
+- 2 [反射](chapter04_interface_n_reflect/02_reflect/reflect.md)
     - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01three_laws/threeLaw.md)
     - [2.2 类型断言](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
     - 2.3 获取结构体字段及获取方法
