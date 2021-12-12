@@ -14,7 +14,7 @@
     Linux 在 2.6 的后期开始引入 sysenter 指令，从当年遗留下来的文章来看，与老古董 int 80 比跑的确实快。
     因此为了性能，我们的 Go 语言自然也是使用 syscall/sysenter 进行系统调用
 
-##Go语言系统调用
+## Go语言系统调用
 尽管 Go 语言具有 cgo 这样的设施可以方便快捷地调用 C 函数，但是其还是自己对系统调用进行了封装，以 amd64 架构为例.
 
 ```go
@@ -136,7 +136,7 @@ ok2:
 Syscall 和 RawSyscall 在源代码上的区别就是有没有调用 runtime 包提供的两个函数。这意味着前者在发生阻塞时可以通知运行时并继续运行其他协 程，而后者只会卡掉整个程序。
 我们在自己封装自定义调用时应当尽量使用 Syscall
 
-###案例分析fmt.Println("hello world")
+### 案例分析fmt.Println("hello world")
 ```go
 func Println(a ...interface{}) (n int, err error) {
 	return Fprintln(os.Stdout, a...)

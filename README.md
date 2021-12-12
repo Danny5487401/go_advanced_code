@@ -63,9 +63,9 @@
     - 1.9 使用channel传递channel
     - [1.10 happened before](chapter03_channel/01_basicUse/10_happened_before/happened_before.md)
     - 1.11 读取关闭的通道值
-- 2 channel应用:TimerChan模块
-    - 2.1 reset陷阱
-    - 2.2 timerStop使用
+- 2 [channel应用:TimerChan模块](chapter03_channel/02_TimerChan/timer.md)
+    - [2.1 reset陷阱](chapter03_channel/02_TimerChan/01_TimerReset/timer_reset.md)
+    - [2.2 timerStop使用](chapter03_channel/02_TimerChan/02_TimerStop/timer_stop.md)
     - 2.3 TimerAfter陷阱
 - 3 [Select多路复用](chapter03_channel/03_select/03Select_DataStructure/select.md)
 - 4 [CSP理论中的Process/Channel](chapter03_channel/04_CSP/CSP.md)
