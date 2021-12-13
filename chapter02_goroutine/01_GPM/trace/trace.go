@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"runtime/trace"
+	"sync"
+	"time"
 )
 
 // trace侧重于分析goroutine的调度
@@ -23,9 +25,31 @@ func main() {
 	defer trace.Stop()
 
 	// main
-	fmt.Println("Hello trace")
+	urls := []string{"0.0.0.0:5000", "0.0.0.0:5001", "0.0.0.0:5002"}
+	var wg sync.WaitGroup
+	for _, url := range urls {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			mockSendToServer(url)
+		}()
+
+	}
+	time.Sleep(time.Microsecond)
+	wg.Wait()
 }
 
-// 运行
-//go run trace.go
-// go tool trace trace.out
+func mockSendToServer(url string) {
+	fmt.Printf("url是%v\n", url)
+}
+
+/*
+// 1。 运行 生成文件
+	go run trace.go
+// 2。 文件进行分析
+	go tool trace trace.out
+ 会打印
+2021/12/10 17:55:21 Parsing trace...
+2021/12/10 17:55:21 Splitting trace...
+2021/12/10 17:55:21 Opening browser. Trace viewer is listening on http://127.0.0.1:57569
+*/
