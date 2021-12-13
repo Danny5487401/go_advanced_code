@@ -2,28 +2,45 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
 func main() {
+	// 1. 基本创建过程
+	basicUse()
 
-	/*1。简单实用
-	func NewTimer(d Duration) *Timer
-		创建一个计时器：d时间以后触发，go触发计时器的方法比较特别，就是在计时器的channel中发送值
-	*/
-	//新建一个计时器：timer
-	//timer := time.NewTimer(3 * time.Second)
-	//fmt.Printf("%T\n", timer) //*time.Timer
-	//fmt.Println(time.Now())   //2021-04-15 10:20:00.845017 +0800 CST m=+0.014991701
-	//
-	////此处在等待channel中的信号，执行此段代码时会阻塞3秒
-	//// 定时器的缓存通道大小只为1，无法多存放超时事件，
-	//fmt.Println(<-timer.C) //2021-04-15 10:20:03.8457622 +0800 CST m=+3.015736901
+	// 2. 错误生成大量timer：造成内存泄漏
+	//var queue = make(chan string)
+	//// 错误前
+	//useWrongTimeAfter(queue)
+	//// 修改后
+	//useRightNewTimer(queue)
 
-	// 2。reset陷阱
-	//test1()
-	//test2()
+	// 3.reset陷阱：reset相关测试
+	// 第1个测试：Reset返回值和什么有关？
+	test1()
+
+	// 第2个测试:超时后，不读通道中的事件，可以Reset成功吗？
+	test2()
+
+	// 第3个测试：Reset前清空通道，尽可能通畅
 	test3()
+}
+
+/*
+func NewTimer(d Duration) *Timer
+	创建一个计时器：d时间以后触发，go触发计时器的方法比较特别，就是在计时器的channel中发送值
+*/
+func basicUse() {
+
+	//新建一个计时器：timer
+	timer := time.NewTimer(3 * time.Second)
+	fmt.Println(time.Now()) //2021-04-15 10:20:00.845017 +0800 CST m=+0.014991701
+
+	// 此处在等待channel中的信号，执行此段代码时会阻塞3秒
+	// 定时器的缓存通道大小只为1，无法多存放超时事件，
+	fmt.Println(<-timer.C) //2021-04-15 10:20:03.8457622 +0800 CST m=+3.015736901
 }
 
 /*
@@ -124,5 +141,48 @@ func test3() {
 		fmt.Println("通道中的时间是重新设置sm前的时间，即第一次超时的时间，所以第二次Reset失败了")
 	} else {
 		fmt.Println("通道中的时间是重新设置sm后的时间，Reset成功了")
+	}
+}
+
+var wg sync.WaitGroup
+
+// 在3分钟内容易重复创建对象，底层并没有删除对象，造成内存泄漏
+func useWrongTimeAfter(queue <-chan string) {
+	defer wg.Done()
+	Running := true
+	for Running {
+		select {
+		case _, ok := <-queue:
+			if !ok {
+				return
+			}
+
+		case <-time.After(3 * time.Minute):
+			// 超时退出
+			return
+		}
+	}
+}
+
+// 正确的方式:重复利用对象
+func useRightNewTimer(in <-chan string) {
+	defer wg.Done()
+	idleDuration := 3 * time.Minute
+	idleDelay := time.NewTimer(idleDuration)
+	defer idleDelay.Stop()
+	Running := true
+	for Running {
+		idleDelay.Reset(idleDuration)
+
+		select {
+		case _, ok := <-in:
+			if !ok {
+				return
+			}
+
+		case <-idleDelay.C:
+			// handle `s`
+			return
+		}
 	}
 }

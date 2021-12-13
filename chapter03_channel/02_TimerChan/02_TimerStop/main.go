@@ -7,8 +7,6 @@ import (
 
 func main() {
 
-	fmt.Println("-------------------------------")
-
 	//新建计时器，5秒后触发
 	timer2 := time.NewTimer(5 * time.Second)
 
@@ -22,7 +20,8 @@ func main() {
 
 	}()
 
-	//由于上面的等待信号是在新线程中，所以代码会继续往下执行，停掉计时器
+	// 由于上面的等待信号是在新线程中，所以代码会继续往下执行，停掉计时器
+	// 3s<5s，所以可以停止成功
 	time.Sleep(3 * time.Second)
 	stop := timer2.Stop()
 
