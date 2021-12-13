@@ -536,9 +536,9 @@ type p struct {
 }
 ```
 
-###schedt
+### schedt
 ![](.GPM_images/shedt_struct.png)
 
-##参考链接
+## 参考链接
 	https://studygolang.com/articles/35104
 
