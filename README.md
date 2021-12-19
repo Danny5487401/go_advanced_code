@@ -116,15 +116,14 @@
 - 4 defer循环性能问题
 - 5 [汇编理解defer函数](chapter08_defer/05_defer_assembly/defer_asm.md)
 
-## [第九章 设计模式](chapter09_design_pattern/introduction.md)
+## [第九章 设计模式-OOP七大准则](chapter09_design_pattern/introduction.md)
 
-### OOP七大准则
 - 1 创建型模式
     - [1.1 静态工厂模式-->new关键字函数实现简单工厂](chapter09_design_pattern/01_construction/01_StaticFactoryMethod/static_factory.md)
     - 1.2 工厂方法模式-->k8s中实现
     - 1.3 单例模式-->标准库strings/replace实现
     - [1.4 原型模式-->confluent-kafka中map实现](chapter09_design_pattern/01_construction/04_prototype/prototype.md)
-    - 1.5 建造者模式-->xorm，k8s中实现
+    - [1.5 建造者模式-->xorm，k8s中实现](chapter09_design_pattern/01_construction/05_builder/builder_info.md)
 - 2 结构型模式
     - 2.1 组合模式
         - 2.1.1 修改前：使用面向对象处理
@@ -135,7 +134,7 @@
         - 2.2.3 反射实现--泛型装饰器
     - 2.3 [享元模式-->线程池,缓存思想](chapter09_design_pattern/02_structure/03_FlyweightPattern/flyWeightPattern.md)
     - 2.4 适配器模式
-    - 2.5 桥接模式(两个变化系统结偶)
+    - [2.5 桥接模式](chapter09_design_pattern/02_structure/05_bridgeMethod/bridge_method.md)
     - 2.6 [门面模式(外观模式)-->在gin中render应用(封装多个子服务)](chapter09_design_pattern/02_structure/06_facade_pattern/facade.md)
     - 2.7 [代理模式](chapter09_design_pattern/02_structure/07_proxy/proxy.md)
 - 3 行为型模式
