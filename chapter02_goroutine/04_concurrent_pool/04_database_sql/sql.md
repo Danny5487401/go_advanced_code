@@ -1,7 +1,7 @@
-#sql源码分析
+# sql源码分析
 
 ![](database_sql.png)
-##1.自动注册
+## 1.自动注册
 ```go
 import (
 	_ "github.com/go-sql-driver/mysql" //自动执行init()函数
@@ -32,7 +32,7 @@ func init() {
 
 ```
 
-##2.打开DB句柄
+## 2.打开DB句柄
 ```go
 type DB struct {
     // 是一个包含Connect(context.Context) (Conn, error)和Driver() Driver方法的接口。
@@ -132,13 +132,16 @@ func OpenDB(c driver.Connector) *DB {
 }
 ```
 
-##3. 获取连接
+## 3. 获取连接
 go从连接池中获取连接时有两个策略
 ```go
-// a.请求新的连接
-alwaysNewConn connReuseStrategy = iota
-// b.从连接池中获取连接
-cachedOrNewConn
+const(
+    // a.请求新的连接
+    alwaysNewConn connReuseStrategy = iota
+    // b.从连接池中获取连接
+    cachedOrNewConn
+)
+
 ```
 
 ```go
@@ -230,29 +233,29 @@ func (db *DB) conn(ctx context.Context, strategy connReuseStrategy) (*driverConn
     func (db *DB) putConnDBLocked(dc *driverConn, err error) bool {
         db.freeConn = append(db.freeConn, dc)
     }
-##4，连接回收到连接池
+## 4. 连接回收到连接池
 ```go
 func (db *DB) putConn(dc *driverConn, err error, resetSession bool)
 ```
 
-	1)首先遍历dc.onPut，执行fn()
+1)首先遍历dc.onPut，执行fn()
 
-	2)如果发现该连接不可用，则调用maybeOpenNewConnections() 异步创建一个连接，并且关闭不可用的连接。
+2)如果发现该连接不可用，则调用maybeOpenNewConnections() 异步创建一个连接，并且关闭不可用的连接。
 
-	3)如果连接成功被连接池回收，但db.resetterCh 阻塞了，则先标记连接为ErrBadConn,所以前面从连接池获取连接时每一次都会判断连接是否可用。
+3)如果连接成功被连接池回收，但db.resetterCh 阻塞了，则先标记连接为ErrBadConn,所以前面从连接池获取连接时每一次都会判断连接是否可用。
 
-	4)如果连接池满了，没回放成功，则会关闭该连接
-##5.处理过期的连接 
+4)如果连接池满了，没回放成功，则会关闭该连接
+## 5. 处理过期的连接 
 ```go
 func (db *DB) connectionCleaner(d time.Duration)
 ```
-	1）开定时器，每隔一段时间检测空闲连接池中的连接是否过期
+1）开定时器，每隔一段时间检测空闲连接池中的连接是否过期
 
-	2）如果接收到db.cleanerCh的信号，也会遍历处理超时，db.cleanerCh的buffer只有1，一般在SetConnMaxLifetime检测生命周期配置变短时发送。
+2）如果接收到db.cleanerCh的信号，也会遍历处理超时，db.cleanerCh的buffer只有1，一般在SetConnMaxLifetime检测生命周期配置变短时发送。
 
-	3）为了遍历空闲队列里面连接的公平性，做了一个巧妙的处理，一旦发现队列前面的连接过期，则会把最后一个连接放到最前面，然后从当前开始遍历。
+3）为了遍历空闲队列里面连接的公平性，做了一个巧妙的处理，一旦发现队列前面的连接过期，则会把最后一个连接放到最前面，然后从当前开始遍历。
 
-	4）遍历空闲队列发现超时的连接，把超时连接一个一个追加到关闭队列中append(closing, c)，然后遍历关闭的队列，一个一个关闭
+4）遍历空闲队列发现超时的连接，把超时连接一个一个追加到关闭队列中append(closing, c)，然后遍历关闭的队列，一个一个关闭
 
 
 
