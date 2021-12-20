@@ -91,7 +91,7 @@ func showRecord() {
 
 func show(depth int) {
 	for skip := 0; skip < depth; skip++ {
-		// runtime.Caller先获取当时的PC寄存器值，以及文件和行号
+		// runtime.Caller 返回值为 程序计数器，文件位置，行号，是否能恢复信息
 		pc, file, line, ok := runtime.Caller(skip)
 		if !ok {
 			break
