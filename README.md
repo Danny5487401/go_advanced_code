@@ -176,16 +176,15 @@
     - 6.10 SingleFlight避免缓存击穿
 
 ## [第十章 函数式编程](chapter10_function/func.md)
-- 1 闭包
-    - 1.1 闭包理论
-    - 1.2 匿名函数
-        - 1.2.1 匿名函数
-        - 1.2.2 函数模版:定义行为
+- 1 函数
+    - 1.1 闭包基本使用
+    - 1.2 匿名函数:回调函数
+    - 1.3 函数模版:定义行为
 - 2 [高级函数](chapter10_function/02_advanced_function/introduction.md)
     - 2.1 简单实现filter,map,reduce
     - 2.2 简单案例
     - 2.3 复杂实现：泛型及类型检查
-- 3 一等公民
+- 3 一等公民案例
     - [网络管理中问题需求](chapter10_function/03_Firstclassfunction/problem_desc.md)
     - 网络管理中三种处理对比
         - 3.1 通过同享内存通信

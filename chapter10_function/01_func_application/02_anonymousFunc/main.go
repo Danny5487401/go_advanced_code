@@ -10,7 +10,7 @@ import (
 
 */
 
-// 定义函数类型 用于排序
+// Traveser 定义函数类型 用于排序
 type Traveser func(ele interface{})
 
 /*
