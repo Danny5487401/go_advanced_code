@@ -212,7 +212,7 @@
 
 - 3 [ Golang底层数据结构](chapter11_assembly_language/03Golang_data_structure/data.md)
     - [3.1 Map底层结构](chapter11_assembly_language/03Golang_data_structure/map_structure/map_intro.md)
-    - 3.2 String底层结构
+    - [3.2 String底层结构,字符集和字符编码,性能分析及内存泄漏分析](chapter11_assembly_language/03Golang_data_structure/string_structure/str.md)
     - 3.3 Struct底层结构
 
 ## 第十二章 网络编程net
