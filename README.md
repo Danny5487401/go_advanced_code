@@ -36,7 +36,7 @@
     - 2.2 Goexit()终止线程
     - 2.3 资源竞争一致性问题分析
     - [2.4 垃圾回收机制(trace查看map垃圾回收）](chapter02_goroutine/02_runtime/04GC/gc.md)
-    - 2.5 监控代码性能pprof
+    - [2.5 监控代码性能pprof](chapter02_goroutine/02_runtime/05pprof/intro.md)
         - 2.5.1 标准包runtime/pprof及net/http/pprof
         - 2.5.2 第三方包pkg/profile
     - [2.6 Go内存结构](chapter02_goroutine/02_runtime/06memory/mem.md)
