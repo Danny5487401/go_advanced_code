@@ -1,4 +1,4 @@
-#select
+# select
 
 ## 基本使用
 ```go
@@ -53,11 +53,11 @@ type scase struct {
 ```
 
 
-###运行时
+### 运行时
 ![](runtime_select.png)
 代码执行流程：/reflect/value.go/Select -> /runtime/select.go/reflect_rselect -> /runtime/select.go/selectgo
 
-###主要讲解两个函数
+### 主要讲解两个函数
 1. 第一个函数
 ```go
 func reflect_rselect(cases []runtimeSelect) (int, bool) {

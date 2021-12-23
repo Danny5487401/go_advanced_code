@@ -280,6 +280,7 @@
 - [2 扩展包pkg.errors](chapter18_error_n_panic/02_pkg_errors/pkg_erros.md)
 - [3 Gin的错误recover分析(panic和recover源码分析)](chapter18_error_n_panic/03_recover/panic.md)
 - [4 errCode错误码自动化生成](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
+- 5 error如何比较
 
 ## 第十九章 nil预定义标识
 - 1 不同类型为nil时的地址和大小
