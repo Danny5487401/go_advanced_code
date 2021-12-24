@@ -11,12 +11,17 @@ func wrapNewPointerError() error {
 }
 
 func wrapConstantPointerError() error {
-	return fmt.Errorf("wrap err1:%w", constantErr)
+	return fmt.Errorf("wrap err0:%w", constantErr)
 }
 
-var constantErr = fmt.Errorf("i am a error1 ")
+func newPointerErrorWithoutWrap() error {
+	return fmt.Errorf("wrap err0:%v", fmt.Errorf("i am a error0"))
+}
+
+var constantErr = fmt.Errorf("i am a error0")
 
 func main() {
-	fmt.Println("第一个结果", errors.Is(wrapNewPointerError(), fmt.Errorf("i am a error0"))) // false
-	fmt.Println("第二个结果", errors.Is(wrapConstantPointerError(), constantErr))            //true
+	//fmt.Println("第一个结果", errors.Is(wrapNewPointerError(), fmt.Errorf("i am a error0"))) //
+	fmt.Println("第二个结果", errors.Is(wrapConstantPointerError(), constantErr)) //
+	//fmt.Println("第三个结果", errors.Is(newPointerErrorWithoutWrap(), fmt.Errorf("i am a error0"))) // fa
 }

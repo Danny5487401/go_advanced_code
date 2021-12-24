@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go_advenced_code/chapter18_error/04_errorCode/02generate_n_stringer/errcode"
+	"go_advanced_code/chapter18_error_n_panic/04_errorCode/02generate_n_stringer/errcode"
 )
 
 func main() {
