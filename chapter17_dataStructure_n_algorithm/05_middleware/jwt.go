@@ -8,7 +8,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 
-	"go_advanced_code/chapter17_dataStructure_n_algrithm/05_middleware/models"
+	"go_advanced_code/chapter17_dataStructure_n_algorithm/05_middleware/models"
 )
 
 type JWTConfig struct {
@@ -113,7 +113,7 @@ func (j *JWT) ParseToken(tokenString string) (*models.CustomClaims, error) {
 
 }
 
-// 更新token
+// RefreshToken 更新token
 func (j *JWT) RefreshToken(tokenString string) (string, error) {
 	jwt.TimeFunc = func() time.Time {
 		return time.Unix(0, 0)
@@ -126,40 +126,9 @@ func (j *JWT) RefreshToken(tokenString string) (string, error) {
 	}
 	if claims, ok := token.Claims.(*models.CustomClaims); ok && token.Valid {
 		jwt.TimeFunc = time.Now
-		claims.StandardClaims.ExpiresAt = time.Now().Add(1 * time.Hour).Unix()
+		claims.StandardClaims.ExpiresAt = time.Now().Add(1 * time.Hour).Unix() // 过期时间，必须设置,
+		claims.Issuer = "danny"                                                //非必须，也可以填充用户名，
 		return j.CreateToken(*claims)
 	}
 	return "", TokenInvalid
 }
-
-/*
-源码分析:
-	// token结构
-	type Token struct {
-		Raw       string                 // 保存原始token解析的时候保存
-		Method    SigningMethod          // 保存签名方法 目前库里有HMAC  RSA  ECDSA
-		Header    map[string]interface{} // jwt中的头部
-		Claims    Claims                 // jwt中第二部分荷载，Claims是一个接口
-		Signature string                 // jwt中的第三部分 签名
-		Valid     bool                   // 记录token是否正确
-	}
-
-	type Claims interface {
-		Valid() error
-	}
-	// 签名方法 所有的签名方法都会实现这个接口
-	// 具体可以参考https://github.com/dgrijalva/jwt-go/blob/master/hmac.go
-	type SigningMethod interface {
-		// 验证token的签名，如果有限返回nil
-		Verify(signingString, signature string, key interface{}) error
-
-		// 签名方法 接受头部和荷载编码过后的字符串和签名秘钥
-		// 在hmac中key必须是Key must be []byte
-		// 在rsa中key 必须是*rsa.PrivateKey 对象
-		Sign(signingString string, key interface{}) (string, error)
-
-		// 返回加密方法的名字 比如'HS256'
-		Alg() string
-	}
-	//parsedKey, err := jwt.ParseRSAPrivateKeyFromPEM(cert.PrivateKey)
-*/

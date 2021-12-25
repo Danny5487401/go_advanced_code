@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-//生成RSA密钥对
+// GenRSAKey 生成RSA密钥对
 func GenRSAKey(size int) (privateKeyBytes, publicKeyBytes []byte, err error) {
 	//生成密钥
 	privateKey, err := rsa.GenerateKey(rand.Reader, size)
@@ -20,7 +20,7 @@ func GenRSAKey(size int) (privateKeyBytes, publicKeyBytes []byte, err error) {
 	return
 }
 
-//公钥加密
+// RsaEncrypt 公钥加密
 func RsaEncrypt(src, publicKeyByte []byte) (bytes []byte, err error) {
 	publicKey, err := x509.ParsePKCS1PublicKey(publicKeyByte)
 	if err != nil {

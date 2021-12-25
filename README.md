@@ -240,7 +240,6 @@
 - 5 C的void返回
 
 ## [第十四章 Context上下文](chapter14_context/introduction.md)
-
 - [0 父类EmptyCtx](chapter14_context/00_original_code_of_context/empty.md)
 - 1 Context来源
     - 1.1 问题：如何释放资源
@@ -263,16 +262,19 @@
 
 ## 第十七章 数据结构及算法
 - 1 queue队列
-- 2 哈希函数
-    - 2.1 hash函数分类及算法md5使用
-- 3 [非对称加密算法rsa](chapter17_dataStructure_n_algorithm/03_rsa/rsa.md)
-    - 3.1 分段与不分段加解密
+- 2 [加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/encryption.md)
+  - 对称式(aes,des)
+  - 数字签名(hmac,md5,sha1)
+    - [md5](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/md5/md5.md)
+    - [hmac](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/hmac/hmac.md)
+    - [sha-1](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/sha1/sha1.md)
+  - [非对称加密算法rsa](chapter17_dataStructure_n_algorithm/03_rsa/rsa.md)
+    - 分段与不分段加解密
 - [4 排序分析](chapter17_dataStructure_n_algrithm/04_sort/sort.md)
     - 4.1 排序算法分类及图解
     - 4.2 排序接口实现（反射方式）
-- 5 [Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.go)
+- 5 [Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
 - 6 Privacy Enhanced Mail Certificate (pem文件)生成
-
 
 ## 第十八章 错误跟踪和panic
 - 0 错误(err)和异常（exception）区别及处理方式
