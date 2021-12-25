@@ -294,3 +294,7 @@
 
 ## [第二十一章 time标准包源码分析](chapter21_time/time.md)
 - 1 比time.Now()更优雅获取时间戳（go:link技术）
+
+## [第二十二章 数据驱动模板-kratos工具生成](chapter22_template/text_template.md)
+- 1 加载多个模版
+- 2 自定义模版函数
