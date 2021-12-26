@@ -225,6 +225,11 @@ JNZ target // 如果 zero flag 被 set 过，则跳转
     格式：
 ```cgo
 DATA    symbol+offset(SB)/width, value
+// 在Go汇编语言中，内存是通过SB伪寄存器定位。SB是Static base pointer的缩写，意为静态内存的开始地址。
+// 其中symbol为变量在汇编语言中对应的标识符，offset是符号开始地址的偏移量，width是要初始化内存的宽度大小，value是要初始化的值。
+// 其中当前包中Go语言定义的符号symbol，在汇编代码中对应·symbol，其中“·”中点符号为一个特殊的unicode符号
+// 具体的含义是从symbol+offset偏移量开始，width宽度的内存，用value常量对应的值初始化。
+
 // 使用 DATA 结合 GLOBL 来定义一个变量
 // GLOBL 必须跟在 DATA 指令之后:
 DATA age+0x00(SB)/4, $18  // forever 18
@@ -235,6 +240,21 @@ GLOBL pi(SB), RODATA, $8
 
 DATA birthYear+0(SB)/4, $1988
 GLOBL birthYear(SB), RODATA, $4
+```
+
+
+DATA初始化内存时，width必须是1、2、4、8几个宽度之一，因为再大的内存无法一次性用一个uint64大小的值表示
+对于int32类型的count变量来说，我们既可以逐个字节初始化，也可以一次性初始化
+```assembly
+
+DATA ·count+0(SB)/1,$1
+DATA ·count+1(SB)/1,$2
+DATA ·count+2(SB)/1,$3
+DATA ·count+3(SB)/1,$4
+
+// or
+DATA ·count+0(SB)/4,$0x04030201
+
 ```
 
 6. 函数声明
@@ -268,21 +288,31 @@ pkgname 包名可以不写，一般都是不写的，可以参考 go 的源码�
 #include textflag.h
 
 NOPROF = 1
-(For TEXT items.) Don’t profile the marked function. This flag is deprecated.
-DUPOK = 2
-It is legal to have multiple instances of this symbol in a single binary. The linker will choose one of the duplicates to use.
+#(For TEXT items.) Don’t profile the marked function. This flag is deprecated.
+
+DUPOK = 2 
+# DUPOK表示该变量对应的标识符可能有多个，在链接时只选择其中一个即可（一般用于合并相同的常量字符串，减少重复数据占用的空间）。
+
 NOSPLIT = 4
-(For TEXT items.) Don’t insert the preamble to check if the stack must be split. The frame for the routine, plus anything it calls, must fit in the spare space at the top of the stack segment. Used to protect routines such as the stack splitting code itself.
+# 不会生成或包含栈分裂代码，这一般用于没有任何其它函数调用的叶子函数，这样可以适当提高性能。
+#(代码段.) Don’t insert the preamble to check if the stack must be split. 
+# The frame for the routine, plus anything it calls, must fit in the spare space at the top of the stack segment. 
+# Used to protect routines such as the stack splitting code itself.
+
 RODATA = 8
-(For DATA and GLOBL items.) Put this data in a read-only section.
+#RODATA标志表示将变量定义在只读内存段，因此后续任何对此变量的修改操作将导致异常（recover也无法捕获）。
+
 NOPTR = 16
-(For DATA and GLOBL items.) This data contains no pointers and therefore does not need to be scanned by the garbage collector.
+#NOPTR则表示此变量的内部不含指针数据，让垃圾回收器忽略对该变量的扫描。如果变量已经在Go代码中声明过的话，Go编译器会自动分析出该变量是否包含指针，这种时候可以不用手写NOPTR标志
+
 WRAPPER = 32
-(For TEXT items.) This is a wrapper function and should not count as disabling recover.
+#(代码段.) WRAPPER标志则表示这个是一个包装函数，在panic或runtime.caller等某些处理函数帧的地方不会增加函数帧计数。
+
 NEEDCTXT = 64
-(For TEXT items.) This function is a closure so it uses its incoming context register.
+#(代码段.) 表示需要一个上下文参数，一般用于闭包函数.
+```
 
-
+```css
 标志位
     助记符	名字	用途    
     OF	溢出	0为无溢出 1为溢出    

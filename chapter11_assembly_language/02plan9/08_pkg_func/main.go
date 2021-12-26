@@ -8,4 +8,5 @@ func main() {
 	println(func_package.Get())
 	// 交换函数
 	println(func_package.Swap(1, 2))
+	println(func_package.Foo(true, 2))
 }

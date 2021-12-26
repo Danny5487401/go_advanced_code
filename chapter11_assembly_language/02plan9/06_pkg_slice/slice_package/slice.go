@@ -1,3 +1,3 @@
 package slice_package
 
-var Helloworld []byte
+var HelloWorld []byte

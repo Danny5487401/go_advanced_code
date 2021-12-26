@@ -197,9 +197,9 @@
     - 2.1  常量constant
     - 2.2  array类型
     - 2.3  bool类型
-    - 2.4  int类型
-    - 2.5  float类型
-    - 2.6  slice类型
+    - 2.4  int,int32,uint32类型
+    - 2.5  float32，float64类型
+    - 2.6  slice类型([]byte)
     - 2.7  引用类型map和channel
     - 2.8  函数类型
     - 2.9  局部变量
