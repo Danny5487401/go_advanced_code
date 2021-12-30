@@ -270,6 +270,7 @@
     - [sha-1](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/sha1/sha1.md)
   - [非对称加密算法rsa](chapter17_dataStructure_n_algorithm/03_rsa/rsa.md)
     - 分段与不分段加解密
+- [3 随机算法（伪随机和真随机)](chapter17_dataStructure_n_algorithm/03_rand/rand.md)
 - [4 排序分析](chapter17_dataStructure_n_algrithm/04_sort/sort.md)
     - 4.1 排序算法分类及图解
     - 4.2 排序接口实现（反射方式）

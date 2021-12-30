@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go_advanced_code/chapter17_dataStructure_n_algrithm/04_sort/sortByReflect"
+	"go_advanced_code/chapter17_dataStructure_n_algorithm/04_sort/sortByReflect"
 	"sort"
 )
 
@@ -32,6 +32,7 @@ import (
 	//逆序
 	sort包提供了Reverse()方法，允许将数据按Less()定义的排序方式逆序排序，而无需修改Less()代码。
 三。Go的sort包已经为基本数据类型都实现了sort功能，其函数名的最后一个字母是s，表示sort之意。比如：Ints, Float64s, Strings，等等。
+
 */
 
 func main() {
