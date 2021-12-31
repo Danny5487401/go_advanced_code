@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"regexp"
+	"time"
 )
 
 var (
@@ -14,7 +16,20 @@ var (
 
 func GetEmail() {
 	// 1.去网站拿数据
-	resp, err := http.Get("https://tieba.baidu.com/p/6051076813?red_tag=1573533731")
+	c := &http.Client{
+		Timeout: 5 * time.Second, // 设置超时，此超时包括任何HTTP 3xx重定向持续时间，响应正文的读取以及连接和握手时间（除非重新使用了连接）
+		Transport: &http.Transport{
+			MaxIdleConns:        100,              //保留大小为100的连接池
+			IdleConnTimeout:     90 * time.Second, //如果90秒钟内未使用任何连接，它将被删除并关闭。
+			MaxIdleConnsPerHost: 2,                //每个目标主机仅保留2个连接池
+			DialContext: (&net.Dialer{
+				// This is the TCP connect timeout in this instance.
+				Timeout: 2500 * time.Millisecond,
+			}).DialContext,
+			TLSHandshakeTimeout: 2500 * time.Millisecond,
+		},
+	}
+	resp, err := c.Get("https://tieba.baidu.com/p/6051076813?red_tag=1573533731")
 	HandleError(err, "http.Get url")
 	if resp != nil {
 		defer resp.Body.Close()

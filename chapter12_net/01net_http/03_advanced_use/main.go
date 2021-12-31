@@ -20,6 +20,8 @@ func main() {
 		Addr:              ":8080",
 		Handler:           &myHandler{}, //注册
 		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       2500 * time.Millisecond, // 涵盖了读取请求标头和可选主体所花费的时间
+		WriteTimeout:      5 * time.Second,         //响应写入结束之前的持续时间
 	}
 
 	// 根据路由前缀注册handler
