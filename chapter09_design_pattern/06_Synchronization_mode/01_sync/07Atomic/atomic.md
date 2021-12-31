@@ -1,23 +1,23 @@
 # 扩大原子操作的适用范围：atomic.Value
 
-    在 Go 语言标准库中，sync/atomic包将底层硬件提供的原子操作封装成了 Go 的函数。但这些操作只支持几种基本数据类型，因此为了扩大原子操作的适用范围，
-    Go 语言在 1.4 版本的时候向sync/atomic包中添加了一个新的类型Value。此类型的值相当于一个容器，可以被用来“原子地"存储（Store）和加载（Load）任意类型的值
+在 Go 语言标准库中，sync/atomic包将底层硬件提供的原子操作封装成了 Go 的函数。但这些操作只支持几种基本数据类型，因此为了扩大原子操作的适用范围，
+Go 语言在 1.4 版本的时候向sync/atomic包中添加了一个新的类型Value。此类型的值相当于一个容器，可以被用来“原子地"存储（Store）和加载（Load）任意类型的值
     
 
-背景：
+## 背景：
 
-    我在golang-dev邮件列表中翻到了14年的这段讨论，有用户报告了encoding/gob包在多核机器上（80-core）上的性能问题，
-    认为encoding/gob之所以不能完全利用到多核的特性是因为它里面使用了大量的互斥锁（mutex），
-    如果把这些互斥锁换成用atomic.LoadPointer/StorePointer来做并发控制，那性能将能提升20倍。
+我在golang-dev邮件列表中翻到了14年的这段讨论，有用户报告了encoding/gob包在多核机器上（80-core）上的性能问题，
+认为encoding/gob之所以不能完全利用到多核的特性是因为它里面使用了大量的互斥锁（mutex），
+如果把这些互斥锁换成用atomic.LoadPointer/StorePointer来做并发控制，那性能将能提升20倍。
 
-做法：
+## 做法
 
-    有人提议在已有的atomic包的基础上封装出一个atomic.Value类型，这样用户就可以在不依赖 Go 内部类型unsafe.Pointer的情况下使用到atomic提供的原子操作。
-    所以我们现在看到的atomic包中除了atomic.Value外，其余都是早期由汇编写成的，并且atomic.Value类型的底层实现也是建立在已有的atomic包的基础上
+有人提议在已有的atomic包的基础上封装出一个atomic.Value类型，这样用户就可以在不依赖 Go 内部类型unsafe.Pointer的情况下使用到atomic提供的原子操作。
+所以我们现在看到的atomic包中除了atomic.Value外，其余都是早期由汇编写成的，并且atomic.Value类型的底层实现也是建立在已有的atomic包的基础上
 
-问题：
-
+# 问题：
     为什么在上面的场景中，atomic会比mutex性能好很多呢？
+
 原因:
 
     Mutexes do no scale. Atomic loads do.------ Dmitry Vyukov
@@ -82,11 +82,11 @@ func(v *Value) Store(x interface{}) //写操作，将原始的变量x存放在at
 
 // ifaceWords is interface{} internal representation.
 type ifaceWords struct {
-    typ  unsafe.Pointer
-    data unsafe.Pointer
+    typ  unsafe.Pointer  // 接口表指针，指向类型信息  --->动态类型
+    data unsafe.Pointer 
 }
 ```
-1.unsafe.Pointer
+1. unsafe.Pointer
 
     Go语言并不支持直接操作内存，但是它的标准库提供一种不保证向后兼容的指针类型unsafe.Pointer， 让程序可以灵活的操作内存，它的特别之处在于：可以绕过Go语言类型系统的检查
     
@@ -99,9 +99,9 @@ var a int32
 (*int)(unsafe.Pointer(&a))
 ```
 
-![](./img/load_n_store_process.png)
 
-2.实现原子性的读取任意结构操作
+2. 实现原子性的读取任意结构操作    
+![](./img/load_n_store_process.png)
 ```go
 
 func (v *Value) Load() (x interface{}) {
@@ -115,13 +115,14 @@ func (v *Value) Load() (x interface{}) {
 	}
 	// 原子性的获取到v的真正的值data的指针，然后返回
 	data := LoadPointer(&vp.data)
+	// 获得x的*ifaceWords类型指针
 	xp := (*ifaceWords)(unsafe.Pointer(&x))
 	xp.typ = typ
 	xp.data = data
 	return
 }
 ```
-3.实现原子性的存储任意结构操作
+3. 实现原子性的存储任意结构操作
 ```go
 func runtime_procPin()  //可以将一个goroutine死死占用当前使用的P ,不允许其他的goroutine抢占
 func runtime_procUnpin() //释放
@@ -167,5 +168,125 @@ func (v *Value) Store(x interface{}) {
 		StorePointer(&vp.data, xp.data)
 		return
 	}
+}
+```
+
+## 第三方应用实现:zeroLog
+使用
+```go
+package main
+
+import (
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"time"
+)
+
+func main() {
+	sampled := log.Sample(&zerolog.BurstSampler{
+		Burst:       5,
+		Period:      1 * time.Second,
+		NextSampler: &zerolog.BasicSampler{N: 20}, //下个采样器
+	})
+	for i := 0; i <= 50; i++ {
+		sampled.Info().Msgf("logged messages : %2d ", i)
+
+	}
+}
+```
+使用结果:本来应该输出 50 条日志，使用了采样，在一秒内输出最大 5 条日志，当大于 5 条后，每 20 条日志输出一次。
+```go
+{"level":"info","time":"2021-12-30T17:31:15+08:00","message":"logged messages :  0 "}
+{"level":"info","time":"2021-12-30T17:31:15+08:00","message":"logged messages :  1 "}
+{"level":"info","time":"2021-12-30T17:31:15+08:00","message":"logged messages :  2 "}
+{"level":"info","time":"2021-12-30T17:31:15+08:00","message":"logged messages :  3 "}
+{"level":"info","time":"2021-12-30T17:31:15+08:00","message":"logged messages :  4 "}
+{"level":"info","time":"2021-12-30T17:31:15+08:00","message":"logged messages :  5 "}
+{"level":"info","time":"2021-12-30T17:31:15+08:00","message":"logged messages : 25 "}
+{"level":"info","time":"2021-12-30T17:31:15+08:00","message":"logged messages : 45 "}
+
+```
+![](.atomic_images/zerolog_sampler.png)
+在 inc 函数中，使用 atomic 包将竞争的接收器对象的参数变成局部变量
+```go
+// =========== sampler.go ===
+
+// 采样器接口
+type Sampler interface {
+    // 如果事件是样本的一部分返回 true
+    Sample(lvl Level) bool
+}
+
+// BasicSampler 基本采样器
+// 每 N 个事件发送一次，不考虑日志级别
+type BasicSampler struct {
+    N
+    counter uint32
+}
+// 实现采样器接口
+func (s *BasicSampler) Sample(lvl Level) bool {
+    n := s.N
+    if n == 1 {
+        return true
+    }
+    // 加一
+    c := atomic.AddUint32(&s.counter, 1)
+    return c%n == 1
+}
+
+
+type BurstSampler struct {
+    // 调用 NextSampler 之前每个时间段(Period)调用的最大事件数量
+    Burst uint32
+    // 如果为 0，则始终调用 NextSampler
+    Period time.Duration
+    // 采样器
+    NextSampler Sampler
+    // 用于计数在一定时间内(Period)的调用数量
+    counter uint32
+    // 时间段的结束时间(纳秒)，即 当前时间+Period
+    resetAt int64
+}
+
+// 实现 Sampler 接口
+func (s *BurstSampler) Sample(lvl Level) bool {
+    // 当设置了 Burst 和 Period，大于零时限制 一定时间内的最大事件数量
+    if s.Burst > 0 && s.Period > 0 {
+        if s.inc() <= s.Burst {
+            return true
+        }
+    }
+    // 没有采样器，结束
+    if s.NextSampler == nil {
+        return false
+    }
+    // 调用采样器
+    return s.NextSampler.Sample(lvl)
+}
+
+func (s *BurstSampler) inc() uint32 {
+    // 当前时间 (纳秒)
+    now := time.Now().UnixNano()
+    // 重置时间 (纳秒)
+    resetAt := atomic.LoadInt64(&s.resetAt)
+    var c uint32
+    // 当前时间 > 重置时间
+    if now > resetAt {
+        c = 1
+        // 重置 s.counter 为 1
+        atomic.StoreUint32(&s.counter, c)
+        // 计算下一次的重置时间
+        newResetAt := now + s.Period.Nanoseconds()
+        // 比较函数开头获取的重置时间与存储的时间是否相等
+        // 相等时，将下一次的重置时间存储到 s.resetAt，并返回 true
+        reset := atomic.CompareAndSwapInt64(&s.resetAt, resetAt, newResetAt)
+        if !reset {
+              // 在上面比较赋值那一步没有抢到的 goroutine 计数器+1
+            c = atomic.AddUint32(&s.counter, 1)
+        }
+    } else {
+        c = atomic.AddUint32(&s.counter, 1)
+    }
+    return c
 }
 ```

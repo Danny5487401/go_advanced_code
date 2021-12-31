@@ -60,7 +60,7 @@ Go语言的反射就是建立在类型之上的，Golang的指定类型的变量
    官方包：sort swapper,sql convertValue ,Json反序列化
    第三方包： proto reflect,sqlx scanAll
 ## 三. 源码分析
-iface 非空接口
+### 1. iface 非空接口
 
 ![](.reflect_images/iface_struct.png)
 ![](img/iface.png)
@@ -79,7 +79,7 @@ type itab struct {
 }
 
 ```
-eface 空接口
+### 2. eface 空接口
 
 ![](.reflect_images/eface_struct.png)
 ![](img/eface.png)
