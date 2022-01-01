@@ -272,11 +272,13 @@
   - [非对称加密算法rsa](chapter17_dataStructure_n_algorithm/03_rsa/rsa.md)
     - 分段与不分段加解密
 - [3 随机算法（伪随机和真随机)](chapter17_dataStructure_n_algorithm/03_rand/rand.md)
-- [4 排序分析](chapter17_dataStructure_n_algrithm/04_sort/sort.md)
-    - 4.1 排序算法分类及图解
-    - 4.2 排序接口实现（反射方式）
-- 5 [Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
-- 6 Privacy Enhanced Mail Certificate (pem文件)生成
+- [4 排序算法分类及图解(sort包源码分析)](chapter17_dataStructure_n_algorithm/04_sort/algorithm.md)
+  - [4.1 map排序 ](chapter17_dataStructure_n_algorithm/04_sort/sorted_map/map_sort.go)
+  - [4.2 排序接口实现（反射方式）](chapter17_dataStructure_n_algorithm/04_sort/sortByReflect/sort.go)
+  - [4.3 slice排序](chapter17_dataStructure_n_algorithm/04_sort/sorted_slice/main.go)
+- [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
+- [6 Privacy Enhanced Mail Certificate (pem文件)生成](chapter17_dataStructure_n_algorithm/06_pem_generate/main.go)
+- [7 Base64编码解析](chapter17_dataStructure_n_algorithm/07_base64_encoding/base64.md)
 
 ## 第十八章 错误跟踪和panic
 - 0 错误(err)和异常（exception）区别及处理方式

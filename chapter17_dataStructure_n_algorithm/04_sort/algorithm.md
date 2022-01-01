@@ -39,3 +39,34 @@
 2. 重新排序数列，所有元素比基准值小的摆放在基准前面，所有元素比基准值大的摆在基准的后面（相同的数可以到任一边）。在这个分区退出之后，该基准就处于数列的中间位置。这个称为分区（partition）操作；
 3. 递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序；
 
+
+## Golang中 sort包内部实现了四种基本的排序算法
+
+1. 插入排序insertionSort
+2. 归并排序symMerge
+3. 堆排序heapSort
+4. 快速排序quickSort
+```go
+// 插入排序
+func insertionSort(data Interface, a, b int)
+// 堆排序
+func heapSort(data Interface, a, b int)
+// 快速排序
+func quickSort(data Interface, a, b, maxDepth int)
+// 归并排序
+func symMerge(data Interface, a, m, b int)
+```
+
+sort包内置的四种排序方法是不公开的，只能被用于sort包内部使用。因此，对数据集合排序时， 不必考虑应当选择哪一种，只需要实现sort.Interface接口定义三个接口即可
+```go
+type Interface interface{
+    Len() int //返回集合中的元素个数
+    Less(i,j int) bool//i>j 返回索引i和元素是否比索引j的元素小
+    Swap(i,j int)//交换i和j的值
+}
+```
+这里其实隐含要求这个容器或数据集合是slice类型或Array类型。否则，没法按照索引号取值
+逆序:sort包提供了Reverse()方法，允许将数据按Less()定义的排序方式逆序排序，而无需修改Less()代码。
+
+Note：Go的sort包已经为基本数据类型都实现了sort功能，其函数名的最后一个字母是s，表示sort之意。比如：Ints, Float64s, Strings，等等。
+
