@@ -1,16 +1,47 @@
-#优雅退出
+# 优雅退出
 在服务端程序更新或重启时，如果我们直接 kill -9 杀掉旧进程并启动新进程，会有以下几个问题：
 
-    * 旧的请求未处理完，如果服务端进程直接退出，会造成客户端链接中断（收到 RST）
-    * 新请求打过来，服务还没重启完毕，造成 connection refused
-    * 即使是要退出程序，直接 kill -9 仍然会让正在处理的请求中断
+* 旧的请求未处理完，如果服务端进程直接退出，会造成客户端链接中断（收到 RST）
+* 新请求打过来，服务还没重启完毕，造成 connection refused
+* 即使是要退出程序，直接 kill -9 仍然会让正在处理的请求中断
+
 很直接的感受就是：在重启过程中，会有一段时间不能给用户提供正常服务；同时粗鲁关闭服务，也可能会对业务依赖的数据库等状态服务造成污染。
 
 所以我们服务重启或者是重新发布过程中，要做到新旧服务无缝切换，同时可以保障变更服务 零宕机时间
-##思路
+## 信号
+### 信号类型
+
+列出了POSIX中定义的信号。 Linux 使用34-64信号用作实时系统中。 命令 man signal 提供了官方的信号介绍。
+在POSIX.1-1990标准中定义的信号列表:
+![](.grateful_stop_images/signal_posix.png)
+
+在SUSv2和POSIX.1-2001标准中的信号列表:
+![](.grateful_stop_images/sus_signal.png)
+
+解析:
+- 第1列为信号名；
+- 第2列为对应的信号值，需要注意的是，有些信号名对应着3个信号值，这是因为这些信号值与平台相关，将man手册中对3个信号值的说明摘出如下，the first one is usually valid for alpha and sparc, the middle one for i386, ppc and sh, and the last one for mips.
+- 第3列为操作系统收到信号后的动作，Term表明默认动作为终止进程，Ign表明默认动作为忽略该信号，Core表明默认动作为终止进程同时输出core dump，Stop表明默认动作为停止进程。
+- 第4列为对信号作用的注释性说明，浅显易懂，这里不再赘述。
+
+需要特别说明的是，SIGKILL和SIGSTOP这两个信号既不能被应用程序捕获，也不能被操作系统阻塞或忽略。
+
+### kill pid与kill -9 pid的区别
+- kill pid的作用是向进程号为pid的进程发送SIGTERM（这是kill默认发送的信号），该信号是一个结束进程的信号且可以被应用程序捕获。
+  若应用程序没有捕获并响应该信号的逻辑代码，则该信号的默认动作是kill掉进程。这是终止指定进程的推荐做法。
+
+- kill -9 pid则是向进程号为pid的进程发送SIGKILL（该信号的编号为9），从本文上面的说明可知，SIGKILL既不能被应用程序捕获，也不能被阻塞或忽略，
+  其动作是立即结束指定进程。通俗地说，应用程序根本无法“感知”SIGKILL信号，它在完全无准备的情况下，就被收到SIGKILL信号的操作系统给干掉了，
+  显然，在这种“暴力”情况下，应用程序完全没有释放当前占用资源的机会。事实上，SIGKILL信号是直接发给init进程的，它收到该信号后，负责终止pid指定的进程。
+  在某些情况下（如进程已经hang死，无法响应正常信号），就可以使用kill -9来结束进程。
+
+- 若通过kill结束的进程是一个创建过子进程的父进程，则其子进程就会成为孤儿进程（Orphan Process），
+  这种情况下，子进程的退出状态就不能再被应用进程捕获（因为作为父进程的应用程序已经不存在了），不过应该不会对整个linux系统产生什么不利影响
+
+## 思路
 对 http 服务来说，一般的思路就是关闭对 fd 的 listen , 确保不会有新的请求进来的情况下处理完已经进入的请求, 然后退出。
 
-###连接的状态
+### 连接的状态
 ```go
 type ConnState int
 
@@ -57,7 +88,7 @@ var stateName = map[ConnState]string{
 ```
 
 
-###源码分析:http 中提供了 server.ShutDown()
+### 源码分析:http 中提供了 server.ShutDown()
 
 启动
 ```go
@@ -133,14 +164,14 @@ func (srv *Server) Serve(l net.Listener) error {
   }
 }
 ```
-###go-zero流程
+### 第三方应用：go-zero流程
 gracefulStop 的流程如下
 
-	* 取消监听信号，毕竟要退出了，不需要重复监听了
-	* wrap up，关闭目前服务请求，以及资源
-	* time.Sleep() ，等待资源处理完成，以后关闭完成
-	* shutdown ，通知退出
-	* 如果主goroutine还没有退出，则主动发送 SIGKILL 退出进程
+* 取消监听信号，毕竟要退出了，不需要重复监听了
+* wrap up，关闭目前服务请求，以及资源
+* time.Sleep() ，等待资源处理完成，以后关闭完成
+* shutdown ，通知退出
+* 如果主goroutine还没有退出，则主动发送 SIGKILL 退出进程
 
 源码分析:go-zero/core/proc/signals.go
 ```
@@ -242,15 +273,17 @@ func gracefulStop(signals chan os.Signal) {
 
 ```
 
-##流程
+## 流程
 ![](.grateful_stop_images/graceful_stop.png)
 
-我们目前 go 程序都是在 docker 容器中运行，所以在服务发布过程中，k8s 会向容器发送一个 SIGTERM 信号，然后容器中程序接收到信号，开始执行 ShutDown
+我们目前 go 程序都是在 docker 容器中运行，所以在服务发布过程中，k8s 会向容器发送一个 SIGTERM 信号(结束程序)，然后容器中程序接收到信号，开始执行 ShutDown
 
 但是还有平滑重启，这个就依赖 k8s 了，基本流程如下：
 
-    * old pod 未退出之前，先启动 new pod
-    * old pod 继续处理完已经接受的请求，并且不再接受新请求
-    * new pod接受并处理新请求的方式
-    * old pod 退出
+* old pod 未退出之前，先启动 new pod
+* old pod 继续处理完已经接受的请求，并且不再接受新请求
+* new pod接受并处理新请求的方式
+* old pod 退出
+
 这样整个服务重启就算成功了，如果 new pod 没有启动成功，old pod 也可以提供服务，不会对目前线上的服务造成影响。
+
