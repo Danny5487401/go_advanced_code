@@ -78,9 +78,9 @@
 - 2 [反射](chapter04_interface_n_reflect/02_reflect/reflect.md)
     - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01three_laws/threeLaw.md)
     - [2.2 类型断言](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
-    - 2.3 获取结构体字段及获取方法
-    - 2.4 reflect.Value调用带参数的方法
-    - 2.5 反射性能优化演变案例
+    - [2.3 获取结构体字段及获取方法](chapter04_interface_n_reflect/02_reflect/03StructField_n_method/main.go)
+    - [2.4 reflect.Value修改值，调用结构体带方法，调用普通方法](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
+    - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05PerformanceInprove/main.go)
 ---
 
 ## 第五章 切片和数组

@@ -1,11 +1,11 @@
-//很多情况下，我们可能并不知道其具体类型，那么这个时候，该如何做呢？需要我们进行遍历探测其Filed来得知
-
 package main
 
 import (
 	"fmt"
 	"reflect"
 )
+
+//很多情况下，我们可能并不知道其具体类型，那么这个时候，该如何做呢？需要我们进行遍历探测其Filed来得知
 
 // 定义结构体及tag
 type Person struct {
@@ -24,19 +24,35 @@ func (p Person) PrintInfo() {
 func main() {
 	p1 := Person{"danny", 30, "男"}
 
-	DoFiledAndMethod(p1)
+	// 传实体
+	doFiledAndMethod(p1)
+
+	// 传指针
+	doFiledAndMethod(&p1)
 
 }
 
 // 通过接口来获取任意参数
-func DoFiledAndMethod(input interface{}) {
+func doFiledAndMethod(input interface{}) {
 
-	getType := reflect.TypeOf(input)             //先获取input的类型
+	getType := reflect.TypeOf(input) //先获取input的类型
+	if getType.Kind() == reflect.Ptr {
+		getType = getType.Elem()
+	}
 	fmt.Println("get Type is :", getType.Name()) // Person
 	fmt.Println("get Kind is :", getType.Kind()) // struct
 
 	getValue := reflect.ValueOf(input)
 	fmt.Println("get all Fields is:", getValue) //{danny 30 男}
+
+	if getValue.Kind() == reflect.Ptr {
+		getValue = getValue.Elem()
+	}
+
+	if getValue.Kind() != reflect.Struct { // 非结构体返回错误提示
+		fmt.Printf("ToMap only accepts struct or struct pointer; got %T", getValue)
+		return
+	}
 
 	// 获取结构体字段
 	// 1. 先获取interface的reflect.Type，然后通过NumField进行遍历
@@ -46,7 +62,9 @@ func DoFiledAndMethod(input interface{}) {
 		field := getType.Field(i)
 		value := getValue.Field(i).Interface() //获取第i个值
 		// 字段名称:Name, 字段类型:string, 字段数值:danny,tag标签:json:"name"
-		fmt.Printf("字段名称:%s, 字段类型:%s, 字段数值:%v，tag标签:%v \n", field.Name, field.Type, value, field.Tag)
+		tagName := "json"
+		tagValue := field.Tag.Get(tagName)
+		fmt.Printf("字段名称:%s, 字段类型:%s, 字段数值:%v，tag标签:%v ,json标签对应的值:%v\n", field.Name, field.Type, value, field.Tag, tagValue)
 	}
 
 	// 通过反射，操作方法
@@ -55,6 +73,8 @@ func DoFiledAndMethod(input interface{}) {
 	for i := 0; i < getType.NumMethod(); i++ {
 		method := getType.Method(i)
 		// 方法名称:PrintInfo, 方法类型:func(main.Person)
+		// 方法名称:Say, 方法类型:func(main.Person, string)
 		fmt.Printf("方法名称:%s, 方法类型:%v \n", method.Name, method.Type)
 	}
+	fmt.Println("---------------")
 }

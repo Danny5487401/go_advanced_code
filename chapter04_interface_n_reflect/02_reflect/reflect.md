@@ -462,7 +462,8 @@ func (v Value) FieldByName(name string) Value
 总结:
 ![](.reflect_images/rtype_emptyface_value_relation.png)
 
-    rtye 实现了 Type 接口，是所有类型的公共部分。emptyface 结构体和 eface 其实是一个东西，
-    而 rtype 其实和 _type 是一个东西，只是一些字段稍微有点差别，
-    比如 emptyface 的 word 字段和 eface 的 data 字段名称不同，但是数据型是一样的。
+rtye 实现了 Type 接口，是所有类型的公共部分。
+
+emptyface 结构体和 eface 其实是一个东西， 而 rtype 其实和 _type 是一个东西，只是一些字段稍微有点差别，
+比如 emptyface 的 word 字段和 eface 的 data 字段名称不同，但是数据型是一样的。
 
