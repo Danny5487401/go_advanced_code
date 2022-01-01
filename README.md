@@ -264,7 +264,9 @@
 ## 第十七章 数据结构及算法
 - 1 queue队列
 - 2 [加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/encryption.md)
-  - 对称式(aes,des)
+  - 对称式加密
+    - [aes高级加密标准](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/aes.md)
+    - [des美国数据加密标准](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/des/des.md)
   - 数字签名(hmac,md5,sha1)
     - [md5](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/md5/md5.md)
     - [hmac](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/hmac/hmac.md)
