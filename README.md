@@ -289,6 +289,10 @@
 ## 第十九章 nil预定义标识
 - 1 不同类型为nil时的地址和大小
 - 2 不同类型与nil的比较
+  - interface
+  - nil==nil
+  - ptr,channel,func,map
+  - slice
 - 3 不同类型nil时的特点
 
 ## [第二十章 for-range源码分析](chapter20_for_range/for_range.md)
