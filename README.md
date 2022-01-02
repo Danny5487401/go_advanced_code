@@ -40,7 +40,7 @@
         - 2.5.1 标准包runtime/pprof及net/http/pprof
         - 2.5.2 第三方包pkg/profile
     - [2.6 Go内存结构](chapter02_goroutine/02_runtime/06memory/mem.md)
-- 3 多goroutine的缓存一致性(涉及cpu伪共享)
+- 3 [多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
 - 4 [线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
     - 4.1 Goroutine最大数量限制(令牌桶方式)
     - 4.2 百万请求处理
