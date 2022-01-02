@@ -1,7 +1,8 @@
 package main
+
 import (
 	"fmt"
-	"go_advenced_code/chapter06_pointer/03PointerSetPrivateValue/p"
+	"go_advanced_code/chapter06_pointer/03PointerSetPrivateValue/p"
 	"runtime"
 	"strconv"
 	"unsafe"
@@ -22,13 +23,13 @@ func main() {
 
 	// 4. i是int32类型，也就是说i占4个字节。所以j是相对于v偏移了4个字节。Note:我的机器64位，占8个字节
 	// 如果是32位CPU就是4个字节，如果是64位就是8个字节，由CPU的位数决定，然后按照公式1字节 = 8位计算
-	fmt.Println(runtime.GOARCH)  //CPU型号 amd64
-	fmt.Println(strconv.IntSize) //int位数 64
+	fmt.Println("cpu架构:", runtime.GOARCH)  // amd64
+	fmt.Println("int位数:", strconv.IntSize) //int位数 64
 	//		您可以用uintptr(4)或uintptr(unsafe.Sizeof(int32(0)))来做这个事
 	//var j *int64 = (*int64)(unsafe.Pointer(uintptr(unsafe.Pointer(v)) + uintptr(unsafe.Sizeof(int32(5)))))
 	var j *int64 = (*int64)(unsafe.Pointer(uintptr(unsafe.Pointer(v)) + uintptr(8)))
 
 	*j = int64(99)
-	v.PutI()  // i=98
-	v.PutJ() // j=0 不是99，注意字节数
+	v.PutI() // i=98
+	v.PutJ() // 如果j=0 不是99，注意字节数
 }

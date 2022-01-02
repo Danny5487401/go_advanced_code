@@ -59,10 +59,10 @@ func addOneThread(bignum int) {
 func main() {
 
 	bigNum := 100000
-	addConcurrent(bigNum) //30.851988ms
 
-	addCPUNum(bigNum)    // 1.472481ms
-	addOneThread(bigNum) //558.033µs
+	addConcurrent(bigNum) //30.851988ms
+	addCPUNum(bigNum)     // 1.472481ms
+	addOneThread(bigNum)  //558.033µs
 
 }
 

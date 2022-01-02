@@ -30,13 +30,13 @@ type Pool struct {
 }
 ```
 
-    local 字段存储指向 [P]poolLocal 数组（严格来说，它是一个切片）的指针，localSize 则表示 local 数组的大小。
-    访问时，P 的 id 对应 [P]poolLocal 下标索引。通过这样的设计，多个 goroutine 使用同一个 Pool 时，减少了竞争，提升了性能。、
+local 字段存储指向 [P]poolLocal 数组（严格来说，它是一个切片）的指针，localSize 则表示 local 数组的大小。
+访问时，P 的 id 对应 [P]poolLocal 下标索引。通过这样的设计，多个 goroutine 使用同一个 Pool 时，减少了竞争，提升了性能。
 
-    在一轮 GC 到来时，victim 和 victimSize 会分别“接管” local 和 localSize。
-    victim 的机制用于减少 GC 后冷启动导致的性能抖动，让分配对象更平滑
+在一轮 GC 到来时，victim 和 victimSize 会分别“接管” local 和 localSize。
+victim 的机制用于减少 GC 后冷启动导致的性能抖动，让分配对象更平滑
 
-    Victim Cache 本来是计算机架构里面的一个概念，是 CPU 硬件处理缓存的一种技术，sync.Pool 引入的意图在于降低 GC 压力的同时提高命中率
+Victim Cache 本来是计算机架构里面的一个概念，是 CPU 硬件处理缓存的一种技术，sync.Pool 引入的意图在于降低 GC 压力的同时提高命中率
 
 ```go
 // Local per-P Pool appendix.

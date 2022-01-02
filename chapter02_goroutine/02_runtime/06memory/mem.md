@@ -243,7 +243,8 @@ type mheap struct {
 }
 ```
 ![](img/mheap.png)
-		bitmap和arena_start指向了同一个地址，这是因为bitmap的地址是从高到低增长
+bitmap和arena_start指向了同一个地址，这是因为bitmap的地址是从高到低增长
+
 内存分配流程
 ![](.mem_images/mem_distribute_process.png)
 
@@ -254,7 +255,7 @@ type mheap struct {
 
 大体上的分配流程：
 
-1. >32KB 的对象，直接从mheap上分配；
+1. 范围: >32KB 的对象，直接从mheap上分配
 
 2. <=16B 且无指针(noscan)的对象使用mcache的tiny分配器分配；
 

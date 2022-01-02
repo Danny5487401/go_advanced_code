@@ -84,7 +84,6 @@
 ---
 
 ## 第五章 切片和数组
-
 - 1 值传递-数组
 - 2 引用传递-指针切片和指针数组
 - 3 切片和数组参数传递性能对比
@@ -98,16 +97,14 @@
 ---
 
 ## 第六章 指针
-
 - 1 指针类型转换及修改值
 - [2 指针分类及unsafe包使用](chapter06_pointer/02unsafe/unsafe.md)
-- 3 获取私有变量值
-- 4 切片与字符串零拷贝互转
+- [3 获取并修改结构体私有变量值](chapter06_pointer/03PointerSetPrivateValue/main.go)
+- [4 切片与字符串零拷贝互转(指针和反射方式)](chapter06_pointer/04SliceToString/sliceToString.go)
 
 ---
 
 ## [第七章 系统调用](chapter07_system_call/Syscall.md)
-
 1. 获取当前进程 PID
 
 ## [第八章 defer函数及汇编语言理解](chapter08_defer/defer.md)
@@ -118,11 +115,10 @@
 - 5 [汇编理解defer函数](chapter08_defer/05_defer_assembly/defer_asm.md)
 
 ## [第九章 设计模式-OOP七大准则](chapter09_design_pattern/introduction.md)
-
 - 1 创建型模式
     - [1.1 静态工厂模式-->new关键字函数实现简单工厂](chapter09_design_pattern/01_construction/01_StaticFactoryMethod/static_factory.md)
     - 1.2 工厂方法模式-->k8s中实现
-    - 1.3 单例模式-->标准库strings/replace实现
+    - [1.3 单例模式-->标准库strings/replace实现](chapter09_design_pattern/01_construction/03_singleton/singleton.md)
     - [1.4 原型模式-->confluent-kafka中map实现](chapter09_design_pattern/01_construction/04_prototype/prototype.md)
     - [1.5 建造者模式-->xorm，k8s中实现](chapter09_design_pattern/01_construction/05_builder/builder_info.md)
 - 2 结构型模式
@@ -158,7 +154,7 @@
 - 6 [同步模式(sync同步原语以及扩展原语)](chapter09_design_pattern/06_Synchronization_mode/01_sync/sync.md)
     - 6.1 waitGroup同步等待组对象
     - 6.2 [互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比](chapter09_design_pattern/06_Synchronization_mode/01_sync/02RWMutex_vs_mutex/mutex.md)
-    - 6.3 Once单例对象
+    - [6.3 Once源码分析](chapter09_design_pattern/06_Synchronization_mode/01_sync/03Once/once.md)
     - 6.4 [并发安全Map(读多写少)](chapter09_design_pattern/06_Synchronization_mode/01_sync/04map/sync_map.md)
     - 6.5 [Pool对象池模式( *非连接池* !）-->官方包对象池fmt](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/pool.md)
         - 6.5.1 未使用newFunc
@@ -213,7 +209,7 @@
 - 3 [ Golang底层数据结构](chapter11_assembly_language/03Golang_data_structure/data.md)
     - [3.1 Map底层结构](chapter11_assembly_language/03Golang_data_structure/map_structure/map_intro.md)
     - [3.2 String底层结构,字符集和字符编码,性能分析及内存泄漏分析](chapter11_assembly_language/03Golang_data_structure/string_structure/str.md)
-    - 3.3 Struct底层结构
+    - [3.3 Struct底层结构,内存布局,空结构体](chapter11_assembly_language/03Golang_data_structure/struct_structure/struct.md)
 
 ## 第十二章 网络编程net
 - [socket介绍](chapter12_net/socket.md)
