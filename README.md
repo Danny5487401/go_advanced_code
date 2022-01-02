@@ -46,7 +46,7 @@
     - 4.2 百万请求处理
     - [4.3 第三方包线程池ants](chapter02_goroutine/04_concurrent_pool/03_antsPool/ants.md)
     - [4.4 标准库连接池sql实现](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
-- 5 goroutine泄漏分析及处理
+- [5 goroutine泄漏分析及处理](chapter02_goroutine/05_goroutine_leaks/goroutine_leak.md)
 ---
 
 ## 第三章 通道Channel

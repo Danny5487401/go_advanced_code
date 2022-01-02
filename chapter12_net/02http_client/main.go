@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"regexp"
@@ -41,11 +42,11 @@ func GetEmail() {
 	*/
 	// 2.读取页面内容
 	pageBytes, err := ioutil.ReadAll(resp.Body)
-	HandleError(err, "ioutil.ReadAll")
 
 	// 字节转字符串
-	pageStr := string(pageBytes)
-	//fmt.Println(pageStr)
+	var pageStr string
+	HandleError(err, "NewDecoder")
+	pageStr = string(pageBytes)
 
 	// 3.过滤数据，过滤qq邮箱
 	re := regexp.MustCompile(reQQEmail)
@@ -67,6 +68,6 @@ func main() {
 // 处理异常
 func HandleError(err error, why string) {
 	if err != nil {
-		fmt.Println(why, err)
+		log.Fatalf(why, err)
 	}
 }
