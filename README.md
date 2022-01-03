@@ -227,6 +227,7 @@
   - 5.1 服务端
   - 5.2 客户端
 - [6 优雅退出原理分析（go-zero实践）](chapter12_net/06_grateful_stop/grateful_stop.md)
+- [7 URL的解析 Parse，query 数据的转义与反转义](chapter12_net/07_url/url.md)
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
 [cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)
