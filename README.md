@@ -282,7 +282,7 @@
 ## 第十八章 错误跟踪和panic
 - 0 错误(err)和异常（exception）区别及处理方式
 - 1 自定义错误类型打印错误栈
-- [2 扩展包pkg.errors](chapter18_error_n_panic/02_pkg_errors/pkg_erros.md)
+- [2 扩展包pkg.errors](chapter18_error_n_panic/02_pkg_errors/pkg_errors.md)
 - [3 Gin的错误recover分析(panic和recover源码分析)](chapter18_error_n_panic/03_recover/panic.md)
 - [4 errCode错误码自动化生成](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
 - 5 error如何比较
