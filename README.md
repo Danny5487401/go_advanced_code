@@ -216,7 +216,10 @@
 - [tcp介绍](chapter12_net/tcp.md)
 - [多路复用](chapter12_net/io_multiplexing.md)
 
-- 1 net/http高级封装演变
+- 1 http服务端高级封装演变
+  - [1.1 使用DefaultServeMux](chapter12_net/01_http_server/01_use_DefaultServeMux/main.go)
+  - [1.2 使用内置serveMux生成函数](chapter12_net/01_http_server/02_use_http_NewServeMux/main.go)
+  - [1.3 自定义实现serveMux](chapter12_net/01_http_server/03_use_cutomized_mux/main.go)
 - 2 爬虫获取邮箱案例(http客户端源码分析)
   - [2.1 request源码](chapter12_net/02http_client/http_request.md)
   - [2.2 response源码](chapter12_net/02http_client/http_response.md)

@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 // 错误和异常处理
 
@@ -14,26 +17,26 @@ func div(a, b int) (int, error) {
 }
 
 func main() {
-	// 错误就是能遇到可能出现的情况，这些情况可能导致你的代码出问题，例如参数检查，数据库转换
+	// 1. 错误就是能遇到可能出现的情况，这些情况可能导致你的代码出问题，例如参数检查，数据库转换
+	/* go 认为这个itoa函数不可能出错，没有必要返回error，
+	内部代码出错这个时候应该抛出异常Panic,对应python中的raise,Java中的throw
+	*/
 
-	//data := 10
-	///* go 认为这个itoa函数不可能出错，没有必要返回error，
-	//	内部代码出错这个时候应该抛出异常Panic,对应python中的raise,Java中的throw
-	//*/
-	//strconv.Itoa(data) //不返回error
-	//i,err := strconv.Atoi("12")  //返回error
-	//if err != nil{
-	//	fmt.Println(err.Error())
-	//}
-	//fmt.Println(i)
+	i, err := strconv.Atoi("12") //返回error
+	if err != nil {
+		fmt.Println(err.Error())
+		return
 
-	// 异常情况
+	}
+	fmt.Println(i)
+
+	// 2. 异常情况
 	panicSituation()
 
 }
 
 /*
-	异常情况 ：在这个启示下，我们给出异常处理的作用域（场景）：
+异常情况 ：异常处理的作用域（场景）：
 	1. 空指针引用
 	2. 下标越界
 	3. 除数为0
