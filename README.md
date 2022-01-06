@@ -264,14 +264,16 @@
 ## 第十七章 数据结构及算法
 - 1 queue队列
 - 2 [加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/encryption.md)
-  - 对称式加密
+  - 2.1 对称式加密
     - [aes高级加密标准](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/aes.md)
+      - Cipher FeedBack密码反馈模式
+      - Cipher Block Chaining密码分组链接模式
     - [des美国数据加密标准](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/des/des.md)
-  - 数字签名(hmac,md5,sha1)
+  - 2.2 数字签名(hmac,md5,sha1)
     - [md5](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/md5/md5.md)
     - [hmac](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/hmac/hmac.md)
     - [sha-1](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/sha1/sha1.md)
-  - [非对称加密算法rsa](chapter17_dataStructure_n_algorithm/03_rsa/rsa.md)
+  - 2.3 [非对称加密算法rsa](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/03_rsa/rsa.md)
     - 分段与不分段加解密
 - [3 随机算法（伪随机和真随机)](chapter17_dataStructure_n_algorithm/03_rand/rand.md)
 - [4 排序算法分类及图解(sort包源码分析)](chapter17_dataStructure_n_algorithm/04_sort/algorithm.md)

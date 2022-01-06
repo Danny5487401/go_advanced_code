@@ -44,3 +44,5 @@ func main() {
 	//log.Println("解密后：\t", string(jiemi))
 
 }
+
+//Note：加密的内容不能太大，最大不能超过秘钥的长度

@@ -12,12 +12,15 @@ import (
 
 // 加密。iv即初始向量，这里取密钥的前16位作为初始向量。
 func encrypt(text string, key []byte) (string, error) {
-	var iv = key[:aes.BlockSize]
-	encrypted := make([]byte, len(text))
+
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return "", err
 	}
+
+	var iv = key[:aes.BlockSize]
+	encrypted := make([]byte, len(text))
+
 	encrypter := cipher.NewCFBEncrypter(block, iv)
 	encrypter.XORKeyStream(encrypted, []byte(text))
 	return hex.EncodeToString(encrypted), nil
