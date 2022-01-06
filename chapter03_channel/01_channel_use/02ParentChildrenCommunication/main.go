@@ -7,7 +7,8 @@ import (
 
 func main() {
 	ch1 := make(chan int)
-	done := make(chan bool) // 通道
+
+	done := make(chan bool) // 结束通道
 	go func() {
 		fmt.Println("子goroutine执行。。。")
 		time.Sleep(3 * time.Second)
@@ -15,7 +16,7 @@ func main() {
 		fmt.Println("data：", data)
 		done <- true
 	}()
-	// 向通道中写数据。。
+	// 向子协程写数据。。
 	time.Sleep(5 * time.Second)
 	ch1 <- 100
 
