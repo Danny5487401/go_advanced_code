@@ -120,7 +120,7 @@
     - 1.2 工厂方法模式-->k8s中实现
     - [1.3 单例模式-->标准库strings/replace实现](chapter09_design_pattern/01_construction/03_singleton/singleton.md)
     - [1.4 原型模式-->confluent-kafka中map实现](chapter09_design_pattern/01_construction/04_prototype/prototype.md)
-    - [1.5 建造者模式-->xorm，k8s中实现](chapter09_design_pattern/01_construction/05_builder/builder_info.md)
+    - [1.5 建造者模式-->xorm,k8s,zap中实现](chapter09_design_pattern/01_construction/05_builder/builder_info.md)
 - 2 结构型模式
     - 2.1 组合模式
         - 2.1.1 修改前：使用面向对象处理
