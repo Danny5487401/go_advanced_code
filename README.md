@@ -50,7 +50,8 @@
 ---
 
 ## 第三章 通道Channel
-- 1 基本使用
+
+- 1 [Channel内部结构及源码分析(含PPT分析)](chapter03_channel/01_channel_use/channel.md)
     - [1.0 channel初始化](chapter03_channel/01_basicUse/00introdution/main.go)
     - [1.1 无缓存通道](chapter03_channel/01_basicUse/01unbufferd_channel/main.go)
     - [1.2 父子通信](chapter03_channel/01_basicUse/02ParentChildrenCommunication/main.go)
@@ -63,13 +64,14 @@
     - [1.9 使用channel传递channel](chapter03_channel/01_basicUse/09ChanPassChan/main.go)
     - [1.10 happened before](chapter03_channel/01_basicUse/10_happened_before/happened_before.md)
     - [1.11 读取关闭的通道值](chapter03_channel/01_basicUse/11_read_closed_chan/readCloseChan.go)
+    - [1.12 select中实现channel优先级-->k8s中实现](chapter03_channel/01_channel_use/12_priority_channel/priority_chan.md)
+
 - 2 [channel应用:TimerChan模块](chapter03_channel/02_TimerChan/timer.md)
     - [2.1 reset陷阱](chapter03_channel/02_TimerChan/01_TimerReset/timer_reset.md)
     - [2.2 timerStop使用](chapter03_channel/02_TimerChan/02_TimerStop/timer_stop.md)
     - [2.3 TimerAfter陷阱](chapter03_channel/02_TimerChan/03_TimeAfter/main.go)
 - 3 [Select多路复用](chapter03_channel/03_select/03Select_DataStructure/select.md)
 - 4 [CSP理论中的Process/Channel](chapter03_channel/04_CSP/CSP.md)
-- 5 [Channel内部结构及源码分析(含PPT分析)](chapter03_channel/05_original_code/original_code.md)
 ---
 
 ## 第四章 interface和反射 

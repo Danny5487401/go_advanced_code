@@ -93,16 +93,17 @@ func reflect_rselect(cases []runtimeSelect) (int, bool) {
 ```
 2. 第二个函数
 ![](selectgo_process.png)
+
 selectgo函数 参考图
-	1、打乱数组顺序（随机获取case）
-	2、锁定所有channel
-	3、遍历所有channel，判断是否有可读或者可写的，如果有，解锁channel,返回对应数据
-	4、否则，判断有没有default，如果有，解锁channel，返回default对应scase
-	5、否则，把当前groutian添加到所有channel的等待队列里，解锁所有channel，等待被唤醒
-	6、被唤醒后，再次锁定所有channel
-	7、遍历所有channel，把g从channel等待队列中移除，并找到可操作的channel
-	8、如果对应的scase不为空，直接返回对应的值
-	9、否则循环此过程
+    1. 打乱数组顺序（随机获取case）
+    2. 锁定所有channel
+    3. 遍历所有channel，判断是否有可读或者可写的，如果有，解锁channel,返回对应数据
+    4. 否则，判断有没有default，如果有，解锁channel，返回default对应scase
+    5. 否则，把当前groutian添加到所有channel的等待队列里，解锁所有channel，等待被唤醒
+    6. 被唤醒后，再次锁定所有channel
+    7. 遍历所有channel，把g从channel等待队列中移除，并找到可操作的channel
+    8. 如果对应的scase不为空，直接返回对应的值
+    9. 否则循环此过程
 ```go
 
 func selectgo(cas0 *scase, order0 *uint16, ncases int) (int, bool) {

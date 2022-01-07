@@ -2,18 +2,6 @@ package main
 
 import "fmt"
 
-/*
-channel的使用场景:把channel用在数据流动的地方
-	1. 消息传递、消息过滤
-	2. 信号广播
-	3. 事件订阅与广播
-	4. 请求、响应转发
-	5. 任务分发
-	6. 结果汇总
-	7. 并发控制
-	8. 同步与异步
-*/
-
 func main() {
 	//未初始化
 	var a chan int

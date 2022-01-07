@@ -1,17 +1,29 @@
-# 源码分析 
+# channel
+## 使用场景
+把channel用在数据流动的地方
+1. 消息传递、消息过滤
+2. 信号广播
+3. 事件订阅与广播
+4. 请求、响应转发
+5. 任务分发
+6. 结果汇总
+7. 并发控制
+8. 同步与异步
+ 
 
-## 数据结构
+## 源码分析- 数据结构
 创建一个容量为 6 的，元素为 int 型的 channel 数据结构
-![](./makeChan.png)
-	图为一个长度为6，类型为int, 两个接收者，三个发送者的channel，当前接收者准备读数据的位置为0，发送者发送数据位置为4.
-	一般情况下recvq和sendq至少有一个为空。只有一个例外，那就是同一个goroutine使用select语句向channel一边写数据，一边读数据
-![](./channel_design.png)  
-![](./channelStructure.png)
+![](.img/makeChan.png)
+图为一个长度为6，类型为int, 两个接收者，三个发送者的channel，当前接收者准备读数据的位置为0，发送者发送数据位置为4.
+一般情况下recvq和sendq至少有一个为空。只有一个例外，那就是同一个goroutine使用select语句向channel一边写数据，一边读数据
+![](.img/channel_design.png)  
+![](.img/channelStructure.png)
 
-	1. buf是有缓冲的channel所特有的结构，用来存储缓存数据。是个循环链表
-	2. sendx和recvx用于记录buf这个循环链表中的~发送或者接收的~index
-	3. lock是个互斥锁。
-	4. recvq和sendq分别是接收(<-channel)或者发送(channel <- xxx)的goroutine抽象出来的结构体(sudog)的队列。是个双向链表
+1. buf是有缓冲的channel所特有的结构，用来存储缓存数据。是个循环链表
+2. sendx和recvx用于记录buf这个循环链表中的~发送或者接收的~index
+3. lock是个互斥锁。
+4. recvq和sendq分别是接收(<-channel)或者发送(channel <- xxx)的goroutine抽象出来的结构体(sudog)的队列。是个双向链表
+
 
 源码在： /runtime/chan.go 结构体是 hchan
 ```go
@@ -39,22 +51,23 @@ type waitq struct {
 
 源码分析PPT: https://speakerdeck.com/kavya719/understanding-channels
 
-	1.channel的创建  
-![](make_chan.jpg)
+1. channel的创建  
+![](.img/make_chan.jpg)
 
-	创建channel实际上就是在内存中实例化了一个hchan的结构体，并返回一个ch指针，我们使用过程中channel在函数之间的传递都是用的这个指针，
-	这就是为什么函数传递中无需使用channel的指针，而直接用channel就行了，因为channel本身就是一个指针
+    创建channel实际上就是在内存中实例化了一个hchan的结构体，并返回一个ch指针，我们使用过程中channel在函数之间的传递都是用的这个指针，
+    这就是为什么函数传递中无需使用channel的指针，而直接用channel就行了，因为channel本身就是一个指针
 
-	2.各种场景的发送和接收
+2. 各种场景的发送和接收
 ![](blocked_into_sudog.jpg)
 
-	3.goroutine的调度
-	4.goroutine的阻塞和唤醒
-	5.channel和goroutine在select操作下  
+3. goroutine的调度
+4. goroutine的阻塞和唤醒
+5. channel和goroutine在select操作下  
 
-## 一.创建过程
-	创建channel的过程实际上是初始化hchan结构。其中类型信息和缓冲区长度由make语句传入，buf的大小则与元素大小和缓冲区长度共同决定
-	源码：runtime/chan.go
+### 一. 创建过程
+创建channel的过程实际上是初始化hchan结构。其中类型信息和缓冲区长度由make语句传入，buf的大小则与元素大小和缓冲区长度共同决定
+
+源码：runtime/chan.go
 ```go
 const (
 	maxAlign  = 8
@@ -109,7 +122,7 @@ c := make(chan int64)
 ```
 
 注意：非阻塞写必须带上default
-	对应
+对应
 ```go
 //阻塞
 func chansend1(c *hchan, elem unsafe.Pointer) {
@@ -290,22 +303,24 @@ func sendDirect(t *_type, sg *sudog, src unsafe.Pointer) {
 	这样做的好处是减少了一次内存 copy：不用先拷贝到 channel 的 buf，直接由发送者到接收者，没有中间商赚差价，效率得以提高，完美。
 
 ## 三. 读数据 --分阻塞和非阻塞
-	1。如果等待发送队列sendq不为空，且没有缓冲区，直接从sendq中取出G，把G中数据读出，最后把G唤醒，结束读取过程；
-	2。如果等待发送队列sendq不为空，此时说明缓冲区已满，从缓冲区中首部读出数据，把G中数据写入缓冲区尾部，把G唤醒，结束读取过程；
-	3。如果缓冲区中有数据，则从缓冲区取出数据，结束读取过程；
-	4。 sender_process_diagram将当前goroutine加入recvq，进入睡眠，等待被写goroutine唤醒；
+1. 如果等待发送队列sendq不为空，且没有缓冲区，直接从sendq中取出G，把G中数据读出，最后把G唤醒，结束读取过程；
+2. 如果等待发送队列sendq不为空，此时说明缓冲区已满，从缓冲区中首部读出数据，把G中数据写入缓冲区尾部，把G唤醒，结束读取过程；
+3. 如果缓冲区中有数据，则从缓冲区取出数据，结束读取过程；
+4. sender_process_diagram将当前goroutine加入recvq，进入睡眠，等待被写goroutine唤醒；
+```go
+c := make(chan int, 10)
+<-c //阻塞读
 
-	c := make(chan int, 10)
-	<-c //阻塞读
+//select读带default为非阻塞读
+select{
+case <-c:
+    //...
+    break
+default:
+    //...
+}
+```
 
-	//select读带default为非阻塞读
-	select{
-	case <-c:
-		//...
-		break
-	default:
-		//...
-	}
 注意：非阻塞读必须带上default
 接收操作有两种写法，
 ```go
@@ -347,7 +362,7 @@ func chanrecv2(c *hchan, elem unsafe.Pointer) (received bool) {
 ```
 
 源码分析
-	最终都指向了chanrecv函数，如果有接收值，val := <-c，会把接收值放到elem的地址中，如果忽略接收值直接写<-c，这时elem为nil
+最终都指向了chanrecv函数，如果有接收值，val := <-c，会把接收值放到elem的地址中，如果忽略接收值直接写<-c，这时elem为nil
 ```go
 // 位于 src/runtime/chan.go
 // chanrecv 函数接收 channel c 的元素并将其写入 ep 所指向的内存地址。
@@ -487,10 +502,10 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool) (selected, received bool)
 ```
 
 当channel缓存满了之后会发生什么?
-	Go调度原理web连接：https://i6448038.github.io/2017/12/04/golang-concurrency-principle/  Go的CSP并发模型--->Go线程实现模型MPG
+Go调度原理web连接：https://i6448038.github.io/2017/12/04/golang-concurrency-principle/  Go的CSP并发模型--->Go线程实现模型MPG
 
 如果有等待发送的队列，说明 channel 已经满了，要么是非缓冲型的 channel，要么是缓冲型的 channel，但 buf 满了。
-	调用 recv 函数
+调用 recv 函数
 
 ```go
 func recv(c *hchan, sg *sudog, ep unsafe.Pointer, unlockf func(), skip int) {
@@ -565,12 +580,12 @@ func chanbuf(c *hchan, i uint) unsafe.Pointer {
 	将该处的元素拷贝到接收地址。然后将发送者待发送的数据拷贝到接收游标处。这样就完成了接收数据和发送数据的操作。
 	接着，分别将发送游标和接收游标向前进一，如果发生“环绕”，再从 0 开始
 
-## 四：关闭channel
+## 四. 关闭channel
 	close 逻辑比较简单，对于一个 channel，recvq 和 sendq 中分别保存了阻塞的发送者和接收者。关闭 channel 后，对于等待接收者而言，会收到一个相应类型的零值。
 	对于等待发送者，会直接 panic。所以，在不了解 channel 还有没有接收者的情况下，不能贸然关闭 channel.
 	close 函数先上一把大锁，接着把所有挂在这个 channel 上的 sender 和 receiver 全都连成一个 sudog 链表，再解锁。
 	最后，再将所有的 sudog 全都唤醒。
-关闭原则：
+### 关闭原则：
 
 	一般原则上使用通道是不允许接收方关闭通道和 不能关闭一个有多个并发发送者的通道。
 	换而言之， 你只能在发送方的 goroutine 中关闭只有该发送方的通道
@@ -663,9 +678,9 @@ func closechan(c *hchan) {
 
 
 
-##总结一下操作 channel 的结果
-![](img/channel_operation_guild.png)
+## 总结一下操作 channel 的结果
+![](.img/channel_operation_guild.png)
 
-###发送和接收元素的本质
+### 送和接收元素的本质
 channel 的发送和接收操作本质上都是 “值的拷贝”，无论是从 sender goroutine 的栈到 chan buf，还是从 chan buf 到 receiver goroutine，
 或者是直接从 sender goroutine 到 receiver goroutine。
