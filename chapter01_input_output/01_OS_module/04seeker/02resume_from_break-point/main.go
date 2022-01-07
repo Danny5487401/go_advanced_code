@@ -42,7 +42,6 @@ func main() {
 	fmt.Println(n1)
 	countStr := string(bs[:n1])
 	fmt.Println(countStr)
-	//count,_:=strconv.Atoi(countStr)
 	count, _ := strconv.ParseInt(countStr, 10, 64)
 	fmt.Println(count)
 

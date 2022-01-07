@@ -40,5 +40,5 @@ type funcval struct {
 ```shell
 deferproc(16, &funcval{sum})
 ```
-    因为 sum 函数有 2 个 int 型的参数共 16 字节，所以在调用 deferproc 函数时第一个参数为16，第二个参数 funcval 结构体对象的 fn 成员为 sum 函数的地址。
-    我们可以先想一下为什么需要把 sum 函数的参数大小传递给 deferproc() 函数？另外为什么没看到 sum 函数需要的两个参数呢？
+因为 sum 函数有 2 个 int 型的参数共 16 字节，所以在调用 deferproc 函数时第一个参数为16，第二个参数 funcval 结构体对象的 fn 成员为 sum 函数的地址。
+我们可以先想一下为什么需要把 sum 函数的参数大小传递给 deferproc() 函数？另外为什么没看到 sum 函数需要的两个参数呢？
