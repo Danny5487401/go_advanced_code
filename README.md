@@ -31,19 +31,22 @@
 ## 第二章 协程Goroutine
 - 1 [线程模型分类及Goroutine切换原则(GPM模型)](chapter02_goroutine/01_GPM/GPM.md)
     - 1.1 [trace查看宏观调度流程(Goroutine启动时长)](chapter02_goroutine/01_GPM/trace/trace.md)
-- 2 runtime模块和GC
-    - 2.1 runtime核心功能及系统信息调用
-    - 2.2 Goexit()终止线程
+- 2 [runtime模块和GC](chapter02_goroutine/02_runtime/runtime.md)
+    - [2.1 runtime核心功能及系统信息调用](chapter02_goroutine/02_runtime/01basic_use/main.go)
+    - [2.2 Goexit()终止线程](chapter02_goroutine/02_runtime/02GoExit/main.go)
     - 2.3 资源竞争一致性问题分析
-    - [2.4 垃圾回收机制(trace查看map垃圾回收）](chapter02_goroutine/02_runtime/04GC/gc.md)
+      - [2.3.1 问题产生](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/main.go)
+      - [2.3.2 问题解决](chapter02_goroutine/02_runtime/03ResourceCompetition/02Fix_Resource_data_consistency/main.go)
+    - [2.4 GC垃圾回收机制(trace查看map垃圾回收)](chapter02_goroutine/02_runtime/04GC/gc.md)
     - [2.5 监控代码性能pprof](chapter02_goroutine/02_runtime/05pprof/intro.md)
-        - 2.5.1 标准包runtime/pprof及net/http/pprof
-        - 2.5.2 第三方包pkg/profile
+      - 2.5.1 标准包runtime/pprof及net/http/pprof
+      - 2.5.2 第三方包pkg/profile
     - [2.6 Go内存结构](chapter02_goroutine/02_runtime/06memory/mem.md)
+    - [2.7 prometheus监控程序](chapter02_goroutine/02_runtime/07prometheus/prometheus.md)
 - 3 [多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
 - 4 [线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
-    - 4.1 Goroutine最大数量限制(令牌桶方式)
-    - 4.2 百万请求处理
+    - [4.1 Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
+    - [4.2 百万请求处理](chapter02_goroutine/04_concurrent_pool/02_millionRequests/main.go)
     - [4.3 第三方包线程池ants](chapter02_goroutine/04_concurrent_pool/03_antsPool/ants.md)
     - [4.4 标准库连接池sql实现](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
 - [5 goroutine泄漏分析及处理](chapter02_goroutine/05_goroutine_leaks/goroutine_leak.md)
