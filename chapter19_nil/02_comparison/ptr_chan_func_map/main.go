@@ -14,13 +14,18 @@ func main() {
 	var a int = 0 // 分配了地址
 	var p *int = &a
 	fmt.Println(p == nil) // false
+
 	p = (*int)(unsafe.Pointer(uintptr(0x0)))
 	fmt.Println(p == nil) // true
+
+	var mapInfo map[int]int
+	fmt.Println(mapInfo == nil) // true
 
 	// ==============分配了空间====================
 
 	m := make(map[int]int)
 	fmt.Println(m == nil) // false
+
 	c := make(chan int)
 	fmt.Println(c == nil) // false
 }

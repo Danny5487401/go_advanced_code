@@ -259,10 +259,10 @@
 - 4 WithValue源码及使用
 - 5 WithTimeout源码及使用
 
-## 第十五章 接口编程
-- 1 冗余代码写法
-- 2 简单优化
-- 3 更优方式
+## 第十五章 接口嵌套编程
+- [1 常见冗余代码写法](chapter15_interfaceProgramming/01_problem/main.go)
+- [2 简单优化](chapter15_interfaceProgramming/02_simple_method/main.go)
+- [3 更优方式](chapter15_interfaceProgramming/03_better_solution/main.go)
 
 ## 第十六章 并发编程
 - 1 简单流水线模型
@@ -292,21 +292,24 @@
 - [7 Base64编码解析](chapter17_dataStructure_n_algorithm/07_base64_encoding/base64.md)
 
 ## 第十八章 错误跟踪和panic
-- 0 错误(err)和异常（exception）区别及处理方式
+- [0 错误(err)和异常（exception）区别及处理方式](chapter18_error_n_panic/00_diff_between_err_n_exception/main.go)
 - 1 自定义错误类型打印错误栈
 - [2 扩展包pkg.errors](chapter18_error_n_panic/02_pkg_errors/pkg_errors.md)
 - [3 Gin的错误recover分析(panic和recover源码分析)](chapter18_error_n_panic/03_recover/panic.md)
 - [4 errCode错误码自动化生成](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
-- 5 error如何比较
+- [5 error如何正确比较](chapter18_error_n_panic/05_err_comparision/main.go)
 
 ## 第十九章 nil预定义标识
 - 1 不同类型为nil时的地址和大小
 - 2 不同类型与nil的比较
-  - interface
-  - nil==nil
-  - ptr,channel,func,map
-  - slice
+  - [interface为nil时:数据段和类型](chapter19_nil/02_comparison/interface/interface.go)
+  - [nil==nil不可以比较](chapter19_nil/02_comparison/nil/main.go)
+  - [ptr,channel,func,map为nil必须地址未分配](chapter19_nil/02_comparison/ptr_chan_func_map/main.go)
+  - [slice的长度和容量不决定nil](chapter19_nil/02_comparison/slice/slice.go)
 - 3 不同类型nil时的特点
+  - [channel为nil时的接收，发送，关闭及select](chapter19_nil/03_Attribute/channel/chan.go)
+  - [map为nil时可读不可写](chapter19_nil/03_Attribute/map/map.go)
+  - [结构体指针为nil时是否可以调用方法](chapter19_nil/03_Attribute/ptr/ptr.go)
 
 ## [第二十章 for-range源码分析](chapter20_for_range/for_range.md)
 - 1 遍历数组和切片
