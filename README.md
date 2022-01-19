@@ -236,9 +236,12 @@
 [cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)
 - 1 Go调用自定义C函数
 - 2 Go调用模块化C库
-- 3 Go实现C定义函数
-- 4 Go获取C函数的errno
-- 5 C的void返回
+- 3 Go重写C定义函数
+- 4 cgo引入其他包的变量错误
+- 5 #Cgo语句
+- 6 Go获取C函数的errno
+- 7 C的void返回
+- 8 Go调用模块化C++库
 
 ## [第十四章 Context上下文](chapter14_context/introduction.md)
 - [0 父类EmptyCtx](chapter14_context/00_original_code_of_context/empty.md)

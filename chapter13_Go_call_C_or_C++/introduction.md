@@ -20,9 +20,13 @@ import "C"
 $GOROOT/misc/cgo/stdio 和 $GOROOT/misc/cgo/gmp
 多个指令定义的值会被串联到一起。这些指令可以包括一系列构建约束，用以限制对满足其中一个约束的系统的影响
 
-## cgo语句
+## #cgo语句
 在import "C"语句前的注释中可以通过#cgo语句设置编译阶段和链接阶段的相关参数。
-编译阶段的参数主要用于定义相关宏和指定头文件检索路径。链接阶段的参数主要是指定库文件检索路径和要链接的库文件
+
+语句主要影响CFLAGS、CPPFLAGS、CXXFLAGS、FFLAGS和LDFLAGS几个编译器环境变量。
+LDFLAGS用于设置链接时的参数，除此之外的几个变量用于改变编译阶段的构建参数(CFLAGS用于针对C语言代码设置编译参数)。
+
+编译阶段的参数主要用于定义相关宏和指定头文件检索路径。链接阶段的参数主要是指定库文件检索路径和要链接的库文件.
 ```shell script
 // #cgo CFLAGS: -DPNG_DEBUG=1 -I./include
 // #cgo amd64 386 CFLAGS: -DX86=1
@@ -30,9 +34,17 @@ $GOROOT/misc/cgo/stdio 和 $GOROOT/misc/cgo/gmp
 // #include <png.h>
 import "C"
 ```
-    CFLAGS部分，-D部分定义了宏PNG_DEBUG，值为1；-I定义了头文件包含的检索目录。LDFLAGS部分，-L指定了链接时库文件检索目录，-l指定了链接时需要链接png库。
-    
-    因为C/C++遗留的问题，C头文件检索目录可以是相对目录，但是库文件检索目录则需要绝对路径。
+CFLAGS部分，-D部分定义了宏PNG_DEBUG，值为1；-I定义了头文件包含的检索目录。LDFLAGS部分，-L指定了链接时库文件检索目录，-l指定了链接时需要链接png库。
+
+因为C/C++遗留的问题，C头文件检索目录可以是相对目录，但是库文件检索目录则需要绝对路径。在库文件的检索目录中可以通过${SRCDIR}变量表示当前包目录的绝对路径：
+
+```go
+// #cgo LDFLAGS: -L${SRCDIR}/libs -lfoo
+```
+上面的代码在链接时将被展开为：
+```go
+// #cgo LDFLAGS: -L/go/src/foo/libs -lfoo
+```
     
 CPPFLAGS 和 LDFLAGS 也可以通过 #cgo pkg-config 命令来通过 pkg-config 来获取。随后的指令指定获取的包名
 ```go
