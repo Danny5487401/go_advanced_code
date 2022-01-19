@@ -91,7 +91,19 @@ import "C"
 CXX_FOR_TARGET, CXX_FOR_${GOOS}_${GOARCH} 以及 CXX 环境变量使用方式类似
 
 ## Go与C类型转换
-![](.introduction_images/transfer_between_c_n_go.png)
+最初CGO是为了达到方便从Go语言函数调用C语言函数（用C语言实现Go语言声明的函数）以复用C语言资源这一目的而出现的（因为C语言还会涉及回调函数，
+自然也会涉及到从C语言函数调用Go语言函数（用Go语言实现C语言声明的函数））。现在，它已经演变为C语言和Go语言双向通讯的桥梁.
+![](.introduction_images/transfer_between_c_n_cgo_n_go.png)
+
+
+在Go语言中访问C语言的符号时，一般是通过虚拟的“C”包访问，比如C.int对应C语言的int类型。
+有些C语言的类型是由多个关键字组成，但通过虚拟的“C”包访问C语言类型时名称部分不能有空格字符，比如unsigned int不能直接通过C.unsigned int访问。
+因此CGO为C语言的基础数值类型都提供了相应转换规则，比如C.uint对应C语言的unsigned int。
+
+需要注意的是，虽然在C语言中int、short等类型没有明确定义内存大小，但是在CGO中它们的内存大小是确定的。
+在CGO中，C语言的int和long类型都是对应4个字节的内存大小，size_t类型可以当作Go语言uint无符号整数类型对待。
+
+
 为了提高C语言的可移植性，在<stdint.h>文件中，不但每个数值类型都提供了明确内存大小，而且和Go语言的类型命名更加一致。
 ![](.introduction_images/stdint.h.png)
 
