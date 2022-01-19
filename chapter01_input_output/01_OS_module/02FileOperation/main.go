@@ -7,7 +7,7 @@ import (
 )
 
 /*
-	文件操作：
+文件操作：
 	1.路径：
 		func Getwd() (dir string, err error) // 获取当前工作目录的根路径
 		func Chdir(dir string) error // 将工作目录修改为dir
@@ -46,10 +46,10 @@ func main() {
 
 	fileName1 := "chapter01_fileOperation/danny.txt"
 	fileName2 := "./chapter01_fileOperation/danny.txt"
-	fmt.Println("绝对目录情况",filepath.IsAbs(fileName1)) //true
-	fmt.Println("绝对目录情况",filepath.IsAbs(fileName2)) //false
-	fmt.Println(filepath.Abs(fileName1)) // /Users/python/Desktop/go_advanced_code/chapter01_fileOperation/danny.txt <nil>
-	fmt.Println(filepath.Abs(fileName2)) // /Users/python/Desktop/go_advanced_code/chapter01_fileOperation/danny.txt <nil>
+	fmt.Println("绝对目录情况", filepath.IsAbs(fileName1)) //true
+	fmt.Println("绝对目录情况", filepath.IsAbs(fileName2)) //false
+	fmt.Println(filepath.Abs(fileName1))             // /Users/python/Desktop/go_advanced_code/chapter01_fileOperation/danny.txt <nil>
+	fmt.Println(filepath.Abs(fileName2))             // /Users/python/Desktop/go_advanced_code/chapter01_fileOperation/danny.txt <nil>
 
 	//2.创建目录
 	//err := os.Mkdir("E:\\go_advanced_code\\chapter01_fileOperation\\testDir",os.ModePerm)

@@ -14,7 +14,7 @@ type eface struct {
 }
 
 /*
-//1.不含方法
+1.不含方法
 type eface struct {
 	_type *_type  // 类型
 	data  unsafe.Pointer  //数据
@@ -31,8 +31,10 @@ func main() {
 	// 不带方法， 用int类型作为例子
 	var i interface{}
 	fmt.Println(i == nil) // true
+
 	(*eface)(unsafe.Pointer(&i)).data = unsafe.Pointer(uintptr(0x1))
 	fmt.Println(i == nil) // true
+
 	(*eface)(unsafe.Pointer(&i))._type = (*int)(unsafe.Pointer(uintptr(0x1)))
 	fmt.Println(i == nil) // false
 

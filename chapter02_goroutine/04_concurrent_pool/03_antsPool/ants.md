@@ -1,11 +1,11 @@
 # ants: goroutine 池
 
-##两种使用方式
+## 两种使用方式
 p, _ := ants.NewPool(cap)：这种方式创建的池子对象需要调用p.Submit(task)提交任务，任务是一个无参数无返回值的函数；
 
 p, _ := ants.NewPoolWithFunc(cap, func(interface{}))：这种方式创建的池子对象需要指定池函数，并且使用p.Invoke(arg)调用池函数。arg就是传给池函数func(interface{})的参数。
 
-###1. 第一种方式：NewPool
+### 1. 第一种方式：NewPool
 结构体
 ```go
 type Pool struct {
@@ -70,7 +70,7 @@ func (w *goWorker) run() {
 }
 ```
 
-####管理工人需要实现的接口
+#### 管理工人需要实现的接口
 ```go
 type workerArray interface {
     len() int  //worker 数量
@@ -208,7 +208,7 @@ func (p *Pool) Submit(task func()) error {
 ```
 
 
-##选项Options
+## 选项Options
 ```go
 // src/github.com/panjf2000/ants/options.go
 type Options struct {

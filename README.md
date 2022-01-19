@@ -16,58 +16,63 @@
 ## *goVersion==1.16*
 
 ## [第一章 I/O操作](chapter01_input_output/io.md)
-- 1 os操作系统模块  
-    - 1.1 os中FileInfo底层的文件描述符和相关信息   
-    - 1.2 os文件操作   
+- 1 os操作系统模块
+    - [1.1 os中FileInfo底层的文件描述符和相关信息](chapter01_input_output/01_OS_module/01FileInfo/main.go)   
+    - [1.2 os文件操作](chapter01_input_output/01_OS_module/02FileOperation/main.go)   
     - 1.3 io包底层Reader和Writer接口   
         - 1.3.1 os,bytes,strings包   
-    - 1.4 io断点续传  
-    - 1.5 FilePath包     
+    - [1.4 io断点续传 ](chapter01_input_output/01_OS_module/04seeker/02resume_from_break-point/main.go) 
+    - [1.5 FilePath包 ](chapter01_input_output/01_OS_module/05filePath/walk.go)    
         - 1.5.1 walkPath遍历目录及文件  
         - 1.5.2 匹配文件名  
-- 2 [bufio缓存读写](chapter01_input_output/02_bufio/bufio.md)
+- [2 bufio缓存读写](chapter01_input_output/02_bufio/bufio.md)
 
 ---
 ## 第二章 协程Goroutine
 - 1 [线程模型分类及Goroutine切换原则(GPM模型)](chapter02_goroutine/01_GPM/GPM.md)
     - 1.1 [trace查看宏观调度流程(Goroutine启动时长)](chapter02_goroutine/01_GPM/trace/trace.md)
-- 2 runtime模块和GC
-    - 2.1 runtime核心功能及系统信息调用
-    - 2.2 Goexit()终止线程
+- 2 [runtime模块和GC](chapter02_goroutine/02_runtime/runtime.md)
+    - [2.1 runtime核心功能及系统信息调用](chapter02_goroutine/02_runtime/01basic_use/main.go)
+    - [2.2 Goexit()终止线程](chapter02_goroutine/02_runtime/02GoExit/main.go)
     - 2.3 资源竞争一致性问题分析
-    - [2.4 垃圾回收机制(trace查看map垃圾回收）](chapter02_goroutine/02_runtime/04GC/gc.md)
+      - [2.3.1 问题产生](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/main.go)
+      - [2.3.2 问题解决](chapter02_goroutine/02_runtime/03ResourceCompetition/02Fix_Resource_data_consistency/main.go)
+    - [2.4 GC垃圾回收机制(trace查看map垃圾回收)](chapter02_goroutine/02_runtime/04GC/gc.md)
     - [2.5 监控代码性能pprof](chapter02_goroutine/02_runtime/05pprof/intro.md)
-        - 2.5.1 标准包runtime/pprof及net/http/pprof
-        - 2.5.2 第三方包pkg/profile
-    - [2.6 Go内存结构](chapter02_goroutine/02_runtime/06memory/mem.md)
+      - 2.5.1 标准包runtime/pprof及net/http/pprof
+      - 2.5.2 第三方包pkg/profile
+    - [2.6 Linux内存及Go内存结构管理](chapter02_goroutine/02_runtime/06memory/mem.md)
+    - [2.7 prometheus监控程序](chapter02_goroutine/02_runtime/07prometheus/prometheus.md)
 - 3 [多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
 - 4 [线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
-    - 4.1 Goroutine最大数量限制(令牌桶方式)
-    - 4.2 百万请求处理
+    - [4.1 Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
+    - [4.2 百万请求处理](chapter02_goroutine/04_concurrent_pool/02_millionRequests/main.go)
     - [4.3 第三方包线程池ants](chapter02_goroutine/04_concurrent_pool/03_antsPool/ants.md)
     - [4.4 标准库连接池sql实现](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
 - [5 goroutine泄漏分析及处理](chapter02_goroutine/05_goroutine_leaks/goroutine_leak.md)
 ---
 
 ## 第三章 通道Channel
+
 - 1 [Channel内部结构及源码分析(含PPT分析)](chapter03_channel/01_channel_use/channel.md)
-    - 1.0 channel初始化
-    - 1.1 无缓存通道
-    - 1.2 父子通信
-    - 1.3 死锁
-    - [1.4 优雅关闭channel](chapter03_channel/01_channel_use/04channelClose/ChanClose.md)
-    - 1.5 通道遍历range
-    - 1.6 有缓冲channel增强并发
-    - 1.7 双向通道
-    - 1.8 单向通道
-    - [1.9 使用channel传递channel](chapter03_channel/01_channel_use/09ChanPassChan/main.go)
-    - [1.10 happened before](chapter03_channel/01_channel_use/10_happened_before/happened_before.md)
-    - 1.11 读取关闭的通道值
+    - [1.0 channel初始化](chapter03_channel/01_basicUse/00introdution/main.go)
+    - [1.1 无缓存通道](chapter03_channel/01_basicUse/01unbufferd_channel/main.go)
+    - [1.2 父子通信](chapter03_channel/01_basicUse/02ParentChildrenCommunication/main.go)
+    - [1.3 死锁](chapter03_channel/01_basicUse/03deadlock/main.go)
+    - [1.4 优雅关闭channel](chapter03_channel/01_basicUse/04channelClose/ChanClose.md)
+    - [1.5 通道遍历range](chapter03_channel/01_basicUse/05ChannelRange/main.go)
+    - [1.6 有缓冲channel增强并发](chapter03_channel/01_basicUse/06bufferChan/main.go)
+    - [1.7 双向通道](chapter03_channel/01_basicUse/07two-wayChan/main.go)
+    - [1.8 单向通道](chapter03_channel/01_basicUse/08one-wayChan/main.go)
+    - [1.9 使用channel传递channel](chapter03_channel/01_basicUse/09ChanPassChan/main.go)
+    - [1.10 happened before](chapter03_channel/01_basicUse/10_happened_before/happened_before.md)
+    - [1.11 读取关闭的通道值](chapter03_channel/01_basicUse/11_read_closed_chan/readCloseChan.go)
     - [1.12 select中实现channel优先级-->k8s中实现](chapter03_channel/01_channel_use/12_priority_channel/priority_chan.md)
+
 - 2 [channel应用:TimerChan模块](chapter03_channel/02_TimerChan/timer.md)
     - [2.1 reset陷阱](chapter03_channel/02_TimerChan/01_TimerReset/timer_reset.md)
     - [2.2 timerStop使用](chapter03_channel/02_TimerChan/02_TimerStop/timer_stop.md)
-    - 2.3 TimerAfter陷阱
+    - [2.3 TimerAfter陷阱](chapter03_channel/02_TimerChan/03_TimeAfter/main.go)
 - 3 [Select多路复用](chapter03_channel/03_select/03Select_DataStructure/select.md)
 - 4 [CSP理论中的Process/Channel](chapter03_channel/04_CSP/CSP.md)
 ---
@@ -84,10 +89,12 @@
 ---
 
 ## 第五章 切片和数组
-- 1 值传递-数组
-- 2 引用传递-指针切片和指针数组
-- 3 切片和数组参数传递性能对比
-- 4 切片底层结构
+- [1 值传递-数组](chapter05_slice_n_array/01passByValue_array/main.go)
+- [2 引用传递-指针切片和指针数组](chapter05_slice_n_array/02passByReference/main.go)
+- [3 切片和数组参数传递性能对比](chapter05_slice_n_array/03Array_n_slice_performance/main_test.go)
+- 4 底层数据结构
+  - [切片](chapter05_slice_n_array/04structure_of_array_n_slice/slice/sliceStructure.md)
+  - [数组](chapter05_slice_n_array/04structure_of_array_n_slice/array/arrayStructure.md)
 - [5 nil切片和空切片](chapter05_slice_n_array/05nilSlice_n_NoneSlice/nil_n_empty_slice.md)
 - [6 扩容策略](chapter05_slice_n_array/06GrowSlice/grow_size_policy.md)
 - [7 不同类型的切片间互转](chapter05_slice_n_array/07Transfer_slice_in_different_type/main.go)
@@ -97,7 +104,7 @@
 ---
 
 ## 第六章 指针
-- 1 指针类型转换及修改值
+- [1 指针类型转换及修改值](chapter06_pointer/01ptrOperation/main.go)
 - [2 指针分类及unsafe包使用](chapter06_pointer/02unsafe/unsafe.md)
 - [3 获取并修改结构体私有变量值](chapter06_pointer/03PointerSetPrivateValue/main.go)
 - [4 切片与字符串零拷贝互转(指针和反射方式)](chapter06_pointer/04SliceToString/sliceToString.go)
@@ -108,11 +115,11 @@
 - 1 自定义kqueue服务器（涉及各种linux系统调用）
 
 ## [第八章 defer函数及汇编语言理解](chapter08_defer/defer.md)
-- 1 注册延迟调用机制定义及使用
-- 2 defer陷阱
-- 3 分解defer函数
-- 4 defer循环性能问题
-- 5 [汇编理解defer函数](chapter08_defer/05_defer_assembly/defer_asm.md)
+- [1 注册延迟调用机制定义及使用](chapter08_defer/01_defer_definiton/main.go)
+- [2 defer陷阱](chapter08_defer/02_defer_common_mistakes/main.go)
+- [3 分阶段解析defer函数](chapter08_defer/03_defer_params_n_return/main.go)
+- [4 defer循环性能问题](chapter08_defer/04_defer_loop_performance/main.go)
+- [5 汇编理解defer函数](chapter08_defer/05_defer_assembly/defer_asm.md)
 
 ## [第九章 设计模式-OOP七大准则](chapter09_design_pattern/introduction.md)
 - 1 创建型模式
@@ -255,10 +262,10 @@
 - 4 WithValue源码及使用
 - 5 WithTimeout源码及使用
 
-## 第十五章 接口编程
-- 1 冗余代码写法
-- 2 简单优化
-- 3 更优方式
+## 第十五章 接口嵌套编程
+- [1 常见冗余代码写法](chapter15_interfaceProgramming/01_problem/main.go)
+- [2 简单优化](chapter15_interfaceProgramming/02_simple_method/main.go)
+- [3 更优方式](chapter15_interfaceProgramming/03_better_solution/main.go)
 
 ## 第十六章 并发编程
 - 1 简单流水线模型
@@ -288,21 +295,24 @@
 - [7 Base64编码解析](chapter17_dataStructure_n_algorithm/07_base64_encoding/base64.md)
 
 ## 第十八章 错误跟踪和panic
-- 0 错误(err)和异常（exception）区别及处理方式
+- [0 错误(err)和异常（exception）区别及处理方式](chapter18_error_n_panic/00_diff_between_err_n_exception/main.go)
 - 1 自定义错误类型打印错误栈
 - [2 扩展包pkg.errors](chapter18_error_n_panic/02_pkg_errors/pkg_errors.md)
 - [3 Gin的错误recover分析(panic和recover源码分析)](chapter18_error_n_panic/03_recover/panic.md)
 - [4 errCode错误码自动化生成](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
-- 5 error如何比较
+- [5 error如何正确比较](chapter18_error_n_panic/05_err_comparision/main.go)
 
 ## 第十九章 nil预定义标识
 - 1 不同类型为nil时的地址和大小
 - 2 不同类型与nil的比较
-  - interface
-  - nil==nil
-  - ptr,channel,func,map
-  - slice
+  - [interface为nil时:数据段和类型](chapter19_nil/02_comparison/interface/interface.go)
+  - [nil==nil不可以比较](chapter19_nil/02_comparison/nil/main.go)
+  - [ptr,channel,func,map为nil必须地址未分配](chapter19_nil/02_comparison/ptr_chan_func_map/main.go)
+  - [slice的长度和容量不决定nil](chapter19_nil/02_comparison/slice/slice.go)
 - 3 不同类型nil时的特点
+  - [channel为nil时的接收，发送，关闭及select](chapter19_nil/03_Attribute/channel/chan.go)
+  - [map为nil时可读不可写](chapter19_nil/03_Attribute/map/map.go)
+  - [结构体指针为nil时是否可以调用方法](chapter19_nil/03_Attribute/ptr/ptr.go)
 
 ## [第二十章 for-range源码分析](chapter20_for_range/for_range.md)
 - 1 遍历数组和切片
