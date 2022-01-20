@@ -249,6 +249,8 @@
 - 6 Go获取C函数的errno
 - 7 C的void返回
 - 8 Go调用模块化C++库
+- 9 调用静态C库
+- 10 调用动态C库
 
 ## [第十四章 Context上下文](chapter14_context/introduction.md)
 - [0 父类EmptyCtx](chapter14_context/00_original_code_of_context/empty.md)

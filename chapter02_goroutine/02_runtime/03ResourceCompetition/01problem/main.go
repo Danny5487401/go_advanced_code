@@ -1,4 +1,5 @@
 package main
+
 // 资源竞争
 import (
 	"fmt"
@@ -18,7 +19,7 @@ func main() {
 	go saleTickets("售票口3") //g3,10
 	go saleTickets("售票口4") //g4,10
 
-	time.Sleep(5*time.Second)
+	time.Sleep(5 * time.Second)
 }
 
 func saleTickets(name string) {
@@ -31,14 +32,16 @@ func saleTickets(name string) {
 			//睡眠
 			time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
 			// g1 ,g3, g2,g4
-			fmt.Println(name, "售出：", ticket)  // 1 , 0, -1 , -2
-			ticket--   //0 , -1 ,-2 , -3
+			fmt.Println(name, "售出：", ticket) // 1 , 0, -1 , -2
+			ticket--                         //0 , -1 ,-2 , -3
 		} else {
-			fmt.Println(name,"售罄，没有票了。。")
+			fmt.Println(name, "售罄，没有票了。。")
 			break
 		}
 	}
+	fmt.Println("最终：", ticket)
 }
+
 /*
 结果：
 售票口1 售罄，没有票了。。
@@ -47,5 +50,4 @@ func saleTickets(name string) {
 售票口4 售出： -2
 售票口4 售罄，没有票了。。
 
- */
-
+*/

@@ -171,10 +171,15 @@ const char *_GoStringPtr(_GoString_ s);
 ## cgo 内部机制
 ### CGO生成的中间文件
 ![](.introduction_images/cgo_generate_file.png)
-    
-    每个 CGO文 件会展开为一个 Go 文件和 C 文件，分别以 .cgo1.go和.cgo2.c 为后缀名。
+包中有4个Go文件，其中nocgo开头的文件中没有import "C"指令，其它的2个文件则包含了cgo代码。
 
-     _cgo_gotypes.go 对应 C 导入到 Go 语言中相关函数或变量的桥接代码。而_cgo_export.h 对应导出的 Go 函数和类型，_cgo_export.c 对应相关包装代码的实现
+每个 CGO文 件会展开为一个 Go 文件和 C 文件，分别以 .cgo1.go和.cgo2.c 为后缀名。
+
+然后会为整个包创建一个 _cgo_gotypes.go Go文件，其中包含Go语言部分辅助代码。
+
+ _cgo_gotypes.go 对应 C 导入到 Go 语言中相关函数或变量的桥接代码。
+ 
+而_cgo_export.h 对应Go 导出到C的 函数和类型，_cgo_export.c 对应相关包装代码的实现
      
 ### 内部调用流程 Go->C
 ```cgo
@@ -188,17 +193,18 @@ func main(){
 }
  
 ```
-    1. C.sum -->_Cfunc_sum
-    2.runtime.cgocall
-    3.newthread:sum
+1. C.sum -->_Cfunc_sum
+2. runtime.cgocall
+3. newthread:sum
 ![](.introduction_images/c_sum(2,3).png)
 
     白色的部分，是我们自己写的代码，黄色部分是 CGO 生成的代码，左边两列浅黄色是 Go 语言的空间，右边就是 C 语言运行空间。
     在中间位置出现了两个黑的横杠隔开了，黑的横杠中间为 C 语言运行空间。
 
-### 内部调用流程：C->Go    
+### 内部调用流程：C->Go
 ![](.introduction_images/c_call_go.png)
 
 内存调用流程
+
 ![](.introduction_images/c_call_go_in_memory.png)
 ![](.introduction_images/c_call_go_process.png)
