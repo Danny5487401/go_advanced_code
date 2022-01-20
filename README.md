@@ -34,7 +34,7 @@
 - 2 [runtime模块和GC](chapter02_goroutine/02_runtime/runtime.md)
     - [2.1 runtime核心功能及系统信息调用](chapter02_goroutine/02_runtime/01basic_use/main.go)
     - [2.2 Goexit()终止线程](chapter02_goroutine/02_runtime/02GoExit/main.go)
-    - 2.3 资源竞争一致性问题分析
+    - [2.3 资源竞争一致性问题分析](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/resource_competion.md)
       - [2.3.1 问题产生](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/main.go)
       - [2.3.2 问题解决](chapter02_goroutine/02_runtime/03ResourceCompetition/02Fix_Resource_data_consistency/main.go)
     - [2.4 GC垃圾回收机制(trace查看map垃圾回收)](chapter02_goroutine/02_runtime/04GC/gc.md)
