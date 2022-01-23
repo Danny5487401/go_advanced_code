@@ -302,6 +302,10 @@ leave指令没有操作数，它一般放在函数的尾部ret指令之前，用
 ![](.introduction_images/loop.png)
 cx存储循环的次数,s为标号
 
+### cmp指令：影响标志寄存器
+![](.introduction_images/cmp.png)
+通过做减法运算，影响标志寄存器，标志寄存器的相关位记录了比较的结果
+
 ## 定位方式
 ![](.introduction_images/locate_addr.png)
 bx+idata，为高级语言提供方便
@@ -312,14 +316,14 @@ bx+idata，为高级语言提供方便
 
 ### 和系统打交道
 程序的基本分段
-```
+```assembly
 .data : 有初始化值的全局变量；定义常量。 .bss : 没有初始化值的全局变量。
 .text : 代码段。
 .rodata: 只读数据段。
 
 ```
 
-```shell
+```assembly
 # 数据段
 section .data
 message: db 'hello, world!', 10
@@ -349,7 +353,8 @@ mov    0x8(%rsp),%rax   //把变量b的值从内存中读取到寄存器rax中
 add   %rdx,%rax             //把寄存器rdx和rax中的值相加，并把结果放回rax寄存器中
 mov   %rax,0x10(%rsp)  //把寄存器rax中的值写回变量c所在的内存
 ```
-![](.introduction_images/asm_in_memory.png)
+![](.introduction_images/asm_in_memory.png)     
+
 对这个图做个简单的说明：
 
     这里假定rsp寄存器的值是X
