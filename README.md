@@ -271,8 +271,8 @@
 - [3 更优方式](chapter15_interfaceProgramming/03_better_solution/main.go)
 
 ## 第十六章 并发编程
-- 1 简单流水线模型
-- 2 FAN-IN和FAN-OUT模型
+- [1 简单流水线模型](chapter16_concurrentProgramming/01_pipeline/pipeline.md)
+- [2 FAN-IN和FAN-OUT模型](chapter16_concurrentProgramming/02_fanin_fanout/fanin_fanout.md)
 
 ## 第十七章 数据结构及算法
 - 1 queue队列
