@@ -1,8 +1,8 @@
-#http.Request源码分析
-##Request
+# http.Request源码分析
+## Request
 request 表示由服务器接收或由客户端发送的HTTP请求，例如客户端(client)在发送各种请求时，需要先新建一个请求对象，然后调用一些请求的方法开始自定义一些配置，服务端监听到该请求便会做出相应的应答
 
-##1.错误类型
+## 1.错误类型
 ```go
 const (
 	defaultMaxMemory = 32 << 20 // 32 MB			// 默认最大内存32 MB
@@ -32,7 +32,8 @@ func badStringError(what, val string) error { return fmt.Errorf("%s %q", what, v
     ProtocolError ：ProtocolError表示HTTP协议错误结构体对象。该对象 实现了error接口(Error() string)，因此，所有该结构体实例都可以当成error返回传参
     badStringError：是一个根据两个 string参数返回一个error的函数，当必要时，可以调用此函数实现返回错误
 
-##2.结构体定义
+## 2.结构体定义
+
 ```go
 // Headers that Request.Write 处理自身应跳过
 var reqWriteExcludeHeader = map[string]bool{
@@ -182,7 +183,7 @@ func (r *Request) ProtoAtLeast(major, minor int) bool {
     WithContext()： 更改请求的上下文方法一，传入新的上下文，返回修改后的请求–r的浅层副本，该方法 通过新建一个变量，使变量的指针指向原 请求，然后克隆请求的URL实现。此方法很少用。要使用上下文创建新请求，请使用NewRequestWithContext
     Clone()： 更改请求的上下文方法二，传入新的上下文，返回修改后的请求–r的深度副本， 通过除了克隆请求的URL，还有对请求结构里的请求头等一一克隆进一个新的请求结构体 实现，一般用此方法
 
-##3.request请求头的一些字段的修改方法
+## 3. request请求头的一些字段的修改方法
 ```go
 // 如果在请求中发送，UserAgent将返回 发送请求的应用程序名称。
 func (r *Request) UserAgent() string {
@@ -226,7 +227,7 @@ func (r *Request) Referer() string {
 }
 
 ```
-##4.请求体的处理方法（针对post请求）：生成一个读取器(以及内部实现)
+## 4. 请求体的处理方法（针对post请求）：生成一个读取器(以及内部实现)
 ```go
 // multipartByReader 是一个sentinel(哨兵)值
 // 它在Request.MultipartForm里的存在，表明了 请求体的解析 已经被 传递给了 一个MultipartReader实例，而不是还需要解析-ParseMultipartForm
@@ -279,7 +280,7 @@ func (r *Request) multipartReader(allowMixed bool) (*multipart.Reader, error) {
 
 ```
 
-##5.request写入方法
+## 5.request写入方法
 ```go
 // 根据 写入器io.Writer 编写http请求，调用了内部write(),传参：不使用代理、空的附加头、不等待
 // 它是头和正文; 此方法引用请求的字段：Host、URL、Method、Header、ContentLength、TransferEncoding、Body
@@ -452,7 +453,7 @@ func (r *Request) write(w io.Writer, usingProxy bool, extraHeaders Header, waitF
 
 
 ```
-##6.根据读取器 读出一个请求对象(以及内部实现)方法自定义request请求
+## 6.根据读取器 读出一个请求对象(以及内部实现)方法自定义request请求
 ```go
 // 新建一个请求的方法（使用后台空上下文包装NewRequestWithContext）
 func NewRequest(method, url string, body io.Reader) (*Request, error) {
@@ -537,7 +538,7 @@ func NewRequestWithContext(ctx context.Context, method, url string, body io.Read
 
 ```
 
-##7.根据 读取器(*bufio.Reader)，读取一个请求实例方法（readRequest内部方法实现），以及读取器的相关方法（新建一个最大字节的读取器，以及读取器结构体对象的读取关闭方法
+## 7.根据 读取器(*bufio.Reader)，读取一个请求实例方法（readRequest内部方法实现），以及读取器的相关方法（新建一个最大字节的读取器，以及读取器结构体对象的读取关闭方法
 ```go
 // ReadRequest 读取并解析来自Reader的传入请求
 func ReadRequest(b *bufio.Reader) (*Request, error) {

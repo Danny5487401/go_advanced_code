@@ -136,7 +136,7 @@ func f4() (r int) {
 func f4() (r int) {
 	r = 1
 	r = 2
-    // 2.闭包引用，但是没有修改返回值 r
+    // 2.闭包引用，修改返回值 r
     defer func() {
         r = r + 5
     }()

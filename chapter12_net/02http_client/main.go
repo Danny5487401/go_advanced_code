@@ -25,9 +25,11 @@ func GetEmail() {
 			MaxIdleConnsPerHost: 2,                //每个目标主机仅保留2个连接池
 			DialContext: (&net.Dialer{
 				// This is the TCP connect timeout in this instance.
-				Timeout: 2500 * time.Millisecond,
+				Timeout:   2500 * time.Millisecond,
+				KeepAlive: 30 * time.Second,
 			}).DialContext,
-			TLSHandshakeTimeout: 2500 * time.Millisecond,
+			TLSHandshakeTimeout:   2500 * time.Millisecond, // TLS 握手超时时间
+			ExpectContinueTimeout: 1 * time.Second,
 		},
 	}
 	resp, err := c.Get("https://tieba.baidu.com/p/6051076813?red_tag=1573533731")

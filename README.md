@@ -118,7 +118,7 @@
 - [2 defer陷阱](chapter08_defer/02_defer_common_mistakes/main.go)
 - [3 分阶段解析defer函数](chapter08_defer/03_defer_params_n_return/main.go)
 - [4 defer循环性能问题](chapter08_defer/04_defer_loop_performance/main.go)
-- [5 汇编理解defer函数](chapter08_defer/05_defer_assembly/defer_asm.md)
+- [5 汇编理解defer函数(AMD)](chapter08_defer/05_defer_assembly/defer_amd.s)
 
 ## [第九章 设计模式-OOP七大准则](chapter09_design_pattern/introduction.md)
 - 1 创建型模式

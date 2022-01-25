@@ -1,10 +1,10 @@
-#http.Response源码解析
+# http.Response源码解析
 
 关于response
 
     在接收和解释请求消息后，服务器会返回一个 HTTP 响应消息,与 HTTP 请求类似，HTTP 响应也是由三个部分组成，分别是：状态行、消息报头和响应正文
 
-##Response结构体
+## Response结构体
 ```go
 type Response struct {
 	Status     string // e.g. "200 OK"

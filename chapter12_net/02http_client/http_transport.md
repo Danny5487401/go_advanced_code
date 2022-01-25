@@ -1,4 +1,4 @@
-#http之transport源码详解
+# http之transport源码详解
 使用golang net/http库发送http请求，最后都是调用 transport的 RoundTrip方法中
 
 go/go1.15.10/src/net/http/client.go
@@ -316,7 +316,9 @@ func (t *Transport) RoundTrip(req *Request) (*Response, error) {
 }
 ```
 
-获取或则新建连接
+获取或则新建连接:
+- 1. 调用 queueForIdleConn 获取空闲 connection；
+- 2. 调用 queueForDial 等待创建新的 connection；
 ```go
  func (t *Transport) getConn(treq *transportRequest, cm connectMethod) (*persistConn, error) {
 	req := treq.Request
