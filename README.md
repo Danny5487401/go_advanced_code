@@ -167,7 +167,7 @@
         - 6.5.2 newFunc与GC（附源码分析）
         - 6.5.3 何时使用对象缓存
         - 6.5.4 第三方对象池object pool(bytebufferpool)
-    - 6.6 [Cond条件变量及NoCopy机制](chapter09_design_pattern/06_Synchronization_mode/01_sync/06Cond/Cond.md)
+    - 6.6 [Cond条件变量通知所有协程及NoCopy机制-->熔断框架hystrix-go实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/06Cond/Cond.md)
     - 6.7 [atomic原子操作源码分析-->zerolog源码中实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/atomic.md)
         - 6.7.0 Value的load和store
         - 6.7.1 add
