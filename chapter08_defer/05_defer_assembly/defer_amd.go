@@ -18,4 +18,4 @@ func main() {
 	f(a, b)
 }
 
-//汇编命令：go tool compile -N -S -L defer_asm.go>defer_asm.s 2>&1
+//汇编命令：go tool compile -N -S -L defer_amd.go>defer_amd.s 2>&1

@@ -13,71 +13,71 @@ os.(*File).close STEXT dupok nosplit size=28 args=0x18 locals=0x0
 	0x0010 8b 00 48 89 44 24 08 e9 00 00 00 00              ..H.D$......
 	rel 24+4 t=8 os.(*file).close+0
 "".sum STEXT size=607 args=0x10 locals=0x120
-	0x0000 00000 (defer_asm.go:5)	TEXT	"".sum(SB), ABIInternal, $288-16
-	0x0000 00000 (defer_asm.go:5)	MOVQ	(TLS), CX
-	0x0009 00009 (defer_asm.go:5)	LEAQ	-160(SP), AX
-	0x0011 00017 (defer_asm.go:5)	CMPQ	AX, 16(CX)
-	0x0015 00021 (defer_asm.go:5)	PCDATA	$0, $-2
-	0x0015 00021 (defer_asm.go:5)	JLS	597
-	0x001b 00027 (defer_asm.go:5)	PCDATA	$0, $-1
-	0x001b 00027 (defer_asm.go:5)	SUBQ	$288, SP
-	0x0022 00034 (defer_asm.go:5)	MOVQ	BP, 280(SP)
-	0x002a 00042 (defer_asm.go:5)	LEAQ	280(SP), BP
-	0x0032 00050 (defer_asm.go:5)	FUNCDATA	$0, gclocals·69c1753bd5f81501d95132d08af04464(SB)
-	0x0032 00050 (defer_asm.go:5)	FUNCDATA	$1, gclocals·80c85b555ba1c8baf4ba3d4d6542c391(SB)
-	0x0032 00050 (defer_asm.go:5)	FUNCDATA	$3, "".sum.stkobj(SB)
-	0x0032 00050 (defer_asm.go:6)	MOVQ	"".a+296(SP), AX
-	0x003a 00058 (defer_asm.go:6)	ADDQ	"".b+304(SP), AX
-	0x0042 00066 (defer_asm.go:6)	MOVQ	AX, "".c+72(SP)
-	0x0047 00071 (defer_asm.go:7)	LEAQ	type.string(SB), AX
-	0x004e 00078 (defer_asm.go:7)	MOVQ	AX, ""..autotmp_12+192(SP)
-	0x0056 00086 (defer_asm.go:7)	LEAQ	""..stmp_0(SB), AX
-	0x005d 00093 (defer_asm.go:7)	MOVQ	AX, ""..autotmp_12+200(SP)
-	0x0065 00101 (defer_asm.go:7)	MOVQ	"".c+72(SP), AX
-	0x006a 00106 (defer_asm.go:7)	MOVQ	AX, (SP)
-	0x006e 00110 (defer_asm.go:7)	PCDATA	$1, $1
-	0x006e 00110 (defer_asm.go:7)	CALL	runtime.convT64(SB)
-	0x0073 00115 (defer_asm.go:7)	MOVQ	8(SP), AX
-	0x0078 00120 (defer_asm.go:7)	MOVQ	AX, ""..autotmp_14+104(SP)
-	0x007d 00125 (defer_asm.go:7)	LEAQ	type.int(SB), CX
-	0x0084 00132 (defer_asm.go:7)	MOVQ	CX, ""..autotmp_13+176(SP)
-	0x008c 00140 (defer_asm.go:7)	MOVQ	AX, ""..autotmp_13+184(SP)
-	0x0094 00148 (defer_asm.go:7)	MOVQ	""..autotmp_12+192(SP), AX
-	0x009c 00156 (defer_asm.go:7)	MOVQ	""..autotmp_12+200(SP), CX
-	0x00a4 00164 (defer_asm.go:7)	MOVQ	AX, "".~arg0+128(SP)
-	0x00ac 00172 (defer_asm.go:7)	MOVQ	CX, "".~arg0+136(SP)
-	0x00b4 00180 (defer_asm.go:7)	MOVQ	""..autotmp_13+176(SP), AX
-	0x00bc 00188 (defer_asm.go:7)	MOVQ	""..autotmp_13+184(SP), CX
-	0x00c4 00196 (defer_asm.go:7)	MOVQ	AX, "".~arg1+112(SP)
-	0x00c9 00201 (defer_asm.go:7)	MOVQ	CX, "".~arg1+120(SP)
-	0x00ce 00206 (defer_asm.go:7)	XORPS	X0, X0
-	0x00d1 00209 (defer_asm.go:7)	MOVUPS	X0, ""..autotmp_17+248(SP)
-	0x00d9 00217 (defer_asm.go:7)	MOVUPS	X0, ""..autotmp_17+264(SP)
-	0x00e1 00225 (defer_asm.go:7)	LEAQ	""..autotmp_17+248(SP), AX
-	0x00e9 00233 (defer_asm.go:7)	MOVQ	AX, ""..autotmp_15+96(SP)
-	0x00ee 00238 (defer_asm.go:7)	TESTB	AL, (AX)
-	0x00f0 00240 (defer_asm.go:7)	MOVQ	"".~arg0+128(SP), CX
-	0x00f8 00248 (defer_asm.go:7)	MOVQ	"".~arg0+136(SP), DX
-	0x0100 00256 (defer_asm.go:7)	MOVQ	CX, ""..autotmp_17+248(SP)
-	0x0108 00264 (defer_asm.go:7)	MOVQ	DX, ""..autotmp_17+256(SP)
-	0x0110 00272 (defer_asm.go:7)	TESTB	AL, (AX)
-	0x0112 00274 (defer_asm.go:7)	MOVQ	"".~arg1+112(SP), AX
-	0x0117 00279 (defer_asm.go:7)	MOVQ	"".~arg1+120(SP), CX
-	0x011c 00284 (defer_asm.go:7)	MOVQ	AX, ""..autotmp_17+264(SP)
-	0x0124 00292 (defer_asm.go:7)	MOVQ	CX, ""..autotmp_17+272(SP)
-	0x012c 00300 (defer_asm.go:7)	MOVQ	""..autotmp_15+96(SP), AX
-	0x0131 00305 (defer_asm.go:7)	TESTB	AL, (AX)
-	0x0133 00307 (defer_asm.go:7)	JMP	309
-	0x0135 00309 (defer_asm.go:7)	MOVQ	AX, fmt.a+224(SP)
-	0x013d 00317 (defer_asm.go:7)	MOVQ	$2, fmt.a+232(SP)
-	0x0149 00329 (defer_asm.go:7)	MOVQ	$2, fmt.a+240(SP)
-	0x0155 00341 (defer_asm.go:7)	MOVQ	$0, fmt.n+64(SP)
-	0x015e 00350 (defer_asm.go:7)	XORPS	X0, X0
-	0x0161 00353 (defer_asm.go:7)	MOVUPS	X0, fmt.err+144(SP)
+	0x0000 00000 (defer_amd.go:5)	TEXT	"".sum(SB), ABIInternal, $288-16
+	0x0000 00000 (defer_amd.go:5)	MOVQ	(TLS), CX
+	0x0009 00009 (defer_amd.go:5)	LEAQ	-160(SP), AX
+	0x0011 00017 (defer_amd.go:5)	CMPQ	AX, 16(CX)
+	0x0015 00021 (defer_amd.go:5)	PCDATA	$0, $-2
+	0x0015 00021 (defer_amd.go:5)	JLS	597
+	0x001b 00027 (defer_amd.go:5)	PCDATA	$0, $-1
+	0x001b 00027 (defer_amd.go:5)	SUBQ	$288, SP
+	0x0022 00034 (defer_amd.go:5)	MOVQ	BP, 280(SP)
+	0x002a 00042 (defer_amd.go:5)	LEAQ	280(SP), BP
+	0x0032 00050 (defer_amd.go:5)	FUNCDATA	$0, gclocals·69c1753bd5f81501d95132d08af04464(SB)
+	0x0032 00050 (defer_amd.go:5)	FUNCDATA	$1, gclocals·80c85b555ba1c8baf4ba3d4d6542c391(SB)
+	0x0032 00050 (defer_amd.go:5)	FUNCDATA	$3, "".sum.stkobj(SB)
+	0x0032 00050 (defer_amd.go:6)	MOVQ	"".a+296(SP), AX
+	0x003a 00058 (defer_amd.go:6)	ADDQ	"".b+304(SP), AX
+	0x0042 00066 (defer_amd.go:6)	MOVQ	AX, "".c+72(SP)
+	0x0047 00071 (defer_amd.go:7)	LEAQ	type.string(SB), AX
+	0x004e 00078 (defer_amd.go:7)	MOVQ	AX, ""..autotmp_12+192(SP)
+	0x0056 00086 (defer_amd.go:7)	LEAQ	""..stmp_0(SB), AX
+	0x005d 00093 (defer_amd.go:7)	MOVQ	AX, ""..autotmp_12+200(SP)
+	0x0065 00101 (defer_amd.go:7)	MOVQ	"".c+72(SP), AX
+	0x006a 00106 (defer_amd.go:7)	MOVQ	AX, (SP)
+	0x006e 00110 (defer_amd.go:7)	PCDATA	$1, $1
+	0x006e 00110 (defer_amd.go:7)	CALL	runtime.convT64(SB)
+	0x0073 00115 (defer_amd.go:7)	MOVQ	8(SP), AX
+	0x0078 00120 (defer_amd.go:7)	MOVQ	AX, ""..autotmp_14+104(SP)
+	0x007d 00125 (defer_amd.go:7)	LEAQ	type.int(SB), CX
+	0x0084 00132 (defer_amd.go:7)	MOVQ	CX, ""..autotmp_13+176(SP)
+	0x008c 00140 (defer_amd.go:7)	MOVQ	AX, ""..autotmp_13+184(SP)
+	0x0094 00148 (defer_amd.go:7)	MOVQ	""..autotmp_12+192(SP), AX
+	0x009c 00156 (defer_amd.go:7)	MOVQ	""..autotmp_12+200(SP), CX
+	0x00a4 00164 (defer_amd.go:7)	MOVQ	AX, "".~arg0+128(SP)
+	0x00ac 00172 (defer_amd.go:7)	MOVQ	CX, "".~arg0+136(SP)
+	0x00b4 00180 (defer_amd.go:7)	MOVQ	""..autotmp_13+176(SP), AX
+	0x00bc 00188 (defer_amd.go:7)	MOVQ	""..autotmp_13+184(SP), CX
+	0x00c4 00196 (defer_amd.go:7)	MOVQ	AX, "".~arg1+112(SP)
+	0x00c9 00201 (defer_amd.go:7)	MOVQ	CX, "".~arg1+120(SP)
+	0x00ce 00206 (defer_amd.go:7)	XORPS	X0, X0
+	0x00d1 00209 (defer_amd.go:7)	MOVUPS	X0, ""..autotmp_17+248(SP)
+	0x00d9 00217 (defer_amd.go:7)	MOVUPS	X0, ""..autotmp_17+264(SP)
+	0x00e1 00225 (defer_amd.go:7)	LEAQ	""..autotmp_17+248(SP), AX
+	0x00e9 00233 (defer_amd.go:7)	MOVQ	AX, ""..autotmp_15+96(SP)
+	0x00ee 00238 (defer_amd.go:7)	TESTB	AL, (AX)
+	0x00f0 00240 (defer_amd.go:7)	MOVQ	"".~arg0+128(SP), CX
+	0x00f8 00248 (defer_amd.go:7)	MOVQ	"".~arg0+136(SP), DX
+	0x0100 00256 (defer_amd.go:7)	MOVQ	CX, ""..autotmp_17+248(SP)
+	0x0108 00264 (defer_amd.go:7)	MOVQ	DX, ""..autotmp_17+256(SP)
+	0x0110 00272 (defer_amd.go:7)	TESTB	AL, (AX)
+	0x0112 00274 (defer_amd.go:7)	MOVQ	"".~arg1+112(SP), AX
+	0x0117 00279 (defer_amd.go:7)	MOVQ	"".~arg1+120(SP), CX
+	0x011c 00284 (defer_amd.go:7)	MOVQ	AX, ""..autotmp_17+264(SP)
+	0x0124 00292 (defer_amd.go:7)	MOVQ	CX, ""..autotmp_17+272(SP)
+	0x012c 00300 (defer_amd.go:7)	MOVQ	""..autotmp_15+96(SP), AX
+	0x0131 00305 (defer_amd.go:7)	TESTB	AL, (AX)
+	0x0133 00307 (defer_amd.go:7)	JMP	309
+	0x0135 00309 (defer_amd.go:7)	MOVQ	AX, fmt.a+224(SP)
+	0x013d 00317 (defer_amd.go:7)	MOVQ	$2, fmt.a+232(SP)
+	0x0149 00329 (defer_amd.go:7)	MOVQ	$2, fmt.a+240(SP)
+	0x0155 00341 (defer_amd.go:7)	MOVQ	$0, fmt.n+64(SP)
+	0x015e 00350 (defer_amd.go:7)	XORPS	X0, X0
+	0x0161 00353 (defer_amd.go:7)	MOVUPS	X0, fmt.err+144(SP)
 	0x0169 00361 (<unknown line number>)	NOP
-	0x0169 00361 (defer_asm.go:7)	MOVQ	$0, fmt..autotmp_3+80(SP)
-	0x0172 00370 (defer_asm.go:7)	XORPS	X0, X0
-	0x0175 00373 (defer_asm.go:7)	MOVUPS	X0, fmt..autotmp_4+160(SP)
+	0x0169 00361 (defer_amd.go:7)	MOVQ	$0, fmt..autotmp_3+80(SP)
+	0x0172 00370 (defer_amd.go:7)	XORPS	X0, X0
+	0x0175 00373 (defer_amd.go:7)	MOVUPS	X0, fmt..autotmp_4+160(SP)
 	0x017d 00381 ($GOROOT/src/fmt/print.go:274)	XORPS	X0, X0
 	0x0180 00384 ($GOROOT/src/fmt/print.go:274)	MOVUPS	X0, ""..autotmp_11+208(SP)
 	0x0188 00392 ($GOROOT/src/fmt/print.go:274)	MOVQ	os.Stdout(SB), AX
@@ -104,23 +104,23 @@ os.(*File).close STEXT dupok nosplit size=28 args=0x18 locals=0x0
 	0x0201 00513 ($GOROOT/src/fmt/print.go:274)	MOVQ	""..autotmp_11+216(SP), CX
 	0x0209 00521 ($GOROOT/src/fmt/print.go:274)	MOVQ	AX, fmt..autotmp_4+160(SP)
 	0x0211 00529 ($GOROOT/src/fmt/print.go:274)	MOVQ	CX, fmt..autotmp_4+168(SP)
-	0x0219 00537 (defer_asm.go:7)	MOVQ	fmt..autotmp_3+80(SP), AX
-	0x021e 00542 (defer_asm.go:7)	MOVQ	AX, fmt.n+64(SP)
-	0x0223 00547 (defer_asm.go:7)	MOVQ	fmt..autotmp_4+160(SP), AX
-	0x022b 00555 (defer_asm.go:7)	MOVQ	fmt..autotmp_4+168(SP), CX
-	0x0233 00563 (defer_asm.go:7)	MOVQ	AX, fmt.err+144(SP)
-	0x023b 00571 (defer_asm.go:7)	MOVQ	CX, fmt.err+152(SP)
-	0x0243 00579 (defer_asm.go:7)	JMP	581
-	0x0245 00581 (defer_asm.go:7)	PCDATA	$1, $-1
-	0x0245 00581 (defer_asm.go:7)	MOVQ	280(SP), BP
-	0x024d 00589 (defer_asm.go:7)	ADDQ	$288, SP
-	0x0254 00596 (defer_asm.go:7)	RET
-	0x0255 00597 (defer_asm.go:7)	NOP
-	0x0255 00597 (defer_asm.go:5)	PCDATA	$1, $-1
-	0x0255 00597 (defer_asm.go:5)	PCDATA	$0, $-2
-	0x0255 00597 (defer_asm.go:5)	CALL	runtime.morestack_noctxt(SB)
-	0x025a 00602 (defer_asm.go:5)	PCDATA	$0, $-1
-	0x025a 00602 (defer_asm.go:5)	JMP	0
+	0x0219 00537 (defer_amd.go:7)	MOVQ	fmt..autotmp_3+80(SP), AX
+	0x021e 00542 (defer_amd.go:7)	MOVQ	AX, fmt.n+64(SP)
+	0x0223 00547 (defer_amd.go:7)	MOVQ	fmt..autotmp_4+160(SP), AX
+	0x022b 00555 (defer_amd.go:7)	MOVQ	fmt..autotmp_4+168(SP), CX
+	0x0233 00563 (defer_amd.go:7)	MOVQ	AX, fmt.err+144(SP)
+	0x023b 00571 (defer_amd.go:7)	MOVQ	CX, fmt.err+152(SP)
+	0x0243 00579 (defer_amd.go:7)	JMP	581
+	0x0245 00581 (defer_amd.go:7)	PCDATA	$1, $-1
+	0x0245 00581 (defer_amd.go:7)	MOVQ	280(SP), BP
+	0x024d 00589 (defer_amd.go:7)	ADDQ	$288, SP
+	0x0254 00596 (defer_amd.go:7)	RET
+	0x0255 00597 (defer_amd.go:7)	NOP
+	0x0255 00597 (defer_amd.go:5)	PCDATA	$1, $-1
+	0x0255 00597 (defer_amd.go:5)	PCDATA	$0, $-2
+	0x0255 00597 (defer_amd.go:5)	CALL	runtime.morestack_noctxt(SB)
+	0x025a 00602 (defer_amd.go:5)	PCDATA	$0, $-1
+	0x025a 00602 (defer_amd.go:5)	JMP	0
 	0x0000 65 48 8b 0c 25 00 00 00 00 48 8d 84 24 60 ff ff  eH..%....H..$`..
 	0x0010 ff 48 3b 41 10 0f 86 3a 02 00 00 48 81 ec 20 01  .H;A...:...H.. .
 	0x0020 00 00 48 89 ac 24 18 01 00 00 48 8d ac 24 18 01  ..H..$....H..$..
@@ -255,90 +255,90 @@ type..eq.[2]interface {} STEXT dupok size=236 args=0x18 locals=0x50
 	rel 161+4 t=8 runtime.efaceeq+0
 	rel 227+4 t=8 runtime.morestack_noctxt+0
 "".f STEXT size=799 args=0x10 locals=0x198
-	0x0000 00000 (defer_asm.go:10)	TEXT	"".f(SB), ABIInternal, $408-16
-	0x0000 00000 (defer_asm.go:10)	MOVQ	(TLS), CX
-	0x0009 00009 (defer_asm.go:10)	LEAQ	-280(SP), AX
-	0x0011 00017 (defer_asm.go:10)	CMPQ	AX, 16(CX)
-	0x0015 00021 (defer_asm.go:10)	PCDATA	$0, $-2
-	0x0015 00021 (defer_asm.go:10)	JLS	789
-	0x001b 00027 (defer_asm.go:10)	PCDATA	$0, $-1
-	0x001b 00027 (defer_asm.go:10)	SUBQ	$408, SP
-	0x0022 00034 (defer_asm.go:10)	MOVQ	BP, 400(SP)
-	0x002a 00042 (defer_asm.go:10)	LEAQ	400(SP), BP
-	0x0032 00050 (defer_asm.go:10)	FUNCDATA	$0, gclocals·69c1753bd5f81501d95132d08af04464(SB)
-	0x0032 00050 (defer_asm.go:10)	FUNCDATA	$1, gclocals·24c4039ad2c1ebd085a158ff91b735c0(SB)
-	0x0032 00050 (defer_asm.go:10)	FUNCDATA	$3, "".f.stkobj(SB)
-	0x0032 00050 (defer_asm.go:11)	MOVL	$16, ""..autotmp_19+104(SP)
-	0x003a 00058 (defer_asm.go:11)	LEAQ	"".sum·f(SB), AX
-	0x0041 00065 (defer_asm.go:11)	MOVQ	AX, ""..autotmp_19+128(SP)
-	0x0049 00073 (defer_asm.go:11)	MOVQ	"".a+416(SP), AX
-	0x0051 00081 (defer_asm.go:11)	MOVQ	AX, ""..autotmp_19+176(SP)
-	0x0059 00089 (defer_asm.go:11)	MOVQ	"".b+424(SP), AX
-	0x0061 00097 (defer_asm.go:11)	MOVQ	AX, ""..autotmp_19+184(SP)
-	0x0069 00105 (defer_asm.go:11)	LEAQ	""..autotmp_19+104(SP), AX
-	0x006e 00110 (defer_asm.go:11)	MOVQ	AX, (SP)
-	0x0072 00114 (defer_asm.go:11)	PCDATA	$1, $0
-	0x0072 00114 (defer_asm.go:11)	CALL	runtime.deferprocStack(SB)
-	0x0077 00119 (defer_asm.go:11)	TESTL	AX, AX
-	0x0079 00121 (defer_asm.go:11)	JNE	762
-	0x007f 00127 (defer_asm.go:11)	NOP
-	0x0080 00128 (defer_asm.go:11)	JMP	130
-	0x0082 00130 (defer_asm.go:13)	MOVQ	"".a+416(SP), AX
-	0x008a 00138 (defer_asm.go:13)	MOVQ	AX, (SP)
-	0x008e 00142 (defer_asm.go:13)	CALL	runtime.convT64(SB)
-	0x0093 00147 (defer_asm.go:13)	MOVQ	8(SP), AX
-	0x0098 00152 (defer_asm.go:13)	MOVQ	AX, ""..autotmp_13+208(SP)
-	0x00a0 00160 (defer_asm.go:13)	LEAQ	type.int(SB), CX
-	0x00a7 00167 (defer_asm.go:13)	MOVQ	CX, ""..autotmp_12+312(SP)
-	0x00af 00175 (defer_asm.go:13)	MOVQ	AX, ""..autotmp_12+320(SP)
-	0x00b7 00183 (defer_asm.go:13)	MOVQ	"".b+424(SP), AX
-	0x00bf 00191 (defer_asm.go:13)	MOVQ	AX, (SP)
-	0x00c3 00195 (defer_asm.go:13)	PCDATA	$1, $1
-	0x00c3 00195 (defer_asm.go:13)	CALL	runtime.convT64(SB)
-	0x00c8 00200 (defer_asm.go:13)	MOVQ	8(SP), AX
-	0x00cd 00205 (defer_asm.go:13)	MOVQ	AX, ""..autotmp_15+200(SP)
-	0x00d5 00213 (defer_asm.go:13)	LEAQ	type.int(SB), CX
-	0x00dc 00220 (defer_asm.go:13)	MOVQ	CX, ""..autotmp_14+296(SP)
-	0x00e4 00228 (defer_asm.go:13)	MOVQ	AX, ""..autotmp_14+304(SP)
-	0x00ec 00236 (defer_asm.go:13)	LEAQ	go.string."a: %d, b: %d\n"(SB), AX
-	0x00f3 00243 (defer_asm.go:13)	MOVQ	AX, fmt.format+248(SP)
-	0x00fb 00251 (defer_asm.go:13)	MOVQ	$13, fmt.format+256(SP)
-	0x0107 00263 (defer_asm.go:13)	MOVQ	""..autotmp_12+312(SP), AX
-	0x010f 00271 (defer_asm.go:13)	MOVQ	""..autotmp_12+320(SP), CX
-	0x0117 00279 (defer_asm.go:13)	MOVQ	AX, "".~arg1+232(SP)
-	0x011f 00287 (defer_asm.go:13)	MOVQ	CX, "".~arg1+240(SP)
-	0x0127 00295 (defer_asm.go:13)	MOVQ	""..autotmp_14+296(SP), AX
-	0x012f 00303 (defer_asm.go:13)	MOVQ	""..autotmp_14+304(SP), CX
-	0x0137 00311 (defer_asm.go:13)	MOVQ	AX, "".~arg2+216(SP)
-	0x013f 00319 (defer_asm.go:13)	MOVQ	CX, "".~arg2+224(SP)
-	0x0147 00327 (defer_asm.go:13)	XORPS	X0, X0
-	0x014a 00330 (defer_asm.go:13)	MOVUPS	X0, ""..autotmp_18+368(SP)
-	0x0152 00338 (defer_asm.go:13)	MOVUPS	X0, ""..autotmp_18+384(SP)
-	0x015a 00346 (defer_asm.go:13)	LEAQ	""..autotmp_18+368(SP), AX
-	0x0162 00354 (defer_asm.go:13)	MOVQ	AX, ""..autotmp_16+192(SP)
-	0x016a 00362 (defer_asm.go:13)	TESTB	AL, (AX)
-	0x016c 00364 (defer_asm.go:13)	MOVQ	"".~arg1+232(SP), CX
-	0x0174 00372 (defer_asm.go:13)	MOVQ	"".~arg1+240(SP), DX
-	0x017c 00380 (defer_asm.go:13)	MOVQ	CX, ""..autotmp_18+368(SP)
-	0x0184 00388 (defer_asm.go:13)	MOVQ	DX, ""..autotmp_18+376(SP)
-	0x018c 00396 (defer_asm.go:13)	TESTB	AL, (AX)
-	0x018e 00398 (defer_asm.go:13)	MOVQ	"".~arg2+216(SP), AX
-	0x0196 00406 (defer_asm.go:13)	MOVQ	"".~arg2+224(SP), CX
-	0x019e 00414 (defer_asm.go:13)	MOVQ	AX, ""..autotmp_18+384(SP)
-	0x01a6 00422 (defer_asm.go:13)	MOVQ	CX, ""..autotmp_18+392(SP)
-	0x01ae 00430 (defer_asm.go:13)	MOVQ	""..autotmp_16+192(SP), AX
-	0x01b6 00438 (defer_asm.go:13)	TESTB	AL, (AX)
-	0x01b8 00440 (defer_asm.go:13)	JMP	442
-	0x01ba 00442 (defer_asm.go:13)	MOVQ	AX, fmt.a+344(SP)
-	0x01c2 00450 (defer_asm.go:13)	MOVQ	$2, fmt.a+352(SP)
-	0x01ce 00462 (defer_asm.go:13)	MOVQ	$2, fmt.a+360(SP)
-	0x01da 00474 (defer_asm.go:13)	MOVQ	$0, fmt.n+80(SP)
-	0x01e3 00483 (defer_asm.go:13)	XORPS	X0, X0
-	0x01e6 00486 (defer_asm.go:13)	MOVUPS	X0, fmt.err+264(SP)
+	0x0000 00000 (defer_amd.go:10)	TEXT	"".f(SB), ABIInternal, $408-16
+	0x0000 00000 (defer_amd.go:10)	MOVQ	(TLS), CX
+	0x0009 00009 (defer_amd.go:10)	LEAQ	-280(SP), AX
+	0x0011 00017 (defer_amd.go:10)	CMPQ	AX, 16(CX)
+	0x0015 00021 (defer_amd.go:10)	PCDATA	$0, $-2
+	0x0015 00021 (defer_amd.go:10)	JLS	789
+	0x001b 00027 (defer_amd.go:10)	PCDATA	$0, $-1
+	0x001b 00027 (defer_amd.go:10)	SUBQ	$408, SP
+	0x0022 00034 (defer_amd.go:10)	MOVQ	BP, 400(SP)
+	0x002a 00042 (defer_amd.go:10)	LEAQ	400(SP), BP
+	0x0032 00050 (defer_amd.go:10)	FUNCDATA	$0, gclocals·69c1753bd5f81501d95132d08af04464(SB)
+	0x0032 00050 (defer_amd.go:10)	FUNCDATA	$1, gclocals·24c4039ad2c1ebd085a158ff91b735c0(SB)
+	0x0032 00050 (defer_amd.go:10)	FUNCDATA	$3, "".f.stkobj(SB)
+	0x0032 00050 (defer_amd.go:11)	MOVL	$16, ""..autotmp_19+104(SP)
+	0x003a 00058 (defer_amd.go:11)	LEAQ	"".sum·f(SB), AX
+	0x0041 00065 (defer_amd.go:11)	MOVQ	AX, ""..autotmp_19+128(SP)
+	0x0049 00073 (defer_amd.go:11)	MOVQ	"".a+416(SP), AX
+	0x0051 00081 (defer_amd.go:11)	MOVQ	AX, ""..autotmp_19+176(SP)
+	0x0059 00089 (defer_amd.go:11)	MOVQ	"".b+424(SP), AX
+	0x0061 00097 (defer_amd.go:11)	MOVQ	AX, ""..autotmp_19+184(SP)
+	0x0069 00105 (defer_amd.go:11)	LEAQ	""..autotmp_19+104(SP), AX
+	0x006e 00110 (defer_amd.go:11)	MOVQ	AX, (SP)
+	0x0072 00114 (defer_amd.go:11)	PCDATA	$1, $0
+	0x0072 00114 (defer_amd.go:11)	CALL	runtime.deferprocStack(SB)
+	0x0077 00119 (defer_amd.go:11)	TESTL	AX, AX
+	0x0079 00121 (defer_amd.go:11)	JNE	762
+	0x007f 00127 (defer_amd.go:11)	NOP
+	0x0080 00128 (defer_amd.go:11)	JMP	130
+	0x0082 00130 (defer_amd.go:13)	MOVQ	"".a+416(SP), AX
+	0x008a 00138 (defer_amd.go:13)	MOVQ	AX, (SP)
+	0x008e 00142 (defer_amd.go:13)	CALL	runtime.convT64(SB)
+	0x0093 00147 (defer_amd.go:13)	MOVQ	8(SP), AX
+	0x0098 00152 (defer_amd.go:13)	MOVQ	AX, ""..autotmp_13+208(SP)
+	0x00a0 00160 (defer_amd.go:13)	LEAQ	type.int(SB), CX
+	0x00a7 00167 (defer_amd.go:13)	MOVQ	CX, ""..autotmp_12+312(SP)
+	0x00af 00175 (defer_amd.go:13)	MOVQ	AX, ""..autotmp_12+320(SP)
+	0x00b7 00183 (defer_amd.go:13)	MOVQ	"".b+424(SP), AX
+	0x00bf 00191 (defer_amd.go:13)	MOVQ	AX, (SP)
+	0x00c3 00195 (defer_amd.go:13)	PCDATA	$1, $1
+	0x00c3 00195 (defer_amd.go:13)	CALL	runtime.convT64(SB)
+	0x00c8 00200 (defer_amd.go:13)	MOVQ	8(SP), AX
+	0x00cd 00205 (defer_amd.go:13)	MOVQ	AX, ""..autotmp_15+200(SP)
+	0x00d5 00213 (defer_amd.go:13)	LEAQ	type.int(SB), CX
+	0x00dc 00220 (defer_amd.go:13)	MOVQ	CX, ""..autotmp_14+296(SP)
+	0x00e4 00228 (defer_amd.go:13)	MOVQ	AX, ""..autotmp_14+304(SP)
+	0x00ec 00236 (defer_amd.go:13)	LEAQ	go.string."a: %d, b: %d\n"(SB), AX
+	0x00f3 00243 (defer_amd.go:13)	MOVQ	AX, fmt.format+248(SP)
+	0x00fb 00251 (defer_amd.go:13)	MOVQ	$13, fmt.format+256(SP)
+	0x0107 00263 (defer_amd.go:13)	MOVQ	""..autotmp_12+312(SP), AX
+	0x010f 00271 (defer_amd.go:13)	MOVQ	""..autotmp_12+320(SP), CX
+	0x0117 00279 (defer_amd.go:13)	MOVQ	AX, "".~arg1+232(SP)
+	0x011f 00287 (defer_amd.go:13)	MOVQ	CX, "".~arg1+240(SP)
+	0x0127 00295 (defer_amd.go:13)	MOVQ	""..autotmp_14+296(SP), AX
+	0x012f 00303 (defer_amd.go:13)	MOVQ	""..autotmp_14+304(SP), CX
+	0x0137 00311 (defer_amd.go:13)	MOVQ	AX, "".~arg2+216(SP)
+	0x013f 00319 (defer_amd.go:13)	MOVQ	CX, "".~arg2+224(SP)
+	0x0147 00327 (defer_amd.go:13)	XORPS	X0, X0
+	0x014a 00330 (defer_amd.go:13)	MOVUPS	X0, ""..autotmp_18+368(SP)
+	0x0152 00338 (defer_amd.go:13)	MOVUPS	X0, ""..autotmp_18+384(SP)
+	0x015a 00346 (defer_amd.go:13)	LEAQ	""..autotmp_18+368(SP), AX
+	0x0162 00354 (defer_amd.go:13)	MOVQ	AX, ""..autotmp_16+192(SP)
+	0x016a 00362 (defer_amd.go:13)	TESTB	AL, (AX)
+	0x016c 00364 (defer_amd.go:13)	MOVQ	"".~arg1+232(SP), CX
+	0x0174 00372 (defer_amd.go:13)	MOVQ	"".~arg1+240(SP), DX
+	0x017c 00380 (defer_amd.go:13)	MOVQ	CX, ""..autotmp_18+368(SP)
+	0x0184 00388 (defer_amd.go:13)	MOVQ	DX, ""..autotmp_18+376(SP)
+	0x018c 00396 (defer_amd.go:13)	TESTB	AL, (AX)
+	0x018e 00398 (defer_amd.go:13)	MOVQ	"".~arg2+216(SP), AX
+	0x0196 00406 (defer_amd.go:13)	MOVQ	"".~arg2+224(SP), CX
+	0x019e 00414 (defer_amd.go:13)	MOVQ	AX, ""..autotmp_18+384(SP)
+	0x01a6 00422 (defer_amd.go:13)	MOVQ	CX, ""..autotmp_18+392(SP)
+	0x01ae 00430 (defer_amd.go:13)	MOVQ	""..autotmp_16+192(SP), AX
+	0x01b6 00438 (defer_amd.go:13)	TESTB	AL, (AX)
+	0x01b8 00440 (defer_amd.go:13)	JMP	442
+	0x01ba 00442 (defer_amd.go:13)	MOVQ	AX, fmt.a+344(SP)
+	0x01c2 00450 (defer_amd.go:13)	MOVQ	$2, fmt.a+352(SP)
+	0x01ce 00462 (defer_amd.go:13)	MOVQ	$2, fmt.a+360(SP)
+	0x01da 00474 (defer_amd.go:13)	MOVQ	$0, fmt.n+80(SP)
+	0x01e3 00483 (defer_amd.go:13)	XORPS	X0, X0
+	0x01e6 00486 (defer_amd.go:13)	MOVUPS	X0, fmt.err+264(SP)
 	0x01ee 00494 (<unknown line number>)	NOP
-	0x01ee 00494 (defer_asm.go:13)	MOVQ	$0, fmt..autotmp_4+88(SP)
-	0x01f7 00503 (defer_asm.go:13)	XORPS	X0, X0
-	0x01fa 00506 (defer_asm.go:13)	MOVUPS	X0, fmt..autotmp_5+280(SP)
+	0x01ee 00494 (defer_amd.go:13)	MOVQ	$0, fmt..autotmp_4+88(SP)
+	0x01f7 00503 (defer_amd.go:13)	XORPS	X0, X0
+	0x01fa 00506 (defer_amd.go:13)	MOVUPS	X0, fmt..autotmp_5+280(SP)
 	0x0202 00514 ($GOROOT/src/fmt/print.go:213)	XORPS	X0, X0
 	0x0205 00517 ($GOROOT/src/fmt/print.go:213)	MOVUPS	X0, ""..autotmp_11+328(SP)
 	0x020d 00525 ($GOROOT/src/fmt/print.go:213)	MOVQ	os.Stdout(SB), AX
@@ -369,30 +369,30 @@ type..eq.[2]interface {} STEXT dupok size=236 args=0x18 locals=0x50
 	0x02a0 00672 ($GOROOT/src/fmt/print.go:213)	MOVQ	""..autotmp_11+336(SP), CX
 	0x02a8 00680 ($GOROOT/src/fmt/print.go:213)	MOVQ	AX, fmt..autotmp_5+280(SP)
 	0x02b0 00688 ($GOROOT/src/fmt/print.go:213)	MOVQ	CX, fmt..autotmp_5+288(SP)
-	0x02b8 00696 (defer_asm.go:13)	MOVQ	fmt..autotmp_4+88(SP), AX
-	0x02bd 00701 (defer_asm.go:13)	MOVQ	AX, fmt.n+80(SP)
-	0x02c2 00706 (defer_asm.go:13)	MOVQ	fmt..autotmp_5+280(SP), AX
-	0x02ca 00714 (defer_asm.go:13)	MOVQ	fmt..autotmp_5+288(SP), CX
-	0x02d2 00722 (defer_asm.go:13)	MOVQ	AX, fmt.err+264(SP)
-	0x02da 00730 (defer_asm.go:13)	MOVQ	CX, fmt.err+272(SP)
-	0x02e2 00738 (defer_asm.go:13)	JMP	740
-	0x02e4 00740 (defer_asm.go:14)	XCHGL	AX, AX
-	0x02e5 00741 (defer_asm.go:14)	CALL	runtime.deferreturn(SB)
-	0x02ea 00746 (defer_asm.go:14)	MOVQ	400(SP), BP
-	0x02f2 00754 (defer_asm.go:14)	ADDQ	$408, SP
-	0x02f9 00761 (defer_asm.go:14)	RET
-	0x02fa 00762 (defer_asm.go:11)	XCHGL	AX, AX
-	0x02fb 00763 (defer_asm.go:11)	NOP
-	0x0300 00768 (defer_asm.go:11)	CALL	runtime.deferreturn(SB)
-	0x0305 00773 (defer_asm.go:11)	MOVQ	400(SP), BP
-	0x030d 00781 (defer_asm.go:11)	ADDQ	$408, SP
-	0x0314 00788 (defer_asm.go:11)	RET
-	0x0315 00789 (defer_asm.go:11)	NOP
-	0x0315 00789 (defer_asm.go:10)	PCDATA	$1, $-1
-	0x0315 00789 (defer_asm.go:10)	PCDATA	$0, $-2
-	0x0315 00789 (defer_asm.go:10)	CALL	runtime.morestack_noctxt(SB)
-	0x031a 00794 (defer_asm.go:10)	PCDATA	$0, $-1
-	0x031a 00794 (defer_asm.go:10)	JMP	0
+	0x02b8 00696 (defer_amd.go:13)	MOVQ	fmt..autotmp_4+88(SP), AX
+	0x02bd 00701 (defer_amd.go:13)	MOVQ	AX, fmt.n+80(SP)
+	0x02c2 00706 (defer_amd.go:13)	MOVQ	fmt..autotmp_5+280(SP), AX
+	0x02ca 00714 (defer_amd.go:13)	MOVQ	fmt..autotmp_5+288(SP), CX
+	0x02d2 00722 (defer_amd.go:13)	MOVQ	AX, fmt.err+264(SP)
+	0x02da 00730 (defer_amd.go:13)	MOVQ	CX, fmt.err+272(SP)
+	0x02e2 00738 (defer_amd.go:13)	JMP	740
+	0x02e4 00740 (defer_amd.go:14)	XCHGL	AX, AX
+	0x02e5 00741 (defer_amd.go:14)	CALL	runtime.deferreturn(SB)
+	0x02ea 00746 (defer_amd.go:14)	MOVQ	400(SP), BP
+	0x02f2 00754 (defer_amd.go:14)	ADDQ	$408, SP
+	0x02f9 00761 (defer_amd.go:14)	RET
+	0x02fa 00762 (defer_amd.go:11)	XCHGL	AX, AX
+	0x02fb 00763 (defer_amd.go:11)	NOP
+	0x0300 00768 (defer_amd.go:11)	CALL	runtime.deferreturn(SB)
+	0x0305 00773 (defer_amd.go:11)	MOVQ	400(SP), BP
+	0x030d 00781 (defer_amd.go:11)	ADDQ	$408, SP
+	0x0314 00788 (defer_amd.go:11)	RET
+	0x0315 00789 (defer_amd.go:11)	NOP
+	0x0315 00789 (defer_amd.go:10)	PCDATA	$1, $-1
+	0x0315 00789 (defer_amd.go:10)	PCDATA	$0, $-2
+	0x0315 00789 (defer_amd.go:10)	CALL	runtime.morestack_noctxt(SB)
+	0x031a 00794 (defer_amd.go:10)	PCDATA	$0, $-1
+	0x031a 00794 (defer_amd.go:10)	JMP	0
 	0x0000 65 48 8b 0c 25 00 00 00 00 48 8d 84 24 e8 fe ff  eH..%....H..$...
 	0x0010 ff 48 3b 41 10 0f 86 fa 02 00 00 48 81 ec 98 01  .H;A.......H....
 	0x0020 00 00 48 89 ac 24 90 01 00 00 48 8d ac 24 90 01  ..H..$....H..$..
@@ -458,33 +458,33 @@ type..eq.[2]interface {} STEXT dupok size=236 args=0x18 locals=0x50
 	rel 769+4 t=8 runtime.deferreturn+0
 	rel 790+4 t=8 runtime.morestack_noctxt+0
 "".main STEXT size=87 args=0x0 locals=0x28
-	0x0000 00000 (defer_asm.go:16)	TEXT	"".main(SB), ABIInternal, $40-0
-	0x0000 00000 (defer_asm.go:16)	MOVQ	(TLS), CX
-	0x0009 00009 (defer_asm.go:16)	CMPQ	SP, 16(CX)
-	0x000d 00013 (defer_asm.go:16)	PCDATA	$0, $-2
-	0x000d 00013 (defer_asm.go:16)	JLS	80
-	0x000f 00015 (defer_asm.go:16)	PCDATA	$0, $-1
-	0x000f 00015 (defer_asm.go:16)	SUBQ	$40, SP
-	0x0013 00019 (defer_asm.go:16)	MOVQ	BP, 32(SP)
-	0x0018 00024 (defer_asm.go:16)	LEAQ	32(SP), BP
-	0x001d 00029 (defer_asm.go:16)	FUNCDATA	$0, gclocals·33cdeccccebe80329f1fdbee7f5874cb(SB)
-	0x001d 00029 (defer_asm.go:16)	FUNCDATA	$1, gclocals·33cdeccccebe80329f1fdbee7f5874cb(SB)
-	0x001d 00029 (defer_asm.go:17)	MOVQ	$1, "".a+24(SP)
-	0x0026 00038 (defer_asm.go:17)	MOVQ	$2, "".b+16(SP)
-	0x002f 00047 (defer_asm.go:18)	MOVQ	"".a+24(SP), AX
-	0x0034 00052 (defer_asm.go:18)	MOVQ	AX, (SP)
-	0x0038 00056 (defer_asm.go:18)	MOVQ	$2, 8(SP)
-	0x0041 00065 (defer_asm.go:18)	PCDATA	$1, $0
-	0x0041 00065 (defer_asm.go:18)	CALL	"".f(SB)
-	0x0046 00070 (defer_asm.go:19)	MOVQ	32(SP), BP
-	0x004b 00075 (defer_asm.go:19)	ADDQ	$40, SP
-	0x004f 00079 (defer_asm.go:19)	RET
-	0x0050 00080 (defer_asm.go:19)	NOP
-	0x0050 00080 (defer_asm.go:16)	PCDATA	$1, $-1
-	0x0050 00080 (defer_asm.go:16)	PCDATA	$0, $-2
-	0x0050 00080 (defer_asm.go:16)	CALL	runtime.morestack_noctxt(SB)
-	0x0055 00085 (defer_asm.go:16)	PCDATA	$0, $-1
-	0x0055 00085 (defer_asm.go:16)	JMP	0
+	0x0000 00000 (defer_amd.go:16)	TEXT	"".main(SB), ABIInternal, $40-0
+	0x0000 00000 (defer_amd.go:16)	MOVQ	(TLS), CX
+	0x0009 00009 (defer_amd.go:16)	CMPQ	SP, 16(CX)
+	0x000d 00013 (defer_amd.go:16)	PCDATA	$0, $-2
+	0x000d 00013 (defer_amd.go:16)	JLS	80
+	0x000f 00015 (defer_amd.go:16)	PCDATA	$0, $-1
+	0x000f 00015 (defer_amd.go:16)	SUBQ	$40, SP
+	0x0013 00019 (defer_amd.go:16)	MOVQ	BP, 32(SP)
+	0x0018 00024 (defer_amd.go:16)	LEAQ	32(SP), BP
+	0x001d 00029 (defer_amd.go:16)	FUNCDATA	$0, gclocals·33cdeccccebe80329f1fdbee7f5874cb(SB)
+	0x001d 00029 (defer_amd.go:16)	FUNCDATA	$1, gclocals·33cdeccccebe80329f1fdbee7f5874cb(SB)
+	0x001d 00029 (defer_amd.go:17)	MOVQ	$1, "".a+24(SP)
+	0x0026 00038 (defer_amd.go:17)	MOVQ	$2, "".b+16(SP)
+	0x002f 00047 (defer_amd.go:18)	MOVQ	"".a+24(SP), AX
+	0x0034 00052 (defer_amd.go:18)	MOVQ	AX, (SP)
+	0x0038 00056 (defer_amd.go:18)	MOVQ	$2, 8(SP)
+	0x0041 00065 (defer_amd.go:18)	PCDATA	$1, $0
+	0x0041 00065 (defer_amd.go:18)	CALL	"".f(SB)
+	0x0046 00070 (defer_amd.go:19)	MOVQ	32(SP), BP
+	0x004b 00075 (defer_amd.go:19)	ADDQ	$40, SP
+	0x004f 00079 (defer_amd.go:19)	RET
+	0x0050 00080 (defer_amd.go:19)	NOP
+	0x0050 00080 (defer_amd.go:16)	PCDATA	$1, $-1
+	0x0050 00080 (defer_amd.go:16)	PCDATA	$0, $-2
+	0x0050 00080 (defer_amd.go:16)	CALL	runtime.morestack_noctxt(SB)
+	0x0055 00085 (defer_amd.go:16)	PCDATA	$0, $-1
+	0x0055 00085 (defer_amd.go:16)	JMP	0
 	0x0000 65 48 8b 0c 25 00 00 00 00 48 3b 61 10 76 41 48  eH..%....H;a.vAH
 	0x0010 83 ec 28 48 89 6c 24 20 48 8d 6c 24 20 48 c7 44  ..(H.l$ H.l$ H.D
 	0x0020 24 18 01 00 00 00 48 c7 44 24 10 02 00 00 00 48  $.....H.D$.....H
