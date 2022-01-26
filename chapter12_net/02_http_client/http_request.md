@@ -28,9 +28,9 @@ func badStringError(what, val string) error { return fmt.Errorf("%s %q", what, v
 ```
 代码风格
 
-    ErrMissingFile：这是请求对象的一个查找方法返回的错误，调用了errors包的New方法来返回一个错误类型的错误（即errors.New可以传string类型参数 来返回一个简单的字符串错误）
-    ProtocolError ：ProtocolError表示HTTP协议错误结构体对象。该对象 实现了error接口(Error() string)，因此，所有该结构体实例都可以当成error返回传参
-    badStringError：是一个根据两个 string参数返回一个error的函数，当必要时，可以调用此函数实现返回错误
+- ErrMissingFile：这是请求对象的一个查找方法返回的错误，调用了errors包的New方法来返回一个错误类型的错误（即errors.New可以传string类型参数 来返回一个简单的字符串错误）
+- ProtocolError ：ProtocolError表示HTTP协议错误结构体对象。该对象 实现了error接口(Error() string)，因此，所有该结构体实例都可以当成error返回传参
+- badStringError：是一个根据两个 string参数返回一个error的函数，当必要时，可以调用此函数实现返回错误
 
 ## 2.结构体定义
 
@@ -280,7 +280,7 @@ func (r *Request) multipartReader(allowMixed bool) (*multipart.Reader, error) {
 
 ```
 
-## 5.request写入方法
+## 5.request 写入方法
 ```go
 // 根据 写入器io.Writer 编写http请求，调用了内部write(),传参：不使用代理、空的附加头、不等待
 // 它是头和正文; 此方法引用请求的字段：Host、URL、Method、Header、ContentLength、TransferEncoding、Body
@@ -453,9 +453,9 @@ func (r *Request) write(w io.Writer, usingProxy bool, extraHeaders Header, waitF
 
 
 ```
-## 6.根据读取器 读出一个请求对象(以及内部实现)方法自定义request请求
+## 6. 根据读取器 读出一个请求对象(以及内部实现)方法自定义request请求
+新建一个请求的方法（使用后台空上下文包装NewRequestWithContext）
 ```go
-// 新建一个请求的方法（使用后台空上下文包装NewRequestWithContext）
 func NewRequest(method, url string, body io.Reader) (*Request, error) {
 	return NewRequestWithContext(context.Background(), method, url, body)
 }
@@ -538,7 +538,7 @@ func NewRequestWithContext(ctx context.Context, method, url string, body io.Read
 
 ```
 
-## 7.根据 读取器(*bufio.Reader)，读取一个请求实例方法（readRequest内部方法实现），以及读取器的相关方法（新建一个最大字节的读取器，以及读取器结构体对象的读取关闭方法
+## 7. 根据 读取器(*bufio.Reader)，读取一个请求实例方法（readRequest内部方法实现），以及读取器的相关方法（新建一个最大字节的读取器，以及读取器结构体对象的读取关闭方法
 ```go
 // ReadRequest 读取并解析来自Reader的传入请求
 func ReadRequest(b *bufio.Reader) (*Request, error) {

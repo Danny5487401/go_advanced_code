@@ -213,7 +213,6 @@
     - [2.14 闭包函数](chapter11_assembly_language/02plan9/14_closure/main.go)
     - [2.15 GoroutineId获取](chapter11_assembly_language/02plan9/15_GoroutineId/main.go)
     - [2.16 汇编调用非汇编Go函数](chapter11_assembly_language/02plan9/16_assembly_call_NonassemblyFunc/main.go)
-
 - 3 [ Golang底层数据结构](chapter11_assembly_language/03Golang_data_structure/data.md)
     - [3.1 Map底层结构](chapter11_assembly_language/03Golang_data_structure/map_structure/map_intro.md)
     - [3.2 String底层结构,字符集和字符编码,性能分析及内存泄漏分析](chapter11_assembly_language/03Golang_data_structure/string_structure/str.md)
@@ -229,10 +228,12 @@
   - [1.2 使用内置serveMux生成函数](chapter12_net/01_http_server/02_use_http_NewServeMux/main.go)
   - [1.3 自定义实现serveMux](chapter12_net/01_http_server/03_use_cutomized_mux/main.go)
 - 2 爬虫获取邮箱案例(http客户端源码分析)
-  - [2.1 request源码](chapter12_net/02http_client/http_request.md)
-  - [2.2 response源码](chapter12_net/02http_client/http_response.md)
-  - [2.3 transport源码](chapter12_net/02http_client/http_transport.md)
+  - [2.1 request源码](chapter12_net/02_http_client/http_request.md)
+  - [2.2 response源码](chapter12_net/02_http_client/http_response.md)
+  - [2.3 transport源码](chapter12_net/02_http_client/http_transport.md)
 - 3 Tcp实现客户端及服务端(tcp底层原理分析)
+  - [客户端](chapter12_net/03_tcp/client/main.go)
+  - [服务端](chapter12_net/03_tcp/server/main.go)
 - 4 Tcp黏包分析及处理(大小端介绍)
 - 5 [fastHttp(源码分析)](chapter12_net/05_fasthttp/fasthttp.md)
   - 5.1 服务端
@@ -275,7 +276,7 @@
 - [2 FAN-IN和FAN-OUT模型](chapter16_concurrentProgramming/02_fanin_fanout/fanin_fanout.md)
 
 ## 第十七章 数据结构及算法
-- 1 queue队列
+- 1 queue双端单向队列(泛型)
 - 2 [加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/encryption.md)
   - 2.1 对称式加密
     - [aes高级加密标准](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/aes.md)

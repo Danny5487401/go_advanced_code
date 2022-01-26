@@ -197,7 +197,9 @@ TLSNextProto指定在TLS NPN / ALPN协议协商之后传输如何切换到备用
 	// TODO: tunable on max per-host TCP dials in flight (Issue 13957)
 }
 ```
-RoundTrip方法
+RoundTrip方法会做两件事情：
+- 调用 Transport 的 getConn 方法获取连接；
+- 在获取到连接后，调用 persistConn 的 roundTrip 方法等待请求响应结果；
 ```go
 //RoundTrip实现了RoundTripper接口
 func (t *Transport) RoundTrip(req *Request) (*Response, error) {
@@ -206,31 +208,7 @@ func (t *Transport) RoundTrip(req *Request) (*Response, error) {
 	//获取请求的上下文
 	ctx := req.Context()
 	trace := httptrace.ContextClientTrace(ctx)
- 
-	//错误处理
-	if req.URL == nil {
-		req.closeBody()
-		return nil, errors.New("http: nil Request.URL")
-	}
-	if req.Header == nil {
-		req.closeBody()
-		return nil, errors.New("http: nil Request.Header")
-	}
-	scheme := req.URL.Scheme
-	isHTTP := scheme == "http" || scheme == "https"
-	//如果是http或https请求，对Header中的数据进行校验
-	if isHTTP {
-		for k, vv := range req.Header {
-			if !httplex.ValidHeaderFieldName(k) {
-				return nil, fmt.Errorf("net/http: invalid header field name %q", k)
-			}
-			for _, v := range vv {
-				if !httplex.ValidHeaderFieldValue(v) {
-					return nil, fmt.Errorf("net/http: invalid header field value %q for key %v", v, k)
-				}
-			}
-		}
-	}
+    // ...
  
 	//如果该scheme有自定义的RoundTrip，则使用自定义的RoundTrip处理request，并返回response
 	altProto, _ := t.altProto.Load().(map[string]RoundTripper)
@@ -239,27 +217,17 @@ func (t *Transport) RoundTrip(req *Request) (*Response, error) {
 			return resp, err
 		}
 	}
- 
-	//如果不是http请求，则关闭并退出
-	if !isHTTP {
-		req.closeBody()
-		return nil, &badStringError{"unsupported protocol scheme", scheme}
-	}
- 
-	//对请求的Method进行校验
-	if req.Method != "" && !validMethod(req.Method) {
-		return nil, fmt.Errorf("net/http: invalid method %q", req.Method)
-	}
- 
-	//请求的host为空，则返回
-	if req.URL.Host == "" {
-		req.closeBody()
-		return nil, errors.New("http: no Host in request URL")
-	}
+    // ...
  
 	for {
+        select {
+        case <-ctx.Done():
+            req.closeBody()
+            return nil, ctx.Err()
+        default:
+        }
 		// treq gets modified by roundTrip, so we need to recreate for each retry.
-		//初始化transportRequest,transportRequest是request的包装器
+		//  封装请求:初始化transportRequest,transportRequest是request的包装器
 		treq := &transportRequest{Request: req, trace: trace}
 		//根据用户的请求信息获取connectMethod  cm
 		cm, err := t.connectMethodForRequest(treq)
@@ -268,10 +236,7 @@ func (t *Transport) RoundTrip(req *Request) (*Response, error) {
 			return nil, err
 		}
  
-		// Get the cached or newly-created connection to either the
-		// host (for http or https), the http proxy, or the http proxy
-		// pre-CONNECTed to https server. In any case, we'll be ready
-		// to send it requests.
+
 		//从缓存中获取一个连接，或者新建一个连接
 		pconn, err := t.getConn(treq, cm)
 		if err != nil {
@@ -291,142 +256,240 @@ func (t *Transport) RoundTrip(req *Request) (*Response, error) {
 		if err == nil {
 			return resp, nil
 		}
-		if !pconn.shouldRetryRequest(req, err) {
-			// Issue 16465: return underlying net.Conn.Read error from peek,
-			// as we've historically done.
-			if e, ok := err.(transportReadFromServerError); ok {
-				err = e.err
-			}
-			return nil, err
-		}
-		testHookRoundTripRetried()
- 
-		// Rewind the body if we're able to.  (HTTP/2 does this itself so we only
-		// need to do it for HTTP/1.1 connections.)
-		if req.GetBody != nil && pconn.alt == nil {
-			newReq := *req
-			var err error
-			newReq.Body, err = req.GetBody()
-			if err != nil {
-				return nil, err
-			}
-			req = &newReq
-		}
+		// ...
 	}
 }
 ```
 
-获取或则新建连接:
+
+## 获取或则新建连接:
 - 1. 调用 queueForIdleConn 获取空闲 connection；
 - 2. 调用 queueForDial 等待创建新的 connection；
+![](.http_transport_images/get_conn.png)
 ```go
- func (t *Transport) getConn(treq *transportRequest, cm connectMethod) (*persistConn, error) {
-	req := treq.Request
-	trace := treq.trace
-	ctx := req.Context()
- 
-	//GetConn是钩子函数在获取连接前调用
-	if trace != nil && trace.GetConn != nil {
-		trace.GetConn(cm.addr())
-	}
-	//如果可以获取到空闲的连接
-	if pc, idleSince := t.getIdleConn(cm); pc != nil {
-		if trace != nil && trace.GotConn != nil {  //GotConn是钩子函数，成功获取连接后调用
-			trace.GotConn(pc.gotIdleConnTrace(idleSince))
-		}
-		// set request canceler to some non-nil function so we
-		// can detect whether it was cleared between now and when
-		// we enter roundTrip
-		/*
-		将请求的canceler设置为某些非零函数，以便我们可以检测它是否在现在和我们进入roundTrip之间被清除
-		*/
-		t.setReqCanceler(req, func(error) {})
-		return pc, nil
-	}
- 
-	type dialRes struct {
-		pc  *persistConn
-		err error
-	}
-	dialc := make(chan dialRes)
- 
-	// Copy these hooks so we don't race on the postPendingDial in
-	// the goroutine we launch. Issue 11136.
-	testHookPrePendingDial := testHookPrePendingDial
-	testHookPostPendingDial := testHookPostPendingDial
- 
-	//该内部函数handlePendingDial的主要作用是，新开启一个协程，当新建连接完成后但没有被使用，将其放到连接池（缓存）中或将其关闭
-	handlePendingDial := func() {
-		testHookPrePendingDial()
-		go func() {
-			if v := <-dialc; v.err == nil {
-				t.putOrCloseIdleConn(v.pc)
-			}
-			testHookPostPendingDial()
-		}()
-	}
- 
-	cancelc := make(chan error, 1)
-	t.setReqCanceler(req, func(err error) { cancelc <- err })
- 
-	go func() {//开启一个协程新建一个连接
-		pc, err := t.dialConn(ctx, cm)
-		dialc <- dialRes{pc, err}
-	}()
- 
-	idleConnCh := t.getIdleConnCh(cm)
-	select {
-	case v := <-dialc: //获取新建的连接
-		// Our dial finished.
-		if v.pc != nil { //如果新建的连接不为nil，则返回新建的连接
-			if trace != nil && trace.GotConn != nil && v.pc.alt == nil {
-				trace.GotConn(httptrace.GotConnInfo{Conn: v.pc.conn})
-			}
-			return v.pc, nil
-		}
-		// Our dial failed. See why to return a nicer error
-		// value.
-		select {
-		case <-req.Cancel:
-			// It was an error due to cancelation, so prioritize that
-			// error value. (Issue 16049)
-			return nil, errRequestCanceledConn
-		case <-req.Context().Done():
-			return nil, req.Context().Err()
-		case err := <-cancelc:
-			if err == errRequestCanceled {
-				err = errRequestCanceledConn
-			}
-			return nil, err
-		default:
-			// It wasn't an error due to cancelation, so
-			// return the original error message:
-			return nil, v.err
-		}
-	case pc := <-idleConnCh:  //如果在新建连接的过程中，有空闲的连接，则返回该空闲的连接
-		// Another request finished first and its net.Conn
-		// became available before our dial. Or somebody
-		// else's dial that they didn't use.
-		// But our dial is still going, so give it away
-		// when it finishes:
-		//如果在dial连接的时候，有空闲的连接，但是这个时候我们仍然正在新建连接，所以当它新建完成后将其放到连接池或丢弃
-		handlePendingDial()
-		if trace != nil && trace.GotConn != nil {
-			trace.GotConn(httptrace.GotConnInfo{Conn: pc.conn, Reused: pc.isReused()})
-		}
-		return pc, nil
-	case <-req.Cancel:
-		handlePendingDial()
-		return nil, errRequestCanceledConn
-	case <-req.Context().Done():
-		handlePendingDial()
-		return nil, req.Context().Err()
-	case err := <-cancelc:
-		handlePendingDial()
-		if err == errRequestCanceled {
-			err = errRequestCanceledConn
-		}
-		return nil, err
-	}
+func (t *Transport) getConn(treq *transportRequest, cm connectMethod) (pc *persistConn, err error) {
+    req := treq.Request
+    trace := treq.trace
+    ctx := req.Context()
+    if trace != nil && trace.GetConn != nil {
+        trace.GetConn(cm.addr())
+    }   
+    // 将请求封装成 wantConn 结构体
+    w := &wantConn{
+        cm:         cm,
+        key:        cm.key(),
+        ctx:        ctx,
+        ready:      make(chan struct{}, 1),
+        beforeDial: testHookPrePendingDial,
+        afterDial:  testHookPostPendingDial,
+    }
+    defer func() {
+        if err != nil {
+            w.cancel(t, err)
+        }
+    }()
+
+    // 获取空闲连接
+    if delivered := t.queueForIdleConn(w); delivered {
+        pc := w.pc
+        ...
+        t.setReqCanceler(treq.cancelKey, func(error) {})
+        return pc, nil
+    }
+
+    // 创建连接
+    t.queueForDial(w)
+
+    select {
+    // 获取到连接后进入该分支
+    case <-w.ready:
+        ...
+        return w.pc, w.err
+    ...
+}
+```
+
+### 获取空闲连接 queueForIdleConn
+![](.http_transport_images/get_queue_for_idle_conn.png)
+成功获取 connection 分为如下几步：
+
+1. 根据当前的请求的地址去空闲 connection 字典中查看存不存在空闲的 connection 列表；
+2. 如果能获取到空闲的 connection 列表，那么获取到列表的最后一个 connection；
+3. 返回
+
+![](.http_transport_images/fail_to_get_queue_for_indle_conn.png)
+当获取不到空闲 connection 时：
+
+1. 根据当前的请求的地址去空闲 connection 字典中查看存不存在空闲的 connection 列表；
+2. 不存在该请求的 connection 列表，那么将该 wantConn 加入到 等待获取空闲 connection 字典中；
+```go
+func (t *Transport) queueForIdleConn(w *wantConn) (delivered bool) {
+    if t.DisableKeepAlives {
+        return false
+    }
+
+    t.idleMu.Lock()
+    defer t.idleMu.Unlock() 
+    t.closeIdle = false
+
+    if w == nil { 
+        return false
+    }
+
+    // 计算空闲连接超时时间
+    var oldTime time.Time
+    if t.IdleConnTimeout > 0 {
+        oldTime = time.Now().Add(-t.IdleConnTimeout)
+    }
+    // Look for most recently-used idle connection.
+    // 找到key相同的 connection 列表
+    if list, ok := t.idleConn[w.key]; ok {
+        stop := false
+        delivered := false
+        for len(list) > 0 && !stop {
+            // 找到connection列表最后一个
+            pconn := list[len(list)-1] 
+            // 检查这个 connection 是不是等待太久了
+            tooOld := !oldTime.IsZero() && pconn.idleAt.Round(0).Before(oldTime)
+            if tooOld { 
+                go pconn.closeConnIfStillIdle()
+            }
+            // 该 connection 被标记为 broken 或 闲置太久 continue
+            if pconn.isBroken() || tooOld { 
+                list = list[:len(list)-1]
+                continue
+            }
+            // 尝试将该 connection 写入到 w 中
+            delivered = w.tryDeliver(pconn, nil)
+            if delivered {
+                // 操作成功，需要将 connection 从空闲列表中移除
+                if pconn.alt != nil { 
+                } else { 
+                    t.idleLRU.remove(pconn)
+                    list = list[:len(list)-1]
+                }
+            }
+            stop = true
+        }
+        if len(list) > 0 {
+            t.idleConn[w.key] = list
+        } else {
+            // 如果该 key 对应的空闲列表不存在，那么将该key从字典中移除
+            delete(t.idleConn, w.key)
+        }
+        if stop {
+            return delivered
+        }
+    } 
+    // 如果找不到空闲的 connection
+    if t.idleConnWait == nil {
+        t.idleConnWait = make(map[connectMethodKey]wantConnQueue)
+    }
+  // 将该 wantConn 加入到 等待获取空闲 connection 字典中
+    q := t.idleConnWait[w.key] 
+    q.cleanFront()
+    q.pushBack(w)
+    t.idleConnWait[w.key] = q
+    return false
+}
+```
+
+### 建立连接 queueForDial
+![](.http_transport_images/queue_for_dial.png)
+尝试去建立连接，总共分为以下几个步骤
+1. 在调用 queueForDial 方法的时候会校验 MaxConnsPerHost 是否未设置或已达上限；
+   * 检验不通过则将当前的请求放入到 connsPerHostWait 等待字典中；
+2. 如果校验通过那么会异步的调用 dialConnFor 方法创建连接；
+3. dialConnFor 方法首先会调用 dialConn 方法创建 TCP 连接，然后启动两个异步线程来处理读写数据，然后调用 tryDeliver 将连接绑定到 wantConn 上面。
+
+```go
+func (t *Transport) queueForDial(w *wantConn) {
+    w.beforeDial()
+    // 小于零说明无限制，异步建立连接
+    if t.MaxConnsPerHost <= 0 {
+        go t.dialConnFor(w)
+        return
+    }
+
+    t.connsPerHostMu.Lock()
+    defer t.connsPerHostMu.Unlock()
+    // 每个 host 建立的连接数没达到上限，异步建立连接
+    if n := t.connsPerHost[w.key]; n < t.MaxConnsPerHost {
+        if t.connsPerHost == nil {
+            t.connsPerHost = make(map[connectMethodKey]int)
+        }
+        t.connsPerHost[w.key] = n + 1
+        go t.dialConnFor(w)
+        return
+    }
+    //每个 host 建立的连接数已达到上限，需要进入等待队列
+    if t.connsPerHostWait == nil {
+        t.connsPerHostWait = make(map[connectMethodKey]wantConnQueue)
+    }
+    q := t.connsPerHostWait[w.key]
+    q.cleanFront()
+    q.pushBack(w)
+    t.connsPerHostWait[w.key] = q
+}
+```
+```go
+func (t *Transport) dialConnFor(w *wantConn) {
+    defer w.afterDial()
+    // 建立连接
+    pc, err := t.dialConn(w.ctx, w.cm)
+    // 连接绑定 wantConn
+    delivered := w.tryDeliver(pc, err)
+    // 建立连接成功，但是绑定 wantConn 失败
+    // 那么将该连接放置到空闲连接字典或调用 等待获取空闲 connection 字典 中的元素执行
+    if err == nil && (!delivered || pc.alt != nil) { 
+        t.putOrCloseIdleConn(pc)
+    }
+    if err != nil {
+        t.decConnsPerHost(w.key)
+    }
+}
+```
+```go
+func (t *Transport) dialConn(ctx context.Context, cm connectMethod) (pconn *persistConn, err error) {
+    // 创建连接结构体
+    pconn = &persistConn{
+        t:             t,
+        cacheKey:      cm.key(),
+        reqch:         make(chan requestAndChan, 1),
+        writech:       make(chan writeRequest, 1),
+        closech:       make(chan struct{}),
+        writeErrCh:    make(chan error, 1),
+        writeLoopDone: make(chan struct{}),
+    }
+    ...
+    if cm.scheme() == "https" && t.hasCustomTLSDialer() {
+        ...
+    } else {
+        // 建立 tcp 连接
+        conn, err := t.dial(ctx, "tcp", cm.addr())
+        if err != nil {
+            return nil, wrapErr(err)
+        }
+        pconn.conn = conn 
+    } 
+    ...
+
+    if s := pconn.tlsState; s != nil && s.NegotiatedProtocolIsMutual && s.NegotiatedProtocol != "" {
+        if next, ok := t.TLSNextProto[s.NegotiatedProtocol]; ok {
+            alt := next(cm.targetAddr, pconn.conn.(*tls.Conn))
+            if e, ok := alt.(http2erringRoundTripper); ok {
+                // pconn.conn was closed by next (http2configureTransport.upgradeFn).
+                return nil, e.err
+            }
+            return &persistConn{t: t, cacheKey: pconn.cacheKey, alt: alt}, nil
+        }
+    }
+
+    pconn.br = bufio.NewReaderSize(pconn, t.readBufferSize())
+    pconn.bw = bufio.NewWriterSize(persistConnWriter{pconn}, t.writeBufferSize())
+    //为每个连接异步处理读写数据
+    go pconn.readLoop()
+    go pconn.writeLoop()
+    return pconn, nil
 }
 ```

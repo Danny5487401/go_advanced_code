@@ -50,3 +50,50 @@ type Response struct {
 }
 
 ```
+## 流程
+![](.http_response_images/response.png)
+在创建连接的时候会初始化两个 channel ：writech 负责写入请求数据，reqch负责读取响应数据。
+我们在创建连接的时候，也提到了会为连接创建两个异步循环 readLoop 和 writeLoop 来负责处理读写数据.
+
+在获取到连接之后，会调用连接的 roundTrip 方法，它首先会将请求数据写入到 writech 管道中，writeLoop 接收到数据之后就会处理请求。
+
+然后 roundTrip 会将 requestAndChan 结构体写入到 reqch 管道中，然后 roundTrip 会循环等待。readLoop 读取到响应数据之后就会通过 requestAndChan 结构体中保存的管道将数据封装成 responseAndError 结构体回写，这样 roundTrip 就可以接受到响应数据结束循环等待并返回
+
+```go
+func (pc *persistConn) roundTrip(req *transportRequest) (resp *Response, err error) {
+    ...
+    writeErrCh := make(chan error, 1)
+    // 将请求数据写入到 writech 管道中
+    pc.writech <- writeRequest{req, writeErrCh, continueCh}
+
+    // 用于接收响应的管道
+    resc := make(chan responseAndError)
+    // 将用于接收响应的管道封装成 requestAndChan 写入到 reqch 管道中
+    pc.reqch <- requestAndChan{
+        req:        req.Request,
+        cancelKey:  req.cancelKey,
+        ch:         resc,
+        ...
+    }
+    ...
+    for {
+        testHookWaitResLoop()
+        select { 
+        // 接收到响应数据
+        case re := <-resc:
+            if (re.res == nil) == (re.err == nil) {
+                panic(fmt.Sprintf("internal error: exactly one of res or err should be set; nil=%v", re.res == nil))
+            }
+            if debugRoundTrip {
+                req.logf("resc recv: %p, %T/%#v", re.res, re.err, re.err)
+            }
+            if re.err != nil {
+                return nil, pc.mapRoundTripError(req, startBytesWritten, re.err)
+            }
+            // 返回响应数据
+            return re.res, nil
+        ...
+    }
+}
+```
+这里会封装好 writeRequest 作为发送请求的数据，并将用于接收响应的管道封装成 requestAndChan 写入到 reqch 管道中，然后循环等待接受响应。
