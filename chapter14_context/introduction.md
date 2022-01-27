@@ -166,6 +166,9 @@ c设计思想：
 
 withCancel使用分析：
 ```go
+// Canceled is the error returned by Context.Err when the context is canceled.
+var Canceled = errors.New("context canceled")
+
 func WithCancel(parent Context) (ctx Context, cancel CancelFunc) {
     c := newCancelCtx(parent)
     propagateCancel(parent, &c)
@@ -258,6 +261,38 @@ propagateCancel完成的主要工作：
 
 得益于子context引用父context的设计，对于每个contest都将可以通过向上回溯得到一条引用链，
 辅助函数 parentCancelCtx即通过不断向内部引用类型转换，达到回看context历史的目的，寻找最近的*cancelCtx型祖先
+
+结束时调用
+```go
+// cancel closes c.done, cancels each of c's children, and, if
+// removeFromParent is true, removes c from its parent's children.
+func (c *cancelCtx) cancel(removeFromParent bool, err error) {
+	if err == nil {
+		panic("context: internal error: missing cancel error")
+	}
+	c.mu.Lock()
+	if c.err != nil {
+		c.mu.Unlock()
+		return // already canceled
+	}
+	c.err = err
+	if c.done == nil {
+		c.done = closedchan
+	} else {
+		close(c.done)
+	}
+	for child := range c.children {
+		// NOTE: acquiring the child's lock while holding parent's lock.
+		child.cancel(false, err)
+	}
+	c.children = nil
+	c.mu.Unlock()
+
+	if removeFromParent {
+		removeChild(c.Context, c)
+	}
+}
+```
 
 
 #### 3. timerCtx：继承自 cancelCtx 他们都是带取消功能的 Context

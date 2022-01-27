@@ -7,8 +7,8 @@ import "fmt"
 */
 
 func main() {
-	ch := make(chan int, 5)
-	ch <- 18
+	ch := make(chan struct{}, 1)
+	ch <- struct{}{}
 	close(ch)
 	x, ok := <-ch
 	if ok {
@@ -18,4 +18,12 @@ func main() {
 	if !ok {
 		fmt.Println("通道关闭")
 	}
+	x, ok = <-ch
+	if !ok {
+		fmt.Println("通道关闭")
+	}
+	a := <-ch // 不会阻塞
+	fmt.Printf("通道已经关闭,数值%v\n", a)
+	fmt.Printf("类型%T\n", a)
+
 }

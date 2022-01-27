@@ -1,4 +1,5 @@
 # channel
+
 ## 使用场景
 把channel用在数据流动的地方
 1. 消息传递、消息过滤
@@ -581,14 +582,17 @@ func chanbuf(c *hchan, i uint) unsafe.Pointer {
 	接着，分别将发送游标和接收游标向前进一，如果发生“环绕”，再从 0 开始
 
 ## 四. 关闭channel
-	close 逻辑比较简单，对于一个 channel，recvq 和 sendq 中分别保存了阻塞的发送者和接收者。关闭 channel 后，对于等待接收者而言，会收到一个相应类型的零值。
-	对于等待发送者，会直接 panic。所以，在不了解 channel 还有没有接收者的情况下，不能贸然关闭 channel.
-	close 函数先上一把大锁，接着把所有挂在这个 channel 上的 sender 和 receiver 全都连成一个 sudog 链表，再解锁。
-	最后，再将所有的 sudog 全都唤醒。
+
+close 逻辑比较简单，对于一个 channel，recvq 和 sendq 中分别保存了阻塞的发送者和接收者。关闭 channel 后，对于等待接收者而言，会收到一个相应类型的零值。
+对于等待发送者，会直接 panic。所以，在不了解 channel 还有没有接收者的情况下，不能贸然关闭 channel.
+close 函数先上一把大锁，接着把所有挂在这个 channel 上的 sender 和 receiver 全都连成一个 sudog 链表，再解锁。
+最后，再将所有的 sudog 全都唤醒。
+
 ### 关闭原则：
 
 	一般原则上使用通道是不允许接收方关闭通道和 不能关闭一个有多个并发发送者的通道。
 	换而言之， 你只能在发送方的 goroutine 中关闭只有该发送方的通道
+
 源码分析
 ```go
 func closechan(c *hchan) {
