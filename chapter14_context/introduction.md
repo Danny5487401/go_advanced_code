@@ -4,7 +4,8 @@
 
 ## 应用场景：
 ![](.introduction_images/multi_goroutine.png)
-那么如果不用 Context，就不能在 Go 语言里实现多个 goroutine  间的信号通知和元数据传递了吗？答案是：简单场景下可以，在多层级 goroutine 的控制中就行不通了。
+
+如果不用 Context，就不能在 Go 语言里实现多个 goroutine  间的信号通知和元数据传递了吗？答案是：简单场景下可以，在多层级 goroutine 的控制中就行不通了。
 
 假如主协程中有多个任务，主协程对这些任务有超时控制；而其中任务1又有多个子任务，任务1对这些子任务也有自己的超时控制，那么这些子任务既要感知主协程的取消信号，也需要感知任务1的取消信号。
 
@@ -22,18 +23,23 @@
 
 ## Context 的调用
 
-	应该是链式的，通过WithCancel，WithDeadline，WithTimeout或WithValue派生出新的 Context。当父 Context 被取消时，其派生的所有 Context 都将取消。
-	通过context.WithXXX都将返回新的 Context 和 CancelFunc。调用 CancelFunc 将取消子代，移除父代对子代的引用，并且停止所有定时器。
-	未能调用 CancelFunc 将泄漏子代，直到父代被取消或定时器触发。go vet工具检查所有流程控制路径上使用 CancelFuncs
+应该是链式的，通过WithCancel，WithDeadline，WithTimeout或WithValue派生出新的 Context。当父 Context 被取消时，其派生的所有 Context 都将取消。
+通过context.WithXXX都将返回新的 Context 和 CancelFunc。调用 CancelFunc 将取消子代，移除父代对子代的引用，并且停止所有定时器。
+未能调用 CancelFunc 将泄漏子代，直到父代被取消或定时器触发。go vet工具检查所有流程控制路径上使用 CancelFuncs
 
 ## 遵循规则
 
-	遵循以下规则，以保持包之间的接口一致，并启用静态分析工具以检查上下文传播。
+遵循以下规则，以保持包之间的接口一致，并启用静态分析工具以检查上下文传播。
 
-	不要将 Contexts 放入结构体，相反context应该作为第一个参数传入，命名为ctx。 func DoSomething（ctx context.Context，arg Arg）error { // ... use ctx ... }
-	即使函数允许，也不要传入nil的 Context。如果不知道用哪种 Context，可以使用context.TODO()。
-	使用context的Value相关方法只应该用于在程序和接口中传递的和请求相关的元数据，不要用它来传递一些可选的参数
-	相同的 Context 可以传递给在不同的goroutine；Context 是并发安全的。
+不要将 Contexts 放入结构体，相反context应该作为第一个参数传入，命名为ctx。
+```go
+func DoSomething（ctx context.Context，arg Arg）error { // ... use ctx ... }
+```
+
+**即使函数允许，也不要传入nil的 Context。如果不知道用哪种 Context，可以使用context.TODO()。**
+
+使用context的Value相关方法只应该用于在程序和接口中传递的和请求相关的元数据，不要用它来传递一些可选的参数
+相同的 Context 可以传递给在不同的goroutine；Context 是并发安全的。
 
 ## Context 源码分析
 ![](.introduction_images/context_relation.png)
@@ -98,7 +104,8 @@ caller 不应该去关心、干涉 callee 的情况，决定如何以及何时 r
 - cancelCtx：实现了cancler接口，为context提供了可取消自身和子孙的功能。
 - timerCtx：在cancelCtx的基础上，对带有定时功能的Context进行了实现。
 - valueCtx：对应携带K-V值的context接口实现，携带k-v数据成员，实现了value函数的具体操作。
-- 
+
+
 #### 1. emptyCtx：即空context，也是所有子context的祖先
 ```go
 type emptyCtx int

@@ -87,5 +87,6 @@ func (h *Host) SendTo(pid, msg string) {
 	版本一：使用锁共享数据，
 	版本二：使用channel传输数据，没办法实现GetPeer
 	版本三：使用channel传输函数,不能对Peer进行同时读，不容易做单元测试
+
 这3种方式本身并无优劣之分，具体要用那种实现，要依赖自身的实际场景进行取舍
 */

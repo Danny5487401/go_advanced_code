@@ -189,7 +189,7 @@
 - 3 一等公民案例
     - [网络管理中问题需求](chapter10_function/03_Firstclassfunction/problem_desc.md)
     - 网络管理中三种处理对比
-        - 3.1 通过同享内存通信
+        - [3.1 通过同享内存通信](chapter10_function/03_Firstclassfunction/01_communicate_by_sharing_memory/main.go)
         - 3.2 通过通信(具体数据)共享内存
         - 3.3 通过通信(函数)共享内存
 

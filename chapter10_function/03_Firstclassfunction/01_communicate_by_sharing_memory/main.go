@@ -23,6 +23,7 @@ Peer定义:
 
 	Peer有一个WriteMsg的方法，实现向该Peer发送消息的功能，例子中使用打印替代。
 */
+
 // Host 代表当前节点的连接管理
 type Host struct {
 	peers map[string]*Peer // 连接上所有的Peer,根据Peer.ID访问
@@ -45,6 +46,7 @@ Host有4个方法，分别是：
 	2. RemovePeer: 删除1个Peer。
 	3. GetPeer: 通过Peer.ID查询1个Peer。
 	4. BroadcastMsg: 向所有Peer发送消息。
+
 每一个方法都需要获取lock，然后访问peers，如果只读取peers则使用读锁
 */
 
@@ -79,7 +81,9 @@ func (h *Host) BroadcastMsg(msg string) {
 
 }
 
-/* communicate by sharing memory
+/*
+communicate by sharing memory
+
 每个goroutine都是1个实体，它们同时运行，调用Host的不同方法来访问peers，只有拿到当前lock的goroutine才能访问peers，仿佛当前goroutine在同其他goroutine讲：
 	我现在有访问权，你们等一下。本质上就是，通过共享Host.lock这块内存，各goroutine进行交流（表明自己拥有访问权）。
 */
