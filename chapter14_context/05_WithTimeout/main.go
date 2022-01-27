@@ -30,10 +30,12 @@ LOOP:
 func main() {
 	// 设置一个50毫秒的超时
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*50)
+
 	wg.Add(1)
 	go worker(ctx)
 	time.Sleep(time.Second * 5)
 	cancel() // 通知子goroutine结束
+
 	wg.Wait()
 	fmt.Println("over")
 }

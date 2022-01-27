@@ -25,6 +25,7 @@ Loop:
 	// 如何接收外部命令实现退出
 	wg.Done()
 }
+
 func worker2(ctx context.Context) {
 Loop:
 	for {

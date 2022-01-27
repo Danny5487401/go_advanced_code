@@ -5,15 +5,6 @@ import (
 	"fmt"
 	"time"
 )
-/*
-源码分析：
-
-	type timerCtx struct {
-		cancelCtx
-		timer *time.Timer // Under cancelCtx.mu.
-		deadline time.Time
-	}
- */
 
 func main() {
 	d := time.Now().Add(5 * time.Millisecond)
