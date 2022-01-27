@@ -65,7 +65,7 @@
     - [1.8 单向通道](chapter03_channel/01_channel_use/08one-wayChan/main.go)
     - [1.9 使用channel传递channel](chapter03_channel/01_channel_use/09ChanPassChan/main.go)
     - [1.10 happened before](chapter03_channel/01_channel_use/10_happened_before/happened_before.md)
-    - [1.11 读取关闭的通道值](chapter03_channel/01_channel_use/11_read_closed_chan/readCloseChan.go)
+    - [1.11 循环读取关闭的通道值是否阻塞](chapter03_channel/01_channel_use/11_read_closed_chan/readCloseChan.go)
     - [1.12 select中实现channel优先级-->k8s中实现](chapter03_channel/01_channel_use/12_priority_channel/priority_chan.md)
 - 2 [channel应用:TimerChan模块](chapter03_channel/02_TimerChan/timer.md)
     - [2.1 reset陷阱](chapter03_channel/02_TimerChan/01_TimerReset/timer_reset.md)
@@ -135,22 +135,22 @@
         - 2.2.2 结构体装饰
         - 2.2.3 反射实现--泛型装饰器
     - 2.3 [享元模式-->线程池,缓存思想](chapter09_design_pattern/02_structure/03_FlyweightPattern/flyWeightPattern.md)
-    - 2.4 适配器模式
+    - [2.4 适配器模式](chapter09_design_pattern/02_structure/04_adopter/adopter.md)
     - [2.5 桥接模式](chapter09_design_pattern/02_structure/05_bridgeMethod/bridge_method.md)
     - 2.6 [门面模式(外观模式)-->在gin中render应用(封装多个子服务)](chapter09_design_pattern/02_structure/06_facade_pattern/facade.md)
     - 2.7 [代理模式](chapter09_design_pattern/02_structure/07_proxy/proxy.md)
 - 3 行为型模式
-    - 3.1  [访问者模式-->k8s中kubectl实现](chapter09_design_pattern/03_motion/01_visitor/vistor.md)
-    - 3.2  迭代器-->标准库container/ring中实现
-    - 3.3  [状态模式](chapter09_design_pattern/03_motion/03_State/introduction.md)
-    - 3.4  责任链模式
-    - 3.5  模版模式
-    - 3.6  策略模式-->if-else的另类写法(内部算法封装)
-    - 3.7  解释器模式
-    - 3.8  命令模式-->go-redis中实现
-    - 3.9  备忘录模式
-    - 3.10 观察者模式-->etcd的watch机制
-    - 3.11 中介者模式
+    - [3.1  访问者模式-->k8s中kubectl实现](chapter09_design_pattern/03_motion/01_visitor/vistor.md)
+    - [3.2  迭代器-->标准库container/ring中实现](chapter09_design_pattern/03_motion/02_Iterator/main.go)
+    - [3.3  状态模式](chapter09_design_pattern/03_motion/03_State/introduction.md)
+    - [3.4  责任链模式](chapter09_design_pattern/03_motion/04_duty_chain_method/duty_chain.md)
+    - [3.5  模版模式](chapter09_design_pattern/03_motion/05_templateMethod/template.go)
+    - [3.6  策略模式-->if-else的另类写法(内部算法封装)](chapter09_design_pattern/03_motion/06_strategyMethod/strategy.md)
+    - [3.7  解释器模式](chapter09_design_pattern/03_motion/07_InterpreterMethod/interpreter.md)
+    - [3.8  命令模式-->go-redis中实现](chapter09_design_pattern/03_motion/08_CommandMethod/command.md)
+    - [3.9  备忘录模式](chapter09_design_pattern/03_motion/09_memento/introduction.md)
+    - [3.10 观察者模式-->官方Signal包及etcd的watch机制](chapter09_design_pattern/03_motion/10_ObserverPattern/introduction.md)
+    - [3.11 中介者模式](chapter09_design_pattern/03_motion/11_mediator/inctroduction.md)
 - [4 函数选项:成例模式-->在日志库zap中实现](chapter09_design_pattern/04_fuctional_option/option.md)
     - 4.1 未使用的现状
     - 4.2 区分必填项和选项
