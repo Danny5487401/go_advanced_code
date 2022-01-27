@@ -17,11 +17,13 @@ Loop:
 		time.Sleep(time.Second)
 		select {
 		case <-ctx.Done():
+			fmt.Println("worker1 结束")
 			break Loop
 		default:
 
 		}
 	}
+
 	// 如何接收外部命令实现退出
 	wg.Done()
 }
@@ -33,6 +35,7 @@ Loop:
 		time.Sleep(time.Second)
 		select {
 		case <-ctx.Done():
+			fmt.Println("worker2 结束")
 			break Loop
 		default:
 

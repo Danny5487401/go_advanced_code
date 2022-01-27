@@ -255,7 +255,7 @@
 
 ## [第十四章 Context上下文-源码分析涉及父类EmptyCtx](chapter14_context/introduction.md)
 - 1 Context使用背景
-    - [1.1 问题：如何释放子goroutine资源](chapter14_context/01_Reason_To_Use_Context/01_problem/main.go)
+    - [1.1 问题：如何通过父进程优雅释放子goroutine资源](chapter14_context/01_Reason_To_Use_Context/01_problem/main.go)
     - [1.2 方式一：全局参数方式解决的优缺点](chapter14_context/01_Reason_To_Use_Context/02_Method1_Global_Param/main.go)
     - [1.3 方式二: 通道channel方式解决的优缺点](chapter14_context/01_Reason_To_Use_Context/03_Method2_Channel/main.go)
     - [1.4 方式三: 最优方式Context](chapter14_context/01_Reason_To_Use_Context/04_Method3_Context/main.go)
