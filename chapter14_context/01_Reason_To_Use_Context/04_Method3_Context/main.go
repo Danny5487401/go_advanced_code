@@ -46,7 +46,7 @@ Loop:
 }
 
 func main() {
-	wg.Add(1)
+	wg.Add(2)
 	ctx, cancel := context.WithCancel(context.Background())
 	go worker1(ctx)
 	go worker2(ctx)
