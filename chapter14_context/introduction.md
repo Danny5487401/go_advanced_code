@@ -155,8 +155,17 @@ c设计思想：
 
 
 #### 2. cancelCtx
+![](.introduction_images/cancelCtx.png)
 
-withCancel
+withCancel使用分析：
+```go
+func WithCancel(parent Context) (ctx Context, cancel CancelFunc) {
+    c := newCancelCtx(parent)
+    propagateCancel(parent, &c)
+    return &c, func() { c.cancel(true, Canceled) }
+}
+```
+
 源码:
 ```go
 type cancelCtx struct {
@@ -172,14 +181,6 @@ type cancelCtx struct {
 type canceler interface {
     cancel(removeFromParent bool, err error)
     Done() <-chan struct{}
-}
-```
-使用分析：
-```go
-func WithCancel(parent Context) (ctx Context, cancel CancelFunc) {
-    c := newCancelCtx(parent)
-    propagateCancel(parent, &c)
-    return &c, func() { c.cancel(true, Canceled) }
 }
 ```
 
@@ -252,7 +253,7 @@ propagateCancel完成的主要工作：
 辅助函数 parentCancelCtx即通过不断向内部引用类型转换，达到回看context历史的目的，寻找最近的*cancelCtx型祖先
 
 
-#### 3. timerCtx
+#### 3. timerCtx：继承自 cancelCtx 他们都是带取消功能的 Context
 ```go
 type timerCtx struct {
     cancelCtx
@@ -261,10 +262,14 @@ type timerCtx struct {
 }
 ```
 
-#### 4. valueCtx
+#### 4. valueCtx：只能携带一个键值对，且自身要依附在上一级 Context 上
+![](.introduction_images/value_context.png)
 
 ##### 使用场景
 WithValue函数能够将请求作用域的数据与 Context 对象建立关系。
+
+每次要在Context链路上增加要携带的键值对时，都要在上级Context的基础上新建一个 valueCtx 存储键值对，切只能增加不能修改，
+读取 Context 上的键值又是一个幂等的操作，所以 Context 就这样实现了线程安全的数据共享机制，且全程无锁，不会影响性能
 
 ##### 使用注意
 提供的键必须是可比性和应该不是字符串类型或任何其他内置的类型以避免包使用的上下文之间的碰撞。WithValue 用户应该定义自己的键的类型。

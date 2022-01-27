@@ -67,7 +67,6 @@
     - [1.10 happened before](chapter03_channel/01_channel_use/10_happened_before/happened_before.md)
     - [1.11 读取关闭的通道值](chapter03_channel/01_channel_use/11_read_closed_chan/readCloseChan.go)
     - [1.12 select中实现channel优先级-->k8s中实现](chapter03_channel/01_channel_use/12_priority_channel/priority_chan.md)
-
 - 2 [channel应用:TimerChan模块](chapter03_channel/02_TimerChan/timer.md)
     - [2.1 reset陷阱](chapter03_channel/02_TimerChan/01_TimerReset/timer_reset.md)
     - [2.2 timerStop使用](chapter03_channel/02_TimerChan/02_TimerStop/timer_stop.md)
@@ -296,7 +295,7 @@
 - [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
 - [6 Privacy Enhanced Mail Certificate (pem文件)生成](chapter17_dataStructure_n_algorithm/06_pem_generate/main.go)
 - [7 Base64编码解析](chapter17_dataStructure_n_algorithm/07_base64_encoding/base64.md)
-- [8 前缀树](chapter17_dataStructure_n_algorithm/08_trie/trie.md)
+- [8 trie前缀树](chapter17_dataStructure_n_algorithm/08_trie/trie.md)
 
 ## 第十八章 错误跟踪和panic
 - [0 错误(err)和异常（exception）区别及处理方式](chapter18_error_n_panic/00_diff_between_err_n_exception/main.go)
