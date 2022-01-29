@@ -1,10 +1,30 @@
 # fasthttp
 高性能主要源自于“复用”，通过服务协程和内存变量的复用，节省了大量资源分配的成本。
 
+## 对比net/http
+net/http流程
+![](.fasthttp_images/net_http.png)
+1. 注册处理器到一个 hash 表中，可以通过键值路由匹配；
+2. 注册完之后就是开启循环监听，每监听到一个连接就会创建一个 Goroutine；
+3. 在创建好的 Goroutine 里面会循环的等待接收请求数据，然后根据请求的地址去处理器路由表中匹配对应的处理器，然后将请求交给处理器处理
+
+fasthttp流程
+![](.fasthttp_images/fasthttp_process.png)
+1. 启动监听；
+2. 循环监听端口获取连接；
+3. 获取到连接之后首先会去 ready 队列里获取 workerChan，获取不到就会去对象池获取；
+4. 将监听的连接传入到 workerChan 的 channel 中；
+5. workerChan 有一个 Goroutine 一直循环获取 channel 中的数据，获取到之后就会对请求进行处理然后返回
+
+workerChan 其实就是一个连接处理对象，这个对象里面有一个 channel 用来传递连接；
+每个 workerChan 在后台都会有一个 Goroutine 循环获取 channel 中的连接，然后进行处理。如果没有设置最大同时连接处理数的话，默认是 256 * 1024个。
+这样可以在并发很高的时候还可以同时保证对外提供服务。
+
 ## 源码分析
 优点
 - 工作协程复用
 - 内存变量复用： 内部大量使用了sync.Pool,可以看server的结构
+- fasthttp 还会切片，通过 s = s[:0]和 s = append(s[:0], b…)来减少切片的再次创建.
 
 Server结构体
 ```go
@@ -265,6 +285,11 @@ type Server struct {
 	done chan struct{}
 }
 ```
+在实现上还通过 sync.Pool 来大量的复用对象，减少内存分配，如：
+
+workerChanPool 、ctxPool 、readerPool、writerPool 等等多大30多个 sync.Pool 。
+
+
 ### 初始化
 ```go
 func (s *Server) Serve(ln net.Listener) error {
@@ -319,13 +344,38 @@ func (wp *workerPool) Serve(c net.Conn) bool {
     return true
 }
 ```
+
+
 ### 具体获取过程: 工作协程的复用
+
+处理连接部分首先会获取 workerChan ，workerChan 结构体里面包含了两个字段：lastUseTime、channel：
 ```go
+type workerChan struct {
+    lastUseTime time.Time  //标识最后一次被使用的时间 
+    ch          chan net.Conn  //ch 是用来传递 Connection 用的 
+}
+```
+
+获取 workerChan
+```go
+func (wp *workerPool) Serve(c net.Conn) bool {
+    // 获取 workerChan 
+    ch := wp.getCh()
+    if ch == nil {
+        return false
+    }
+    // 将 Connection 放入到 channel 中
+    ch.ch <- c
+    return true
+}
+
+
 func (wp *workerPool) getCh() *workerChan {
 	var ch *workerChan
 	createWorker := false
 
 	wp.lock.Lock()
+    // 尝试从空闲队列里获取 workerChan
 	ready := wp.ready
 	n := len(ready) - 1
 	if n < 0 {
@@ -341,31 +391,36 @@ func (wp *workerPool) getCh() *workerChan {
 	}
 	wp.lock.Unlock()
 
+	// 获取不到则从对象池中获取
 	if ch == nil {
 		if !createWorker {
 			return nil
 		}
 		vch := wp.workerChanPool.Get()
 		ch = vch.(*workerChan)
+        // 为新的 workerChan 开启 goroutine
 		go func() {
+            // 处理 channel 中的数据
 			wp.workerFunc(ch)
+			
+			// 处理完之后重新放回到对象池中
 			wp.workerChanPool.Put(vch)
 		}()
 	}
 	return ch
 }
-
 ```
 
-工作池结构池 workerPool
-```go 
+
+#### 工作池结构池 workerPool
+```go
 // /Users/python/go/pkg/mod/github.com/valyala/fasthttp@v1.29.0/workerpool.go
 type workerPool struct {
 	// Function for serving server connections.
 	// It must leave c unclosed.
-	WorkerFunc ServeHandler
+	WorkerFunc ServeHandler // 用来匹配请求对应的 handler 并执行；
 
-	MaxWorkersCount int
+	MaxWorkersCount int //最大同时处理的请求数
 
 	LogAllErrors bool
 
@@ -374,25 +429,59 @@ type workerPool struct {
 	Logger Logger
 
 	lock         sync.Mutex
-	workersCount int
+	workersCount int  // 目前正在处理的请求数
 	mustStop     bool
 
-	ready []*workerChan
+	ready []*workerChan  //空闲的 workerChan
 
 	stopCh chan struct{}
 
-	workerChanPool sync.Pool
+	workerChanPool sync.Pool // workerChan 的对象池，是一个 sync.Pool 类型的；
 
-	connState func(net.Conn, ConnState)
+	connState func(net.Conn, ConnState) 
 }
 ```
 
-每个工作协程
+
+workerPool 的 Start 方法
+```go
+func (wp *workerPool) Start() {
+    if wp.stopCh != nil {
+        panic("BUG: workerPool already started")
+    }
+    wp.stopCh = make(chan struct{})
+    stopCh := wp.stopCh
+    // 设置 worker Pool 的创建函数
+    wp.workerChanPool.New = func() interface{} {
+        return &workerChan{
+            ch: make(chan net.Conn, workerChanCap),
+        }
+    }
+    go func() {
+        var scratch []*workerChan
+        for {
+            // 没隔一段时间会清理空闲超时的 workerChan
+            wp.clean(&scratch)
+            select {
+            case <-stopCh:
+                return
+            default:
+                // 默认是 10 s
+                time.Sleep(wp.getMaxIdleWorkerDuration())
+            }
+        }
+    }()
+}
+```
+
+
+处理连接: 每个工作协程
 ```go
 func (wp *workerPool) workerFunc(ch *workerChan) {
 	var c net.Conn
 
 	var err error
+    // 消费 channel 中的数据
 	for c = range ch.ch {
 		if c == nil {
 			break
@@ -400,13 +489,7 @@ func (wp *workerPool) workerFunc(ch *workerChan) {
         // 业务执行流程
 		if err = wp.WorkerFunc(c); err != nil && err != errHijacked {
 			errStr := err.Error()
-			if wp.LogAllErrors || !(strings.Contains(errStr, "broken pipe") ||
-				strings.Contains(errStr, "reset by peer") ||
-				strings.Contains(errStr, "request headers: small read buffer") ||
-				strings.Contains(errStr, "unexpected EOF") ||
-				strings.Contains(errStr, "i/o timeout")) {
-				wp.Logger.Printf("error when serving connection %q<->%q: %s", c.LocalAddr(), c.RemoteAddr(), err)
-			}
+			// ... 
 		}
 		if err == errHijacked {
 			wp.connState(c, StateHijacked)
@@ -415,7 +498,7 @@ func (wp *workerPool) workerFunc(ch *workerChan) {
 			wp.connState(c, StateClosed)
 		}
 		c = nil
-        
+		// 将当前的 workerChan 放入的 ready 队列中
 		if !wp.release(ch) {
 			break
 		}
@@ -426,6 +509,43 @@ func (wp *workerPool) workerFunc(ch *workerChan) {
 	wp.lock.Unlock()
 }
 ```
+这里会遍历获取 workerChan 的 channel 中的 Connection 然后执行 WorkerFunc 函数处理请求，处理完毕之后会将当前的 workerChan 重新放入到 ready 队列中复用。
+
+这个循环会在获取 Connection 为 nil 的时候跳出循环，这个 nil 是 workerPool 在异步调用 clean 方法检查该 workerChan 空闲时间超长了就会往 channel 中传入一个 nil。
+
+### 获取连接
+```go
+func acceptConn(s *Server, ln net.Listener, lastPerIPErrorTime *time.Time) (net.Conn, error) {
+    for {
+        c, err := ln.Accept() 
+        if err != nil {
+            if c != nil {
+                panic("BUG: net.Listener returned non-nil conn and non-nil error")
+            }
+            ...
+            return nil, io.EOF
+        }
+        if c == nil {
+            panic("BUG: net.Listener returned (nil, nil)")
+        }
+        // 校验每个ip对应的连接数
+        if s.MaxConnsPerIP > 0 {
+            pic := wrapPerIPConn(s, c)
+            if pic == nil {
+                if time.Since(*lastPerIPErrorTime) > time.Minute {
+                    s.logger().Printf("The number of connections from %s exceeds MaxConnsPerIP=%d",
+                        getConnIP4(c), s.MaxConnsPerIP)
+                    *lastPerIPErrorTime = time.Now()
+                }
+                continue
+            }
+            c = pic
+        }
+        return c, nil
+    }
+}
+```
+
 
 ### 内存变量复用
 具体工作时
@@ -442,6 +562,7 @@ func (s *Server) serveConn(c net.Conn) (err error) {
 	return
 }
 ```
+
 获取及释放上下文
 ```go
 func (s *Server) acquireCtx(c net.Conn) (ctx *RequestCtx) {
