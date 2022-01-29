@@ -23,9 +23,10 @@
         - 1.3.1 os,bytes,strings包   
     - [1.4 io断点续传 ](chapter01_input_output/01_OS_module/04seeker/02resume_from_break-point/main.go) 
     - [1.5 FilePath包 ](chapter01_input_output/01_OS_module/05filePath/walk.go)    
-        - 1.5.1 walkPath遍历目录及文件  
-        - 1.5.2 匹配文件名  
+        - [1.5.1 walkPath遍历目录及文件(匹配文件名)](chapter01_input_output/01_OS_module/05filePath/walk.go)
 - [2 bufio缓存读写](chapter01_input_output/02_bufio/bufio.md)
+  - [2.1 reader](chapter01_input_output/02_bufio/01reader/main.go)
+  - [2.2 writer](chapter01_input_output/02_bufio/02writer/main.go)
 
 ---
 ## 第二章 协程Goroutine
