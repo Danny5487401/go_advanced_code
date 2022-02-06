@@ -56,6 +56,11 @@ INT n是软中断指令，n可以是0到255之间的数，用于指示中断向�
 
 7. 串操作指令:这部分指令用于对数据串进行操作，包括串传送指令MOVS、串比较指令CMPS、串扫描指令SCANS、串加载指令LODS、串保存指令STOS，
 这些指令可以有选择地使用REP/REPE/REPZ/REPNE和REPNZ的前缀以连续操作
+![](.introduction_images/movsb.png)
+si:源寄存器  di:目标寄存器
+movsb -> move string byte(以字节单元传送): 将ds:si指向的内存单元中的字节 送入 es:di中，然后根据标志寄存器DF位的值，将si和di递增1或则递减1。
+movsw -> move string word(以字单元传送): 将ds:si指向的内存单元中的字节 送入 es:di中，然后根据标志寄存器DF位的值，将si和di递增2或则递减2。
+一般和rep搭配，如rep movsb，rep的作用是根据cx的值，重复执行后面的 串操作指令。
 
 8. 输入输出指令: 这部分指令用于同外围设备交换数据，包括端口输入指令IN/INS、端口输出指令OUT/OUTS
 
@@ -264,13 +269,20 @@ ret指令从被调用函数返回调用函数，它的实现原理是把call指�
     但ret指令执行过程中会把之前call指令PUSH到栈上的返回地址 0x40055e POP给rip寄存器，这样，当ret执行完成后就会从被调用函数返回到调用函数的call指令的下一条指令继续执行。
     这里同样要注意的是retq指令也会修改rsp寄存器的
 
+### cmp指令：影响标志寄存器
+![](.introduction_images/cmp.png)
+通过做减法运算，影响标志寄存器，标志寄存器的相关位记录了比较的结果
+
 ### jmp/je/jle/jg/jge等等j开头的指令--转移指令，例如可以修改8086cpu的cs段寄存器，ip指令寄存器
+![](.introduction_images/jmp.png)
+![](.introduction_images/jmp_english.png)
 这些都属于跳转指令，操作码后面直接跟要跳转到的地址或存有地址的寄存器，这些指令与高级编程语言中的 goto 和 if 等语句对应。用法示例：
 ```shell
 jmp    0x4005f2 #-->相当于jmp IP  0x4005f2,仅仅修改ip指令寄存器
 jle    0x4005ee
 jl     0x4005b8
 ```
+通常cmp和跳转指令为一对，就像call和ret指令一样.
 
 ### push/pop指令-可以直接操作段寄存器
 ```shell
@@ -302,9 +314,6 @@ leave指令没有操作数，它一般放在函数的尾部ret指令之前，用
 ![](.introduction_images/loop.png)
 cx存储循环的次数,s为标号
 
-### cmp指令：影响标志寄存器
-![](.introduction_images/cmp.png)
-通过做减法运算，影响标志寄存器，标志寄存器的相关位记录了比较的结果
 
 ## 定位方式
 ![](.introduction_images/locate_addr.png)
