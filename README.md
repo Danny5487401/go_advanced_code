@@ -158,10 +158,10 @@
 - 5 [插件式编程-->grpc中实现](chapter09_design_pattern/05_plugin_programming/plugin.md)
 - 6 [同步模式(sync同步原语以及扩展原语)](chapter09_design_pattern/06_Synchronization_mode/01_sync/sync.md)
     - 6.1 waitGroup同步等待组对象
-    - 6.2 [互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比](chapter09_design_pattern/06_Synchronization_mode/01_sync/02RWMutex_vs_mutex/mutex.md)
+    - [6.2 互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比](chapter09_design_pattern/06_Synchronization_mode/01_sync/02RWMutex_vs_mutex/mutex.md)
     - [6.3 Once源码分析](chapter09_design_pattern/06_Synchronization_mode/01_sync/03Once/once.md)
-    - 6.4 [并发安全Map(读多写少)](chapter09_design_pattern/06_Synchronization_mode/01_sync/04map/sync_map.md)
-    - 6.5 [Pool对象池模式( *非连接池* !）-->官方包对象池fmt](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/pool.md)
+    - [6.4 并发安全Map(读多写少)](chapter09_design_pattern/06_Synchronization_mode/01_sync/04map/sync_map.md)
+    - [6.5 Pool对象池模式( *非连接池* !）-->官方包对象池fmt](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/pool.md)
         - 6.5.1 未使用newFunc
         - 6.5.2 newFunc与GC（附源码分析）
         - 6.5.3 何时使用对象缓存
@@ -173,7 +173,9 @@
         - 6.7.2 cas算法和自旋锁
         - 6.7.3 load和store用法
         - 6.7.4 swap交换
-    - 6.8 [ErrorGroup获取协程中error](chapter09_design_pattern/06_Synchronization_mode/01_sync/08ErrorGroup/errGroup.md)
+    - [6.8 ErrorGroup获取协程中error](chapter09_design_pattern/06_Synchronization_mode/01_sync/08ErrorGroup/errGroup.md)
+        - [6.8.1 不带context](chapter09_design_pattern/06_Synchronization_mode/01_sync/08ErrorGroup/01WithoutContext/main.go)
+        - [6.8.2 带context](chapter09_design_pattern/06_Synchronization_mode/01_sync/08ErrorGroup/02WithContext/main.go)
     - 6.9 [信号量Semaphore](chapter09_design_pattern/06_Synchronization_mode/01_sync/09Semaphore/semaphore.md)
     - 6.10 SingleFlight避免缓存击穿
 
@@ -274,19 +276,19 @@
 - [2 FAN-IN和FAN-OUT模型](chapter16_concurrentProgramming/02_fanin_fanout/fanin_fanout.md)
 
 ## 第十七章 数据结构及算法
-- 1 queue双端单向队列(泛型)
+- 1 [queue双端单向队列(泛型)](chapter17_dataStructure_n_algorithm/01_queue/queue_test.go)
 - 2 [加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/encryption.md)
   - 2.1 对称式加密
     - [aes高级加密标准](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/aes.md)
-      - Cipher FeedBack密码反馈模式
-      - Cipher Block Chaining密码分组链接模式
+      - [Cipher FeedBack密码反馈模式](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/01_cfb/aes_cfb.go)
+      - [Cipher Block Chaining密码分组链接模式](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/02_cbc/aes_cbc.go)
     - [des美国数据加密标准](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/des/des.md)
   - 2.2 数字签名(hmac,md5,sha1)
     - [md5](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/md5/md5.md)
     - [hmac](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/hmac/hmac.md)
     - [sha-1](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/sha1/sha1.md)
   - 2.3 [非对称加密算法rsa](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/03_rsa/rsa.md)
-    - 分段与不分段加解密
+    - [分段与不分段进行加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/03_rsa/main.go)
 - [3 随机算法（伪随机和真随机)](chapter17_dataStructure_n_algorithm/03_rand/rand.md)
 - [4 排序算法分类及图解(sort包源码分析)](chapter17_dataStructure_n_algorithm/04_sort/algorithm.md)
   - [4.1 map排序 ](chapter17_dataStructure_n_algorithm/04_sort/sorted_map/map_sort.go)
@@ -318,13 +320,17 @@
   - [结构体指针为nil时是否可以调用方法](chapter19_nil/03_Attribute/ptr/ptr.go)
 
 ## [第二十章 for-range源码分析](chapter20_for_range/for_range.md)
-- 1 遍历数组和切片
-- 2 遍历Goroutine(协程启动时间)
-- 3 遍历Map
+- [1 遍历数组,切片,结构体数组](chapter20_for_range/01_for_range_slice_n_array/main.go)
+- [2 正确遍历Goroutine(解析协程启动时间)](chapter20_for_range/02_for_range_goroutine/main.go)
+- [3 遍历Map(增加或删除map元素时)](chapter20_for_range/03_for_range_map/main.go)
 
 ## [第二十一章 time标准包源码分析](chapter21_time/time.md)
-- 1 比time.Now()更优雅获取时间戳（go:link技术）
-
+- [1 比time.Now()更优雅获取时间戳（go:link技术）
+](chapter21_time/time.go)
 ## [第二十二章 数据驱动模板-kratos工具生成](chapter22_template/text_template.md)
-- 1 加载多个模版
-- 2 自定义模版函数
+- [1 加载多个模版](chapter22_template/01_multi_template/main.go)
+- [2 自定义模版函数](chapter22_template/02_template_func/main.go)
+
+## 第二十三章 调试内部对象
+- [1 fmt打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)
+- [2 go-spew优化调试](chapter23_debug_program/02_go_spew/main.go)

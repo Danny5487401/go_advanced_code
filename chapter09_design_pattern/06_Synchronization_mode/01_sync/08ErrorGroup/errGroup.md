@@ -18,20 +18,28 @@
 ```go
 // 结构体
 type Group struct {
-    cancel  func()             //context cancel()
-    wg      sync.WaitGroup
-    errOnce sync.Once          //只会传递第一个出现错的协程的 error
-    err     error              //传递子协程错误
+    cancel  func()             // 这个存的是context的cancel方法
+    wg      sync.WaitGroup  // 封装sync.WaitGroup
+    errOnce sync.Once          // 保证只接受一次错误
+    err     error             // 保存第一个返回的错误
 }
 
+func WithContext(ctx context.Context) (*Group, context.Context){
+    ctx, cancel := context.WithCancel(ctx)
+    return &Group{cancel: cancel}, ctx
+}
 
 func (g *Group) Go(f func() error) {
+	// 增加一个计数器
     g.wg.Add(1)
 
     go func() {
+		// 控制是否结束
         defer g.wg.Done()
         if err := f(); err != nil {
+			// 如果有一个函数f运行出错了，我们把它保存起来
             g.errOnce.Do(func() {
+				// 这里的目的就是保证获取到第一个出错的信息，避免被后面的Goroutine的错误覆盖
                 g.err = err             //记录子协程中的错误
                 if g.cancel != nil {
                     g.cancel()
