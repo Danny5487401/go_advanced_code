@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
-	"go_advanced_code/chapter07_system_call/08_kqueue_server/kqueue"
-	"go_advanced_code/chapter07_system_call/08_kqueue_server/socket"
+	"go_advanced_code/chapter07_system_call/01_kqueue_server/kqueue"
+	"go_advanced_code/chapter07_system_call/01_kqueue_server/socket"
 
 	"log"
 	"os"

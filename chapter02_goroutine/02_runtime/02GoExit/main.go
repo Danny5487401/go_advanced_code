@@ -17,7 +17,6 @@ func fun() {
 	fmt.Println("fun函数。。。")
 }
 
-
 func main() {
 	//创建新建的协程
 	go func() {
@@ -26,16 +25,14 @@ func main() {
 		//调用了别的函数
 		fun()
 
-		fmt.Println("goroutine结束。。")  //Goexit()之后 运行不到
+		fmt.Println("goroutine结束。。") //Goexit()之后 运行不到
 	}() //别忘了()
 
 	//睡一会儿，不让主协程结束
-	time.Sleep(3*time.Second)
+	time.Sleep(3 * time.Second)
 }
-
-
 
 /*结果：
 goroutine开始。。。
 defer。。。
- */
+*/

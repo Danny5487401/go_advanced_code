@@ -99,7 +99,6 @@
 - [7 不同类型的切片间互转](chapter05_slice_n_array/07Transfer_slice_in_different_type/main.go)
 - [8 带索引初始化数组和切片](chapter05_slice_n_array/08_make_slice_with_index/make_slice_with_index.go)
 - [9 使用copy替代原切片进行切片](chapter05_slice_n_array/09_reslice/reslice.go)
-
 ---
 
 ## 第六章 指针
@@ -107,11 +106,11 @@
 - [2 指针分类及unsafe包使用](chapter06_pointer/02unsafe/unsafe.md)
 - [3 获取并修改结构体私有变量值](chapter06_pointer/03PointerSetPrivateValue/main.go)
 - [4 切片与字符串零拷贝互转(指针和反射方式)](chapter06_pointer/04SliceToString/sliceToString.go)
-
 ---
 
 ## [第七章 系统调用](chapter07_system_call/Syscall.md)
-- 1 自定义kqueue服务器（涉及各种linux系统调用）
+- [1 自定义kqueue服务器（涉及各种linux系统调用）](chapter07_system_call/01_kqueue_server/main.go)
+- [2 使用strace工具追踪系统调用](chapter07_system_call/02_ptrace/ptrace.md)
 
 ## [第八章 defer函数及汇编语言理解](chapter08_defer/defer.md)
 - [1 注册延迟调用机制定义及使用](chapter08_defer/01_defer_definiton/main.go)
