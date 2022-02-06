@@ -188,6 +188,7 @@
     - 2.1 简单实现filter,map,reduce
     - 2.2 简单案例
     - 2.3 复杂实现：泛型及类型检查
+    - [2.4 一个应用首页可能依托于很多服务,在没有强依赖关系下,优雅地实现并发编排任务](chapter10_function/02_advanced_function/04_mapReduce/main.go)
 - 3 一等公民案例
     - [网络管理中问题需求](chapter10_function/03_Firstclassfunction/problem_desc.md)
     - 网络管理中三种处理对比

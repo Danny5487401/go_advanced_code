@@ -23,6 +23,7 @@ var list = []Employee{
 }
 
 // 2. 设计函数
+
 // 计数
 func EmployeeCount(list []Employee, fn func(e *Employee) bool) int {
 	count := 0
@@ -54,9 +55,8 @@ func EmployeeSum(list []Employee, fn func(e *Employee) int) int {
 	return sum
 }
 
-
 // 3. 业务逻辑
-func main()  {
+func main() {
 	// 1）统计有多少员工大于40岁
 	old := EmployeeCount(list, func(e *Employee) bool {
 		return e.Age > 40
