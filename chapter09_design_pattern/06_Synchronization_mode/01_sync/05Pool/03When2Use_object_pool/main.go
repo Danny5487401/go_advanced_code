@@ -4,6 +4,7 @@ package main
 /*
  Get函数：如果没有的话， 就从共享池子里拿，如果还是没有的话，就调用 getSlow 里拿，再不行的话，就调用 New 函数了
 */
+
 import (
 	"bytes"
 	"sync"
@@ -56,6 +57,6 @@ ok  	github.com/jiajunhuang/test	3.645s
 	因为bytes所使用的内存比较小，使用内存池的效果并不好
 
 结论：
-	1。 类型转换(type casting)很费CPU
-	2。 对于大块的内存，使用内存池才有意义
+	1.  类型转换(type casting)很费CPU
+	2. 对于大块的内存，使用内存池才有意义
 */

@@ -1,8 +1,5 @@
 package main
 
-// sync pool 源码使用，比如fmt.Printf就有用到
-//fmt.Printf->Fprintf(os.Stdout, format, a...)-->newPrinter()-->ppFree sync.pool实例
-
 import (
 	"bytes"
 	"fmt"
@@ -19,6 +16,7 @@ import (
 	3. New func() interface{}
 
 */
+
 func NewConnection(num int) *Connection {
 	return &Connection{id: num}
 }
@@ -35,6 +33,8 @@ func main() {
 	pool.Put(NewConnection(1))
 	pool.Put(NewConnection(2))
 	pool.Put(NewConnection(3))
+
+	//runtime.GOMAXPROCS(1) //Note:注释 前后使用结果
 
 	// get 获取 内存对象
 	connection := pool.Get().(*Connection)
@@ -66,6 +66,7 @@ func main() {
 
 步骤：第一步是检索先前分配的缓冲区（如果是第一个调用，则创建一个缓冲区，但这是抽象的）。然后，defer操作是将缓冲区放回sync.Pool中
 */
+
 func writeFile(pool *sync.Pool, filename string) error {
 	buf := pool.Get().(*bytes.Buffer)
 

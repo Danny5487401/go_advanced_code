@@ -157,15 +157,15 @@
     - 4.3 带参数的选项模式
 - 5 [插件式编程-->grpc中实现](chapter09_design_pattern/05_plugin_programming/plugin.md)
 - 6 [同步模式(sync同步原语以及扩展原语)](chapter09_design_pattern/06_Synchronization_mode/01_sync/sync.md)
-    - 6.1 waitGroup同步等待组对象
+    - [6.1 waitGroup同步等待组对象](chapter09_design_pattern/06_Synchronization_mode/01_sync/01waitGroup/main.go)
     - [6.2 互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比](chapter09_design_pattern/06_Synchronization_mode/01_sync/02RWMutex_vs_mutex/mutex.md)
     - [6.3 Once源码分析](chapter09_design_pattern/06_Synchronization_mode/01_sync/03Once/once.md)
     - [6.4 并发安全Map(读多写少)](chapter09_design_pattern/06_Synchronization_mode/01_sync/04map/sync_map.md)
     - [6.5 Pool对象池模式( *非连接池* !）-->官方包对象池fmt](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/pool.md)
-        - 6.5.1 未使用newFunc
-        - 6.5.2 newFunc与GC（附源码分析）
-        - 6.5.3 何时使用对象缓存
-        - 6.5.4 第三方对象池object pool(bytebufferpool)
+        - [6.5.1 错误使用：未使用newFunc](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/01Without_newFunc/main.go)
+        - [6.5.2 newFunc与GC前后Get对比](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/02NewFunc/newFunc.go)
+        - [6.5.3 何时使用对象缓存](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/03When2Use_object_pool/main.go)
+        - [6.5.4 第三方对象池object pool(bytebufferpool)](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/04_byteBufferPool/main.go)
     - 6.6 [Cond条件变量通知所有协程及NoCopy机制-->熔断框架hystrix-go实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/06Cond/Cond.md)
     - 6.7 [atomic原子操作源码分析-->zerolog源码中实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/atomic.md)
         - 6.7.0 Value的load和store

@@ -1,15 +1,25 @@
 # sync.Pool 
-    定位不是做类似连接池的东西，它的用途仅仅是增加对象重用的几率，减少gc的负担
-## 背景：
-    Go是自动垃圾回收的(garbage collector)，这大大减少了程序编程负担。但gc是一把双刃剑，带来了编程的方便但同时也增加了运行时开销，
-    使用不当甚至会严重影响程序的性能。因此性能要求高的场景不能任意产生太多的垃圾（有gc但又不能完全依赖它挺恶心的），如何解决呢？
-    那就是要重用对象了，我们可以简单的使用一个chan把这些可重用的对象缓存起来，但如果很多goroutine竞争一个chan性能肯定是问题
 
-缺点：
-    上面我们可以看到pool创建的时候是不能指定大小的，所有sync.Pool的缓存对象数量是没有限制的（只受限于内存），
-    因此使用sync.pool是没办法做到控制缓存对象数量的个数的。另外sync.pool缓存对象的期限是很诡异的，这是很多人错误理解的地方，
+定位不是做类似连接池的东西，它的用途仅仅是增加对象重用的几率，减少gc的负担.
+
+sync.Pool 是一个内存池。通常内存池是用来防止内存泄露的（例如C/C++)。sync.Pool 这个内存池却不是干这个的，
+带 GC 功能的语言都存在垃圾回收 STW 问题，需要回收的内存块越多，STW 持续时间就越长。如果能让 new 出来的变量，一直不被回收，得到重复利用，是不是就减轻了 GC 的压力
+
+## 背景：
+
+Go是自动垃圾回收的(garbage collector)，这大大减少了程序编程负担。但gc是一把双刃剑，带来了编程的方便但同时也增加了运行时开销，
+使用不当甚至会严重影响程序的性能。因此性能要求高的场景不能任意产生太多的垃圾（有gc但又不能完全依赖它挺恶心的），如何解决呢？
+
+那就是要重用对象了，我们可以简单的使用一个chan把这些可重用的对象缓存起来，但如果很多goroutine竞争一个chan性能肯定是问题.
+
+### 缺点
+
+上面我们可以看到pool创建的时候是不能指定大小的，所有sync.Pool的缓存对象数量是没有限制的（只受限于内存），
+因此使用sync.pool是没办法做到控制缓存对象数量的个数的。另外sync.pool缓存对象的期限是很诡异的，这是很多人错误理解的地方，
 
 ## 源码分析
+![](.pool_images/sync_pool_structure.png)
+
 ### Pool结构体
 ![](.pool_images/pool_structure.png)
 ```go
@@ -34,9 +44,9 @@ local 字段存储指向 [P]poolLocal 数组（严格来说，它是一个切片
 访问时，P 的 id 对应 [P]poolLocal 下标索引。通过这样的设计，多个 goroutine 使用同一个 Pool 时，减少了竞争，提升了性能。
 
 在一轮 GC 到来时，victim 和 victimSize 会分别“接管” local 和 localSize。
-victim 的机制用于减少 GC 后冷启动导致的性能抖动，让分配对象更平滑
+victim 的机制用于减少 GC 后冷启动导致的性能抖动，让分配对象更平滑.
 
-Victim Cache 本来是计算机架构里面的一个概念，是 CPU 硬件处理缓存的一种技术，sync.Pool 引入的意图在于降低 GC 压力的同时提高命中率
+Victim Cache 本来是计算机架构里面的一个概念，是 CPU 硬件处理缓存的一种技术，sync.Pool 引入的意图在于降低 GC 压力的同时提高命中率.
 
 ```go
 // Local per-P Pool appendix.
@@ -59,15 +69,17 @@ type poolLocal struct {
 }
 
 ```
+pad涉及伪共享]
 [伪共享](chapter02_goroutine/03_cache/cache.md)
 
-    现代 cpu 中，cache 都划分成以 cache line (cache block) 为单位，在 x86_64 体系下一般都是 64 字节，cache line 是操作的最小单元。
+现代 cpu 中，cache 都划分成以 cache line (cache block) 为单位，在 x86_64 体系下一般都是 64 字节，cache line 是操作的最小单元。
 
-    程序即使只想读内存中的 1 个字节数据，也要同时把附近 63 节字加载到 cache 中，如果读取超个 64 字节，那么就要加载到多个 cache line 中。
+程序即使只想读内存中的 1 个字节数据，也要同时把附近 63 节字加载到 cache 中，如果读取超个 64 字节，那么就要加载到多个 cache line 中。
 
-    简单来说，如果没有 pad 字段，那么当需要访问 0 号索引的 poolLocal 时，CPU 同时会把 0 号和 1 号索引同时加载到 cpu cache。
-    在只修改 0 号索引的情况下，会让 1 号索引的 poolLocal 失效。这样，当其他线程想要读取 1 号索引时，发生 cache miss，还得重新再加载，对性能有损。
-    增加一个 pad，补齐缓存行，让相关的字段能独立地加载到缓存行就不会出现 false sharding 了。
+简单来说，如果没有 pad 字段，那么当需要访问 0 号索引的 poolLocal 时，CPU 同时会把 0 号和 1 号索引同时加载到 cpu cache。
+在只修改 0 号索引的情况下，会让 1 号索引的 poolLocal 失效。这样，当其他线程想要读取 1 号索引时，发生 cache miss，还得重新再加载，对性能有损。
+增加一个 pad，补齐缓存行，让相关的字段能独立地加载到缓存行就不会出现 false sharding 了。
+
 ```go
 // poolChain 是一个双端队列的实现
 type poolChain struct {
@@ -103,14 +115,15 @@ type poolDequeue struct {
 	vals []eface
 }
 ```
-    poolDequeue 被实现为单生产者、多消费者的固定大小的无锁（atomic 实现） Ring 式队列（底层存储使用数组，使用两个指针标记 head、tail）。
-    生产者可以从 head 插入、head 删除，而消费者仅可从 tail 删除。
+poolDequeue 被实现为单生产者、多消费者的固定大小的无锁（atomic 实现） Ring 式队列（底层存储使用数组，使用两个指针标记 head、tail）。
+生产者可以从 head 插入、head 删除，而消费者仅可从 tail 删除。
 
-    headTail 指向队列的头和尾，通过位运算将 head 和 tail 存入 headTail 变量中。
+headTail 指向队列的头和尾，通过位运算将 head 和 tail 存入 headTail 变量中。
 
-    我们看到 Pool 并没有直接使用 poolDequeue，原因是它的大小是固定的，而 Pool 的大小是没有限制的。因此，在 poolDequeue 之上包装了一下，变成了一个 poolChainElt 的双向链表，可以动态增长
+我们看到 Pool 并没有直接使用 poolDequeue，原因是它的大小是固定的，而 Pool 的大小是没有限制的。因此，在 poolDequeue 之上包装了一下，变成了一个 poolChainElt 的双向链表，可以动态增长
+
 ### sync.Pool 的 init 函数
-    对于 Pool 而言，并不能无限扩展，否则对象占用内存太多了，会引起内存溢出。
+对于 Pool 而言，并不能无限扩展，否则对象占用内存太多了，会引起内存溢出。
 ```go
 func init() {
     runtime_registerPoolCleanup(poolCleanup)
@@ -131,10 +144,10 @@ func sync_runtime_registerPoolCleanup(f func()) {
 }
 ```
 
-    可以看到pool包在init的时候注册了一个poolCleanup函数，它会清除所有的pool里面的所有缓存的对象，该函数注册进去之后会在每次gc之前都会调用，
-    因此sync.Pool缓存的期限只是两次gc之间这段时间
-    
-    正因为这样，我们是不可以使用sync.Pool去实现一个socket连接池的。
+可以看到pool包在init的时候注册了一个poolCleanup函数，它会清除所有的pool里面的所有缓存的对象，该函数注册进去之后会在每次gc之前都会调用，
+因此sync.Pool缓存的期限只是两次gc之间这段时间
+
+正因为这样，我们是不可以使用sync.Pool去实现一个socket连接池的。
 
 ![](sync_pool_structure.png)
 一个goroutine固定在一个局部调度器P上，从当前 P 对应的 poolLocal 取值， 若取不到，则从对应的 shared 数组上取，若还是取不到；
@@ -144,7 +157,6 @@ func sync_runtime_registerPoolCleanup(f func()) {
 ![](.pool_images/pool_get.png)
 
 ```go
-
 func (p *Pool) Get() interface{} {
     // ......
   l, pid := p.pin()
@@ -164,6 +176,7 @@ func (p *Pool) Get() interface{} {
   return x
 }
 ```
+
 ### sync.Pool的 Put 函数
 ![](.pool_images/pool_put.png)
 ```go
@@ -188,9 +201,82 @@ func (p *Pool) Put(x interface{}) {
 }
 ```
 
+## 常见问题
 
+### 1. Pool 的内容会清理？清理会造成数据丢失吗？
+Go 会在每个 GC 周期内定期清理 sync.Pool 内的数据。
 
-## 官方包fmt源码分析
+要分几个方面来说这个问题。
+
+已经从 sync.Pool Get 的值，在 poolClean 时虽说将 pool.local 置成了nil，Get 到的值依然是有效的，是被 GC 标记为黑色的，不会被 GC回收，当 Put 后又重新加入到 sync.Pool 中
+在第一个 GC 周期内 Put 到 sync.Pool 的数值，在第二个 GC 周期没有被 Get 使用，就会被放在 local.victim 中。如果在 第三个 GC 周期仍然没有被使用就会被 GC 回收。
+
+### 2. runtime.GOMAXPROCS 与 pool 之间的关系？
+```go
+
+func (p *Pool) pinSlow() (*poolLocal, int) {
+	// Retry under the mutex.
+	// Can not lock the mutex while pinned.
+	runtime_procUnpin()
+	allPoolsMu.Lock()
+	defer allPoolsMu.Unlock()
+	pid := runtime_procPin()
+	// poolCleanup won't be called while we are pinned.
+	s := p.localSize
+	l := p.local
+	if uintptr(pid) < s {
+		return indexLocal(l, pid), pid
+	}
+	if p.local == nil {
+		allPools = append(allPools, p)
+	}
+	// If GOMAXPROCS changes between GCs, we re-allocate the array and lose the old one.
+	// 获取当前最大的 p 的数量
+	size := runtime.GOMAXPROCS(0)
+	local := make([]poolLocal, size)
+	atomic.StorePointer(&p.local, unsafe.Pointer(&local[0])) // store-release
+	runtime_StoreReluintptr(&p.localSize, uintptr(size))     // store-release
+	return &local[pid], pid
+}
+```
+
+### 3. New() 的作用？假如没有 New 会出现什么情况？
+从上面的 pool.Get 流程图可以看出来，从 sync.Pool 获取一个内存会尝试从当前 private，shared，其他的 p 的 shared 获取或者 victim 获取，如果实在获取不到时，才会调用 New 函数来获取。也就是 New() 函数才是真正开辟内存空间的。New() 开辟出来的的内存空间使用完毕后，调用 pool.Put 函数放入到 sync.Pool 中被重复利用。
+
+如果 New 函数没有被初始化会怎样呢？很明显，sync.Pool 就废掉了，因为没有了初始化内存的地方了。
+
+### 4. 先 Put，再 Get 会出现什么情况？
+```go
+func main(){
+    pool:= sync.Pool{
+        New: func() interface{} {
+            return item{}
+        },
+    }
+    pool.Put(item{value:1})
+    data := pool.Get()
+    fmt.Println(data)
+}
+```
+如果你直接跑这个例子，能得到你想像的结果，但是在某些情况下就不是这个结果了。
+
+在 Pool.Get 注释里面有这么一句话：“Callers should not assume any relation between values passed to Put and the values returned by Get.”，告诉我们不能把值 Pool.Put 到 sync.Pool 中，再使用 Pool.Get 取出来，因为 sync.Pool 不是 map 或者 slice，放入的值是有可能拿不到的，sync.Pool 的数据结构就不支持做这个事情。
+
+前面说使用 sync.Pool 容易被错误示例误导，就是上面这个写法。为什么 Put 的值 再 Get 会出现问题？
+
+- 情况1：sync.Pool 的 poolCleanup 函数在系统 GC 时会被调用，Put 到 sync.Pool 的值，由于有可能一直得不到利用，被在某个 GC 周期内就有可能被释放掉了。
+- 情况2：不同的 goroutine 绑定的 p 有可能是不一样的，当前 p 对应的 goroutine 放入到 sync.Pool 的值有可能被其他的 p 对应的 goroutine 取到，导致当前 goroutine 再也取不到这个值。
+- 情况3：使用 runtime.GOMAXPROCS（N) 来改变 p 的数量，会使 sync.Pool 的 pool.poolLocal 释放重新开辟新的空间，导致 sync.Pool 被释放掉。
+- 情况4：还有很多情况
+
+### 5. 只 Get 不 Put 会内存泄露吗？
+使用其他的池，如连接池，如果取连接使用后不放回连接池，就会出现连接池泄露，「是不是 sync.Pool 也有这个问题呢？」
+
+通过上面的流程图，可以看出来 Pool.Get 的时候会尝试从当前 private，shared，其他的 p 的 shared 获取或者 victim 获取，如果实在获取不到时，才会调用 New 函数来获取，New 出来的内容本身还是受系统 GC 来控制的。所以如果我们提供的 New 实现不存在内存泄露的话，那么 sync.Pool 是不会内存泄露的。当 New 出来的变量如果不再被使用，就会被系统 GC 给回收掉。
+
+如果不 Put 回 sync.Pool，会造成 Get 的时候每次都调用的 New 来从堆栈申请空间，达不到减轻 GC 压力。
+
+## 1. 官方包fmt源码分析
 ```go
 func Printf(format string, a ...interface{}) (n int, err error) {
 	return Fprintf(os.Stdout, format, a...)
@@ -232,5 +318,21 @@ func (p *pp) free() {
   p.value = reflect.Value{}
   p.wrappedErr = nil
   ppFree.Put(p)
+}
+```
+
+## 2. 第三方库应用（gin)
+/Users/python/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/gin.go
+```go
+// ServeHTTP conforms to the http.Handler interface.
+func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	c := engine.pool.Get().(*Context)
+	c.writermem.reset(w)
+	c.Request = req
+	c.reset()
+
+	engine.handleHTTPRequest(c)
+
+	engine.pool.Put(c)
 }
 ```
