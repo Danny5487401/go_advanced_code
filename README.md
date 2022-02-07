@@ -128,8 +128,8 @@
     - [1.5 建造者模式-->xorm,k8s,zap中实现](chapter09_design_pattern/01_construction/05_builder/builder_info.md)
 - 2 结构型模式
     - 2.1 组合模式
-        - 2.1.1 修改前：使用面向对象处理
-        - 2.1.2 修改后：使用组合模式处理
+        - [2.1.1 修改前：使用面向对象处理](chapter09_design_pattern/02_structure/01_Composite/01_modify_before/composite.go)
+        - [2.1.2 修改后：使用组合模式处理](chapter09_design_pattern/02_structure/01_Composite/02_modify_after/conposite.go)
     - 2.2 [装饰模式-->grpc源码体现](chapter09_design_pattern/02_structure/02_Decorate/decorate.md)
         - 2.2.1 闭包实现--多个装饰器同时使用
         - 2.2.2 结构体装饰

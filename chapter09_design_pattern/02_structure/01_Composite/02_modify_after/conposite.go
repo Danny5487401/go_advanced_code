@@ -109,37 +109,15 @@ type Group interface {
 	Child(idx int) MenuComponent
 }
 
-// 开始调用
-func main() {
-	menu1 := NewMenu("培根鸡腿燕麦堡套餐", "供应时间：09:15--22:44")
-	menu1.Add(NewMenuItem("主食", "培根鸡腿燕麦堡1个", 11.5))
-	menu1.Add(NewMenuItem("小吃", "玉米沙拉1份", 5.0))
-	menu1.Add(NewMenuItem("饮料", "九珍果汁饮料1杯", 6.5))
-
-	menu2 := NewMenu("奥尔良烤鸡腿饭套餐", "供应时间：09:15--22:44")
-	menu2.Add(NewMenuItem("主食", "新奥尔良烤鸡腿饭1份", 15.0))
-	menu2.Add(NewMenuItem("小吃", "新奥尔良烤翅2块", 11.0))
-	menu2.Add(NewMenuItem("饮料", "芙蓉荟蔬汤1份", 4.5))
-
-	all := NewMenu("超值午餐", "周一至周五有售")
-	all.Add(menu1)
-	all.Add(menu2)
-
-	if m, ok := all.Child(1).(Group); ok {
-		m.Add(NewMenuItem("玩具", "Hello Kitty", 5.0))
-	}
-
-	all.Print()
-}
-
 /*
 比较与思考
 前后两份代码差异其实很小：
-	1。第二份实现的接口简单一些，只有两个函数。
-	2。New函数返回值的类型不一样。
+	1. 第二份实现的接口简单一些，只有两个函数。
+	2. New函数返回值的类型不一样。
+
 从思路上看，差异很大却也有些微妙：
-	1。第一份实现中接口是模板，是struct的蓝图，其属性来源于事先对系统组件的综合分析归纳；第二份实现中接口是一份约束声明，其属性来源于使用者对被使用者的要求。
-	2。第一份实现认为children中的MenuComponent是一种具体对象，这个对象具有一系列方法可以调用，只是其方法的功能会由于子类覆盖而表现不同；第二份实现则认为children中的MenuComponent可以是任意无关的对象，唯一的要求是他们“恰巧”实现了接口所指定的约束条件。
+	1. 第一份实现中接口是模板，是struct的蓝图，其属性来源于事先对系统组件的综合分析归纳；第二份实现中接口是一份约束声明，其属性来源于使用者对被使用者的要求。
+	2. 第一份实现认为children中的MenuComponent是一种具体对象，这个对象具有一系列方法可以调用，只是其方法的功能会由于子类覆盖而表现不同；第二份实现则认为children中的MenuComponent可以是任意无关的对象，唯一的要求是他们“恰巧”实现了接口所指定的约束条件。
 	注意第一份实现中，MenuComponent中有Add()、Remove()、Child()三个方法，但却不一定是可用的，能不能使用由具体对象的类型决定；第二份实现中则不存在这些不安全的方法，因为New函数返回的是具体类型，所以可以调用的方法都是安全的
 
 */

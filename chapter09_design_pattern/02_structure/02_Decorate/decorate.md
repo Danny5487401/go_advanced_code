@@ -50,6 +50,7 @@ gRPC的ClientConn通过调用ccResolverWrapper来进行域名解析，而具体�
     这个问题有很多种解决方案，我们可以使用一些成熟的服务发现组件，例如consul或者zookeeper，也可以我们自己实现一个解析服务器；
 
     第二个问题，如何将我们选择的服务解析方式应用到grpc的连接建立中去？这个也不难，因为grpc的resolver，就是帮我们解决这个问题的。
+
 #### resolver的工作原理
 关于resolver，我们主要有两个问题：
 

@@ -276,7 +276,8 @@ func main(){
 
 如果不 Put 回 sync.Pool，会造成 Get 的时候每次都调用的 New 来从堆栈申请空间，达不到减轻 GC 压力。
 
-## 1. 官方包fmt源码分析
+## 优秀应用实践
+### 1. 官方包fmt源码分析
 ```go
 func Printf(format string, a ...interface{}) (n int, err error) {
 	return Fprintf(os.Stdout, format, a...)
@@ -321,7 +322,7 @@ func (p *pp) free() {
 }
 ```
 
-## 2. 第三方库应用（gin)
+### 2. 第三方库应用（gin)
 /Users/python/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/gin.go
 ```go
 // ServeHTTP conforms to the http.Handler interface.
