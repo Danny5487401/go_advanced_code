@@ -157,7 +157,7 @@
     - 4.3 带参数的选项模式
 - 5 [插件式编程-->grpc中实现](chapter09_design_pattern/05_plugin_programming/plugin.md)
 - 6 [同步模式(sync同步原语以及扩展原语)](chapter09_design_pattern/06_Synchronization_mode/01_sync/sync.md)
-    - [6.1 waitGroup同步等待组对象](chapter09_design_pattern/06_Synchronization_mode/01_sync/01waitGroup/main.go)
+    - [6.1 waitGroup同步等待组对象](chapter09_design_pattern/06_Synchronization_mode/01_sync/01waitGroup/waitGroup.md)
     - [6.2 互斥锁（sync.Mutex）和读写锁（sync.RWMutex）性能对比](chapter09_design_pattern/06_Synchronization_mode/01_sync/02RWMutex_vs_mutex/mutex.md)
     - [6.3 Once源码分析](chapter09_design_pattern/06_Synchronization_mode/01_sync/03Once/once.md)
     - [6.4 并发安全Map(读多写少)](chapter09_design_pattern/06_Synchronization_mode/01_sync/04map/sync_map.md)
@@ -218,7 +218,7 @@
 - 3 [ Golang底层数据结构](chapter11_assembly_language/03Golang_data_structure/data.md)
     - [3.1 Map底层结构](chapter11_assembly_language/03Golang_data_structure/map_structure/map_intro.md)
     - [3.2 String底层结构,字符集和字符编码,性能分析及内存泄漏分析](chapter11_assembly_language/03Golang_data_structure/string_structure/str.md)
-    - [3.3 Struct底层结构,内存布局,空结构体](chapter11_assembly_language/03Golang_data_structure/struct_structure/struct.md)
+    - [3.3 Struct底层结构,内存布局,空结构体内存对齐](chapter11_assembly_language/03Golang_data_structure/struct_structure/struct.md)
 
 ## 第十二章 网络编程net
 - [socket介绍](chapter12_net/socket.md)

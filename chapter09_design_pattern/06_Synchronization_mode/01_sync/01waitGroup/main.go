@@ -5,10 +5,6 @@ import (
 	"sync"
 )
 
-/*
-使用场景
-	使用场景是批量发出 RPC 或者 HTTP 请求
-*/
 var wg sync.WaitGroup // 创建同步等待组对象
 func main() {
 	/*
