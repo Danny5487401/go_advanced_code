@@ -1,4 +1,4 @@
-package _0_value
+package main
 
 import (
 	"sync/atomic"

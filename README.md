@@ -168,11 +168,11 @@
         - [6.5.4 第三方对象池object pool(bytebufferpool)](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/04_byteBufferPool/main.go)
     - 6.6 [Cond条件变量通知所有协程及NoCopy机制-->熔断框架hystrix-go实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/06Cond/Cond.md)
     - 6.7 [atomic原子操作源码分析-->zerolog源码中实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/atomic.md)
-        - 6.7.0 Value的load和store
-        - 6.7.1 add
-        - 6.7.2 cas算法和自旋锁
-        - 6.7.3 load和store用法
-        - 6.7.4 swap交换
+        - [6.7.0 Value的load和store](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/00_value/main.go)
+        - [6.7.1 add及补码减](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/01_add/main.go)
+        - [6.7.2 cas算法和自旋锁](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/02_CompareAndSwap/main.go)
+        - [6.7.3 load和store用法](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/03_load_n_store/main.go)
+        - [6.7.4 swap交换](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/04_swap/main.go)
     - [6.8 ErrorGroup获取协程中error](chapter09_design_pattern/06_Synchronization_mode/01_sync/08ErrorGroup/errGroup.md)
         - [6.8.1 不带context](chapter09_design_pattern/06_Synchronization_mode/01_sync/08ErrorGroup/01WithoutContext/main.go)
         - [6.8.2 带context](chapter09_design_pattern/06_Synchronization_mode/01_sync/08ErrorGroup/02WithContext/main.go)
