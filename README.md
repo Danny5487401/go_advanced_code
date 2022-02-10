@@ -131,9 +131,9 @@
         - [2.1.1 修改前：使用面向对象处理](chapter09_design_pattern/02_structure/01_Composite/01_modify_before/composite.go)
         - [2.1.2 修改后：使用组合模式处理](chapter09_design_pattern/02_structure/01_Composite/02_modify_after/conposite.go)
     - 2.2 [装饰模式-->grpc源码体现](chapter09_design_pattern/02_structure/02_Decorate/decorate.md)
-        - 2.2.1 闭包实现--多个装饰器同时使用
-        - 2.2.2 结构体装饰
-        - 2.2.3 反射实现--泛型装饰器
+        - [2.2.1 闭包实现--多个装饰器同时使用](chapter09_design_pattern/02_structure/02_Decorate/01_closure_decorate/main.go)
+        - [2.2.2 结构体装饰](chapter09_design_pattern/02_structure/02_Decorate/02_struct_decorate_inGrpc/main.go)
+        - [2.2.3 反射实现--泛型装饰器](chapter09_design_pattern/02_structure/02_Decorate/03_reflect_decorate/decorate.go)
     - 2.3 [享元模式-->线程池,缓存思想](chapter09_design_pattern/02_structure/03_FlyweightPattern/flyWeightPattern.md)
     - [2.4 适配器模式](chapter09_design_pattern/02_structure/04_adopter/adopter.md)
     - [2.5 桥接模式](chapter09_design_pattern/02_structure/05_bridgeMethod/bridge_method.md)
@@ -331,8 +331,7 @@
 - [3 遍历Map(增加或删除map元素时)](chapter20_for_range/03_for_range_map/main.go)
 
 ## [第二十一章 time标准包源码分析](chapter21_time/time.md)
-- [1 比time.Now()更优雅获取时间戳（go:link技术）
-](chapter21_time/time.go)
+- [1 比time.Now()更优雅获取时间戳（go:link技术）](chapter21_time/time.go)
 ## [第二十二章 数据驱动模板-kratos工具生成](chapter22_template/text_template.md)
 - [1 加载多个模版](chapter22_template/01_multi_template/main.go)
 - [2 自定义模版函数](chapter22_template/02_template_func/main.go)
