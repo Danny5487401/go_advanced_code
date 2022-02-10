@@ -1,8 +1,166 @@
-# golang的读写锁的实现
+# mutex 互斥锁 和 RWMutex读写锁
+
+## 什么时候需要用到锁？
+
+当程序中就一个线程的时候，是不需要加锁的，但是通常实际的代码不会只是单线程，所以这个时候就需要用到锁了，那么关于锁的使用场景主要涉及到哪些呢？
+1. 多个线程在读相同的数据时
+2. 多个线程在写相同的数据时
+3. 同一个资源，有读又有写
+
+### 读写锁（sync.RWMutex）
+在读多写少的环境中，可以优先使用读写互斥锁（sync.RWMutex），它比互斥锁更加高效。sync 包中的 RWMutex 提供了读写互斥锁的封装
+分类:读锁和写锁
+- 如果设置了一个写锁，那么其它读的线程以及写的线程都拿不到锁，这个时候，与互斥锁的功能相同
+- 如果设置了一个读锁，那么其它写的线程是拿不到锁的，但是其它读的线程是可以拿到锁
+
+## Mutex结构体
+
+```go
+type Mutex struct {
+    state int32  // 当前互斥锁的状态
+    sema  uint32 // 信号
+}
+```
+
+### 互斥锁的状态
+在默认情况下，互斥锁的所有状态位都是 0，int32 中的不同位分别表示了不同的状态：
+```go
+const (
+	mutexLocked = 1 << iota // 表示互斥锁的锁定状态；
+	mutexWoken  // 表示从正常模式被从唤醒；
+	mutexStarving  // 当前的互斥锁进入饥饿状态；
+	mutexWaiterShift = iota
+
+	// Mutex fairness.
+	//
+	// Mutex can be in 2 modes of operations: 正常和饥饿
+	// 正常情况下，waiters 是先进先出FIFO, but a woken up waiter
+	// does not own the mutex and competes with new arriving goroutines over
+	// the ownership.新请求的 Goroutine 进入自旋时是仍然拥有 CPU 的, 所以比等待信号量唤醒的 Goroutine 更容易获取锁. 
+	// 用官方话说就是，新请求锁的 Goroutine具有优势，它正在CPU上执行，而且可能有好几个，所以刚刚唤醒的 Goroutine 有很大可能在锁竞争中失败. 
+	//  In such case it is queued at front of the wait queue. 
+	// 那些等待超过 1 ms 的 Goroutine 还没有获取到锁，该 Goroutine 就会进入饥饿状态。
+	//
+	// 饥饿模式下，直接将唤醒信号发给第一个等待的 Goroutine.
+	// New arriving goroutines don't try to acquire the mutex even if it appears
+	// to be unlocked, and don't try to spin. Instead they queue themselves at
+	// the tail of the wait queue.
+	//
+	// If a waiter receives ownership of the mutex and sees that either
+	// (1) it is the last waiter in the queue, or (2) it waited for less than 1 ms,
+	// it switches mutex back to normal operation mode.
+	//
+	// Normal mode has considerably better performance as a goroutine can acquire
+	// a mutex several times in a row even if there are blocked waiters.
+	// Starvation mode is important to prevent pathological cases of tail latency.
+	starvationThresholdNs = 1e6
+)
+
+```
+
+- waitersCount — 当前互斥锁上等待的 Goroutine 个数
+
+Note：注意Mutex 状态（mutexLocked，mutexWoken，mutexStarving，mutexWaiterShift） 与 Goroutine 之间的状态（starving，awoke）改变
+
+
+
+
+
+### lock加锁过程
+![](.mutex_images/mutex_lock.png)
+
+
+
+如果互斥锁的状态不是 0 时就会调用 sync.Mutex.lockSlow 尝试通过自旋（Spinning）等方式等待锁的释放，该方法的主体是一个非常大 for 循环，这里将它分成几个部分介绍获取锁的过程：
+1. 判断当前 Goroutine 能否进入自旋；
+2. 通过自旋等待互斥锁的释放；
+3. 计算互斥锁的最新状态；
+4. 更新互斥锁的状态并获取锁
+
+#### 重点代码
+```go
+func (m *Mutex) lockSlow() {
+	// 。。。
+    queueLifo := waitStartTime != 0
+    if waitStartTime == 0 {
+        waitStartTime = runtime_nanotime()
+    }
+    // 入队
+    runtime_SemacquireMutex(&m.sema, queueLifo, 1)
+    
+    // 。。。 
+}
+```
+
+1. Goroutine 第一次被阻塞：
+   由于 waitStartTime 等于 0，runtime_SemacquireMutex 的 queueLifo 等于 false, 于是该 Goroutine 放入到队列的尾部.
+
+2. goroutine 被唤醒过，但是没加锁成功，再次被阻塞：由于 Goroutine 被唤醒过，waitStartTime 不等于 0，runtime_SemacquireMutex 的 queueLifo 等于 true, 于是该 Goroutine 放入到队列的头部
+
+```go
+
+func (m *Mutex) unlockSlow(new int32) {
+	if (new+mutexLocked)&mutexLocked == 0 {
+		throw("sync: unlock of unlocked mutex")
+	}
+	if new&mutexStarving == 0 {
+		// 当前 mutex 不是饥饿状态：
+		old := new
+		for {
+			// If there are no waiters or a goroutine has already
+			// been woken or grabbed the lock, no need to wake anyone.
+			// In starvation mode ownership is directly handed off from unlocking
+			// goroutine to the next waiter. We are not part of this chain,
+			// since we did not observe mutexStarving when we unlocked the mutex above.
+			// So get off the way.
+			if old>>mutexWaiterShift == 0 || old&(mutexLocked|mutexWoken|mutexStarving) != 0 {
+				return
+			}
+			// Grab the right to wake someone.
+			new = (old - 1<<mutexWaiterShift) | mutexWoken
+			if atomic.CompareAndSwapInt32(&m.state, old, new) {
+				// 设置 runtime_Semrelease 的 handoff 参数是 false, 于是唤醒其中一个 Goroutine
+				runtime_Semrelease(&m.sema, false, 1)
+				return
+			}
+			old = m.state
+		}
+	} else {
+		// 当前 mutex 已经是饥饿状态
+		// Starving mode: handoff mutex ownership to the next waiter, and yield
+		// our time slice so that the next waiter can start to run immediately.
+		// Note: mutexLocked is not set, the waiter will set it after wakeup.
+		// But mutex is still considered locked if mutexStarving is set,
+		// so new coming goroutines won't acquire it.
+		// 设置 runtime_Semrelease 的 handoff 参数是 true, 于是让等待队列头部的第一个 Goroutine 获得锁
+		runtime_Semrelease(&m.sema, true, 1)
+	}
+}
+```
+
+
+### 解锁过程
+![](.mutex_images/mutex_unlock.png)
+
+1. 当互斥锁已经被解锁时，调用 sync.Mutex.Unlock 会直接抛出异常；
+2. 当互斥锁处于饥饿模式时，将锁的所有权交给队列中的下一个等待者，等待者会负责设置 mutexLocked 标志位；
+3. 当互斥锁处于普通模式时，如果没有 Goroutine 等待锁的释放或者已经有被唤醒的 Goroutine 获得了锁，会直接返回；在其他情况下会通过 sync.runtime_Semrelease 唤醒对应的 Goroutine
 
 ![](.mutex_images/lock_member.png)
 
-结构体
+### 没有加锁，直接解锁问题-异常
+![](.mutex_images/unlock_again.png)
+
+### 案例：两个goroutine
+![](.mutex_images/two_gorountine_lock.png)
+### 案例：三个goroutine
+![](.mutex_images/three_goroutine_lock.png)
+
+
+
+
+
+## RWMutex结构体
 ```go
 
 type RWMutex struct {
@@ -13,14 +171,30 @@ type RWMutex struct {
     readerWait  int32  // 等待读锁释放的数量
 }
 ```
+### 方法
 
-## 写锁计数
+写操作使用 sync.RWMutex.Lock 和 sync.RWMutex.Unlock 方法；
+读操作使用 sync.RWMutex.RLock 和 sync.RWMutex.RUnlock 方法；
+
+### 读和写锁关系
+调用 sync.RWMutex.Lock 尝试获取写锁时；
+1. 每次 sync.RWMutex.RUnlock 都会将 readerCount 其减一，当它归零时该 Goroutine 会获得写锁；
+2. 将 readerCount 减少 rwmutexMaxReaders 个数以阻塞后续的读操作；
+
+调用 sync.RWMutex.Unlock 释放写锁时，会先通知所有的读操作，然后才会释放持有的互斥锁
+
+### 写锁饥饿问题
+因为读锁是共享的，所以如果当前已经有读锁，那后续goroutine继续加读锁正常情况下是可以加锁成功，
+但是如果一直有读锁进行加锁，那尝试加写锁的goroutine则可能会长期获取不到锁，这就是因为读锁而导致的写锁饥饿问题
+
+### 写锁计数
 
 读写锁中允许加读锁的最大数量是4294967296，在go里面对写锁的计数采用了负值进行，通过递减最大允许加读锁的数量从而进行写锁对读锁的抢占
 ```go
 const rwmutexMaxReaders = 1 << 30
 ```
-## 读锁加锁实现
+
+### 读锁加锁实现
 ![](.mutex_images/readerMutex_lock.png)
 
 ```go
@@ -40,7 +214,7 @@ func (rw *RWMutex) RLock() {
     }
 }
 ```
-## 读锁释放实现
+### 读锁释放实现
 ![](.mutex_images/readerMutex_release.png)
 
 ```go
@@ -70,7 +244,7 @@ func (rw *RWMutex) RUnlock() {
 ```
 
 
-## 写锁加锁实现
+### 写锁加锁实现
 ![](.mutex_images/writerMutex_lock.png)
 ```go
 func (rw *RWMutex) Lock() {
@@ -98,7 +272,7 @@ func (rw *RWMutex) Lock() {
 
 ```
 
-## 写锁释放实现
+### 写锁释放实现
 ![](.mutex_images/writer_mutex_release.png)
 ```go
 func (rw *RWMutex) Unlock() {
@@ -126,10 +300,9 @@ func (rw *RWMutex) Unlock() {
 }
 ```
 
-# 写锁与读锁的公平性
+### 写锁与读锁的公平性
 
-    在加读锁和写锁的工程中都使用atomic.AddInt32来进行递增，而该指令在底层是会通过LOCK来进行CPU总线加锁的，
-    因此多个CPU同时执行readerCount其实只会有一个成功，从这上面看其实是写锁与读锁之间是相对公平的，
-    谁先达到谁先被CPU调度执行，进行LOCK锁cache line成功，谁就加成功锁
+在加读锁和写锁的工程中都使用atomic.AddInt32来进行递增，而该指令在底层是会通过LOCK来进行CPU总线加锁的，
+因此多个CPU同时执行readerCount其实只会有一个成功，从这上面看其实是写锁与读锁之间是相对公平的，
+谁先达到谁先被CPU调度执行，进行LOCK锁cache line成功，谁就加成功锁
 
-# 底层实现的CPU指令
