@@ -13,9 +13,7 @@ import (
 // Traveser 定义函数类型 用于排序
 type Traveser func(ele interface{})
 
-/*
-   具体操作:降序排序数组元素
-*/
+// SortByDescending 具体操作:降序排序数组元素
 func SortByDescending(ele interface{}) {
 	intSlice, ok := ele.([]int)
 	if !ok {
@@ -38,9 +36,7 @@ func SortByDescending(ele interface{}) {
 	}
 }
 
-/*
-   具体操作:升序排序数组元素
-*/
+//  SortByAscending具体操作:升序排序数组元素
 func SortByAscending(ele interface{}) {
 	intSlice, ok := ele.([]int)
 	if !ok {

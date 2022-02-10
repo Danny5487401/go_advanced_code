@@ -122,7 +122,7 @@
 ## [第九章 设计模式-OOP七大准则](chapter09_design_pattern/introduction.md)
 - 1 创建型模式
     - [1.1 静态工厂模式-->new关键字函数实现简单工厂](chapter09_design_pattern/01_construction/01_StaticFactoryMethod/static_factory.md)
-    - 1.2 工厂方法模式-->k8s中实现
+    - [1.2 工厂方法模式-->k8s中实现](chapter09_design_pattern/01_construction/02_factory_mode/factory.md)
     - [1.3 单例模式-->标准库strings/replace实现](chapter09_design_pattern/01_construction/03_singleton/singleton.md)
     - [1.4 原型模式-->confluent-kafka中map实现](chapter09_design_pattern/01_construction/04_prototype/prototype.md)
     - [1.5 建造者模式-->xorm,k8s,zap中实现](chapter09_design_pattern/01_construction/05_builder/builder_info.md)
@@ -152,15 +152,18 @@
     - [3.10 观察者模式-->官方Signal包及etcd的watch机制](chapter09_design_pattern/03_motion/10_ObserverPattern/introduction.md)
     - [3.11 中介者模式](chapter09_design_pattern/03_motion/11_mediator/inctroduction.md)
 - [4 函数选项:成例模式-->在日志库zap中实现](chapter09_design_pattern/04_fuctional_option/option.md)
-    - 4.1 未使用的现状
-    - 4.2 区分必填项和选项
+    - [4.1 未使用函数选项初始化结构体的现状](chapter09_design_pattern/04_fuctional_option/01_problem/ServerConfig.md)
+    - [4.2 区分必填项和选项](chapter09_design_pattern/04_fuctional_option/02_method_splitConfig/SplitConfig.go)
     - 4.3 带参数的选项模式
+      - [不返回error](chapter09_design_pattern/04_fuctional_option/03_FunctionalOption/01_simple_solution/main.go)
+      - [返回error](chapter09_design_pattern/04_fuctional_option/03_FunctionalOption/02_complexed_with_error/main.go)
 - 5 [插件式编程-->grpc中实现](chapter09_design_pattern/05_plugin_programming/plugin.md)
 - 6 [同步模式(sync同步原语以及扩展原语)](chapter09_design_pattern/06_Synchronization_mode/01_sync/sync.md)
     - [6.1 waitGroup同步等待组对象](chapter09_design_pattern/06_Synchronization_mode/01_sync/01waitGroup/waitGroup.md)
     - 6.2 使用互斥锁（sync.Mutex）实现读写功能和直接使用读写锁（sync.RWMutex）性能对比
       - [6.2.1 使用互斥锁（sync.Mutex）实现读写功能](chapter09_design_pattern/06_Synchronization_mode/01_sync/02RWMutex_vs_mutex/Mutex/main.go)
       - [6.2.2 直接使用读写锁（sync.RWMutex）实现读写功能](chapter09_design_pattern/06_Synchronization_mode/01_sync/02RWMutex_vs_mutex/RWMutex/main.go)
+      - [Mutex和RWMutex源码分析](chapter09_design_pattern/06_Synchronization_mode/01_sync/02RWMutex_vs_mutex/mutex.md)
     - [6.3 Once源码分析](chapter09_design_pattern/06_Synchronization_mode/01_sync/03Once/once.md)
     - [6.4 并发安全Map(读多写少)](chapter09_design_pattern/06_Synchronization_mode/01_sync/04map/sync_map.md)
     - [6.5 Pool对象池模式( *非连接池* !）-->官方包对象池fmt](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/pool.md)
@@ -183,9 +186,9 @@
 
 ## [第十章 函数式编程](chapter10_function/func.md)
 - 1 函数
-    - 1.1 闭包基本使用
-    - 1.2 匿名函数:回调函数
-    - 1.3 函数模版:定义行为
+    - [1.1 闭包基本使用](chapter10_function/01_func_application/01_closure/main.go)
+    - [1.2 匿名函数应用:回调函数](chapter10_function/01_func_application/02_anonymousFunc/main.go)
+    - [1.3 函数模版:定义行为](chapter10_function/01_func_application/03_func_template/main.go)
 - 2 [高级函数](chapter10_function/02_advanced_function/introduction.md)
     - 2.1 简单实现filter,map,reduce
     - 2.2 简单案例

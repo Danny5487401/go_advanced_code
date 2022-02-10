@@ -1,3 +1,6 @@
+
+# 未使用选项模式
+```go
 package _1_problem
 
 import (
@@ -16,24 +19,32 @@ type ServerCfg struct {
 	TLS      *tls.Config   // 非必填
 }
 type Server struct {
+	
 }
 
-// 未使用选项模式
-/*  不好的做法
+//  不好的做法
 func NewServer(addr string, port int) (*Server, error)                                   {}
 func NewTLSServer(addr string, port int, tls *tls.Config) (*Server, error)               {}
 func NewServerWithTimeout(addr string, port int, timeout time.Duration) (*Server, error) {}
-func NewTLSServerWithMaxConnAndTimeout(addr string, port int, maxconns int, timeout time.Duration, tls *tls.Config) (*Server, error) {
-}
+func NewTLSServerWithMaxConnAndTimeout(addr string, port int, maxconns int, timeout time.Duration, tls *tls.Config) (*Server, error) {}
 
-// 问题：我们要实现非常多种方法，来支持各种非必填的情况
+```
 
-优点：
-	实现比较简单
-缺点：
-	但是同时传入参数较多，对调用方来说，使用的成本就会比较高，而且每个参数的具体含义这里并不清晰，很容易出错
+
+## 问题
+
+我们要实现非常多种方法，来支持各种非必填的情况
+
+## 优点：
+
+实现比较简单
+## 缺点：
+但是同时传入参数较多，对调用方来说，使用的成本就会比较高，而且每个参数的具体含义这里并不清晰，很容易出错
 选项模式最终效果：
-	MyFunc2("requiredStr")
-	MyFunc2("requiredStr", WithOptionStr1("mystr1"))
-	MyFunc2("requiredStr", WithOptionStr2AndInt2("mystr2", 22), WithOptionInt1(11)
-*/
+```go
+MyFunc2("requiredStr")
+MyFunc2("requiredStr", WithOptionStr1("mystr1"))
+MyFunc2("requiredStr", WithOptionStr2AndInt2("mystr2", 22), WithOptionInt1(11)
+```
+
+

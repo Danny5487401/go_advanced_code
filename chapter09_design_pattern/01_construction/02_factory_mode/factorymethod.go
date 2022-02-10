@@ -1,41 +1,10 @@
 package factorymethod
 
-
-/*
-工厂方法模式使用子类的方式延迟生成对象到子类中实现。
-
-Go中不存在继承 所以使用匿名组合来实现
-源码参考：k8s------>k8s.io/kubectl/pkg/cmd/util/factory.go
-
-type Factory interface {
-	genericclioptions.RESTClientGetter
-	DynamicClient() (dynamic.Interface, error)
-	KubernetesClientSet() (*kubernetes.Clientset, error)
-	RESTClient() (*restclient.RESTClient, error)
-	NewBuilder() *resource.Builder
-	ClientForMapping(mapping *meta.RESTMapping) (resource.RESTClient, error)
-	UnstructuredClientForMapping(mapping *meta.RESTMapping) (resource.RESTClient, error)
-	Validator(validate bool) (validation.Schema, error)
-	OpenAPISchema() (openapi.Resources, error)
-}
-
-
-
-pkg/kubectl/cmd/cmd.go 生成工厂--->f := cmdutil.NewFactory(matchVersionKubeConfigFlags)
-func NewFactory(clientGetter genericclioptions.RESTClientGetter) Factory {
-	f := &factoryImpl{
-		clientGetter: clientGetter,
-	}
-	return f
-}
-
- */
-
 //Operator 是被封装的实际类接口
 type Operator interface {
 	SetA(int)
 	SetB(int)
-	Result()int
+	Result() int
 }
 
 //OperatorFactory 是工厂接口
@@ -45,7 +14,7 @@ type OperatorFactory interface {
 
 //OperatorBase 是Operator 接口实现的基类，封装公用方法
 type OperatorBase struct {
-	a,b int
+	a, b int
 }
 
 //SetA 设置 A
@@ -67,10 +36,9 @@ type PlusOperator struct {
 	*OperatorBase
 }
 
-
-func (PlusOperatorFactory)Create() Operator {
+func (PlusOperatorFactory) Create() Operator {
 	return &PlusOperator{
-		OperatorBase:&OperatorBase{},
+		OperatorBase: &OperatorBase{},
 	}
 }
 
