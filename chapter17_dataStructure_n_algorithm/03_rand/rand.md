@@ -71,6 +71,8 @@ rand.Seed(time.Now().UnixNano())
 ```
 分析
 ```go
+
+
 func (rng *rngSource) Seed(seed int64) {
 	rng.tap = 0
 	rng.feed = rngLen - rngTap
@@ -94,9 +96,60 @@ func (rng *rngSource) Seed(seed int64) {
 			x = seedrand(x)
 			u ^= int64(x)
 			u ^= rngCooked[i]
+			// 对 rng.vec 各个位置设置对应的值. rng.vec 的大小是 607.
 			rng.vec[i] = u
 		}
 	}
+}
+
+
+// seed rng x[n+1] = 48271 * x[n] mod (2**31 - 1)
+func seedrand(x int32) int32 {
+	const (
+		A = 48271
+		Q = 44488
+		R = 3399
+	)
+
+	hi := x / Q
+	lo := x % Q
+	x = A*lo - R*hi
+	if x < 0 {
+		x += int32max
+	}
+	return x
+}
+```
+
+我们在使用不管调用 Intn(), Int31n() 等其他函数, 最终调用到就是这个函数Uint64().
+```go
+// Uint64 returns a non-negative pseudo-random 64-bit integer as an uint64.
+func (rng *rngSource) Uint64() uint64 {
+	rng.tap--
+	if rng.tap < 0 {
+		rng.tap += rngLen
+	}
+
+	rng.feed--
+	if rng.feed < 0 {
+		rng.feed += rngLen
+	}
+
+	// rng.feed rng.tap 从 rng.vec 中取到两个值相加的结果
+	x := rng.vec[rng.feed] + rng.vec[rng.tap]
+	rng.vec[rng.feed] = x
+	return uint64(x)
+}
+
+```
+
+在这里需要注意使用 rng.go 的 rngSource 时, 由于 rng.vec 在获取随机数时会同时设置 rng.vec 的值, 当多 goroutine 同时调用时就会有数据竞争问题. math/rand 采用在调用 rngSource 时加锁  sync.Mutex 解决.
+```go
+func (r *lockedSource) Uint64() (n uint64) {
+    r.lk.Lock()
+    n = r.src.Uint64()
+    r.lk.Unlock()
+    return
 }
 ```
 
