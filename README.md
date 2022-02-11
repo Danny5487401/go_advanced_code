@@ -312,7 +312,7 @@
 - [3 Gin的错误recover分析(panic和recover源码分析)](chapter18_error_n_panic/03_recover/panic.md)
 - [4 errCode错误码自动化生成](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
 - [5 error如何正确比较](chapter18_error_n_panic/05_err_comparision/main.go)
-
+- [6 收集多个errors-->go-multierror实现](chapter18_error_n_panic/06_multi_error/01_one_goroutine_n_errors/main.go)
 ## 第十九章 nil预定义标识
 - 1 不同类型为nil时的地址和大小
 - 2 不同类型与nil的比较
