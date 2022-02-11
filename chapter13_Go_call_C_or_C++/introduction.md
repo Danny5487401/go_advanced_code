@@ -21,10 +21,29 @@ $GOROOT/misc/cgo/stdio 和 $GOROOT/misc/cgo/gmp
 多个指令定义的值会被串联到一起。这些指令可以包括一系列构建约束，用以限制对满足其中一个约束的系统的影响
 
 ## #cgo语句
-在import "C"语句前的注释中可以通过#cgo语句设置编译阶段和链接阶段的相关参数。
 
+![](.introduction_images/go_env.png)
+- CGO_ENABLED	指明cgo工具是否可用的标识。
+- GOARCH	程序构建环境的目标计算架构。
+- GOBIN	存放可执行文件的目录的绝对路径。
+- GOPATH	工作区目录的绝对路径。
+- GOROOT	Go语言的安装目录的绝对路径。
+- GOOS	程序构建环境的目标操作系统。
+- GOHOSTOS	程序运行环境的目标操作系统。
+
+```go
+man clang
+```
+![](.introduction_images/man_clang.png)
+
+在import "C"语句前的注释中可以通过#cgo语句设置编译阶段和链接阶段的相关参数。
 语句主要影响CFLAGS、CPPFLAGS、CXXFLAGS、FFLAGS和LDFLAGS几个编译器环境变量。
-LDFLAGS用于设置链接时的参数，除此之外的几个变量用于改变编译阶段的构建参数(CFLAGS用于针对C语言代码设置编译参数)。
+
+- LDFLAGS用于设置链接时的参数.gcc 等编译器会用到的一些优化参数，也可以在里面指定库文件的位置。用法：LDFLAGS=-L/usr/lib -L/path/to/your/lib.每安装一个包都几乎一定的会在安装目录里建立一个lib目录。如果明明安装了某个包，而安装另一个包时，它愣是说找不到，可以抒那个包的lib路径加入的LDFALGS中试一下。
+
+- CFLAGS用于针对C语言代码设置编译参数,指定头文件（.h文件）的路径，如：CFLAGS=-I/usr/include -I/path/include。同样地，安装一个包时会在安装路径下建立一个include目录，当安装过程中出现问题时，试着把以前安装的包的include目录加入到该变量中来。
+
+
 
 编译阶段的参数主要用于定义相关宏和指定头文件检索路径。链接阶段的参数主要是指定库文件检索路径和要链接的库文件.
 ```shell script
@@ -62,11 +81,17 @@ import "C"
     跟包有关的 flag 应该使用指令来设置，而不是通过环境变量来设置，这样构建工作可以处于未修改的环境中。从环境变量中获取的值不属于上述描述的安全限制。
 编译事项： 
 
-    在一个 Go 包中的所有 CPPFLAGS 和 CFLAGS 指令都会被串联到一起，然后被用来编译这个包中的 C 文件。
-    包中所有的 CPPFLAGS 和 CXXFLAGS 指令都会被串联到一起，用于编译包中的 C++ 文件。包中所有的 CPPFLAGS 和 FFLAGS 指令都会被串联到一起，用来编译包中的 Fortran 文件。
+1. 在一个 Go 包中的所有 CPPFLAGS 和 CFLAGS 指令都会被串联到一起，然后被用来编译这个包中的 C 文件。
+2. 包中所有的 CPPFLAGS 和 CXXFLAGS 指令都会被串联到一起，用于编译包中的 C++ 文件。
+3. 包中所有的 CPPFLAGS 和 FFLAGS 指令都会被串联到一起，用来编译包中的 Fortran 文件。
+
+
     一个程序中所有包中的 LDFLAGS 指令都会被串联到一起，并在连接 (link) 的时候使用。
-    所有的 pkg-config 指令都会被串联到一起，并同时发给 pkg-config，来添加每个合适的 flag 命令行的集合
-    在解析 cgo 指令时，所有字符串中的 ${SRCDIR} 都会被替换成当前源文件所在的绝对路径。这样允许提前编译的静态库被包含在包路径中且被正确地链接。比如，如果包 foo 在 /go/src/foo 路径下：
+    所有的 pkg-config 指令都会被串联到一起，并同时发给 pkg-config，来添加每个合适的 flag 命令行的集合.
+
+在解析 cgo 指令时，所有字符串中的 ${SRCDIR} 都会被替换成当前源文件所在的绝对路径。
+${SRCDIR} -->source directory 源代码目录
+这样允许提前编译的静态库被包含在包路径中且被正确地链接。比如，如果包 foo 在 /go/src/foo 路径下：
 ```go
 // #cgo LDFLAGS: -L${SRCDIR}/libs -lfoo
 //会被扩展成：

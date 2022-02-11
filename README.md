@@ -12,7 +12,7 @@
 ![高级go编程](./img/golang.jpeg)
 
 # *目录*
-
+Note:目录同级为 代码展示，可在Goland中运行
 ## *goVersion==1.16*
 
 ## [第一章 I/O操作](chapter01_input_output/io.md)
@@ -250,6 +250,7 @@
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
 [cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)
+Note:内部代码待优化
 - [1 Go调用自定义C函数-未模块化](chapter13_Go_call_C_or_C++/01_call_C_func/main.go)
 - 2 Go调用自定义C函数-模块化
 - 3 Go重写C定义函数
