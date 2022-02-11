@@ -255,10 +255,10 @@
 - 3 Go重写C定义函数
 - 4 cgo引入其他包的变量错误
 - 5 #Cgo语句
-- 6 Go获取C函数的errno
-- 7 C的void返回
+- [6 Go获取C函数的errno](chapter13_Go_call_C_or_C++/06_return_err/main.go)
+- [7 C的void返回](chapter13_Go_call_C_or_C++/07_void_return/main.go)
 - 8 Go调用模块化C++库
-- 9 调用静态C库
+- [9 调用静态C库](chapter13_Go_call_C_or_C++/09_static_c_lib/main.go)
 - 10 调用动态C库
 
 ## [第十四章 Context上下文-源码分析涉及父类EmptyCtx](chapter14_context/introduction.md)
