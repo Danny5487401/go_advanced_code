@@ -243,15 +243,15 @@
   - [服务端](chapter12_net/03_tcp/server/main.go)
 - 4 Tcp黏包分析及处理(大小端介绍)
 - 5 [fastHttp(源码分析)](chapter12_net/05_fasthttp/fasthttp.md)
-  - 5.1 服务端
-  - 5.2 客户端
+  - [5.1 服务端](chapter12_net/05_fasthttp/server/main.go)
+  - [5.2 客户端](chapter12_net/05_fasthttp/client/client.go)
 - [6 优雅退出原理分析（go-zero实践）](chapter12_net/06_grateful_stop/grateful_stop.md)
 - [7 URL的解析 Parse，query 数据的转义与反转义](chapter12_net/07_url/url.md)
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
 [cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)
-- 1 Go调用自定义C函数
-- 2 Go调用模块化C库
+- [1 Go调用自定义C函数-未模块化](chapter13_Go_call_C_or_C++/01_call_C_func/main.go)
+- 2 Go调用自定义C函数-模块化
 - 3 Go重写C定义函数
 - 4 cgo引入其他包的变量错误
 - 5 #Cgo语句
