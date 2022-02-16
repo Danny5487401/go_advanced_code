@@ -40,8 +40,8 @@ Note:目录同级为 代码展示，可在Goland中运行
       - [2.3.2 问题解决](chapter02_goroutine/02_runtime/03ResourceCompetition/02Fix_Resource_data_consistency/main.go)
     - [2.4 GC垃圾回收机制(trace查看map垃圾回收)](chapter02_goroutine/02_runtime/04GC/gc.md)
     - [2.5 监控代码性能pprof](chapter02_goroutine/02_runtime/05pprof/intro.md)
-      - 2.5.1 标准包runtime/pprof及net/http/pprof
-      - 2.5.2 第三方包pkg/profile
+      - [2.5.1 标准包runtime/pprof及net/http/pprof使用](chapter02_goroutine/02_runtime/05pprof/pprof/main.go)
+      - [2.5.2 第三方包pkg/profile](chapter02_goroutine/02_runtime/05pprof/pkg_profile/cpu.go)
     - [2.6 Linux内存及Go内存结构管理](chapter02_goroutine/02_runtime/06memory/mem.md)
     - [2.7 prometheus监控程序](chapter02_goroutine/02_runtime/07prometheus/prometheus.md)
 - 3 [多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
