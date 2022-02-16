@@ -1,4 +1,12 @@
-# Go 中监控代码性能
+# Go 中监控代码性能pprof
+
+## 4 种类型
+
+- CPU profiling（CPU 性能分析）：这是最常使用的一种类型。用于分析函数或方法的执行耗时；
+- Memory profiling：这种类型也常使用。用于分析程序的内存占用情况；
+- Block profiling：这是 Go 独有的，用于记录 goroutine 在等待共享资源花费的时间；
+- Mutex profiling：与 Block profiling 类似，但是只记录因为锁竞争导致的等待或延迟。
+
 ## 两个包：
 1. net/http/pprof
 使用场景：在线服务（一直运行着的程序）
