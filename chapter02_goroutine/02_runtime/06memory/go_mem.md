@@ -9,6 +9,7 @@
 
 针对 linux 操作系统而言，将最高的 1G 字节（从虚拟地址 0xC0000000 到 0xFFFFFFFF），供内核使用，称为内核空间，
 而将较低的 3G 字节（从虚拟地址 0x00000000 到 0xBFFFFFFF），供各个进程使用，称为用户空间
+
 ## 进程地址空间
 ![](.mem_images/linux_process_memory.png)    
 
@@ -57,6 +58,8 @@ mmap,brk这两种方式分配的都是虚拟内存，没有分配物理内存。
 
 ## 分配算法TCMalloc
 ![](.mem_images/TCMalloc_strategy.png)
+
+TCMalloc 相关的信息可以看这里：http://goog-perftools.sourceforge.net/doc/tcmalloc.html 
 
 由于 Go 语言不使用 malloc 来获取内存，而是直接操作系统申请（通过 mmap），它必须自己实现内存分配和释放（就像 malloc 一样）。Go 语言的内存分配器最初基于 TCMalloc：Thread-Caching Malloc。
 
