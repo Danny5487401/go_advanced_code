@@ -1,18 +1,13 @@
-# 加密算法的分类
+# RSA（Rivest–Shamir–Adleman）加密
+RSA以麻省理工学院的科学家（Rivest、Shamir 和 Adleman）的名字命名。
 
-加密的基本思想是将数据转换成一种掩盖了原始含义的形式，只有经过适当授权的人才能解密。
+RSA算法的安全性基于RSA问题的困难性，也就是基于大整数因子分解的困难性上。但是RSA问题不会比因子分解问题更加困难，
+也就是说，在没有解决因子分解问题的情况下可能解决RSA问题，因此RSA算法并不是完全基于大整数因子分解的困难性上的。
 
-使用相同或不同的密钥对数据进行加解密，如果加密和解密使用相同的密钥，则称该过程是对称的。如果使用不同的密钥，则该过程被定义为非对称的。
+它是一种非对称加密算法，也叫”单向加密“。用这种方式，任何人都可以很容易地对数据进行加密，而只有用正确的”秘钥“才能解密
+RSA加密是最常用的非对称加密方式，原理是对一极大整数做因数分解的困难性来保证安全性。通常个人保存私钥，公钥是公开的（可能同时多人持有）
 
-当今使用最广泛的两种加密算法是 AES 和 RSA。两者都非常有效和安全，但它们通常以不同的方式使用
-
-## 1. RSA（Rivest–Shamir–Adleman）加密
-RSA以麻省理工学院的科学家（Rivest、Shamir 和 Adleman）的名字命名
-
-    它是一种非对称加密算法，也叫”单向加密“。用这种方式，任何人都可以很容易地对数据进行加密，而只有用正确的”秘钥“才能解密
-    RSA加密是最常用的非对称加密方式，原理是对一极大整数做因数分解的困难性来保证安全性。通常个人保存私钥，公钥是公开的（可能同时多人持有）
-
-### RSA加密有常见的三种情况：
+## RSA加密有常见的三种情况：
 
 1. 公钥加密，私钥解密   
     最常用的一种情况，对接过支付宝就应该碰到过。
@@ -38,24 +33,116 @@ RSA以麻省理工学院的科学家（Rivest、Shamir 和 Adleman）的名字�
     假如你是服务提供方，使用私钥进行加密后，接入方使用你提供的公钥进行解密，一旦这个公钥泄漏，带来的后果和对称加密密钥泄漏是一样的。
     只有双方互换公钥（均使用对方公钥加密，己方私钥解密），才能充分发挥非对称加密的优势。
 
-### 应用
+## 应用
 RSA 算法需要的计算量比 AES 高，但速度要慢得多。它比较适合用于加密少量数据。
 
-## 2. AES加密
-AES 算法依次对每个 128 位数据块应用一系列数学变换。由于这种方法的计算要求较低，AES 可用于笔记本电脑和智能手机等消费类设备上进行数据加密，以及快速加密大量数据。
-
-AES 是一种对称算法，它使用相同的 128、192 或 256 位密钥进行加密和解密。128、192 或 256 位的密钥可以理解为分别对应16、24和32个字节的16进制字符串密钥，AES 系统的安全性会随密钥长度呈指数增长。
-
-即使使用 128 位密钥，通过对 2128 个可能的密钥值进行暴力枚举，来尝试破解 AES加密后的数据的任务也是个非常计算密集型的任务。事实上，AES 从未被破解，并且根据当前的技术趋势，预计在未来几年内仍将保持安全
 ## 相关概念
-PEM
 
-    将X.509基础证书用base64重新编码存为ASCII文件，用于和邮件一起传输保证邮件安全性。
-X.509
+### .509
 
-    这是由国际电信联盟（ITU-T）制定的ASN.1规范下数字证书标准，它规定了证书应包含哪些信息和使用什么样的编码格式（默认DER二进制编码）。
-PKCS
+这是由国际电信联盟（ITU-T）制定的ASN.1规范下数字证书标准，它规定了证书应包含哪些信息和使用什么样的编码格式（默认DER二进制编码）。
+
+### PKCS
 
     The Public-Key Cryptography Standards，公钥密码学标准，由美帝的RSA公司制定的一系列标准，这里我们只讨论#7/#8/#12，
     #7/#12是对X.509证书进行扩展、加密用于交换。#8是一种私钥格式标准。openssl生成的私钥，可以转换成pkcs8格式
 
+## 密钥
+常见的几种秘钥存储格式有：字符串、证书文件、n/e参数等
+
+### 1. 字符串格式
+这是最常见的一种形式，通常RSA的秘钥都是以hex、base64编码后的字符串提供，如证书内的秘钥格式即是base64编码的字符串，然后添加前后的具体标识实现的。可以通过解码字符串，构建公钥/私钥。
+
+Note:base64存在几种细节不同的编码格式，StdEncoding、URLEncoding、RawStdEncoding、RawURLEncoding，使用时还需要进一步确认秘钥具体编码格式，避免解码出错。
+以下未特殊说明的例子中均默认使用StdEncoding。
+
+（1）公钥
+直接hex、base64解码后调用x509.ParsePKIXPublicKey即可
+```go
+key, _ := hex.DecodeString(publicKeyStr)
+publicKey, _ := x509.ParsePKIXPublicKey(key)
+
+```
+
+（2）私钥
+由于RSA私钥存在PKCS1和PKCS8两种格式，因此解码后需要根据格式类型调用对应的方法即可。一般java使用pkcs8格式的私钥，其他语言使用pkcs1格式的私钥。使用时，记得确认下格式。
+```go
+//解析pkcs1格式私钥
+key, _ := base64.StdEncoding.DecodeString(pkcs1keyStr)
+privateKey, _ := x509.ParsePKCS1PrivateKey(key)
+
+//解析pkcs8格式私钥
+key, _ := hex.DecodeString(pkcs8keyStr)
+privateKey, err := x509.ParsePKCS8PrivateKey(key)
+
+```
+
+2. 证书文件格式
+
+（1）.pem、.cert、.cer、.crt
+
+.pem、.cert、.cer、.crt等都是pem格式的文件，只是文件后缀不一。
+
+PEM是Privacy Enhance Mail的缩写，PEM实质上是Base64编码的二进制内容(即对字符串格式私钥的文件化处理)，再加上开始和结束行。
+
+解析方式：读取文件，调用pem.Decode，然后按照base64解码，再解析成公钥/私钥。
+```go
+key,_ := ioutil.ReadFile("pem_file_path")
+block, _ := pem.Decode(key)
+//解析成pkcs8格式私钥
+privateKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+//解析成pkcs1格式私钥
+privateKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+//解析成公钥
+publicKey, _ := x509.ParsePKIXPublicKey(key)
+
+
+```
+
+（2）.pkcs12、.pfx、.p12
+
+.pkcs12、.pfx、.p12这些文件格式存储的是已加密后的内容，可以通过openssl转换成pem文件后进行处理。
+
+
+提取密钥对：
+```shell
+openssl pkcs12 -in in.p12 -out out.pem -nodes
+```
+
+3. N,E参数
+
+例如：login with apple keys的公钥就是这种格式的，需要根据n,e构造出公钥。
+```shell
+{
+      "kty": "RSA",
+      "kid": "eXaunmL",
+      "use": "sig",
+      "alg": "RS256",
+      "n": "4dGQ7bQK8LgILOdLsYzfZjkEAoQeVC_aqyc8GC6RX7dq_KvRAQAWPvkam8VQv4GK5T4ogklEKEvj5ISBamdDNq1n52TpxQwI2EqxSk7I9fKPKhRt4F8-2yETlYvye-2s6NeWJim0KBtOVrk0gWvEDgd6WOqJl_yt5WBISvILNyVg1qAAM8JeX6dRPosahRVDjA52G2X-Tip84wqwyRpUlq2ybzcLh3zyhCitBOebiRWDQfG26EH9lTlJhll-p_Dg8vAXxJLIJ4SNLcqgFeZe4OfHLgdzMvxXZJnPp_VgmkcpUdRotazKZumj6dBPcXI_XID4Z4Z3OM1KrZPJNdUhxw",
+      "e": "AQAB"
+    }
+
+```
+
+使用时就需要，将N，E解析成big.Int格式，注意N、E的base64的具体编码格式：
+
+```go
+pubN, _ := parse2bigInt(n)
+pubE, _ := parse2bigInt(e)
+pub = &rsa.PublicKey{
+    N: pubN,
+    E: int(pubE.Int64()),
+}
+
+// parse string to big.Int
+func parse2bigInt(s string) (bi *big.Int, err error) {
+    bi = &big.Int{}
+    b, err := base64.RawURLEncoding.DecodeString(s)//此处使用的是RawURLEncoding
+    if err != nil {
+        return
+    }
+    bi.SetBytes(b)
+    return
+}
+
+```
