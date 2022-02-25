@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"math/rand"
 	"time"
 )
@@ -30,7 +31,6 @@ func newSourceRand() {
 	rand.Seed(time.Now().UnixNano())
 	for i := 0; i < 10; i++ {
 		fmt.Printf("current:%d\n", time.Now().Unix())
-		rand.Seed(time.Now().Unix())
-		fmt.Printf("每次不同的结果：%v\n", rand.Intn(100))
+		fmt.Printf("每次不同的结果：%v\n", rand.Intn(2))
 	}
 }
