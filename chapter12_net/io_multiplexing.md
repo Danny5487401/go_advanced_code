@@ -37,7 +37,10 @@ int FD_ISSET(int fd, fd_set *set);
 void FD_SET(int fd, fd_set *set);
 void FD_ZERO(fd_set *set);
 ```
-fd_set:取 fd_set 长度为 1 字节，fd_set 中的每一 bit 可以对应一个文件描述符 fd，则 1 字节长的 fd_set 最大可以对应 8 个 fd。
+- fd_set:取 fd_set 长度为 1 字节，fd_set 中的每一 bit 可以对应一个文件描述符 fd，则 1 字节长的 fd_set 最大可以对应 8 个 fd。
+- writefds、readfds、和exceptfds是三个文件描述符集合。select会遍历每个集合的前nfds个描述符，分别找到可以读取、可以写入、发生错误的描述符，统称为就绪的描述符。
+- timeout参数表示调用select时的阻塞时长。如果所有文件描述符都未就绪，就阻塞调用进程，直到某个描述符就绪，或者阻塞超过设置的 timeout 后，返回。如果timeout参数设为 NULL，会无限阻塞直到某个描述符就绪；如果timeout参数设为 0，会立即返回，不阻塞。
+
 select的执行流程：
 
 1. 执行 FD_ZERO(&set), 则 set 用位表示是0000,0000
@@ -62,17 +65,33 @@ select缺点
 * 每次调用 select，都需要把 fd 集合从用户态拷贝到内核态，这个开销在 fd 很多时会很大
 * 性能衰减严重：每次 kernel 都需要线性扫描整个 fd_set，所以随着监控的描述符 fd 数量增长，其 I/O 性能会线性下降
 
-###poll
+### poll
 poll 的实现和 select 非常相似，只是描述 fd 集合的方式不同，poll 使用 pollfd 结构而不是 select 的 fd_set 结构，poll 解决了最大文件描述符数量限制的问题，
 但是同样需要从用户态拷贝所有的 fd 到内核态，也需要线性遍历所有的 fd 集合，
 
-###epoll
+### epoll
 ![](.net_images/epoll.png)
 
 epoll 是 linux kernel 2.6 之后引入的新 I/O 事件驱动技术，I/O 多路复用的核心设计是 1 个线程处理所有连接的等待消息准备好I/O 事件，
 这一点上 epoll 和 select&poll 是大同小异的。但 select&poll 预估错误了一件事，当数十万并发连接存在时，可能每一毫秒只有数百个活跃的连接，同时其余数十万连接在这一毫秒是非活跃的。
 select&poll 的使用方法是这样的：返回的活跃连接 == select（全部待监控的连接）
 
+用法
+```c
+int listenfd = socket(AF_INET, SOCK_STREAM, 0);   
+bind(listenfd, ...)
+listen(listenfd, ...)
+
+int epfd = epoll_create(...);
+epoll_ctl(epfd, ...); //将所有需要监听的fd添加到epfd中
+
+while(1){
+    int n = epoll_wait(...)
+    for(接收到数据的socket){
+        //处理
+    }
+}
+```
 
 什么时候会调用 select&poll 呢？在你认为需要找出有报文到达的活跃连接时，就应该调用。
 所以，select&poll 在高并发时是会被频繁调用的。这样，这个频繁调用的方法就很有必要看看它是否有效率，因为，它的轻微效率损失都会被高频二字所放大。它有效率损失吗？
@@ -80,7 +99,7 @@ select&poll 的使用方法是这样的：返回的活跃连接 == select（全�
 被放大后就会发现，处理并发上万个连接时，select&poll 就完全力不从心了。这个时候就该 epoll 上场了，epoll 通过一些新的设计和优化，基本上解决了 select&poll 的问题
 
 源码epoll
-```
+```c
 #include <sys/epoll.h>
 int epoll_create(int size); // int epoll_create1(int flags);
 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
@@ -90,6 +109,11 @@ int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 * epoll_ctl 注册 file descriptor 等待的 I/O 事件(比如 EPOLLIN、EPOLLOUT 等) 到 epoll 实例上；
 * epoll_wait 则是阻塞监听 epoll 实例上所有的 file descriptor 的 I/O 事件，它接收一个用户空间上的一块内存地址 (events 数组)，
 kernel 会在有 I/O 事件发生的时候把文件描述符列表复制到这块内存地址上，然后 epoll_wait 解除阻塞并返回，最后用户空间上的程序就可以对相应的 fd 进行读写了
+
+
+epoll实例内部存储：
+- 监听列表：所有要监听的文件描述符，使用红黑树；
+- 就绪列表：所有就绪的文件描述符，使用链表；
 
 源码读写
 ```
@@ -201,31 +225,44 @@ static__poll_t ep_send_events_proc(struct eventpoll *ep, struct list_head *head,
 ```
 从do_epoll_wait开始层层跳转，我们可以很清楚地看到最后内核是通过__put_user函数把就绪 fd 列表和事件返回到用户空间，而__put_user正是内核用来拷贝数据到用户空间的标准函数
 
-###Non-block io
+### Non-block io
 ![](.net_images/non-block.png)
 当用户进程发出 read 操作时，如果 kernel 中的数据还没有准备好，那么它并不会 block 用户进程，而是立刻返回一个 EAGAIN error。
 从用户进程角度讲 ，它发起一个 read 操作后，并不需要等待，而是马上就得到了一个结果。用户进程判断结果是一个 error 时，它就知道数据还没有准备好，于是它可以再次发送 read 操作。
 一旦 kernel 中的数据准备好了，并且又再次收到了用户进程的 system call，那么它马上就将数据拷贝到了用户内存，然后返回。
 
 所以，non-blocking I/O 的特点是用户进程需要不断的主动询问 kernel 数据好了没有。
-##Go源码分析
+## Go源码分析
 
-Go netpoll 通过在底层对 epoll/kqueue/iocp 的封装，从而实现了使用同步编程模式达到异步执行的效果。总结来说，所有的网络操作都以网络描述符 netFD 为中心实现。
+Go netpoll 通过在底层对 epoll/kqueue/iocp 的封装，比如，在 Linux 系统下基于 epoll，freeBSD 系统下基于 kqueue，以及 Windows 系统下基于 iocp,
+从而实现了使用同步编程模式达到异步执行的效果。总结来说，所有的网络操作都以网络描述符 netFD 为中心实现。
+
+netpoll本质上是对 I/O 多路复用技术的封装，所以自然也是和epoll一样脱离不了下面几步：
+1. netpoll创建及其初始化；
+2. 向netpoll中加入待监控的任务；
+3. 从netpoll获取触发的事件；
+
+```go
+func netpollinit()  // 负责初始化netpoll
+func netpollopen(fd uintptr, pd *pollDesc) int32  //负责监听文件描述符上的事件；
+func netpoll(delay int64) gList  // 会阻塞等待返回一组已经准备就绪的 Goroutine；
+```
+
 netFD 与底层 PollDesc 结构绑定，当在一个 netFD 上读写遇到 EAGAIN 错误时，就将当前 goroutine 存储到这个 netFD 对应的 PollDesc 中，
 同时调用 gopark 把当前 goroutine 给 park 住，直到这个 netFD 上再次发生读写事件，才将此 goroutine 给 ready 激活重新运行。
-显然，在底层通知 goroutine 再次发生读写等事件的方式就是 epoll/kqueue/iocp 等事件驱动机制
+显然，在底层通知 goroutine 再次发生读写等事件的方式就是 epoll/kqueue/iocp 等事件驱动机制.
 
 网络底层概念：
 
-    netFD // 网络描述符
-    pollDesc  // 底层数据结构
+- netFD // 网络描述符
+- pollDesc  // 底层数据结构
 
 怎么实现同步编程：
 
-    网络描述netFD与pollDesc进行绑定。当在一个netFD上遇到EAGAIN,就将当前goroutine存储在netFD对应的pollDesc中，同时将goroutine给park住，
-    直到这个netFD上再次发生读写事件时，才将次goroutine给ready激活.显然，在底层通知goroutine再次发生读写等事件的方式就是epoll等事件驱动机制.
+网络描述netFD与pollDesc进行绑定。当在一个netFD上遇到EAGAIN,就将当前goroutine存储在netFD对应的pollDesc中，同时将goroutine给park住，
+直到这个netFD上再次发生读写事件时，才将次goroutine给ready激活.显然，在底层通知goroutine再次发生读写等事件的方式就是epoll等事件驱动机制.
 
-###接口
+### 接口
 ```go
 
 type Listener interface {
@@ -562,7 +599,7 @@ func netpollopen(fd uintptr, pd *pollDesc) int32
 func netpoll(block bool) gList
 ```
 
-####net.Listen
+#### net.Listen
 netpoll中 accept socket 的工作流程如下：
 
 1. 服务端的 netFD 在listen时会创建 epoll 的实例，并将 listenerFD 加入 epoll 的事件队列
@@ -593,6 +630,7 @@ func internetSocket(ctx context.Context, net string, laddr, raddr sockaddr, soty
 // socket returns a network file descriptor that is ready for
 // asynchronous I/O using the network poller.
 func socket(ctx context.Context, net string, family, sotype, proto int, ipv6only bool, laddr, raddr sockaddr, ctrlFn func(string, string, syscall.RawConn) error) (fd *netFD, err error) {
+    // 创建一个socket
 	s, err := sysSocket(family, sotype, proto)
 	if err != nil {
 		return nil, err
@@ -601,6 +639,7 @@ func socket(ctx context.Context, net string, family, sotype, proto int, ipv6only
 		poll.CloseFunc(s)
 		return nil, err
 	}
+	//  创建fd
 	if fd, err = newFD(s, family, sotype, net); err != nil {
 		poll.CloseFunc(s)
 		return nil, err
@@ -631,6 +670,7 @@ func socket(ctx context.Context, net string, family, sotype, proto int, ipv6only
 	if laddr != nil && raddr == nil {
 		switch sotype {
 		case syscall.SOCK_STREAM, syscall.SOCK_SEQPACKET:
+			// 调用 netFD的listenStream方法完成对 socket 的 bind&listen和netFD的初始化
 			if err := fd.listenStream(laddr, listenerBacklog(), ctrlFn); err != nil {
 				fd.Close()
 				return nil, err
@@ -653,7 +693,7 @@ func socket(ctx context.Context, net string, family, sotype, proto int, ipv6only
 
 ```
 
-####Conn.Read/Conn.Write
+#### Conn.Read/Conn.Write
 
 read()为例
 ```go
