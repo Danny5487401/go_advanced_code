@@ -81,8 +81,10 @@ Note:目录同级为 代码展示，可在Goland中运行
 ---
 
 ## 第四章 interface和反射 
-- 1 interface
-    - [1.1 interface源码分析](chapter04_interface_n_reflect/01_original_code/interface.md)
+- [1 interface源码分析](chapter04_interface_n_reflect/01_interface/interface.md)
+    - [1.1 汇编分析不含方法eface和带方法iface](chapter04_interface_n_reflect/01_interface/01_interface_in_asm/main.go)
+    - [1.2 接口值的零值是指动态类型和动态值都为 nil](chapter04_interface_n_reflect/01_interface/02_interface_compare_with_nil/main.go)
+    - [1.3 打印出接口的动态类型和值](chapter04_interface_n_reflect/01_interface/03_print_dynamic_value_n_type/main.go)
 - 2 [反射](chapter04_interface_n_reflect/02_reflect/reflect.md)
     - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01three_laws/threeLaw.md)
     - [2.2 类型断言](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
