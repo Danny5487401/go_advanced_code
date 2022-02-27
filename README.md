@@ -40,7 +40,7 @@ Note:目录同级为 代码展示，可在Goland中运行
       - [2.3.2 问题解决](chapter02_goroutine/02_runtime/03ResourceCompetition/02Fix_Resource_data_consistency/main.go)
     - [2.4 GC垃圾回收机制(trace查看map垃圾回收)](chapter02_goroutine/02_runtime/04GC/gc.md)
       - [2.4.1 下次GC的时机](chapter02_goroutine/02_runtime/04GC/01_next_gc_stage/main.go)
-      - [2.4.2 删除Map元素查看GC回收流程](chapter02_goroutine/02_runtime/04GC/map_GC/main.go)
+      - [2.4.2 删除Map元素查看GC回收流程](chapter02_goroutine/02_runtime/04GC/02_map_GC/main.go)
     - [2.5 监控代码性能pprof](chapter02_goroutine/02_runtime/05pprof/intro.md)
       - [2.5.1 标准包runtime/pprof及net/http/pprof使用](chapter02_goroutine/02_runtime/05pprof/01_pprof/main.go)
       - [2.5.2 第三方包pkg/profile](chapter02_goroutine/02_runtime/05pprof/02_pkg_profile/cpu.go)
