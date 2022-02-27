@@ -1,17 +1,46 @@
 # Go 中监控代码性能pprof
 
-## 4 种类型
+pprof 是用于可视化和分析性能分析数据的工具
+
+pprof 以 profile.proto 读取分析样本的集合，并生成报告以可视化并帮助分析数据（支持文本和图形报告）
+
+profile.proto 是一个 Protocol Buffer v3 的描述文件，它描述了一组 callstack 和 symbolization 信息， 作用是表示统计分析的一组采样的调用栈，是很常见的 stacktrace 配置文件格式
+
+
+## 展示参数
+![](.intro_images/pprof_args.png)
+
+allocs 和 heap 采样的信息一致，不过前者是所有对象的内存分配，而 heap 则是活跃对象的内存分配
+
+
+
+4 种类型
 
 - CPU profiling（CPU 性能分析）：这是最常使用的一种类型。用于分析函数或方法的执行耗时；
 - Memory profiling：这种类型也常使用。用于分析程序的内存占用情况；
 - Block profiling：这是 Go 独有的，用于记录 goroutine 在等待共享资源花费的时间；
 - Mutex profiling：与 Block profiling 类似，但是只记录因为锁竞争导致的等待或延迟。
 
+### 源码
+```go
+profiles.m = map[string]*Profile{
+    "goroutine":    goroutineProfile,  //显示当前所有协程的堆栈信息
+    "threadcreate": threadcreateProfile, // 系统线程创建情况的采样信息
+    "heap":         heapProfile,  // 堆上的内存分配情况的采样信息
+    "allocs":       allocsProfile,  //内存分配情况的采样信息
+    "block":        blockProfile,  //阻塞操作情况的采样信息
+    "mutex":        mutexProfile,  // 锁竞争情况的采样信息
+}
+```
+
+
 ## 两个包：
 1. net/http/pprof
 使用场景：在线服务（一直运行着的程序）
+
 2. runtime/pprof
 使用场景：工具型应用（比如说定制化的分析小工具、集成到公司监控系统）
+
 这两个包都是可以监控代码性能的， 只不过net/http/pprof是通过http端口方式暴露出来的，内部封装的仍然是runtime/pprof。
 
 ## net/http/pprof 源码分析
@@ -25,8 +54,43 @@ func init() {
 	http.HandleFunc("/debug/pprof/trace", Trace)
 }
 ```
+1. 第一个路径 /debug/pprof/ 下面其实还有 5 个子路径：
+- goroutine
+- threadcreate
+- heap
+- block
+- mutex
 
-Profile 举例
+直接使用如下命令，则不需要通过点击浏览器上的链接就能进入命令行交互模式：
+```go
+go tool pprof http://47.93.238.9:8080/debug/pprof/profile
+
+```
+
+当然也是需要先后台采集一段时间的数据，再将数据文件下载到本地，最后进行分析。上述的 Url 后面还可以带上时间参数：?seconds=60，自定义 CPU Profiling 的时长。
+
+
+类似的命令还有：
+```shell
+# 下载 cpu profile，默认从当前开始收集 30s 的 cpu 使用情况，需要等待 30s
+go tool pprof http://47.93.238.9:8080/debug/pprof/profile
+# wait 120s
+go tool pprof http://47.93.238.9:8080/debug/pprof/profile?seconds=120     
+
+# 下载 heap profile
+go tool pprof http://47.93.238.9:8080/debug/pprof/heap
+
+# 下载 goroutine profile
+go tool pprof http://47.93.238.9:8080/debug/pprof/goroutine
+
+# 下载 block profile
+go tool pprof http://47.93.238.9:8080/debug/pprof/block
+
+# 下载 mutex profile
+go tool pprof http://47.93.238.9:8080/debug/pprof/mutex
+```
+
+### Profile 举例
 ```go
 func Profile(w http.ResponseWriter, r *http.Request) {
     // ...
@@ -54,17 +118,29 @@ runtime/pprof中的程序来生成三种包含实时性数据的概要文件，�
 程序阻塞概要文件用于保存用户程序中的Goroutine阻塞事件的记录。
 
 
+## pprof 文件分析
 
-# 第三方性能分析来分析代码包
+pprof 文件是二进制的，不是给人读的，需要翻译一下，而 golang 原生就给我们提供了分析工具，直接执行下面命令即可，会生成一张很直观的 svg 图片，
+直接用 chrome 就可以打开，当然也可以生成别的格式（pdf，png 都可以），可以用 go tool pprof -h 命令查看支持的输出类型
+   
+##  第三方性能分析来分析代码包
 runtime.pprof 提供基础的运行时分析的驱动，但是这套接口使用起来还不是太方便，例如：
 1. 输出数据使用 io.Writer 接口，虽然扩展性很强，但是对于实际使用不够方便，不支持写入文件。
 2. 默认配置项较为复杂。
 
-很多第三方的包在系统包 runtime.pprof 的技术上进行便利性封装，让整个测试过程更为方便。这里使用 github.com/pkg/profile 包进行例子展示，
+runtime/pprof使用起来有些不便，因为要重复编写打开文件，开启分析，结束分析的代码.
+
 使用下面代码安装这个包
 ```go
 go get github.com/pkg/profile
 ```
+使用
+```go
+defer profile.Start().Stop()
+```
+
+
+
 
 
 
