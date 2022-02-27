@@ -37,14 +37,112 @@ RSA加密是最常用的非对称加密方式，原理是对一极大整数做�
 RSA 算法需要的计算量比 AES 高，但速度要慢得多。它比较适合用于加密少量数据。
 
 ## 相关概念
-### PEM
 
-将X.509基础证书用base64重新编码存为ASCII文件，用于和邮件一起传输保证邮件安全性。
 ### .509
 
 这是由国际电信联盟（ITU-T）制定的ASN.1规范下数字证书标准，它规定了证书应包含哪些信息和使用什么样的编码格式（默认DER二进制编码）。
+
 ### PKCS
 
     The Public-Key Cryptography Standards，公钥密码学标准，由美帝的RSA公司制定的一系列标准，这里我们只讨论#7/#8/#12，
     #7/#12是对X.509证书进行扩展、加密用于交换。#8是一种私钥格式标准。openssl生成的私钥，可以转换成pkcs8格式
 
+## 密钥
+常见的几种秘钥存储格式有：字符串、证书文件、n/e参数等
+
+### 1. 字符串格式
+这是最常见的一种形式，通常RSA的秘钥都是以hex、base64编码后的字符串提供，如证书内的秘钥格式即是base64编码的字符串，然后添加前后的具体标识实现的。可以通过解码字符串，构建公钥/私钥。
+
+Note:base64存在几种细节不同的编码格式，StdEncoding、URLEncoding、RawStdEncoding、RawURLEncoding，使用时还需要进一步确认秘钥具体编码格式，避免解码出错。
+以下未特殊说明的例子中均默认使用StdEncoding。
+
+（1）公钥
+直接hex、base64解码后调用x509.ParsePKIXPublicKey即可
+```go
+key, _ := hex.DecodeString(publicKeyStr)
+publicKey, _ := x509.ParsePKIXPublicKey(key)
+
+```
+
+（2）私钥
+由于RSA私钥存在PKCS1和PKCS8两种格式，因此解码后需要根据格式类型调用对应的方法即可。一般java使用pkcs8格式的私钥，其他语言使用pkcs1格式的私钥。使用时，记得确认下格式。
+```go
+//解析pkcs1格式私钥
+key, _ := base64.StdEncoding.DecodeString(pkcs1keyStr)
+privateKey, _ := x509.ParsePKCS1PrivateKey(key)
+
+//解析pkcs8格式私钥
+key, _ := hex.DecodeString(pkcs8keyStr)
+privateKey, err := x509.ParsePKCS8PrivateKey(key)
+
+```
+
+2. 证书文件格式
+
+（1）.pem、.cert、.cer、.crt
+
+.pem、.cert、.cer、.crt等都是pem格式的文件，只是文件后缀不一。
+
+PEM是Privacy Enhance Mail的缩写，PEM实质上是Base64编码的二进制内容(即对字符串格式私钥的文件化处理)，再加上开始和结束行。
+
+解析方式：读取文件，调用pem.Decode，然后按照base64解码，再解析成公钥/私钥。
+```go
+key,_ := ioutil.ReadFile("pem_file_path")
+block, _ := pem.Decode(key)
+//解析成pkcs8格式私钥
+privateKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+//解析成pkcs1格式私钥
+privateKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+//解析成公钥
+publicKey, _ := x509.ParsePKIXPublicKey(key)
+
+
+```
+
+（2）.pkcs12、.pfx、.p12
+
+.pkcs12、.pfx、.p12这些文件格式存储的是已加密后的内容，可以通过openssl转换成pem文件后进行处理。
+
+
+提取密钥对：
+```shell
+openssl pkcs12 -in in.p12 -out out.pem -nodes
+```
+
+3. N,E参数
+
+例如：login with apple keys的公钥就是这种格式的，需要根据n,e构造出公钥。
+```shell
+{
+      "kty": "RSA",
+      "kid": "eXaunmL",
+      "use": "sig",
+      "alg": "RS256",
+      "n": "4dGQ7bQK8LgILOdLsYzfZjkEAoQeVC_aqyc8GC6RX7dq_KvRAQAWPvkam8VQv4GK5T4ogklEKEvj5ISBamdDNq1n52TpxQwI2EqxSk7I9fKPKhRt4F8-2yETlYvye-2s6NeWJim0KBtOVrk0gWvEDgd6WOqJl_yt5WBISvILNyVg1qAAM8JeX6dRPosahRVDjA52G2X-Tip84wqwyRpUlq2ybzcLh3zyhCitBOebiRWDQfG26EH9lTlJhll-p_Dg8vAXxJLIJ4SNLcqgFeZe4OfHLgdzMvxXZJnPp_VgmkcpUdRotazKZumj6dBPcXI_XID4Z4Z3OM1KrZPJNdUhxw",
+      "e": "AQAB"
+    }
+
+```
+
+使用时就需要，将N，E解析成big.Int格式，注意N、E的base64的具体编码格式：
+
+```go
+pubN, _ := parse2bigInt(n)
+pubE, _ := parse2bigInt(e)
+pub = &rsa.PublicKey{
+    N: pubN,
+    E: int(pubE.Int64()),
+}
+
+// parse string to big.Int
+func parse2bigInt(s string) (bi *big.Int, err error) {
+    bi = &big.Int{}
+    b, err := base64.RawURLEncoding.DecodeString(s)//此处使用的是RawURLEncoding
+    if err != nil {
+        return
+    }
+    bi.SetBytes(b)
+    return
+}
+
+```
