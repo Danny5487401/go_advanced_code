@@ -1,5 +1,5 @@
-#ifndef NUMBER_H_
-#define NUMBER_H_
+#ifndef _NUMBER_H_
+#define _NUMBER_H_
 
 extern void SayHello( char* s);
 

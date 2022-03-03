@@ -1,9 +1,10 @@
-prefix=/Users/xiaxin/Desktop/go_advanced_code/chapter13_Go_call_C_or_C++/11_pkg_config/hello
+prefix=/Users/xiaxin/Desktop/go_advanced_code/chapter13_Go_call_C_or_C++/11_pkg_config/number
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${exec_prefix}/include
-Name: hello
-Description: The hello library just for testing pkgconfig
+Name: number
+Description: The number library just for testing pkgconfig
 Version: 0.1
-Libs: -lhello -L${libdir}
+Libs: -lnumber -L${libdir}
 Cflags: -I${includedir}
+
