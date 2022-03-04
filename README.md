@@ -44,6 +44,7 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [2.5 监控代码性能pprof](chapter02_goroutine/02_runtime/05pprof/intro.md)
       - [2.5.1 标准包runtime/pprof及net/http/pprof使用](chapter02_goroutine/02_runtime/05pprof/01_pprof/main.go)
       - [2.5.2 第三方包pkg/profile](chapter02_goroutine/02_runtime/05pprof/02_pkg_profile/cpu.go)
+      - [2.5.3 debug时添加pprof标签定位goroutine](chapter02_goroutine/02_runtime/05pprof/03_pprof_label/client/main.go)
     - 2.6 Linux内存及Go内存结构管理
       - [2.6.1 Linux内存管理](chapter02_goroutine/02_runtime/06memory/linux_mem.md)
       - [2.6.2 Go内存结构管理](chapter02_goroutine/02_runtime/06memory/go_mem.md)
