@@ -16,25 +16,14 @@ import (
 */
 
 func main() {
-	// 1. 基本使用
-	basicUse()
 
-	// 2. 为操作加超时
+	// 为操作加超时
 	rsp, err := doWithTimeOut(3 * time.Second)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 	fmt.Printf("成功返回%+v", rsp)
-}
-
-func basicUse() {
-	// 简单理解
-	ch1 := time.After(3 * time.Second) //3s后
-	fmt.Printf("%T\n", ch1)            // <-chan time.Time
-	fmt.Println("当前时间是", time.Now())   //2021-04-15 10:24:06.8008246 +0800 CST m=+0.031982001
-	time2 := <-ch1
-	fmt.Println(time2) //2021-04-15 10:24:09.8000272 +0800 CST m=+3.031184601
 }
 
 func doWithTimeOut(timeout time.Duration) (int, error) {
@@ -54,8 +43,8 @@ func do() <-chan int {
 		fmt.Println("执行业务逻辑")
 
 		// 场景：
-		// 1。注释: 会阻塞，返回没有值，会超时
-		// 2。不注释：返回有值，不超时
+		// 1. 注释: 会阻塞，返回没有值，会超时
+		// 2. 不注释：返回有值，不超时
 		//outCh <- 2 // 看是否返回
 	}()
 	return outCh
