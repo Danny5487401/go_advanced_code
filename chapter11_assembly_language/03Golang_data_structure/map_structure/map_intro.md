@@ -73,6 +73,15 @@ Go 语言采用的是哈希查找表，并且使用链表解决哈希冲突。
 
   
 Go 官方发现：负载因子太大了，会有很多溢出的桶。太小了，就会浪费很多空间（too large and we have lots of overflow buckets, too small and we waste a lot of space）
+```go
+const (
+    // Maximum average load of a bucket that triggers growth is 6.5.
+    // Represent as loadFactorNum/loadFactorDen, to allow integer math.
+    loadFactorNum = 13
+    loadFactorDen = 2
+)
+// Golang的map中，负载因子是6.5，这是写在代码里的。
+```
 
 每个哈希表的实现对负载因子容忍程度不同，比如Redis实现中负载因子大于1时就会触发rehash，而Go则在在负载因子达到6.5时才会触发rehash，因为Redis的每个bucket只能存1个键值对，而Go的bucket可能存8个键值对，所以Go可以容忍更高的负载因子
 
@@ -209,7 +218,8 @@ type mapextra struct {
 }
 ```
 
-
+![](.map_intro_images/key_value_key.png)
+![](.map_intro_images/key_key_value_value.png)
 注意到 key 和 value 是各自放在一起的，并不是 key/value/key/value/... 这样的形式。
 源码里说明这样的好处是在某些情况下可以省略掉 padding 字段，节省内存空间。
 
@@ -217,7 +227,10 @@ type mapextra struct {
 ```go
 map[int64]int8
 ```
+
 如果按照 key/value/key/value/... 这样的模式存储，那在每一个 key/value 对之后都要额外 padding 7 个字节；而将所有的 key，value 分别绑定到一起，
+
+
 这种形式 key/key/.../value/value/...，则只需要在最后添加 padding。
 
 每个 bucket 设计成最多只能放 8 个 key-value 对，如果有第 9 个 key-value 落入当前的 bucket，那就需要再构建一个 bucket ，通过 overflow 指针连接起来
@@ -436,17 +449,32 @@ done:
 
 ```
 
-1. 计算key的hash值,通过hash的高八位和低B为分别确定tophash和桶的序号
+#### 1. 计算key的hash值,通过hash的高八位和低B为分别确定tophash和桶的序号
 
-    tophash是什么?
-        tophash是用来快速定位key和value的位置的,在查找或删除过程如果高8位hash都不相等，那么就没必要再去比较key值是否相等了，效率相对会高一些。
+1. tophash是什么?
 
-    如何定位到哪个桶执行插入?
-        例如哈希表对应2^4个桶,即B是4,某个key的hash二进制值是如下值，那么如图可知该key对应的tophash值为10001100,即140，
-        桶的值为0111,即是桶的序号为7
-        hash := 100011001101111001110010010110000001111010110000100101011010111
-2 每个桶可以存储8个tophash、8个key、8个value,遍历桶中的tophash,如果tophash不相等且是空的,说明该位置可以插入，
-    分别获取对应位置key和value的地址并更新tophash。
+tophash是用来快速定位key和value的位置的,在查找或删除过程如果高8位hash都不相等，那么就没必要再去比较key值是否相等了，效率相对会高一些。
+
+2. 如何定位到哪个桶执行插入?
+例如哈希表对应2^4个桶,即B是4,某个key的hash二进制值是如下值，那么如图可知该key对应的tophash值为10001100,即140， 桶的值为0111,即是桶的序号为7
+
+hash := 100011001101111001110010010110000001111010110000100101011010111
+```go
+bucket := hash & bucketMask(h.B)
+```
+当确定了选择哪一个bucket，接下来就要确定bucket里面的位置。每个bucket使用散列值（hash value）前面的字节（byte）（top hash）来确定在bucket内部列表的顺序。
+```go
+// tophash calculates the tophash value for hash.
+func tophash(hash uintptr) uint8 {
+	top := uint8(hash >> (sys.PtrSize*8 - 8))
+	if top < minTopHash {
+		top += minTopHash
+	}
+	return top
+}
+```
+
+3. 每个桶可以存储8个tophash、8个key、8个value,遍历桶中的tophash,如果tophash不相等且是空的,说明该位置可以插入，分别获取对应位置key和value的地址并更新tophash。
 
 ### 4. 扩容 hashGrow
 
@@ -1110,6 +1138,7 @@ func mapdelete(t *maptype, h *hmap, key unsafe.Pointer) {
 
 	// Set hashWriting after calling t.hasher, since t.hasher may panic,
 	// in which case we have not actually done a write (delete).
+	//  没有其他写，将flag置位
 	h.flags ^= hashWriting
 
 	bucket := hash & bucketMask(h.B)
@@ -1191,10 +1220,11 @@ search:
 			break search
 		}
 	}
-
+	
 	if h.flags&hashWriting == 0 {
 		throw("concurrent map writes")
 	}
+    // flag恢复
 	h.flags &^= hashWriting
 }
 ```
