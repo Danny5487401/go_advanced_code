@@ -72,10 +72,10 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [1.10 happened before](chapter03_channel/01_channel_use/10_happened_before/happened_before.md)
     - [1.11 循环读取关闭的通道值是否阻塞](chapter03_channel/01_channel_use/11_read_closed_chan/readCloseChan.go)
     - [1.12 select中实现channel优先级-->k8s中实现](chapter03_channel/01_channel_use/12_priority_channel/priority_chan.md)
-- 2 [channel应用:TimerChan模块](chapter03_channel/02_TimerChan/timer.md)
-    - [2.1 reset陷阱](chapter03_channel/02_TimerChan/01_TimerReset/timer_reset.md)
+- 2 [channel应用:TimerChan模块源码分析及使用陷阱](chapter03_channel/02_TimerChan/timer.md)
+    - [2.1 reset重新等待被触发](chapter03_channel/02_TimerChan/01_TimerReset/timer_reset.md)
     - [2.2 timerStop使用](chapter03_channel/02_TimerChan/02_TimerStop/timer_stop.md)
-    - [2.3 TimerAfter陷阱](chapter03_channel/02_TimerChan/03_TimeAfter/main.go)
+    - [2.3 TimerAfter给数据库操作增加超时](chapter03_channel/02_TimerChan/03_TimeAfter/main.go)
 - 3 [Select多路复用](chapter03_channel/03_select/03Select_DataStructure/select.md)
 - 4 [CSP理论中的Process/Channel](chapter03_channel/04_CSP/CSP.md)
 ---
@@ -262,7 +262,9 @@ Note:目录同级为 代码展示，可在Goland中运行
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
 [cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)
-Note:内部代码待优化
+
+**_Note:内部运行代码待优化_**
+
 - [1 Go调用自定义C函数-未模块化](chapter13_Go_call_C_or_C++/01_call_C_func/main.go)
 - 2 Go调用自定义C函数-模块化
 - 3 Go重写C定义函数
@@ -273,6 +275,7 @@ Note:内部代码待优化
 - 8 Go调用模块化C++库
 - [9 调用静态C库](chapter13_Go_call_C_or_C++/09_static_c_lib/main.go)
 - 10 调用动态C库
+- [11 Golang使用pkg-config自动获取头文件和链接库的方法](chapter13_Go_call_C_or_C++/11_pkg_config/pkg_config.md)
 
 ## [第十四章 Context上下文-源码分析涉及父类EmptyCtx](chapter14_context/introduction.md)
 - 1 Context使用背景

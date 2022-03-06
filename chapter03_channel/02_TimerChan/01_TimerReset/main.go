@@ -7,15 +7,13 @@ import (
 )
 
 func main() {
-	// 1. 基本创建过程
-	basicUse()
 
-	// 2. 错误生成大量timer：造成内存泄漏
-	//var queue = make(chan string)
+	// 1. 错误生成大量timer：造成内存泄漏
+	var queue = make(chan string)
 	//// 错误前
 	//useWrongTimeAfter(queue)
-	//// 修改后
-	//useRightNewTimer(queue)
+	// 修改后
+	useRightNewTimer(queue)
 
 	// 3.reset陷阱：reset相关测试
 	// 第1个测试：Reset返回值和什么有关？
@@ -26,21 +24,6 @@ func main() {
 
 	// 第3个测试：Reset前清空通道，尽可能通畅
 	test3()
-}
-
-/*
-func NewTimer(d Duration) *Timer
-	创建一个计时器：d时间以后触发，go触发计时器的方法比较特别，就是在计时器的channel中发送值
-*/
-func basicUse() {
-
-	//新建一个计时器：timer
-	timer := time.NewTimer(3 * time.Second)
-	fmt.Println(time.Now()) //2021-04-15 10:20:00.845017 +0800 CST m=+0.014991701
-
-	// 此处在等待channel中的信号，执行此段代码时会阻塞3秒
-	// 定时器的缓存通道大小只为1，无法多存放超时事件，
-	fmt.Println(<-timer.C) //2021-04-15 10:20:03.8457622 +0800 CST m=+3.015736901
 }
 
 /*
