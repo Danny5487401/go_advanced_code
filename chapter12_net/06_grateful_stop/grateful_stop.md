@@ -8,7 +8,30 @@
 很直接的感受就是：在重启过程中，会有一段时间不能给用户提供正常服务；同时粗鲁关闭服务，也可能会对业务依赖的数据库等状态服务造成污染。
 
 所以我们服务重启或者是重新发布过程中，要做到新旧服务无缝切换，同时可以保障变更服务 零宕机时间
+
 ## 信号
+
+信号是事件发生时对进程的通知机制。有时也称之为软件中断。信号与硬件中断的相似之处在于打断了程序执行的正常流程，大多数情况下，无法预测信号到达的精确时间。
+
+因为一个具有合适权限的进程可以向另一个进程发送信号，这可以称为进程间的一种同步技术。当然，进程也可以向自身发送信号。然而，发往进程的诸多信号，通常都是源于内核。引发内核为进程产生信号的各类事件如下。
+
+硬件发生异常，即硬件检测到一个错误条件并通知内核，随即再由内核发送相应信号给相关进程。比如执行一条异常的机器语言指令（除 0，引用无法访问的内存区域）。
+用户键入了能够产生信号的终端特殊字符。如中断字符（通常是 Control-C）、暂停字符（通常是 Control-Z）。
+发生了软件事件。如调整了终端窗口大小，定时器到期等。
+针对每个信号，都定义了一个唯一的（小）整数，从 1 开始顺序展开。系统会用相应常量表示。Linux 中，1-31 为标准信号；32-64 为实时信号（通过 kill -l 可以查看）。
+
+信号达到后，进程视具体信号执行如下默认操作之一。
+
+- 忽略信号，也就是内核将信号丢弃，信号对进程不产生任何影响。
+- 终止（杀死）进程。
+- 产生 coredump 文件，同时进程终止。
+- 暂停（Stop）进程的执行。
+- 恢复进程执行。
+
+当然，对于有些信号，程序是可以改变默认行为的，这也就是 os/signal 包的用途。
+
+兼容性问题：信号的概念来自于 Unix-like 系统。Windows 下只支持 os.SIGINT 信号
+
 ### 信号类型
 
 列出了POSIX中定义的信号。 Linux 使用34-64信号用作实时系统中。 命令 man signal 提供了官方的信号介绍。
@@ -40,6 +63,92 @@
 
 ## 思路
 对 http 服务来说，一般的思路就是关闭对 fd 的 listen , 确保不会有新的请求进来的情况下处理完已经进入的请求, 然后退出。
+
+
+### Go os/signal包
+
+Notify 改变信号处理，可以改变信号的默认行为；Ignore 可以忽略信号；Reset 重置信号为默认行为；Stop 则停止接收信号，但并没有重置为默认行为。
+
+#### 1. Ignore 函数
+```go
+func Ignore(sig ...os.Signal)
+```
+
+忽略一个、多个或全部（不提供任何信号）信号。如果程序接收到了被忽略的信号，则什么也不做。
+对一个信号，如果先调用 Notify，再调用 Ignore，Notify 的效果会被取消；如果先调用 Ignore，在调用 Notify，接着调用 Reset/Stop 的话，会回到 Ingore 的效果。
+注意，如果 Notify 作用于多个 chan，则 Stop 需要对每个 chan 都调用才能起到该作用。
+
+#### 2. Notify 函数
+```go
+func Notify(c chan<- os.Signal, sig ...os.Signal)
+
+```
+
+类似于绑定信号处理程序。将输入信号转发到 chan c。如果没有列出要传递的信号，会将所有输入信号传递到 c；否则只传递列出的输入信号。
+```go
+func Notify(c chan<- os.Signal, sig ...os.Signal) {
+	// ... 
+	if len(sig) == 0 {
+		for n := 0; n < numSig; n++ {
+			add(n)
+		}
+	} else {
+		for _, s := range sig {
+			add(signum(s))
+		}
+	}
+}
+```
+
+channel c 缓存如何决定？因为 signal 包不会为了向 c 发送信息而阻塞（就是说如果发送时 c 阻塞了，signal 包会直接放弃）：
+调用者应该保证 c 有足够的缓存空间可以跟上期望的信号频率。对使用单一信号用于通知的 channel，缓存为 1 就足够了。
+
+```go
+// src/os/signal/signal.go 
+func process(sig os.Signal) {
+	n := signum(sig)
+	if n < 0 {
+		return
+	}
+
+	handlers.Lock()
+	defer handlers.Unlock()
+
+	for c, h := range handlers.m {
+		if h.want(n) {
+			// send but do not block for it
+			select {
+			case c <- sig:
+			default:  // 保证不会阻塞，直接丢弃
+			}
+		}
+	}
+	// ... 
+}
+```
+可以使用同一 channel 多次调用 Notify：每一次都会扩展该 channel 接收的信号集。唯一从信号集去除信号的方法是调用 Stop。
+可以使用同一信号和不同 channel 多次调用 Notify：每一个 channel 都会独立接收到该信号的一个拷贝。
+
+
+#### 3. Stop 函数
+func Stop(c chan<- os.Signal)
+
+让 signal 包停止向 c 转发信号。它会取消之前使用 c 调用的所有 Notify 的效果。当 Stop 返回后，会保证 c 不再接收到任何信号。
+
+#### 4. Reset 函数
+func Reset(sig ...os.Signal)
+
+取消之前使用 Notify 对信号产生的效果；如果没有参数，则所有信号处理都被重置。
+
+
+#### SIGPIPE
+文档中对这个信号单独进行了说明。如果 Go 程序往一个 broken pipe 写数据，内核会产生一个 SIGPIPE 信号。
+
+如果 Go 程序没有为 SIGPIPE 信号调用 Notify，对于标准输出或标准错误（文件描述符 1 或 2），该信号会使得程序退出；但其他文件描述符对该信号是啥也不做，当然 write 会返回错误 EPIPE。
+
+如果 Go 程序为 SIGPIPE 调用了 Notify，不论什么文件描述符，SIGPIPE 信号都会传递给 Notify channel，当然 write 依然会返回 EPIPE。
+
+也就是说，默认情况下，Go 的命令行程序跟传统的 Unix 命令行程序行为一致；但当往一个关闭的网络连接写数据时，传统 Unix 程序会 crash，但 Go 程序不会。
 
 ### 连接的状态
 ```go
@@ -174,8 +283,7 @@ gracefulStop 的流程如下
 * 如果主goroutine还没有退出，则主动发送 SIGKILL 退出进程
 
 源码分析:go-zero/core/proc/signals.go
-```
-
+```go
 //go:build linux || darwin
 // +build linux darwin
 
@@ -276,14 +384,53 @@ func gracefulStop(signals chan os.Signal) {
 ## 流程
 ![](.grateful_stop_images/graceful_stop.png)
 
-我们目前 go 程序都是在 docker 容器中运行，所以在服务发布过程中，k8s 会向容器发送一个 SIGTERM 信号(结束程序)，然后容器中程序接收到信号，开始执行 ShutDown
+### docker中流程
+```shell
+docker stop
+```
+默认情况下 docker stop 命令会向容器发送 SIGTERM 信号，然后等待 10s，如果容器没停止再发送 SIGKILL 信号。
 
-但是还有平滑重启，这个就依赖 k8s 了，基本流程如下：
+在 Dockerfile 中，可以通过 STOPSIGNAL 指令来设置默认的退出信号，比如 STOPSIGNAL SIGKILL 将退出信号设置为 SIGKILL。或者在 docker run 是通过 --stop-signal 参数来覆盖镜像中的 STOPSIGNAL 设置。
 
+```shell
+docker kill
+```
+
+默认情况下 docker kill 会直接杀死容器，不给容器任何机会进行优雅停止，这里发出的就是 SIGKILL 信号。
+
+当然 docker kill 可以通过 --signal 来指定要发送的信号，类似 Linux 的 kill 命令：
+```shell
+ocker kill ----signal=SIGTERM foo
+```
+
+### k8s中流程
+在 Kubernetes 中，Pod 停止时 kubelet 会先给容器中的主进程发 SIGTERM 信号来通知进程进行 shutdown 以实现优雅停止，如果超时进程还未完全停止则会使用 SIGKILL 来强行终止。
+
+基本流程如下：
+- Pod 被删除，状态置为 Terminating。
+- kube-proxy 更新转发规则，将 Pod 从 service 的 endpoint 列表中摘除掉，新的流量不再转发到该 Pod。
+- 如果 Pod 配置了 preStop Hook ，将会执行。
+- kubelet 对 Pod 中各个 container 发送 SIGTERM 信号以通知容器进程开始优雅停止。
+- 等待容器进程完全停止，如果在 terminationGracePeriodSeconds 内 (默认 30s) 还未完全停止，就发送 SIGKILL 信号强制杀死进程。
+- 所有容器进程终止，清理 Pod 资源。
+
+我们需要的流程
 * old pod 未退出之前，先启动 new pod
 * old pod 继续处理完已经接受的请求，并且不再接受新请求
 * new pod接受并处理新请求的方式
 * old pod 退出
 
 这样整个服务重启就算成功了，如果 new pod 没有启动成功，old pod 也可以提供服务，不会对目前线上的服务造成影响。
+
+
+注意事项：
+
+要实现优雅退出，还需要注意的是如果业务容器的进程，是使用shell脚本启动的，需要进行特殊处理，业务容器才能接收到SIGTERM信号。建议尽量不使用shell脚本启动，如果确实需要，则需要特殊处理。
+
+#### shell启动为什么接收不到SIGTERM信号呢？
+1、容器主进程是 shell，业务进程是在 shell 中启动的，成为了 shell 进程的子进程。
+2、shell 进程默认不会处理 SIGTERM 信号，自己不会退出，也不会将信号传递给子进程，导致业务进程不会触发停止逻辑。
+3、当等到 K8S 优雅停止超时时间 (terminationGracePeriodSeconds，默认 30s)，发送 SIGKILL 强制杀死 shell 及其子进程。
+
+
 

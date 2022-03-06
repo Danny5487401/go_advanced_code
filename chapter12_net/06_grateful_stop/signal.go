@@ -11,7 +11,7 @@ import (
 // 优雅退出go守护进程
 func main() {
 	// 创建监听退出chan
-	c := make(chan os.Signal)
+	c := make(chan os.Signal, 1) // Note:注意一定要有容量,因为你可能监听不止一个信号，但是signal处理过程中不阻塞
 	// 监听指定信号 ctrl+c kill
 	signal.Notify(c, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGUSR1, syscall.SIGUSR2)
 	go func() {

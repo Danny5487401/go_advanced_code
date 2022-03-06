@@ -1,5 +1,5 @@
 # 汇编
-![汇编到机器码过程](process.png)
+![汇编到机器码过程](.introduction_images/process.png)
 
 汇编语言（assembly language):用于电子计算机、微处理器、微控制器或其他可编程器件的低级语言，亦称为符号语言
 
@@ -11,7 +11,7 @@
 - 汇编器（assembler）是一种工具程序，用于将汇编语言源程序转换为机器语言
   1. windows: Microsoft 宏汇编器（称为 MASM）,TASM（Turbo 汇编器），NASM（Netwide 汇编器）和 MASM32（MASM 的一种变体）
   2. linux: GAS（GNU 汇编器）和 NASM,NASM 的语法与 MASM 的最相似
-- 链接器（linker）把汇编器生成的单个文件组合为一个可执行程序。
+- 链接器（linker）把汇编器生成的单个文件 组合 为一个可执行程序。
 - 调试器（debugger），使程序员可以在程序运行时，单步执行程序并检查寄存器和内存状态。
 
 ## 汇编语言与机器语言有什么关系:
@@ -342,7 +342,7 @@ shl al, cl;
 bx+idata，为高级语言提供方便
 ![](.introduction_images/bx+idata.png)
 
-### 案例:c语言中
+## 案例:c语言中
 ![](.introduction_images/location_in_c.png)
 
 ### 和系统打交道
@@ -372,7 +372,7 @@ _start:
 
 ```
 
-### 案例:go语言编写
+## 案例:go语言编写
 ```go
 c=a+b
 ```
@@ -408,5 +408,32 @@ mov   %rax,0x10(%rsp)  //把寄存器rax中的值写回变量c所在的内存
 - 大端存储模式：数据的高字节保存在内存的低地址中，低字节保存在内存的高地址中。
 - 小端存储模式：数据的高字节保存在内存的高地址中，低字节保存在内存的低地址中。
 
-注意的是大小端存储模式与CPU相关，而与内存无关，内存只管保存数据而不关心数据是什么以及怎么解释这些数据
+注意的是大小端存储模式与CPU相关，而与内存无关，内存只管保存数据而不关心数据是什么以及怎么解释这些数据.
+
+## 中断
+### 内中断过程
+内中断的中断类型码是由cpu内部产生的.
+![img.png](.introduction_images/inter_interupt.png)
+
+### 外中断
+外中断分为可屏蔽和不可屏蔽，可屏蔽中断信息来自cpu外部，中断类型码通过数据总线送入cpu。
+#### 可屏蔽
+与内中断就第一步中断类型码不同。
+
+案例：pc端键盘
+![img.png](.introduction_images/keyboard_process.png)
+![img.png](.introduction_images/keyboard_process2.png)
+
+#### 不可屏蔽
+![img.png](.introduction_images/unstop_outer_interupt.png)
+标志寄存器IF设置位0，禁止其他的可屏蔽中断。8086cpu，sti设置IF=1,cli设置IF=0。
+
+
+## 标号
+![img.png](.introduction_images/code_before.png)
+![img.png](.introduction_images/code_after.png)
+start,s仅仅表示内存单元的地址。还有的可以内存单元的长度，注意冒号变化。
+![img.png](.introduction_images/assume_data.png)
+
+
 
