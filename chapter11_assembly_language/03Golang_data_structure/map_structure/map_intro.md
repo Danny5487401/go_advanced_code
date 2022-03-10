@@ -1,53 +1,137 @@
 # Map介绍
 map 的设计也被称为 “The dictionary problem”，它的任务是设计一种数据结构用来维护一个集合的数据，并且可以同时对集合进行增删查改的操作。
 
-最主要的数据结构有两种：哈希查找表（Hashtable）、 搜索树（Searchtree）
-## 哈希查找表（Hashtable）
+## 最主要的数据结构有两种：哈希查找表（Hashtable）、 搜索树（Searchtree）
+### 1. 哈希查找表（Hashtable）
 哈希查找表用一个哈希函数将 key 分配到不同的桶（bucket，也就是数组的不同 index）。这样，开销主要在哈希函数的计算以及数组的常数访问时间。
 在很多场景下，哈希查找表的性能很高。
 
 哈希查找表一般会存在“碰撞”的问题，就是说不同的 key 被哈希到了同一个 bucket。一般有两种应对方法：链表法和 开放定址法(实际开发中较少)。
 
-链表法将一个 bucket 实现成一个链表，落在同一个 bucket 中的 key 都会插入这个链表。
-开放定址法则是碰撞发生后，通过一定的规律，在数组的后面挑选“空位”，用来放置新的 key。
+- 链表法将一个 bucket 实现成一个链表，落在同一个 bucket 中的 key 都会插入这个链表。
+- 开放定址法则是碰撞发生后，通过一定的规律，在数组的后面挑选“空位”，用来放置新的 key。
 
-## 搜索树法
+### 2. 搜索树法
 一般采用自平衡搜索树，包括：AVL 树，红黑树。
 
-## 对比：
+### 对比
 自平衡搜索树法的最差搜索效率是 O(logN)，而哈希查找表最差是 O(N)。当然，哈希查找表的平均查找效率是 O(1)，
 如果哈希函数设计的很好，最坏的情况基本不会出现。
 还有一点，遍历自平衡搜索树，返回的 key 序列，一般会按照从小到大的顺序；而哈希查找表则是乱序的。
 
 ## map哈希表源码解析(1.9)
 Go 语言采用的是哈希查找表，并且使用链表解决哈希冲突。  
-![](.map_intro_images/hashmap_structure.png)
-### 1. 表示 map 的结构体是 hmap，它是 hashmap 的“缩写”：
+
+### 名词解释
+![](.map_intro_images/map_word_info.png)
+
+#### 哈希桶
+指整个哈希数组，数组内每个元素是一个桶。
+
+#### 桶链
+哈希桶的一个桶以及该桶下挂着的所有溢出桶。
+
+#### 桶（bucket）
+一个bmap结构，与溢出桶的区别在于它是哈希桶数组上的一个元素。
+
+#### 溢出桶（overflow bucket）
+一个bmap结构，与桶区别是，它不是哈希桶数组的元素，而是挂在哈希桶数组上或挂在其它溢出桶上。
+
+#### 负载因子(load factor)
+表示平均每个哈希桶的元素个数（注意是哈希桶，不包括溢出桶）。
+```
+负载因子 = 键数量/bucket数量
+```
+如当前map中总共有20个元素，哈希桶长度为4，则负载因子为5。负载因子主要是来判断当前map是否需要扩容。
+
+负载因子与扩容、迁移等重新散列（rehash）行为有直接关系：
+
+- 在程序运行时，会不断地进行插入、删除等，会导致 bucket 不均，内存利用率低，需要迁移。
+- 在程序运行时，出现负载因子过大，需要做扩容，解决 bucket 过大的问题。
+负载因子是哈希表中的一个重要指标，在各种版本的哈希表实现中都有类似的东西，主要目的是为了平衡 buckets 的存储空间大小和查找元素时的性能高低。
+
 ```go
+// runtime/map.go
+//  loadFactor    %overflow  bytes/entry     hitprobe    missprobe
+//        4.00         2.13        20.77         3.00         4.00
+//        4.50         4.05        17.30         3.25         4.50
+//        5.00         6.85        14.77         3.50         5.00
+//        5.50        10.55        12.94         3.75         5.50
+//        6.00        15.27        11.67         4.00         6.00
+//        6.50        20.90        10.79         4.25         6.50
+//        7.00        27.14        10.15         4.50         7.00
+//        7.50        34.03         9.73         4.75         7.50
+//        8.00        41.10         9.40         5.00         8.00
+//
+```
 
+- loadFactor：负载因子，也有叫装载因子。
+- %overflow：溢出率，有溢出 bukcet 的百分比。
+- bytes/entry：每对 key/elem 的开销字节数.
+- hitprobe：查找一个存在的 key 时，要查找的平均个数。
+- missprobe：查找一个不存在的 key 时，要查找的平均个数
+
+  
+Go 官方发现：负载因子太大了，会有很多溢出的桶。太小了，就会浪费很多空间（too large and we have lots of overflow buckets, too small and we waste a lot of space）
+```go
+const (
+    // Maximum average load of a bucket that triggers growth is 6.5.
+    // Represent as loadFactorNum/loadFactorDen, to allow integer math.
+    loadFactorNum = 13
+    loadFactorDen = 2
+)
+// Golang的map中，负载因子是6.5，这是写在代码里的。
+```
+
+每个哈希表的实现对负载因子容忍程度不同，比如Redis实现中负载因子大于1时就会触发rehash，而Go则在在负载因子达到6.5时才会触发rehash，因为Redis的每个bucket只能存1个键值对，而Go的bucket可能存8个键值对，所以Go可以容忍更高的负载因子
+
+
+
+#### 新、旧哈希桶
+
+新、旧哈希桶的概念只存在于map扩容阶段，在哈希桶扩容时，会申请一个新的哈希桶，原来的哈希桶变成了旧哈希桶，然后会分步将旧哈希桶的元素迁移到新桶上，当旧哈希桶所有元素都迁移完成时，旧哈希桶会被释放掉
+
+### 文件组成
+map的源代码都在src/runtime目录下，主要由4个文件组成：
+
+- map.go
+- map_fast32.go
+- map_fast64.go
+- map_faststr.go
+主体实现都在map.go文件中，其它三个文件分别对特点类型的key做了优化。如下：
+
+- map_fast32.go，针对key类型为int32\uint32做了优化
+- map_fast64.go，针对key类型为int\int64\uint64\pointer做了优化
+- map_faststr.go，针对key类型为string做了优化
+
+
+
+### 1. 表示 map 的结构体是 hmap，它是 hashmap 的“缩写”：
+![](.map_intro_images/hashmap_structure.png)
+![](.map_intro_images/hmap_structure.png)
+```go
 //src/runtime/map.go
-
 type hmap struct {
-  // 元素个数，调用 len(map) 时，直接返回此值
-  count     int    // 表示当前哈希表中元素的数量
-  
-  flags     uint8  // 表示哈希表的标记 1表示buckets正在被使用 2表示oldbuckets正在被使用 4表示哈希正在被写入 8表示哈希是等量扩容
-
-  // buckets 的对数 log_2
-  B         uint8  // 可以最多容纳 6.5 * 2 ^ B 个元素，6.5为装载因子 // loadFactor:= count / (2^B）
-  noverflow uint16 // 溢出的个数
-  
-  //  计算 key 的哈希的时候会传入哈希函数
-  hash0     uint32 // 哈希种子
-
-  // 指向 buckets 数组，大小为 2^B
-  // 如果元素个数为0，就为 ni
-  buckets    unsafe.Pointer // 桶的地址
-  
-  oldbuckets unsafe.Pointer // 旧桶的地址，用于扩容
-  
-  nevacuate  uintptr        // 搬迁进度，小于nevacuate的已经搬迁
-  extra *mapextra // optional fields
+    // 元素个数，调用 len(map) 时，直接返回此值
+    count     int    // 表示当前哈希表中元素的数量
+    
+    flags     uint8  // 表示读、写、扩容、迭代等标记, 1表示buckets正在被使用 2表示oldbuckets正在被使用 4表示哈希正在被写入 8表示哈希是等量扩容
+    
+    // buckets 的对数 log_2
+    B         uint8  // 可以最多容纳 6.5 * 2 ^ B 个元素，6.5为装载因子 // loadFactor:= count / (2^B）
+    noverflow uint16 // 溢出的个数,当溢出桶个数过多时，这个值是一个近似值
+    
+    //  计算 key 的哈希的时候会传入哈希函数,，保证一个key在不同map中存放的位置是随机的
+    hash0     uint32 // 哈希种子
+    
+    // 指向 buckets 数组，大小为 2^B
+    // 如果元素个数为0，就为 ni
+    buckets    unsafe.Pointer // 桶的地址
+    
+    oldbuckets unsafe.Pointer // 旧桶的地址，用于扩容
+    
+    nevacuate  uintptr        // 搬迁进度，小于nevacuate的已经搬迁
+    extra *mapextra // 扩展字段，不一定每个map都需要
 }
 
  /*
@@ -56,22 +140,53 @@ type hmap struct {
     为什么有两个？因为Go map在hash冲突过多时，会发生扩容操作，为了不全量搬迁数据，使用了增量搬迁，[0]表示当前使用的溢出桶集合，
     [1]是在发生扩容时，保存了旧的溢出桶集合；overflow存在的意义在于防止溢出桶被gc。
   */
+ 
+const(
+    // flags
+    iterator     = 1 // there may be an iterator using buckets
+    oldIterator  = 2 // there may be an iterator using oldbuckets
+    hashWriting  = 4 // a goroutine is writing to the map
+    sameSizeGrow = 8 // the current map growth is to a new map of the same size
+)
 
 ```
+扩展一下，当map做为传参时，实际传入的是一个hmap指针。了解这一点，就能理解为什么在被调用方法里面对map做修改时，会在调用者里map也会改变。
 
 bucket 里面存储了 key 和 value,最终它指向的是一个结构体
-编译前的bmap
+
+#### bmap(bucket map)，描述一个桶，即可以是哈希桶也可以是溢出桶。
+编译前的bmap:结构体只含有一个tophash，用于桶内快速查找，并没有存K/V的地方。
+从下面定义里面两个Followed定义可以看出，其实bmap只给出了部分字段的描述，后面还有一块存K/V的内存，以及一个指向溢出桶的指针。
+
+之所以不给出全部描述，是因为K/V的内存块大小会随着K/V的类型不断变化，无法固定写死，在使用时也只能通过指针偏移的方式去取用。
+
 ```go
+const (
+    // Maximum number of key/elem pairs a bucket can hold.
+    bucketCntBits = 3
+    bucketCnt     = 1 << bucketCntBits
+)
+
 // A bucket for a Go map.桶结构体
 type bmap struct {
-  // 每个元素hash值的高8位，如果tophash[0] < minTopHash，表示这个桶的搬迁状态
-  tophash [bucketCnt]uint8
-  // 接下来是8个key、8个value，但是我们不能直接看到；为了优化对齐，go采用了key放在一起，value放在一起的存储方式，
-  // 再接下来是hash冲突发生时，下一个溢出桶的地址
+    // 每个元素hash值的高8位，如果tophash[0] < minTopHash，表示这个桶的搬迁状态
+    tophash [bucketCnt]uint8
+    // 接下来是8个key、8个value，但是我们不能直接看到；为了优化对齐，go采用了key放在一起，value放在一起的存储方式，
+    // 再接下来是hash冲突发生时，下一个溢出桶的地址
+
+    // Followed by bucketCnt keys and then bucketCnt elems.
+    // NOTE: packing all the keys together and then all the elems together makes the
+    // code a bit more complicated than alternating key/elem/key/elem/... but it allows
+    // us to eliminate padding which would be needed for, e.g., map[int64]int8.
+    
+    // Followed by an overflow pointer.
 }
 
 ```
-编译后的bmap
+
+编译后的bmap:真实描述（伪代码）
+![](chapter11_assembly_language/03Golang_data_structure/map_structure/.map_intro_images/bmap_in_mem.png)
+上图就是 bucket 的内存模型， HOBHash 指的就是 top hash。
 ```go
 //	tophash的存在是为了快速试错，毕竟只有8位，比较起来会快一点。
 //  桶的结构到底是怎样的？
@@ -90,6 +205,7 @@ bmap 就是我们常说的“桶”，桶里面会最多装 8 个 key，这些 k
 又会根据 key 计算出来的 hash 值的高 8 位来决定 key 到底落入桶内的哪个位置（一个桶内最多有8个位置）。
 
 当 map 的 key 和 value 都不是指针，并且 size 都小于 128 字节的情况下，会把 bmap 标记为不含指针，这样可以避免 gc 时扫描整个 hmap。
+
 但是，我们看 bmap 其实有一个 overflow 的字段，是指针类型的，破坏了 bmap 不含指针的设想，这时会把 overflow 移动到 extra 字段来
 ```go
 // mapextra holds fields that are not present on all maps.
@@ -101,8 +217,9 @@ type mapextra struct {
     nextOverflow *bmap
 }
 ```
-![](./bmap_in_mem.png)
-上图就是 bucket 的内存模型， HOBHash 指的就是 top hash。
+
+![](.map_intro_images/key_value_key.png)
+![](.map_intro_images/key_key_value_value.png)
 注意到 key 和 value 是各自放在一起的，并不是 key/value/key/value/... 这样的形式。
 源码里说明这样的好处是在某些情况下可以省略掉 padding 字段，节省内存空间。
 
@@ -110,7 +227,10 @@ type mapextra struct {
 ```go
 map[int64]int8
 ```
+
 如果按照 key/value/key/value/... 这样的模式存储，那在每一个 key/value 对之后都要额外 padding 7 个字节；而将所有的 key，value 分别绑定到一起，
+
+
 这种形式 key/key/.../value/value/...，则只需要在最后添加 padding。
 
 每个 bucket 设计成最多只能放 8 个 key-value 对，如果有第 9 个 key-value 落入当前的 bucket，那就需要再构建一个 bucket ，通过 overflow 指针连接起来
@@ -118,29 +238,32 @@ map[int64]int8
 ### 2. 初始化 makemap
 从语法层面上来说，创建 map 很简单
 ```go
-ageMap := make(map[string]int)
+make(map[keyType]valueType)
 //指定长度
-ageMap2 := make(map[string]int8)
+make(map[keyType]valueType, size)
+
 //ageMap 为nil，不能向其添加元素，会直接panic
 var ageMap3 map[string]int
 ```
+
 通过汇编语言可以看到，实际上底层调用的是 makemap 函数，主要做的工作就是初始化 hmap 结构体的各种字段，例如计算 B 的大小，设置哈希种子 hash0 等等。
 ```go
 // makemap implements Go map creation for make(map[k]v, hint) 
 func makemap(t *maptype, hint int, h *hmap) *hmap {
-  //计算内存空间和判断是否内存溢出
+  // 计算内存空间和判断是否内存溢出
   mem, overflow := math.MulUintptr(uintptr(hint), t.bucket.size)
   if overflow || mem > maxAlloc {
       hint = 0
   }
 
-  // initialize Hmap
+  // 1. 创建hmap，并初始化
   if h == nil {
       h = new(hmap)
   }
+  // 2. 获取一个随机种子，保证同一个key在不同map的hash值不一样（安全考量
   h.hash0 = fastrand()
 
-  //计算出指数B,那么桶的数量表示2^B
+  //3. 计算出指数B,那么桶的数量表示2^B
   B := uint8(0)
   for overLoadFactor(hint, B) {
       B++
@@ -164,13 +287,21 @@ func makemap(t *maptype, hint int, h *hmap) *hmap {
 //b. hmap没有的情况进行初始化，并设置hash0表示hash因子
 //c. 计算出指数B,桶的数量表示为2^B,通过makeBucketArray去创建对应的桶和溢出桶
 ```
-哈希函数
+#### 哈希桶初始大小
+在创建map时，当没有指定size大小或size为0时，不会创建哈希桶，会在插入元素时创建，避免只申请不使用导致的效率和内存浪费。
+当size不为0时，会根据size大小计算出哈希桶的大小，具体计算算法如下：
+```go
+func overLoadFactor(count int, B uint8) bool {
+	return count > bucketCnt && uintptr(count) > loadFactorNum*(bucketShift(B)/loadFactorDen)
+}
+
+```
+
+#### 哈希函数
 
 map 的一个关键点在于，哈希函数的选择。在程序启动时，会检测 cpu 是否支持 aes，如果支持，则使用 aes hash，否则使用 memhash。
 这是在函数 alginit() 中完成，位于路径：src/runtime/alg.go 下。
 
-    hash 函数，有加密型和非加密型。加密型的一般用于加密数据、数字摘要等，典型代表就是 md5、sha1、sha256、aes256 这种；
-    非加密型的一般就是查找。在 map 的应用场景中，用的是查找。选择 hash 函数主要考察的是两点：性能、碰撞概率。
 类型的结构体
 ```go
 type _type struct {
@@ -193,6 +324,7 @@ type _type struct {
 }
 // hash 函数计算类型的哈希值，而 equal 函数则计算两个类型是否“哈希相等”。
 ```
+
 对于 string 类型，它的 hash、equal 函数如下：
 ```shell
 / func strhash(p unsafe.Pointer, h uintptr) uintptr
@@ -215,6 +347,8 @@ func strequal(p, q unsafe.Pointer) bool {
 ```
 
 ### 3. 赋值mapassign
+map的添加和更新是通过一个方法实现的，在往map里面插入一个K/V时，如果key已经存在，就直接覆盖更新；如果key不存在，就插入map。
+
 函数并没有传入 value 值，赋值操作是汇编语言中寻找。mapassign 函数返回的指针就是指向的 key 所对应的 value 值位置，有了地址，就很好操作赋值了
 ```go
 func mapassign(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
@@ -225,6 +359,11 @@ func mapassign(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
 
     //更新状态为正在写入
     h.flags ^= hashWriting
+
+    // 如果当前哈希桶为空，则新建一个大小为1的哈希桶
+    if h.buckets == nil {
+        h.buckets = newobject(t.bucket) // newarray(t.bucket, 1)
+    }
 
 again:
     //通过hash获取对应的桶
@@ -310,27 +449,45 @@ done:
 
 ```
 
-	a. 计算key的hash值,通过hash的高八位和低B为分别确定tophash和桶的序号
-		tophash是什么?
-			tophash是用来快速定位key和value的位置的,在查找或删除过程如果高8位hash都不相等，那么就没必要再去比较key值是否相等了，效率相对会高一些。
-		如何定位到哪个桶执行插入?
-			例如哈希表对应2^4个桶,即B是4,某个key的hash二进制值是如下值，那么如图可知该key对应的tophash值为10001100,即140，
-			桶的值为0111,即是桶的序号为7
-			hash := 100011001101111001110010010110000001111010110000100101011010111
-	b. 每个桶可以存储8个tophash、8个key、8个value,遍历桶中的tophash,如果tophash不相等且是空的,说明该位置可以插入，
-		分别获取对应位置key和value的地址并更新tophash。
+#### 1. 计算key的hash值,通过hash的高八位和低B为分别确定tophash和桶的序号
+
+1. tophash是什么?
+
+tophash是用来快速定位key和value的位置的,在查找或删除过程如果高8位hash都不相等，那么就没必要再去比较key值是否相等了，效率相对会高一些。
+
+2. 如何定位到哪个桶执行插入?
+例如哈希表对应2^4个桶,即B是4,某个key的hash二进制值是如下值，那么如图可知该key对应的tophash值为10001100,即140， 桶的值为0111,即是桶的序号为7
+
+hash := 100011001101111001110010010110000001111010110000100101011010111
+```go
+bucket := hash & bucketMask(h.B)
+```
+当确定了选择哪一个bucket，接下来就要确定bucket里面的位置。每个bucket使用散列值（hash value）前面的字节（byte）（top hash）来确定在bucket内部列表的顺序。
+```go
+// tophash calculates the tophash value for hash.
+func tophash(hash uintptr) uint8 {
+	top := uint8(hash >> (sys.PtrSize*8 - 8))
+	if top < minTopHash {
+		top += minTopHash
+	}
+	return top
+}
+```
+
+3. 每个桶可以存储8个tophash、8个key、8个value,遍历桶中的tophash,如果tophash不相等且是空的,说明该位置可以插入，分别获取对应位置key和value的地址并更新tophash。
 
 ### 4. 扩容 hashGrow
 
-    使用哈希表的目的就是要快速查找到目标 key，然而，随着向 map 中添加的 key 越来越多，key 发生碰撞的概率也越来越大。
-    bucket 中的 8 个 cell 会被逐渐塞满，查找、插入、删除 key 的效率也会越来越低。   
-    最理想的情况是一个 bucket 只装一个 key，这样，就能达到 O(1) 的效率，但这样空间消耗太大，用空间换时间的代价太高。
-    
-    Go 语言采用一个 bucket 里装载 8 个 key，定位到某个 bucket 后，还需要再定位到具体的 key，这实际上又用了时间换空间。
-    
-    当然，这样做，要有一个度，不然所有的 key 都落在了同一个 bucket 里，直接退化成了链表，各种操作的效率直接降为 O(n)，是不行的。
-    
-    因此，需要有一个指标来衡量前面描述的情况，这就是 装载因子。
+使用哈希表的目的就是要快速查找到目标 key，然而，随着向 map 中添加的 key 越来越多，key 发生碰撞的概率也越来越大。
+bucket 中的 8 个 cell 会被逐渐塞满，查找、插入、删除 key 的效率也会越来越低。   
+最理想的情况是一个 bucket 只装一个 key，这样，就能达到 O(1) 的效率，但这样空间消耗太大，用空间换时间的代价太高。
+
+Go 语言采用一个 bucket 里装载 8 个 key，定位到某个 bucket 后，还需要再定位到具体的 key，这实际上又用了时间换空间。
+
+当然，这样做，要有一个度，不然所有的 key 都落在了同一个 bucket 里，直接退化成了链表，各种操作的效率直接降为 O(n)，是不行的。
+
+因此，需要有一个指标来衡量前面描述的情况，这就是 装载因子。
+
 装载因子
 ```go
 loadFactor := count/(2^B)
@@ -338,9 +495,9 @@ loadFactor := count/(2^B)
 ```
 判断是否扩容的条件
 
-    a.哈希表不是正在扩容的状态
-    b.元素的数量 > 2^B次方(桶的数量) * 6.5,6.5表示为装载因子,很容易理解装载因子最大为8(一个桶能装载的元素数量)
-    c.溢出桶过多,当前已经使用的溢出桶数量 >=2^B次方(桶的数量) ,B最大为15
+1. `哈希表不是正在扩容的状态
+2. `元素的数量 > 2^B次方(桶的数量) * 6.5,6.5表示为装载因子,很容易理解装载因子最大为8(一个桶能装载的元素数量)
+3. `溢出桶过多,当前已经使用的溢出桶数量 >=2^B次方(桶的数量) ,B最大为15
 ```go
 // 触发扩容时机
 if !h.growing() && (overLoadFactor(h.count+1, h.B) || tooManyOverflowBuckets(h.noverflow, h.B)) {
@@ -644,15 +801,21 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
     老 buckets 中的 key 分裂到了 2 个 新的 bucket。一个在 x part，一个在 y 的 part。
     依据是 hash 的 lowbits。新 map 中 0-3称为 x part， 4-7 称为 y pa
 
-###5. 读取mapaccess
+### 5. 读取mapaccess
 两种 get 操作
 ```go
 ageMap := make(map[string]int)
 ageMap["danny"]=25
-// 不带 comma 用法
+
+// 1. 2不带 comma 用法
 age := ageMap["danny"]
-// 带comma用法
+
+// 2. 带comma用法
 age2,ok := ageMap["danny"]
+
+// 3. 返回key和value，只用于range迭代场景
+for k, v := range ageMap {
+}
 ```
 对应源码
 ```go
@@ -672,144 +835,86 @@ func mapaccess2(t *maptype, h *hmap, key unsafe.Pointer) (unsafe.Pointer, bool)
 再用哈希值的高 8 位，找到此 key 在 bucket 中的位置，这是在寻找已有的 key。最开始桶内还没有 key，新加入的 key 会找到第一个空位，放入。
 
 buckets 编号就是桶编号，当两个不同的 key 落在同一个桶中，也就是发生了哈希冲突。冲突的解决手段是用链表法：在 bucket 中，从前往后找到第一个空位。这样，在查找某个 key 时，先找到对应的桶，再去遍历 bucket 中的 key。
-![](./search_value.png)
+![](chapter11_assembly_language/03Golang_data_structure/map_structure/.map_intro_images/search_value.png)
 上图中，假定 B = 5，所以 bucket 总数就是 2^5 = 32。首先计算出待查找 key 的哈希，使用低 5 位 00110，找到对应的 6 号 bucket，
 使用高 8 位 10010111，对应十进制 151， 在 6 号 bucket 中寻找 tophash 值（HOB hash）为 151 的 key， 找到了 2 号槽位，这样整个查找过程就结束了。
 如果在 bucket 中没找到，并且 overflow 不为空，还要继续去 overflow bucket 中寻找，直到找到或是所有的 key 槽位都找遍了，包括所有的 overflow bucket。
 
-源码学习
-mapaccess 系列函数，函数的作用类似，这里我们直接看 mapacess1 函数
 
-go的哈希查找有两种方式,一种是不返回ok的对应的源码方法为runtime.mapaccess1,另外返回ok的函数对应源码方法为runtime.mapaccess2
+mapaccess 系列函数，函数的作用类似，这里我们直接看 mapaccess1 函数
+
+go的哈希查找有两种方式,
+- 一种是不返回ok的对应的源码方法为runtime.mapaccess1,
+- 另外返回ok的函数对应源码方法为runtime.mapaccess2
+
 根据 key 的不同类型，编译器还会将查找、插入、删除的函数用更具体的函数替换
+
 ![](.map_intro_images/different_key_type_when_search_key.png)
 ```go
-//key为字符串
-func mapaccess1_faststr(t *maptype, h *hmap, ky string) unsafe.Pointer {
-	if raceenabled && h != nil {
-		callerpc := getcallerpc()
-		racereadpc(unsafe.Pointer(h), callerpc, funcPC(mapaccess1_faststr))
-	}
-	//  如果 h 什么都没有，返回零值
-	if h == nil || h.count == 0 {
-		return unsafe.Pointer(&zeroVal[0])
-	}
-	//  写和读冲突
+func mapaccess1(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
+	...
+	// 判断是否正在写，如果是直接报错
 	if h.flags&hashWriting != 0 {
 		throw("concurrent map read and map write")
 	}
-	key := stringStructOf(&ky)
-	if h.B == 0 {
-		// One-bucket table.
-		b := (*bmap)(h.buckets)
-		if key.len < 32 {
-			// short key, doing lots of comparisons is ok
-			for i, kptr := uintptr(0), b.keys(); i < bucketCnt; i, kptr = i+1, add(kptr, 2*sys.PtrSize) {
-				k := (*stringStruct)(kptr)
-				if k.len != key.len || isEmpty(b.tophash[i]) {
-					if b.tophash[i] == emptyRest {
-						break
-					}
-					continue
-				}
-				if k.str == key.str || memequal(k.str, key.str, uintptr(key.len)) {
-					return add(unsafe.Pointer(b), dataOffset+bucketCnt*2*sys.PtrSize+i*uintptr(t.elemsize))
-				}
-			}
-			return unsafe.Pointer(&zeroVal[0])
-		}
-		// long key, try not to do more comparisons than necessary
-		keymaybe := uintptr(bucketCnt)
-
-		// 遍历 8 个 bucket
-		for i, kptr := uintptr(0), b.keys(); i < bucketCnt; i, kptr = i+1, add(kptr, 2*sys.PtrSize) {
-			k := (*stringStruct)(kptr)
-			if k.len != key.len || isEmpty(b.tophash[i]) {
-				if b.tophash[i] == emptyRest {
-					break
-				}
-				continue
-			}
-			if k.str == key.str {
-				return add(unsafe.Pointer(b), dataOffset+bucketCnt*2*sys.PtrSize+i*uintptr(t.elemsize))
-			}
-			// check first 4 bytes
-			if *((*[4]byte)(key.str)) != *((*[4]byte)(k.str)) {
-				continue
-			}
-			// check last 4 bytes
-			if *((*[4]byte)(add(key.str, uintptr(key.len)-4))) != *((*[4]byte)(add(k.str, uintptr(key.len)-4))) {
-				continue
-			}
-			if keymaybe != bucketCnt {
-				// Two keys are potential matches. Use hash to distinguish them.
-				goto dohash
-			}
-			keymaybe = i
-		}
-		if keymaybe != bucketCnt {
-			k := (*stringStruct)(add(unsafe.Pointer(b), dataOffset+keymaybe*2*sys.PtrSize))
-			if memequal(k.str, key.str, uintptr(key.len)) {
-				return add(unsafe.Pointer(b), dataOffset+bucketCnt*2*sys.PtrSize+keymaybe*uintptr(t.elemsize))
-			}
-		}
-		
-         // 返回零值
-		return unsafe.Pointer(&zeroVal[0])
-	}
-dohash:
-	//  计算哈希值，并且加入 hash0 引入随机性
-	hash := t.hasher(noescape(unsafe.Pointer(&ky)), uintptr(h.hash0))
 	
-    // 比如 B=5，那 m 就是31，二进制是全 1
-    // 求 bucket num 时，将 hash 与 m 相与，
-    // 达到 bucket num 由 hash 的低 8 位决定的效果
+	// 计算key哈希值
+	alg := t.key.alg
+	hash := alg.hash(key, uintptr(h.hash0))
+	
+	// 计算桶链首地址
 	m := bucketMask(h.B)
-
-    // b 就是 bucket 的地址
 	b := (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
-	// oldbuckets 不为 nil，说明发生了扩容
-	if c := h.oldbuckets; c != nil {
-    // 如果不是同 size 扩容（看后面扩容的内容）
-
-		if !h.sameSizeGrow() {
-			// There used to be half as many buckets; mask down one more power of two.
-			m >>= 1
-		}
-
-    // 求出 key 在老的 map 中的 bucket 位置
-		oldb := (*bmap)(add(c, (hash&m)*uintptr(t.bucketsize)))
-
-        // 如果 oldb 没有搬迁到新的 bucket
-        // 那就在老的 bucket 中寻找
-		if !evacuated(oldb) {
-			b = oldb
-		}
-	}
-
-	// 计算出高 8 位的 hash
+	
+	// 计算tophash值
 	top := tophash(hash)
+bucketloop:
+
+	// 遍历桶链每个桶
 	for ; b != nil; b = b.overflow(t) {
-		for i, kptr := uintptr(0), b.keys(); i < bucketCnt; i, kptr = i+1, add(kptr, 2*sys.PtrSize) {
-			k := (*stringStruct)(kptr)
-			if k.len != key.len || b.tophash[i] != top {
+	    // 遍历桶的元素
+		for i := uintptr(0); i < bucketCnt; i++ {
+			// 如果tophash不相等，continue
+			if b.tophash[i] != top {
+				if b.tophash[i] == emptyRest {
+					break bucketloop
+				}
 				continue
 			}
-			if k.str == key.str || memequal(k.str, key.str, uintptr(key.len)) {
-				return add(unsafe.Pointer(b), dataOffset+bucketCnt*2*sys.PtrSize+i*uintptr(t.elemsize))
+			// tophash相等
+			// 获取当前位置对应的key值
+			k := add(unsafe.Pointer(b), dataOffset+i*uintptr(t.keysize))
+			if t.indirectkey() {
+				k = *((*unsafe.Pointer)(k))
+			}
+			// 如果与key匹配，表明找到了，直接返回value值
+			if alg.equal(key, k) {
+				v := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.valuesize))
+				if t.indirectvalue() {
+					v = *((*unsafe.Pointer)(v))
+				}
+				return v
 			}
 		}
 	}
+	
+	// 一直没有找到，返回value类型的默认值
 	return unsafe.Pointer(&zeroVal[0])
 }
+
 ```
 
-    a. mapaccess1_fat 返回一个值和 mapaccess2_fat返回两个值
-    b. hash分为高位和地位，先通过低位快速找到bucket，再通过高位进一步查找，对比具体的key
-    c. 访问到oldbuckets的数据时，会迁移到buckets
 定位 key 和 value 的方法以及整个循环的写法
 
 ```go
+const(
+    dataOffset = unsafe.Offsetof(struct {
+        b bmap
+        v int64
+    }{}.v)
+)
+
+
 // key 定位公式
 keymaybe := uintptr(bucketCnt)
 key := add(unsafe.Pointer(b), dataOffset+keymaybe*2*sys.PtrSize
@@ -817,20 +922,19 @@ key := add(unsafe.Pointer(b), dataOffset+keymaybe*2*sys.PtrSize
 //  value 定位公式
 value := add(unsafe.Pointer(b), dataOffset+bucketCnt*2*sys.PtrSize+i*uintptr(t.elemsize))
 ```
-    b 是 bmap 的地址，这里 bmap 还是源码里定义的结构体，只包含一个 tophash 数组，经编译器扩充之后的结构体才包含 key，value，overflow 这些字段.
-    dataOffset 是 key 相对于 bmap 起始地址的偏移
-    
-    value 的地址是在所有 key 之后，因此第 i 个 value 的地址还需要加上所有 key 的偏移。
+b 是 bmap 的地址，这里 bmap 还是源码里定义的结构体，只包含一个 tophash 数组，经编译器扩充之后的结构体才包含 key，value，overflow 这些字段.
+dataOffset 是 key 相对于 bmap 起始地址的偏移
+
+value 的地址是在所有 key 之后，因此第 i 个 value 的地址还需要加上所有 key 的偏移。
 ```go
-	dataOffset = unsafe.Offsetof(struct {
-		b bmap
-		v int64
-	}{}.v)
+
 ```
+
+
 minTopHash
 
-    一个 cell 的 tophash 值小于 minTopHash 时，标志这个 cell 的迁移状态。
-    因为这个状态值是放在 tophash 数组里，为了和正常的哈希值区分开，会给 key 计算出来的哈希值一个增量：minTopHash。这样就能区分正常的 top hash 值和表示状态的哈希值。
+一个 cell 的 tophash 值小于 minTopHash 时，标志这个 cell 的迁移状态。
+因为这个状态值是放在 tophash 数组里，为了和正常的哈希值区分开，会给 key 计算出来的哈希值一个增量：minTopHash。这样就能区分正常的 top hash 值和表示状态的哈希值。
 ```go
 	emptyRest      = 0 // this cell is empty, and there are no more non-empty cells at higher indexes or overflows.
 	emptyOne       = 1 // this cell is empty
@@ -865,14 +969,15 @@ func evacuated(b *bmap) bool {
 
 ### 6. 遍历
 
-    本来 map 的遍历过程比较简单：遍历所有的 bucket 以及它后面挂的 overflow bucket，然后挨个遍历 bucket 中的所有 cell。
-    每个 bucket 中包含 8 个 cell，从有 key 的 cell 中取出 key 和 value，这个过程就完成了。
+本来 map 的遍历过程比较简单：遍历所有的 bucket 以及它后面挂的 overflow bucket，然后挨个遍历 bucket 中的所有 cell。
+每个 bucket 中包含 8 个 cell，从有 key 的 cell 中取出 key 和 value，这个过程就完成了。
 
-    但是，现实并没有这么简单。还记得前面讲过的扩容过程吗？
-    扩容过程不是一个原子的操作，它每次最多只搬运 2 个 bucket，所以如果触发了扩容操作，那么在很长时间里，map 的状态都是处于一个中间态：有些 bucket 已经搬迁到新家，而有些 bucket 还待在老地方。
+但是，现实并没有这么简单。还记得前面讲过的扩容过程吗？
+扩容过程不是一个原子的操作，它每次最多只搬运 2 个 bucket，所以如果触发了扩容操作，那么在很长时间里，map 的状态都是处于一个中间态：有些 bucket 已经搬迁到新家，而有些 bucket 还待在老地方。
+
 ![](.map_intro_images/map_iterinit.png)
 
-    先是调用 mapiterinit 函数初始化迭代器，然后循环调用 mapiternext 函数进行 map 迭代.
+先是调用 mapiterinit 函数初始化迭代器，然后循环调用 mapiternext 函数进行 map 迭代.
 
 迭代器的结构体定义
 ```go
@@ -1033,6 +1138,7 @@ func mapdelete(t *maptype, h *hmap, key unsafe.Pointer) {
 
 	// Set hashWriting after calling t.hasher, since t.hasher may panic,
 	// in which case we have not actually done a write (delete).
+	//  没有其他写，将flag置位
 	h.flags ^= hashWriting
 
 	bucket := hash & bucketMask(h.B)
@@ -1114,20 +1220,21 @@ search:
 			break search
 		}
 	}
-
+	
 	if h.flags&hashWriting == 0 {
 		throw("concurrent map writes")
 	}
+    // flag恢复
 	h.flags &^= hashWriting
 }
 ```
 
-    它首先会检查 h.flags 标志，如果发现写标位是 1，直接 panic，因为这表明有其他协程同时在进行写操作。
-    
-    计算 key 的哈希，找到落入的 bucket。检查此 map 如果正在扩容的过程中，直接触发一次搬迁操作。
-    
-    删除操作同样是两层循环，核心还是找到 key 的具体位置。寻找过程都是类似的，在 bucket 中挨个 cell 寻找。
-    
-    找到对应位置后，对 key 或者 value 进行“清零”操作
+它首先会检查 h.flags 标志，如果发现写标位是 1，直接 panic，因为这表明有其他协程同时在进行写操作。
 
-    最后，将 count 值减 1，将对应位置的 tophash 值置成 Empty
+计算 key 的哈希，找到落入的 bucket。检查此 map 如果正在扩容的过程中，直接触发一次搬迁操作。
+
+删除操作同样是两层循环，核心还是找到 key 的具体位置。寻找过程都是类似的，在 bucket 中挨个 cell 寻找。
+
+找到对应位置后，对 key 或者 value 进行“清零”操作
+
+最后，将 count 值减 1，将对应位置的 tophash 值置成 Empty

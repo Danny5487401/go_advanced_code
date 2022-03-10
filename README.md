@@ -230,6 +230,7 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [2.16 汇编调用非汇编Go函数](chapter11_assembly_language/02plan9/16_assembly_call_NonassemblyFunc/main.go)
 - 3 [ Golang底层数据结构-涉及数值类型占用的bit](chapter11_assembly_language/03Golang_data_structure/data.md)
     - [3.1 Map底层结构](chapter11_assembly_language/03Golang_data_structure/map_structure/map_intro.md)
+      - [map的指针优化场景](chapter11_assembly_language/03Golang_data_structure/map_structure/Improvement/map_test.go)
     - [3.2 String底层结构,字符集和字符编码,性能分析及内存泄漏分析](chapter11_assembly_language/03Golang_data_structure/string_structure/str.md)
     - [3.3 Struct底层结构,内存布局,空结构体内存对齐](chapter11_assembly_language/03Golang_data_structure/struct_structure/struct.md)
 
@@ -261,7 +262,9 @@ Note:目录同级为 代码展示，可在Goland中运行
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
 [cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)
-Note:内部代码待优化
+
+**_Note:内部运行代码待优化_**
+
 - [1 Go调用自定义C函数-未模块化](chapter13_Go_call_C_or_C++/01_call_C_func/main.go)
 - 2 Go调用自定义C函数-模块化
 - 3 Go重写C定义函数
@@ -272,6 +275,7 @@ Note:内部代码待优化
 - 8 Go调用模块化C++库
 - [9 调用静态C库](chapter13_Go_call_C_or_C++/09_static_c_lib/main.go)
 - 10 调用动态C库
+- [11 Golang使用pkg-config自动获取头文件和链接库的方法](chapter13_Go_call_C_or_C++/11_pkg_config/pkg_config.md)
 
 ## [第十四章 Context上下文-源码分析涉及父类EmptyCtx](chapter14_context/introduction.md)
 - 1 Context使用背景

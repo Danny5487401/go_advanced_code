@@ -1,9 +1,9 @@
 package main
 
 //#cgo CFLAGS: -I./number
-//#cgo LDFLAGS: -L${SRCDIR}/chapter13_Go_call_C_or_C++/10_dynamic_c_lib/number -llibnumber.so
+//#cgo LDFLAGS: -L${SRCDIR}/number -lnumber
 //
-//#include "number.h"
+//#include "./number.h"
 import "C"
 import "fmt"
 
