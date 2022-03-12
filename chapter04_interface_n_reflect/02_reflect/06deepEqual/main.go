@@ -12,6 +12,9 @@ func main() {
 	// 2. map对比
 	mapEqual()
 
+	// 3. 自定义int比较
+	intDeepEqual()
+
 }
 
 func sliceEqual() {
@@ -49,4 +52,14 @@ func mapEqual() {
 	// two interfaces are eual or not
 	res1 := reflect.DeepEqual(map_1, map_2)
 	fmt.Println("Is Map 1 is equal to Map 2:", res1)
+}
+
+type MyInt int
+type YourInt int
+
+func intDeepEqual() {
+	m := MyInt(1)
+	y := YourInt(1)
+
+	fmt.Println("myInt and YrInt ", reflect.DeepEqual(m, y)) // false
 }
