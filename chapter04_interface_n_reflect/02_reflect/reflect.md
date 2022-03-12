@@ -63,7 +63,7 @@ Go语言的反射就是建立在类型之上的，Golang的指定类型的变量
 ### 1. iface 非空接口
 
 ![](.reflect_images/iface_struct.png)
-![](img/iface.png)
+![](.reflect_images/iface.png)
 ```go
 type iface struct {
 	tab  *itab  // tab 是接口表指针，指向类型信息  --->动态类型
@@ -82,7 +82,7 @@ type itab struct {
 ### 2. eface 空接口
 
 ![](.reflect_images/eface_struct.png)
-![](img/eface.png)
+![](.reflect_images/eface.png)
 ```go
 type eface struct
  {
