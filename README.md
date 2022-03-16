@@ -44,6 +44,7 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [2.5 监控代码性能pprof](chapter02_goroutine/02_runtime/05pprof/intro.md)
       - [2.5.1 标准包runtime/pprof及net/http/pprof使用](chapter02_goroutine/02_runtime/05pprof/01_pprof/main.go)
       - [2.5.2 第三方包pkg/profile](chapter02_goroutine/02_runtime/05pprof/02_pkg_profile/cpu.go)
+      - [2.5.3 debug时添加pprof标签定位goroutine](chapter02_goroutine/02_runtime/05pprof/03_pprof_label/client/main.go)
     - 2.6 Linux内存及Go内存结构管理
       - [2.6.1 Linux内存管理](chapter02_goroutine/02_runtime/06memory/linux_mem.md)
       - [2.6.2 Go内存结构管理](chapter02_goroutine/02_runtime/06memory/go_mem.md)
@@ -58,7 +59,7 @@ Note:目录同级为 代码展示，可在Goland中运行
 ---
 
 ## 第三章 通道Channel
-- 1 [Channel内部结构及源码分析(含PPT分析)](chapter03_channel/01_channel_use/channel.md)
+- [1 Channel内部结构及源码分析(含PPT分析)](chapter03_channel/01_channel_use/channel.md)
     - [1.0 channel初始化](chapter03_channel/01_channel_use/00introdution/main.go)
     - [1.1 无缓存通道](chapter03_channel/01_channel_use/01unbufferd_channel/main.go)
     - [1.2 父子通信](chapter03_channel/01_channel_use/02ParentChildrenCommunication/main.go)
@@ -72,12 +73,12 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [1.10 happened before](chapter03_channel/01_channel_use/10_happened_before/happened_before.md)
     - [1.11 循环读取关闭的通道值是否阻塞](chapter03_channel/01_channel_use/11_read_closed_chan/readCloseChan.go)
     - [1.12 select中实现channel优先级-->k8s中实现](chapter03_channel/01_channel_use/12_priority_channel/priority_chan.md)
-- 2 [channel应用:TimerChan模块源码分析及使用陷阱](chapter03_channel/02_TimerChan/timer.md)
+- [ channel应用:TimerChan模块源码分析及使用陷阱](chapter03_channel/02_TimerChan/timer.md)
     - [2.1 reset重新等待被触发](chapter03_channel/02_TimerChan/01_TimerReset/timer_reset.md)
     - [2.2 timerStop使用](chapter03_channel/02_TimerChan/02_TimerStop/timer_stop.md)
     - [2.3 TimerAfter给数据库操作增加超时](chapter03_channel/02_TimerChan/03_TimeAfter/main.go)
-- 3 [Select多路复用](chapter03_channel/03_select/03Select_DataStructure/select.md)
-- 4 [CSP理论中的Process/Channel](chapter03_channel/04_CSP/CSP.md)
+- [3 Select多路复用](chapter03_channel/03_select/03Select_DataStructure/select.md)
+- [4 CSP理论中的Process/Channel](chapter03_channel/04_CSP/CSP.md)
 ---
 
 ## 第四章 interface和反射 
@@ -85,12 +86,13 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [1.1 汇编分析不含方法eface和带方法iface](chapter04_interface_n_reflect/01_interface/01_interface_in_asm/main.go)
     - [1.2 接口值的零值是指动态类型和动态值都为 nil](chapter04_interface_n_reflect/01_interface/02_interface_compare_with_nil/main.go)
     - [1.3 打印出接口的动态类型和值](chapter04_interface_n_reflect/01_interface/03_print_dynamic_value_n_type/main.go)
-- 2 [反射](chapter04_interface_n_reflect/02_reflect/reflect.md)
+- [2 反射](chapter04_interface_n_reflect/02_reflect/reflect.md)
     - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01three_laws/threeLaw.md)
-    - [2.2 类型断言](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
+    - [2.2 类型断言及性能分析](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
     - [2.3 获取结构体字段及获取方法](chapter04_interface_n_reflect/02_reflect/03StructField_n_method/main.go)
-    - [2.4 reflect.Value修改值，调用结构体带方法，调用普通方法](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
+    - [2.4 reflect.Value修改值，调用结构体方法，调用普通方法](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
     - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05PerformanceInprove/main.go)
+    - [2.6 反射深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
 ---
 
 ## 第五章 切片和数组
@@ -143,8 +145,8 @@ Note:目录同级为 代码展示，可在Goland中运行
     - 2.3 [享元模式-->线程池,缓存思想](chapter09_design_pattern/02_structure/03_FlyweightPattern/flyWeightPattern.md)
     - [2.4 适配器模式](chapter09_design_pattern/02_structure/04_adopter/adopter.md)
     - [2.5 桥接模式](chapter09_design_pattern/02_structure/05_bridgeMethod/bridge_method.md)
-    - 2.6 [门面模式(外观模式)-->在gin中render应用(封装多个子服务)](chapter09_design_pattern/02_structure/06_facade_pattern/facade.md)
-    - 2.7 [代理模式](chapter09_design_pattern/02_structure/07_proxy/proxy.md)
+    - [2.6 门面模式(外观模式)-->在gin中render应用(封装多个子服务)](chapter09_design_pattern/02_structure/06_facade_pattern/facade.md)
+    - [2.7 代理模式](chapter09_design_pattern/02_structure/07_proxy/proxy.md)
 - 3 行为型模式
     - [3.1  访问者模式-->k8s中kubectl实现](chapter09_design_pattern/03_motion/01_visitor/vistor.md)
     - [3.2  迭代器-->标准库container/ring中实现](chapter09_design_pattern/03_motion/02_Iterator/main.go)
@@ -316,9 +318,7 @@ Note:目录同级为 代码展示，可在Goland中运行
   - [3.2 crypto_rand使用](chapter17_dataStructure_n_algorithm/03_rand/02_crypto_rand/main.go)
   - [3.3 fastrand优化使用](chapter17_dataStructure_n_algorithm/03_rand/03_fastrand/main.go)
 - [4 排序算法分类及图解(sort包源码分析)](chapter17_dataStructure_n_algorithm/04_sort/algorithm.md)
-  - [4.1 map排序 ](chapter17_dataStructure_n_algorithm/04_sort/sorted_map/map_sort.go)
-  - [4.2 排序接口实现（反射方式）](chapter17_dataStructure_n_algorithm/04_sort/sortByReflect/sort.go)
-  - [4.3 slice排序](chapter17_dataStructure_n_algorithm/04_sort/sorted_slice/main.go)
+  - [4.1 不同结构体切片根据反射排序，map根据key排序](chapter17_dataStructure_n_algorithm/04_sort/sorted_info/main.go)
 - [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
 - [6 Privacy Enhanced Mail Certificate (pem文件)生成](chapter17_dataStructure_n_algorithm/06_pem_generate/main.go)
 - [7 Base64编码解析](chapter17_dataStructure_n_algorithm/07_base64_encoding/base64.md)

@@ -1,6 +1,9 @@
 # 线程模型
 
-线程是处理器调度和分配的基本单位，进程则作为资源拥有的基本单位
+线程是处理器调度和分配的基本单位，进程则作为资源拥有的基本单位。
+
+操作系统调度器会将系统中的多个线程按照一定算法调度到物理CPU上去运行。
+虽然线程比较轻量，但是在调度时也有比较大的额外开销。每个线程会都占用 1M 以上的内存空间，线程切换和恢复寄存器中的内容也需要向系统申请资源。
 
 ## 一. 体系架构
 操作系统根据资源访问权限的不同，体系架构可分为用户空间和内核空间；
@@ -9,7 +12,7 @@
 
 ## 二. 线程
 
-所谓的“线程”，往往是用户态的线程user space，和操作系统本身内核态的线程（简称KSE)kernel space。
+所谓的“线程”，往往是用户态的线程user space，和操作系统本身内核态的线程（简称KSE)kernel space不一样。
 	
 协程跟线程是有区别的，线程由CPU调度是抢占式的，协程由用户态调度是协作式的
 
@@ -58,8 +61,8 @@ Go语言中支撑整个scheduler实现的主要有4个重要结构，分别是M�
 
 1. Sched结构就是调度器，它维护有存储M和G的队列以及调度器的一些状态信息等
 2. M结构是Machine，系统线程，它由操作系统管理的，goroutine就是跑在M之上的；
-    M是一个很大的结构，里面维护小对象内存cache（mcache）、当前执行的goroutine、随机数发生器等等非常多的信息
-3. P结构是Processor，处理器，它的主要用途就是用来执行goroutine的，它维护了一个goroutine队列，即runqueue。
+    M是一个很大的结构，M 结构体对象除了记录着工作线程的诸如栈的起止位置、当前正在执行的Goroutine 以及是否空闲等等状态信息之外，还通过指针维持着与 P 结构体的实例对象之间的绑定关系。
+3. P结构代表一个虚拟的 Processor 处理器，它的主要用途就是用来执行goroutine的，它维护了一个goroutine队列，即runqueue。
     Processor是让我们从N:1调度到M:N调度的重要部分. 也是 context，保存 goroutine 运行所需要的上下文
 4. G是goroutine实现的核心结构，主要保存 goroutine 的一些状态信息以及 CPU 的一些寄存器的值，
     例如 IP 寄存器，以便在轮到本 goroutine 执行时，CPU 知道要从哪一条指令处开始执行。
@@ -75,6 +78,7 @@ Go语言中支撑整个scheduler实现的主要有4个重要结构，分别是M�
 golang调度的职责就是为需要执行的Go代码(G)寻找执行者(M)以及执行的准许和资源(P). 并没有一个调度器的实体, 调度是需要发生调度时由m执行runtime.schedule方法进行的.
 
 调度在计算机中是分配工作所需资源的方法. linux的调度为CPU找到可运行的线程. 而Go的调度是为M(线程)找到P(内存, 执行 票据)和可运行的G.
+
 ![](.GPM_images/schedule.png)
 
 goroutine在go代码中无处不在，go程序会根据不同的情况去调度不同的goroutine，一个goroutine在某个时刻要么在运行，要么在等待，或者死亡
@@ -121,13 +125,13 @@ const (
 	// 刚刚被分配, 还没有初始化
 	_Gidle = iota // 0
 
-	//  表示在runqueue上, 还没有被运行
+	//  表示在runqueue上, 还没有被运行，没有栈的所有权，存储在运行队列中
 	_Grunnable // 1
 
-	//  go协程可能在执行go代码, 不在runqueue上, 与M, P已绑定
+	//  go协程可能在执行go代码, 不在runqueue上, 拥有栈的所有权，被赋予了内核线程 M 和处理器 P
 	_Grunning // 2
 
-	//  go协程在执行系统调用, 没执行go代码, 没有在runqueue上, 只与M绑定
+	//  go协程在执行系统调用, 没执行go代码, 没有在runqueue上, 拥有栈的所有权,只与M绑定
 	_Gsyscall // 3
 
 	// go协程被阻塞(IO, GC, chan阻塞, 锁等). 不在runqueue上, 但是一定在某个地 方, 比如channel中, 锁排队中等.
@@ -153,7 +157,7 @@ const (
 	// ready()ing this G.
 	_Gpreempted // 9
 
-    // 与runnable, running, syscall, waiting等状态结合, 表示GC正在扫描这个G的 栈
+    // 与runnable, running, syscall, waiting等状态结合, 表示GC正在扫描这个G的 栈,没有执行代码
 	_Gscan          = 0x1000
 	_Gscanrunnable  = _Gscan + _Grunnable  // 0x1001
 	_Gscanrunning   = _Gscan + _Grunning   // 0x1002
@@ -162,6 +166,13 @@ const (
 	_Gscanpreempted = _Gscan + _Gpreempted // 0x1009
 )
 ```
+际上只需要关注下面几种就好了：
+
+- 等待中：_ Gwaiting、_Gsyscall 和 _Gpreempted，这几个状态表示G没有在执行；
+- 可运行：_Grunnable，表示G已经准备就绪，
+- 运行中：_Grunning，表示G正在运行；
+
+
 G结构体
 
 ![](.GPM_images/G_struct.png)
@@ -176,10 +187,11 @@ type g struct {
 
 	_panic       *_panic // innermost panic - offset known to liblink
 	_defer       *_defer // innermost defer
-    // 当前与 g 绑定的 m
+	
+    // 当前与 g 占用的线程
 	m            *m      // current m; offset known to arm liblink
 	
-    // goroutine 的运行现场
+    // goroutine 的运行现场,存储 Goroutine 的调度相关的数据
 	sched        gobuf
 	syscallsp    uintptr        // if status==Gsyscall, syscallsp = sched.sp to use during gc
 	syscallpc    uintptr        // if status==Gsyscall, syscallpc = sched.pc to use during gc
@@ -187,6 +199,8 @@ type g struct {
 
 	// wakeup 时传入的参数
 	param        unsafe.Pointer // passed parameter on wakeup
+	
+	// Goroutine 的状态
 	atomicstatus uint32
 	stackLock    uint32 // sigprof/scang lock; TODO: fold in to atomicstatus
 	goid         int64
@@ -200,7 +214,10 @@ type g struct {
 	
 	// 抢占调度标志。这个为 true 时，stackguard0 等于 stackpreempt
 	preempt       bool // preemption signal, duplicates stackguard0 = stackpreempt
+	
+	// 抢占时将状态修改成 `_Gpreempted`
 	preemptStop   bool // transition to _Gpreempted on preemption; otherwise, just deschedule
+	//  在同步安全点收缩栈
 	preemptShrink bool // shrink stack at synchronous safe point
 
 	// asyncSafePoint is set if g is stopped at an asynchronous
@@ -283,7 +300,7 @@ type gobuf struct {
 	// 存储 rsp 寄存器的值
 	sp   uintptr
 
-	// 存储 rip 寄存器的值
+	// 存储 ip 寄存器的值
 	pc   uintptr
 
 	// 指向 goroutine
@@ -298,9 +315,9 @@ type gobuf struct {
 ```
 
 ### M
-当 M 没有工作可做的时候，在它休眠前，会“自旋”地来找工作：检查全局队列，查看 network poller，试图执行 gc 任务，或者“偷”工作
-```go
+当 M 没有工作可做的时候，在它休眠前，会“自旋”地来找工作：检查全局队列，查看 network poller，试图执行 gc 任务，或者“偷”工作.
 ![](.GPM_images/M_struct.png)
+```go
 // m 代表工作线程，保存了自身使用的栈信息
 type m struct {
     // 记录工作线程（也就是内核线程）使用的栈信息。在执行调度代码时需要使用
@@ -311,6 +328,7 @@ type m struct {
 
 	// Fields not known to debuggers.
 	procid        uint64       // for debuggers, but offset not hard-coded
+	//  处理 signal 的 G
 	gsignal       *g           // signal-handling g
 	goSigStack    gsignalStack // Go-allocated signal handling stack
 	sigmask       sigset       // storage for saved signal mask
@@ -322,13 +340,14 @@ type m struct {
 	mstartfn      func()
 
 
-    // 指向正在运行的 gorutine 对象
+    // 指向正在运行的 goroutine 对象
 	curg          *g       // current running goroutine
 	caughtsig     guintptr // goroutine running during fatal signal
 
     // 当前工作线程绑定的 p
 	p             puintptr // attached p for executing go code (nil if not executing go code)
 	nextp         puintptr
+	// 之前使用的P
 	oldp          puintptr // the p that was attached before executing a syscall
 	id            int64
 	mallocing     int32
@@ -415,15 +434,34 @@ type m struct {
 
 ### P
 ![](.GPM_images/P_struct.png)
+
+P的状态
+```go
+const ( 
+    // 表示P没有运行用户代码或者调度器 
+    _Pidle = iota 
+    // 被线程 M 持有，并且正在执行用户代码或者调度器
+    _Prunning 
+    // 没有执行用户代码，当前线程陷入系统调用
+    _Psyscall
+    // 被线程 M 持有，当前处理器由于垃圾回收 STW 被停止
+    _Pgcstop 
+    // 当前处理器已经不被使用
+    _Pdead
+)
+```
+
+
 ```go
 // p 保存 go 运行时所必须的资源
 type p struct {
     // 在 allp 中的索引
 	id          int32
+	//   p 的状态
 	status      uint32 // one of pidle/prunning/...
 	link        puintptr
 	
-	// 每次调用 schedule 时会加一
+	// 调度器调用会+1
 	schedtick   uint32     // incremented on every scheduler call
     // 每次系统调用时加一
 	syscalltick uint32     // incremented on every system call
@@ -435,6 +473,7 @@ type p struct {
 	pcache      pageCache
 	raceprocctx uintptr
 
+	// defer 结构池
 	deferpool    [5][]*_defer // pool of available defer structs of different sizes (see panic.go)
 	deferpoolbuf [5][32]*_defer
 
@@ -453,7 +492,7 @@ type p struct {
     // 这个 G 被 当前 G 修改为 ready 状态，相比 runq 中的 G 有更高的优先级。
     // 如果当前 G 还有剩余的可用时间，那么就应该运行这个 G
     // 运行之后，该 G 会继承当前 G 的剩余时间
-	runnext guintptr
+	runnext guintptr  // 缓存可立即执行的 G
 	
     // 运行完状态为Gdead的状态，可用于复用
 	gFree struct {
@@ -553,6 +592,46 @@ type p struct {
 ### schedt
 ![](.GPM_images/shedt_struct.png)
 
+```go
+type schedt struct {
+    ...
+    lock mutex 
+    // 空闲的 M 列表
+    midle        muintptr  
+    // 空闲的 M 列表数量
+    nmidle       int32      
+    // 下一个被创建的 M 的 id
+    mnext        int64  
+    // 能拥有的最大数量的 M  
+    maxmcount    int32    
+    // 空闲 p 链表
+    pidle      puintptr // idle p's
+    // 空闲 p 数量
+    npidle     uint32
+    // 处于 spinning 状态的 M 的数量
+    nmspinning uint32   
+    // 全局 runnable G 队列
+    runq     gQueue
+    runqsize int32  
+    // 有效 dead G 的全局缓存.
+    gFree struct {
+        lock    mutex
+        stack   gList // Gs with stacks
+        noStack gList // Gs without stacks
+        n       int32
+    } 
+    // sudog 结构的集中缓存
+    sudoglock  mutex
+    sudogcache *sudog 
+    // defer 结构的池
+    deferlock mutex
+    deferpool [5]*_defer 
+    ...
+}
+```
+
 ## 参考链接
-	https://studygolang.com/articles/35104
+
+1. https://studygolang.com/articles/35104
+2. https://www.luozhiyun.com/archives/448
 
