@@ -7,11 +7,20 @@
 2. 多个线程在写相同的数据时
 3. 同一个资源，有读又有写
 
-### 读写锁（sync.RWMutex）
-在读多写少的环境中，可以优先使用读写互斥锁（sync.RWMutex），它比互斥锁更加高效。sync 包中的 RWMutex 提供了读写互斥锁的封装
-分类:读锁和写锁
-- 如果设置了一个写锁，那么其它读的线程以及写的线程都拿不到锁，这个时候，与互斥锁的功能相同
-- 如果设置了一个读锁，那么其它写的线程是拿不到锁的，但是其它读的线程是可以拿到锁
+## 死锁
+多线程以及多进程改善了系统资源的利用率并提高了系统 的处理能力。然而，并发执行也带来了新的问题——死锁。
+死锁是指两个或两个以上的进程（线程）在运行过程中因争夺资源而造成的一种僵局（Deadly-Embrace) ) ，若无外力作用，这些进程（线程）都将无法向前推进。
+
+### 死锁产生的原因
+
+- 竞争不可抢占资源引起死锁
+通常系统中拥有的不可抢占资源，其数量不足以满足多个进程运行的需要，使得进程在运行过程中，会因争夺资源而陷入僵局，如磁带机、打印机等。只有对不可抢占资源的竞争 才可能产生死锁，对可抢占资源的竞争是不会引起死锁的。
+- 竞争可消耗资源引起死锁
+- 进程推进顺序不当引起死锁
+进程在运行过程中，请求和释放资源的顺序不当，也同样会导致死锁。例如，并发进程 P1、P2分别保持了资源R1、R2，而进程P1申请资源R2，进程P2申请资源R1时，两者都会因为所需资源被占用而阻塞。
+信号量使用不当也会造成死锁。进程间彼此相互等待对方发来的消息，结果也会使得这 些进程间无法继续向前推进。例如，进程A等待进程B发的消息，进程B又在等待进程A 发的消息，可以看出进程A和B不是因为竞争同一资源，而是在等待对方的资源导致死锁。
+
+
 
 ## Mutex结构体
 
@@ -21,6 +30,7 @@ type Mutex struct {
     sema  uint32 // 信号
 }
 ```
+Mutex 的实现主要借助了 CAS 指令 + 自旋 + 信号量来实现
 
 ### 互斥锁的状态
 在默认情况下，互斥锁的所有状态位都是 0，int32 中的不同位分别表示了不同的状态：
@@ -63,13 +73,8 @@ const (
 Note：注意Mutex 状态（mutexLocked，mutexWoken，mutexStarving，mutexWaiterShift） 与 Goroutine 之间的状态（starving，awoke）改变
 
 
-
-
-
 ### lock加锁过程
 ![](.mutex_images/mutex_lock.png)
-
-
 
 如果互斥锁的状态不是 0 时就会调用 sync.Mutex.lockSlow 尝试通过自旋（Spinning）等方式等待锁的释放，该方法的主体是一个非常大 for 循环，这里将它分成几个部分介绍获取锁的过程：
 1. 判断当前 Goroutine 能否进入自旋；
@@ -77,7 +82,22 @@ Note：注意Mutex 状态（mutexLocked，mutexWoken，mutexStarving，mutexWait
 3. 计算互斥锁的最新状态；
 4. 更新互斥锁的状态并获取锁
 
-#### 重点代码
+
+#### 源码分析
+```go
+func (m *Mutex) Lock() {
+	// Fast path: grab unlocked mutex.
+	if atomic.CompareAndSwapInt32(&m.state, 0, mutexLocked) {
+		if race.Enabled {
+			race.Acquire(unsafe.Pointer(m))
+		}
+		return
+	}
+	// Slow path (outlined so that the fast path can be inlined)
+	m.lockSlow()
+}
+```
+
 ```go
 func (m *Mutex) lockSlow() {
 	// 。。。
@@ -148,17 +168,17 @@ func (m *Mutex) unlockSlow(new int32) {
 
 ![](.mutex_images/lock_member.png)
 
-### 没有加锁，直接解锁问题-异常
-![](.mutex_images/unlock_again.png)
 
-### 案例：两个goroutine
+### 案例
+#### 1. 一个goroutine
+![](.mutex_images/one_goroutine_lock.png)
+#### 2. 两个goroutine
 ![](.mutex_images/two_gorountine_lock.png)
-### 案例：三个goroutine
+#### 3. 三个goroutine
 ![](.mutex_images/three_goroutine_lock.png)
 
-
-
-
+#### 4. 没有加锁，直接解锁问题-异常
+![](.mutex_images/unlock_again.png)
 
 ## RWMutex结构体
 ```go
@@ -168,12 +188,24 @@ type RWMutex struct {
     writerSem   uint32 // 用于writer等待读完成排队的信号量
     readerSem   uint32 // 用于reader等待写完成排队的信号量
     readerCount int32  // 读锁的计数器
-    readerWait  int32  // 等待读锁释放的数量
+    readerWait  int32  // 获取写锁时需要等待的写者的数量，用于防止写者饿死
 }
+```
+
+在读多写少的环境中，可以优先使用读写互斥锁（sync.RWMutex），它比互斥锁更加高效。sync 包中的 RWMutex 提供了读写互斥锁的封装
+
+分类:读锁和写锁
+- 如果设置了一个写锁，那么其它读的线程以及写的线程都拿不到锁，这个时候，与互斥锁的功能相同
+- 如果设置了一个读锁，那么其它写的线程是拿不到锁的，但是其它读的线程是可以拿到锁
+
+```go
+const rwmutexMaxReaders = 1 << 30 // 支持最多2^30个读锁
 ```
 ### 方法
 
 写操作使用 sync.RWMutex.Lock 和 sync.RWMutex.Unlock 方法；
+
+
 读操作使用 sync.RWMutex.RLock 和 sync.RWMutex.RUnlock 方法；
 
 ### 读和写锁关系
@@ -199,6 +231,7 @@ const rwmutexMaxReaders = 1 << 30
 
 ```go
 func (rw *RWMutex) RLock() {
+	// // 竞争检测代码，不看
     if race.Enabled {
         _ = rw.w.state
         race.Disable()
@@ -214,6 +247,7 @@ func (rw *RWMutex) RLock() {
     }
 }
 ```
+
 ### 读锁释放实现
 ![](.mutex_images/readerMutex_release.png)
 
@@ -242,7 +276,6 @@ func (rw *RWMutex) RUnlock() {
     }
 }
 ```
-
 
 ### 写锁加锁实现
 ![](.mutex_images/writerMutex_lock.png)
@@ -303,6 +336,14 @@ func (rw *RWMutex) Unlock() {
 ### 写锁与读锁的公平性
 
 在加读锁和写锁的工程中都使用atomic.AddInt32来进行递增，而该指令在底层是会通过LOCK来进行CPU总线加锁的，
+
 因此多个CPU同时执行readerCount其实只会有一个成功，从这上面看其实是写锁与读锁之间是相对公平的，
 谁先达到谁先被CPU调度执行，进行LOCK锁cache line成功，谁就加成功锁
 
+
+### 总结 读写互斥锁的实现
+
+1. 读锁不能阻塞读锁，引入readerCount实现
+2. 读锁需要阻塞写锁，直到所有读锁都释放，引入readerSem实现
+3. 写锁需要阻塞读锁，直到所有写锁都释放，引入wirterSem实现
+4. 写锁需要阻塞写锁，引入Metux实现
