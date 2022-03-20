@@ -51,11 +51,13 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [2.7 prometheus监控程序](chapter02_goroutine/02_runtime/07prometheus/prometheus.md)
 - 3 [多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
 - 4 [线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
-    - [4.1 Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
-    - [4.2 百万请求处理](chapter02_goroutine/04_concurrent_pool/02_millionRequests/main.go)
+    - [4.1 使用channe实现Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
+    - [4.2 百万请求处理案例](chapter02_goroutine/04_concurrent_pool/02_millionRequests/main.go)
     - [4.3 第三方包线程池ants](chapter02_goroutine/04_concurrent_pool/03_antsPool/ants.md)
-    - [4.4 标准库连接池sql实现](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
-- [5 goroutine泄漏分析及处理](chapter02_goroutine/05_goroutine_leaks/goroutine_leak.md)
+    - [4.4 标准库连接池database/sql实现](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
+- [5 channel导致goroutine泄漏分析及处理](chapter02_goroutine/05_goroutine_leaks/goroutine_leak.md)
+  - [5.1 channel未正常关闭导致goroutine泄漏](chapter02_goroutine/05_goroutine_leaks/01_leaks_happen/main.go)
+  - [5.2 channel监听避免goroutine泄漏](chapter02_goroutine/05_goroutine_leaks/02_avoid_leaks/main.go)
 ---
 
 ## 第三章 通道Channel
@@ -65,6 +67,8 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [1.2 父子通信](chapter03_channel/01_channel_use/02ParentChildrenCommunication/main.go)
     - [1.3 死锁](chapter03_channel/01_channel_use/03deadlock/main.go)
     - [1.4 优雅关闭channel](chapter03_channel/01_channel_use/04channelClose/ChanClose.md)
+      - [1.4.1 N 个 sender，一个 receiver](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
+      - [1.4.2 N 个 sender， M 个 receiver ](chapter03_channel/01_channel_use/04channelClose/case4_nsender_nreceiver/nsender_nreceiver.go)
     - [1.5 通道遍历range](chapter03_channel/01_channel_use/05ChannelRange/main.go)
     - [1.6 有缓冲channel增强并发](chapter03_channel/01_channel_use/06bufferChan/main.go)
     - [1.7 双向通道](chapter03_channel/01_channel_use/07two-wayChan/main.go)

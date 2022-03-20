@@ -12,7 +12,7 @@ func gen(done chan struct{}, nums ...int) <-chan int {
 		defer close(out)
 		for _, n := range nums {
 			select {
-			case out <- n:
+			case out <- n: //会阻塞
 			case <-done: // 监听关闭channel
 				return
 			}
@@ -38,6 +38,7 @@ func main() {
 		fmt.Println(n)              // 2
 		time.Sleep(5 * time.Second) // done thing, 可能异常中断接收
 		if true {                   // if err != nil
+			// 突然关闭，只能获取到2
 			break
 		}
 	}
