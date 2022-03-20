@@ -116,8 +116,12 @@ Note:目录同级为 代码展示，可在Goland中运行
 ## 第六章 指针
 - [1 指针类型转换及修改值](chapter06_pointer/01ptrOperation/main.go)
 - [2 指针分类及unsafe包使用](chapter06_pointer/02unsafe/unsafe.md)
+  - 指针修改结构体成员
+  - 指针获取切片长度和容量
+  - 指针获取Map的元素数量
 - [3 获取并修改结构体私有变量值](chapter06_pointer/03PointerSetPrivateValue/main.go)
 - [4 切片与字符串零拷贝互转(指针和反射方式)](chapter06_pointer/04SliceToString/sliceToString.go)
+- [5 结构体的内存对齐](chapter06_pointer/05_struct_align/align.go)
 ---
 
 ## [第七章 系统调用](chapter07_system_call/Syscall.md)

@@ -10,11 +10,13 @@ import (
 /*
 	[]byte和string其实内部的存储结构都是一样的，但 Go 语言的类型系统禁止他俩互换。如果借助unsafe.Pointer，我们就可以实现在零拷贝的情况下，
 	将[]byte数组直接转换成string类型,实现字符串和 bytes 切片之间的转换，要求是 zero-copy
+
 底层数据结构
 type StringHeader struct{
 	Data uintptr
 	Len int
 }
+
 type SliceHeader struct{
 	Data uintptr
 	len int
