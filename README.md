@@ -104,8 +104,8 @@ Note:目录同级为 代码展示，可在Goland中运行
 - [2 引用传递-指针切片和指针数组](chapter05_slice_n_array/02passByReference/main.go)
 - [3 切片和数组参数传递性能对比](chapter05_slice_n_array/03Array_n_slice_performance/main_test.go)
 - 4 底层数据结构
-  - [切片](chapter05_slice_n_array/04structure_of_array_n_slice/slice/sliceStructure.md)
-  - [数组](chapter05_slice_n_array/04structure_of_array_n_slice/array/arrayStructure.md)
+  - [切片数据结构及拷贝copy源码分析](chapter05_slice_n_array/04structure_of_array_n_slice/slice/sliceStructure.md)
+  - [数组数据结构](chapter05_slice_n_array/04structure_of_array_n_slice/array/arrayStructure.md)
 - [5 nil切片和空切片](chapter05_slice_n_array/05nilSlice_n_NoneSlice/nil_n_empty_slice.md)
 - [6 扩容策略](chapter05_slice_n_array/06GrowSlice/grow_size_policy.md)
 - [7 不同类型的切片间互转](chapter05_slice_n_array/07Transfer_slice_in_different_type/main.go)
@@ -187,8 +187,8 @@ Note:目录同级为 代码展示，可在Goland中运行
         - [6.5.2 newFunc与GC前后Get对比](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/02NewFunc/newFunc.go)
         - [6.5.3 何时使用对象缓存](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/03When2Use_object_pool/main.go)
         - [6.5.4 第三方对象池object pool(bytebufferpool)](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/04_byteBufferPool/main.go)
-    - 6.6 [Cond条件变量通知所有协程及NoCopy机制-->熔断框架hystrix-go实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/06Cond/Cond.md)
-    - 6.7 [atomic原子操作源码分析-->zerolog源码中实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/atomic.md)
+    - [6.6 Cond条件变量通知所有协程及NoCopy机制-->熔断框架hystrix-go实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/06Cond/Cond.md)
+    - [6.7 atomic原子操作源码分析-->zerolog源码中实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/atomic.md)
         - [6.7.0 Value的load和store](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/00_value/main.go)
         - [6.7.1 add及补码减](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/01_add/main.go)
         - [6.7.2 cas算法和自旋锁](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/02_CompareAndSwap/main.go)
@@ -293,10 +293,10 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [1.2 方式一：全局参数方式解决的优缺点](chapter14_context/01_Reason_To_Use_Context/02_Method1_Global_Param/main.go)
     - [1.3 方式二: 通道channel方式解决的优缺点](chapter14_context/01_Reason_To_Use_Context/03_Method2_Channel/main.go)
     - [1.4 方式三: 最优方式Context](chapter14_context/01_Reason_To_Use_Context/04_Method3_Context/main.go)
-- 2 WithCancel使用
-- 3 WithDeadline使用
-- 4 WithValue使用
-- 5 WithTimeout使用
+- [2 WithCancel使用](chapter14_context/02_WithCancel/main.go)
+- [3 WithDeadline使用](chapter14_context/03_WithDeadline/main.go)
+- [4 WithValue使用](chapter14_context/04_WIthValue/main.go)
+- [5 WithTimeout对WithDeadline封装的使用](chapter14_context/05_WithTimeout/main.go)
 
 ## 第十五章 接口嵌套编程
 - [1 常见冗余代码写法](chapter15_interfaceProgramming/01_problem/main.go)
