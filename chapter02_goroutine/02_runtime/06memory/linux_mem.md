@@ -1,7 +1,7 @@
 # Linux系统内存管理
 
 ## 用户空间与内核空间
-![](.mem_images/user_kernel.png)
+![](.mem_images/.go_mem_images/user_kernel.png)
 
 现在操作系统都是采用虚拟存储器，那么对 32 位操作系统而言，它的寻址空间（虚拟存储空间）为 4G（2 的 32 次方）。
 操作系统的核心是内核，独立于普通的应用程序，可以访问受保护的内存空间，也有访问底层硬件设备的所有权限。
@@ -11,7 +11,7 @@
 而将较低的 3G 字节（从虚拟地址 0x00000000 到 0xBFFFFFFF），供各个进程使用，称为用户空间
 
 ## 进程地址空间
-![](.mem_images/linux_process_memory.png)
+![](.mem_images/.go_mem_images/linux_process_memory.png)
 
 每个进程都有一个线性虚拟地址空间，地址从 0 到最大值。虚拟地址空间不需要是连续的，因此并非所有这些虚拟地址实际上都用于存储数据，并且它们不占用 RAM 或磁盘中的空间。
 很酷的一点是，真实内存的同一帧可以支持属于多个进程的多个虚拟页面。通常就是这种情况，虚拟内存占用 GNU C 库代码（libc），如果使用 go build 进行编译，则默认包含该代码。
@@ -57,7 +57,7 @@ mmap,brk这两种方式分配的都是虚拟内存，没有分配物理内存。
 2）当开辟的空间大于 128K 时，mmap（）系统调用函数来在虚拟地址空间中（堆和栈中间，称为“文件映射区域”的地方）找一块空间来开辟。
 
 ## 分配算法TCMalloc
-![](.mem_images/TCMalloc_strategy.png)
+![](.mem_images/.go_mem_images/TCMalloc_strategy.png)
 
 TCMalloc 相关的信息可以看这里：http://goog-perftools.sourceforge.net/doc/tcmalloc.html
 
@@ -85,7 +85,7 @@ func main() {
     http.ListenAndServe(":8080", nil)
 }
 ```
-![](.mem_images/ps_memory.png)
+![](.mem_images/.go_mem_images/ps_memory.png)
 
 - PID :进程Id
 - %CPU:（处理器）使用百分比
@@ -98,17 +98,17 @@ func main() {
 
 
 ## 物理和虚拟内存
-![](.mem_images/physical_mem.png)
+![](.mem_images/.go_mem_images/physical_mem.png)
 
 我们可以将物理内存看作是一个槽/单元的数组，其中槽可以容纳 8 个位信息 1。每个内存槽都有一个地址。
 
-![](.mem_images/virtual_mem_to_physical_mem.png)
+![](.mem_images/.go_mem_images/virtual_mem_to_physical_mem.png)
 
 虚拟内存可以使用基于 CPU 体系结构和操作系统的段或页表来实现。页表更常见。
 
 在分页虚拟内存中，我们将虚拟内存划分为块，称为页。页的大小可以根据硬件的不同而有所不同，但是页的大小通常是 4-64 KB，此外，通常还能够使用从 2MB 到 1GB 的巨大的页。
 分块很有用，因为单独管理每个内存槽需要更多的内存，而且会降低计算机的性能。
-![](.mem_images/virtual_mem_transfer_to_physical_mem.png)
+![](.mem_images/.go_mem_images/virtual_mem_transfer_to_physical_mem.png)
 
 为了实现分页虚拟内存，计算机通常有一个称为内存管理单元(MMU)的芯片，它位于 CPU 和内存之间。
 MMU 在一个名为页表的表(它存储在内存中)中保存了从虚拟地址到物理地址的映射，其中每页包含一个页表项(PTE)。

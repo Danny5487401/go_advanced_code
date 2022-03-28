@@ -1,4 +1,4 @@
-package p
+package main
 
 import (
 	"fmt"
@@ -13,14 +13,12 @@ type W struct {
 
 // b是byte类型，占1个字节；i是int32类型，占4个字节；j是int64类型，占8个字节: 1+4+8=13
 
-func init() {
-	fmt.Println("---初始化Init开始---")
+func main() {
 	var w *W = new(W)
 	fmt.Printf("Struct_W_size=%d\n", unsafe.Sizeof(*w))   // size=16
 	fmt.Printf("w.b_alignSize=%d\n", unsafe.Alignof(w.b)) // alignSize=1
 	fmt.Printf("w.i_alignSize=%d\n", unsafe.Sizeof(w.i))  // alignSize=4
 	fmt.Printf("w.j_alignSize=%d\n", unsafe.Sizeof(w.j))  // alignSize=8
-	fmt.Println("---初始化Init结束---")
 }
 
 // 13 !=16

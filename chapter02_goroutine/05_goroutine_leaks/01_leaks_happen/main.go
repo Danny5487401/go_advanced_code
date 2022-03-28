@@ -29,11 +29,17 @@ func main() {
 	out := gen(2, 3, 4, 5)
 
 	for n := range out {
-		fmt.Println(n)              // 2
-		time.Sleep(5 * time.Second) // done thing, 可能异常中断接收
-		// 模拟接收者没接受完就异常关闭
+		fmt.Println(n) // 2
+		//time.Sleep(5 * time.Second) // done thing, 可能异常中断接收
+		//模拟接收者没接受完就异常关闭
 		if true { // if err != nil
 			break
 		}
 	}
+	time.Sleep(5 * time.Second)
 }
+
+/*
+泄漏的原因是 goroutine 操作 channel 后，处于发送或接收阻塞状态，而 channel 处于满或空的状态，一直得不到改变。
+同时，垃圾回收器也不会回收此类资源，进而导致 goroutine 会一直处于等待队列中，不见天日。
+*/

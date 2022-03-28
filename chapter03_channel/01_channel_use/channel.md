@@ -1,4 +1,4 @@
-# channel
+# channel通道
 
 ## 使用场景
 把channel用在数据流动的地方
@@ -14,13 +14,17 @@
 
 ## 源码分析- 数据结构
 创建一个容量为 6 的，元素为 int 型的 channel 数据结构
+```go
+make(chan int,6 )
+```
 ![](.img/makeChan.png)
 图为一个长度为6，类型为int, 两个接收者，三个发送者的channel，当前接收者准备读数据的位置为0，发送者发送数据位置为4.
-一般情况下recvq和sendq至少有一个为空。只有一个例外，那就是同一个goroutine使用select语句向channel一边写数据，一边读数据
+- 一般情况下recvq和sendq至少有一个为空。
+- 只有一个例外，那就是同一个goroutine使用select语句向channel一边写数据，一边读数据
 ![](.img/channel_design.png)  
 ![](.img/channelStructure.png)
 
-1. buf是有缓冲的channel所特有的结构，用来存储缓存数据。是个循环链表
+1. buf是有缓冲的channel所特有的结构，用来存储缓存数据。是个循环链表，上图为了简单画成数组
 2. sendx和recvx用于记录buf这个循环链表中的~发送或者接收的~index
 3. lock是个互斥锁。
 4. recvq和sendq分别是接收(<-channel)或者发送(channel <- xxx)的goroutine抽象出来的结构体(sudog)的队列。是个双向链表
@@ -30,7 +34,7 @@
 ```go
 type hchan struct {
 	qcount   uint           // total data in the queue 队列中元素，缓冲的元素
-	dataqsiz uint           // size of the circular queue   队列长度，eg make(chan int64, 5), dataqsiz为5
+	dataqsiz uint           // size of the circular queue  队列长度，eg make(chan int64, 5), dataqsiz为5
 	buf      unsafe.Pointer // points to an array of dataqsiz elements 数据存储环形数组
 	elemsize uint16 //每个元素的大小
 	closed   uint32 //是否关闭 0 未关闭
@@ -59,7 +63,7 @@ type waitq struct {
     这就是为什么函数传递中无需使用channel的指针，而直接用channel就行了，因为channel本身就是一个指针
 
 2. 各种场景的发送和接收
-![](blocked_into_sudog.jpg)
+![](.img/blocked_into_sudog.jpg)
 
 3. goroutine的调度
 4. goroutine的阻塞和唤醒
@@ -78,6 +82,8 @@ const (
 func makechan(t *chantype, size int) *hchan {
 	elem := t.elem
 	//...省略了检查 channel size，align 的代码
+	mem, overflow := math.MulUintptr(elem.size, uintptr(size))
+	
 	var c *hchan
 	//创建hchan结构并分配内存
 	switch {
@@ -110,16 +116,17 @@ func makechan(t *chantype, size int) *hchan {
 ## 二. 写数据--分为阻塞写和非阻塞写
 ```go
 c := make(chan int64)
-//阻塞写
-	c <- 1
-//非阻塞写
-	select {
-	case c <- 1:
-		//do something
-		break
-	default:
-		//do something
-	}
+// 1. 阻塞写
+c <- 1
+
+// 2. 非阻塞写
+select {
+case c <- 1:
+    //do something
+    break
+default:
+    //do something
+}
 ```
 
 注意：非阻塞写必须带上default
@@ -149,7 +156,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr) bool {
 		throw("unreachable")
 	}
 	// 省略 debug 相关……
-	
 	
 	// 对于不阻塞的 send，快速检测失败场景
 	// 如果 channel 未关闭且 channel 没有多余的缓冲空间。这可能是：
@@ -325,12 +331,14 @@ default:
 注意：非阻塞读必须带上default
 接收操作有两种写法，
 ```go
-//一种带 “ok”，反应 channel 是否关闭；
-//一种不带 “ok”，这种写法，当接收到相应类型的零值时无法知道是真实的发送者发送过来的值，还是 channel 被关闭后，返回给接收者的默认类型的零值
+// 一种带 “ok”，反应 channel 是否关闭；
+// 一种不带 “ok”，这种写法，当接收到相应类型的零值时无法知道是真实的发送者发送过来的值，还是 channel 被关闭后，返回给接收者的默认类型的零值
 c := make(chan int64, 5)
 c <- 0
+
 v, ok := <-c
 fmt.Println(v, ok) // 0, true
+
 close(c) //关闭
 
 v, ok = <-c
@@ -506,8 +514,8 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool) (selected, received bool)
 Go调度原理web连接：https://i6448038.github.io/2017/12/04/golang-concurrency-principle/  Go的CSP并发模型--->Go线程实现模型MPG
 
 如果有等待发送的队列，说明 channel 已经满了，要么是非缓冲型的 channel，要么是缓冲型的 channel，但 buf 满了。
-调用 recv 函数
 
+调用 recv 函数
 ```go
 func recv(c *hchan, sg *sudog, ep unsafe.Pointer, unlockf func(), skip int) {
 	if c.dataqsiz == 0 {
@@ -590,8 +598,8 @@ close 函数先上一把大锁，接着把所有挂在这个 channel 上的 send
 
 ### 关闭原则：
 
-	一般原则上使用通道是不允许接收方关闭通道和 不能关闭一个有多个并发发送者的通道。
-	换而言之， 你只能在发送方的 goroutine 中关闭只有该发送方的通道
+一般原则上使用通道是 不允许接收方关闭通道 和 不能关闭一个有多个并发发送者的通道。
+换而言之， 你只能在发送方的 goroutine 中关闭只有该发送方的通道
 
 源码分析
 ```go
@@ -677,14 +685,19 @@ func closechan(c *hchan) {
 }
 ```
 
-	对于一个 channel，recvq 和 sendq 中分别保存了阻塞的发送者和接收者。关闭 channel 后，对于等待接收者而言，会收到一个相应类型的零值。
-	对于等待发送者，会直接 panic。所以，在不了解 channel 还有没有接收者的情况下，不能贸然关闭 channel
+对于一个 channel，recvq 和 sendq 中分别保存了阻塞的发送者和接收者。关闭 channel 后，对于等待接收者而言，会收到一个相应类型的零值。
+对于等待发送者，会直接 panic。所以，在不了解 channel 还有没有接收者的情况下，不能贸然关闭 channel
+
+close 函数先上一把大锁，接着把所有挂在这个 channel 上的 sender 和 receiver 全都连成一个 sudog 链表，再解锁。最后，再将所有的 sudog 全都唤醒。
 
 
+唤醒之后，该干嘛干嘛。
+- sender 会继续执行 chansend 函数里 goparkunlock 函数之后的代码，很不幸，检测到 channel 已经关闭了，panic。
+- receiver 则比较幸运，进行一些扫尾工作后，返回。这里，selected 返回 true，而返回值 received 则要根据 channel 是否关闭，返回不同的值。如果 channel 关闭，received 为 false，否则为 true。这我们分析的这种情况下，received 返回 false。
 
 ## 总结一下操作 channel 的结果
 ![](.img/channel_operation_guild.png)
 
-### 送和接收元素的本质
+### 发送和接收元素的本质
 channel 的发送和接收操作本质上都是 “值的拷贝”，无论是从 sender goroutine 的栈到 chan buf，还是从 chan buf 到 receiver goroutine，
 或者是直接从 sender goroutine 到 receiver goroutine。

@@ -1,4 +1,3 @@
-
 # 切片介绍
 
 切片本身并不是动态数组或者数组指针。
@@ -6,6 +5,7 @@
 切片（slice）是对数组一个连续片段的引用，所以切片是一个引用类型（因此更类似于 C++ 中的 Vector 类型，或者 Python 中的 list 类型）
 
 ## 源码结构
+![](sliceStructure.png)
 runtime/slice.go
 ```go
 type slice struct {
@@ -15,8 +15,9 @@ type slice struct {
 }
 ```
 
-	切片的结构体由3部分构成，Pointer 是指向一个数组的指针，len 代表当前切片的长度，cap 是当前切片的容量。cap 总是大于等于 len 的
-	看sliceStructure.png图，切片是在数组的基础上抽象了一层，底层是对数组的引用,当切片发生扩容时,底层数组发生改变，而对于上层切片来说是没有变化的
+切片的结构体由3部分构成，Pointer 是指向一个数组的指针，len 代表当前切片的长度，cap 是当前切片的容量。cap 总是大于等于 len 的
+
+看图，切片是在数组的基础上抽象了一层，底层是对数组的引用,当切片发生扩容时,底层数组发生改变，而对于上层切片来说是没有变化的
 
 ## 初始化
 slice的make初始化主要通过runtime.makeslice来完成,先计算出需要的内存空间大小，然后再分配内存。
@@ -41,42 +42,16 @@ func makeslice(et *_type, len, cap int) unsafe.Pointer {
 }
 ```
 内存空间大小的计算公式为：
-	内存空间大小 = 切片中元素大小 * 容量大小
-
-## append扩容：
-	当使用append的时候就可能会触发切片的扩容机制,扩容是调用runtime.growslice,具体步骤为
-```go
-func growslice(et *_type, old slice, cap int) slice {
-	.....
-	newcap := old.cap
-	doublecap := newcap + newcap
-	if cap > doublecap {
-		newcap = cap
-	} else {
-		if old.len < 1024 {
-			newcap = doublecap
-		} else {
-			// Check 0 < newcap to detect overflow
-			// and prevent an infinite loop.
-			for 0 < newcap && newcap < cap {
-				newcap += newcap / 4
-			}
-			// Set newcap to the requested cap when
-			// the newcap calculation overflowed.
-			if newcap <= 0 {
-				newcap = cap
-			}
-		}
-	}
-}
+```shell
+内存空间大小 = 切片中元素大小 * 容量大小
 ```
 
 
-1. 在一开始旧切片old.cap可能还未初始化,old.cap为0,这时候new.cap直接等于预期的容量cap
-2. 当旧切片的长度old.len < 1024时,进行两倍扩容new.cap= 2(old.cap)
-3. 当旧切片的长度old.len > 1024时,进行1.25倍扩容new.cap = 1.25(old.cap)
-
-## 拷贝切片：
+## 拷贝切片
+拷贝切片可以用copy方法
+```go
+func copy(dst, src []Type) int
+```
 实际上copy根据数据类型，最终会调用切片的runtime.slicecopy方法。
 ```go
 func slicecopy(toPtr unsafe.Pointer, toLen int, fmPtr unsafe.Pointer, fmLen int, width uintptr) int {
@@ -99,10 +74,10 @@ func slicecopy(toPtr unsafe.Pointer, toLen int, fmPtr unsafe.Pointer, fmLen int,
 	size := uintptr(n) * width
 	if size == 1 { // common case worth about 2x to do here
 		// TODO: is this still worth it with new memmove impl?
-		//如果拷贝的空间大小等于1,那么直接转化赋值
+		//如果拷贝的空间大小 等于1,那么直接转化赋值
 		*(*byte)(toPtr) = *(*byte)(fmPtr) // known to be a byte pointer
 	} else {
-		//如果拷贝的空间大小大于1,则源切片中array的数据拷贝到目标切片的array
+		//如果拷贝的空间大小 大于1,则源切片中array的数据拷贝到目标切片的array
 		memmove(toPtr, fmPtr, size)
 	}
 	return n
@@ -147,7 +122,7 @@ sliceHeader := (*reflect.SliceHeader)(unsafe.Pointer(&o))
 sliceHeader.Cap = length
 sliceHeader.Len = length
 sliceHeader.Data = uintptr(ptr)
-*/
+
 ```
 
 具体操作

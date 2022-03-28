@@ -250,8 +250,30 @@ func (e *entry) load() (value interface{}, ok bool) {
 
 ```
 
+## 劣势
+存值过程中可以看到，如果值并不存在于read之中，也是需要使用互斥锁的，而如果完全是新添加的key，还可能进行dirtyLocked的操作
+```go
+func (m *Map) dirtyLocked() {
+	if m.dirty != nil {
+		return
+	}
+	read, _ := m.read.Load().(readOnly)
+	m.dirty = make(map[interface{}]*entry, len(read.m))
+	for k, e := range read.m {
+		if !e.tryExpungeLocked() {
+			m.dirty[k] = e
+		}
+	}
+}
+
+```
+这个时候，需要完成从read到dirty的复制，这个对性能是极大的损耗的。
+
+这个地方有一个点是非常值得注意的，由于map[interface{}]*entry中的值是一个指针，所以在复制完成之后，对read里面的值进行修改，那么dirty中的值也是相应的会修改的，因为两者指向的是同一个对象
 
 ## 适用场景
 
 sync.map 适用于读多写少的场景。对于写多的场景，会导致 read map 缓存失效，需要加锁，导致冲突变多；
 而且由于未命中 read map 次数过多，导致 dirty map 提升为 read map，这是一个 O(N) 的操作，会进一步降低性能
+
+总的来说，sync.Map对于频繁修改的map效率是极高的，但是对于频繁增删的map，其效率是还不如使用sync.RWMutex的。

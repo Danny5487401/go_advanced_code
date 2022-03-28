@@ -44,17 +44,20 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [2.5 监控代码性能pprof](chapter02_goroutine/02_runtime/05pprof/intro.md)
       - [2.5.1 标准包runtime/pprof及net/http/pprof使用](chapter02_goroutine/02_runtime/05pprof/01_pprof/main.go)
       - [2.5.2 第三方包pkg/profile](chapter02_goroutine/02_runtime/05pprof/02_pkg_profile/cpu.go)
+      - [2.5.3 debug时添加pprof标签定位goroutine](chapter02_goroutine/02_runtime/05pprof/03_pprof_label/client/main.go)
     - 2.6 Linux内存及Go内存结构管理
       - [2.6.1 Linux内存管理](chapter02_goroutine/02_runtime/06memory/linux_mem.md)
       - [2.6.2 Go内存结构管理](chapter02_goroutine/02_runtime/06memory/go_mem.md)
     - [2.7 prometheus监控程序](chapter02_goroutine/02_runtime/07prometheus/prometheus.md)
 - 3 [多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
 - 4 [线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
-    - [4.1 Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
-    - [4.2 百万请求处理](chapter02_goroutine/04_concurrent_pool/02_millionRequests/main.go)
+    - [4.1 使用channe实现Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
+    - [4.2 百万请求处理案例](chapter02_goroutine/04_concurrent_pool/02_millionRequests/main.go)
     - [4.3 第三方包线程池ants](chapter02_goroutine/04_concurrent_pool/03_antsPool/ants.md)
-    - [4.4 标准库连接池sql实现](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
-- [5 goroutine泄漏分析及处理](chapter02_goroutine/05_goroutine_leaks/goroutine_leak.md)
+    - [4.4 标准库连接池database/sql实现](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
+- [5 channel导致goroutine泄漏分析及处理](chapter02_goroutine/05_goroutine_leaks/goroutine_leak.md)
+  - [5.1 channel未正常关闭导致goroutine泄漏](chapter02_goroutine/05_goroutine_leaks/01_leaks_happen/main.go)
+  - [5.2 channel监听避免goroutine泄漏](chapter02_goroutine/05_goroutine_leaks/02_avoid_leaks/main.go)
 ---
 
 ## 第三章 通道Channel
@@ -64,6 +67,8 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [1.2 父子通信](chapter03_channel/01_channel_use/02ParentChildrenCommunication/main.go)
     - [1.3 死锁](chapter03_channel/01_channel_use/03deadlock/main.go)
     - [1.4 优雅关闭channel](chapter03_channel/01_channel_use/04channelClose/ChanClose.md)
+      - [1.4.1 N 个 sender，一个 receiver](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
+      - [1.4.2 N 个 sender， M 个 receiver ](chapter03_channel/01_channel_use/04channelClose/case4_nsender_nreceiver/nsender_nreceiver.go)
     - [1.5 通道遍历range](chapter03_channel/01_channel_use/05ChannelRange/main.go)
     - [1.6 有缓冲channel增强并发](chapter03_channel/01_channel_use/06bufferChan/main.go)
     - [1.7 双向通道](chapter03_channel/01_channel_use/07two-wayChan/main.go)
@@ -99,8 +104,8 @@ Note:目录同级为 代码展示，可在Goland中运行
 - [2 引用传递-指针切片和指针数组](chapter05_slice_n_array/02passByReference/main.go)
 - [3 切片和数组参数传递性能对比](chapter05_slice_n_array/03Array_n_slice_performance/main_test.go)
 - 4 底层数据结构
-  - [切片](chapter05_slice_n_array/04structure_of_array_n_slice/slice/sliceStructure.md)
-  - [数组](chapter05_slice_n_array/04structure_of_array_n_slice/array/arrayStructure.md)
+  - [切片数据结构及拷贝copy源码分析](chapter05_slice_n_array/04structure_of_array_n_slice/slice/sliceStructure.md)
+  - [数组数据结构](chapter05_slice_n_array/04structure_of_array_n_slice/array/arrayStructure.md)
 - [5 nil切片和空切片](chapter05_slice_n_array/05nilSlice_n_NoneSlice/nil_n_empty_slice.md)
 - [6 扩容策略](chapter05_slice_n_array/06GrowSlice/grow_size_policy.md)
 - [7 不同类型的切片间互转](chapter05_slice_n_array/07Transfer_slice_in_different_type/main.go)
@@ -111,8 +116,12 @@ Note:目录同级为 代码展示，可在Goland中运行
 ## 第六章 指针
 - [1 指针类型转换及修改值](chapter06_pointer/01ptrOperation/main.go)
 - [2 指针分类及unsafe包使用](chapter06_pointer/02unsafe/unsafe.md)
+  - 指针修改结构体成员
+  - 指针获取切片长度和容量
+  - 指针获取Map的元素数量
 - [3 获取并修改结构体私有变量值](chapter06_pointer/03PointerSetPrivateValue/main.go)
 - [4 切片与字符串零拷贝互转(指针和反射方式)](chapter06_pointer/04SliceToString/sliceToString.go)
+- [5 结构体的内存对齐](chapter06_pointer/05_struct_align/align.go)
 ---
 
 ## [第七章 系统调用](chapter07_system_call/Syscall.md)
@@ -172,14 +181,14 @@ Note:目录同级为 代码展示，可在Goland中运行
       - [6.2.2 直接使用读写锁（sync.RWMutex）实现读写功能](chapter09_design_pattern/06_Synchronization_mode/01_sync/02RWMutex_vs_mutex/RWMutex/main.go)
       - [Mutex和RWMutex源码分析](chapter09_design_pattern/06_Synchronization_mode/01_sync/02RWMutex_vs_mutex/mutex.md)
     - [6.3 Once源码分析](chapter09_design_pattern/06_Synchronization_mode/01_sync/03Once/once.md)
-    - [6.4 并发安全Map(读多写少)](chapter09_design_pattern/06_Synchronization_mode/01_sync/04map/sync_map.md)
+    - [6.4 并发安全的sync.Map与sync.RWMutex封装的map对比及源码分析](chapter09_design_pattern/06_Synchronization_mode/01_sync/04map/sync_map.md)
     - [6.5 Pool对象池模式( *非连接池* !）-->官方包对象池fmt](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/pool.md)
         - [6.5.1 错误使用：未使用newFunc](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/01Without_newFunc/main.go)
         - [6.5.2 newFunc与GC前后Get对比](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/02NewFunc/newFunc.go)
         - [6.5.3 何时使用对象缓存](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/03When2Use_object_pool/main.go)
         - [6.5.4 第三方对象池object pool(bytebufferpool)](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/04_byteBufferPool/main.go)
-    - 6.6 [Cond条件变量通知所有协程及NoCopy机制-->熔断框架hystrix-go实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/06Cond/Cond.md)
-    - 6.7 [atomic原子操作源码分析-->zerolog源码中实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/atomic.md)
+    - [6.6 Cond条件变量通知所有协程及NoCopy机制-->熔断框架hystrix-go实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/06Cond/Cond.md)
+    - [6.7 atomic原子操作源码分析-->zerolog源码中实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/atomic.md)
         - [6.7.0 Value的load和store](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/00_value/main.go)
         - [6.7.1 add及补码减](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/01_add/main.go)
         - [6.7.2 cas算法和自旋锁](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/02_CompareAndSwap/main.go)
@@ -284,10 +293,10 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [1.2 方式一：全局参数方式解决的优缺点](chapter14_context/01_Reason_To_Use_Context/02_Method1_Global_Param/main.go)
     - [1.3 方式二: 通道channel方式解决的优缺点](chapter14_context/01_Reason_To_Use_Context/03_Method2_Channel/main.go)
     - [1.4 方式三: 最优方式Context](chapter14_context/01_Reason_To_Use_Context/04_Method3_Context/main.go)
-- 2 WithCancel使用
-- 3 WithDeadline使用
-- 4 WithValue使用
-- 5 WithTimeout使用
+- [2 WithCancel使用](chapter14_context/02_WithCancel/main.go)
+- [3 WithDeadline使用](chapter14_context/03_WithDeadline/main.go)
+- [4 WithValue使用](chapter14_context/04_WIthValue/main.go)
+- [5 WithTimeout对WithDeadline封装的使用](chapter14_context/05_WithTimeout/main.go)
 
 ## 第十五章 接口嵌套编程
 - [1 常见冗余代码写法](chapter15_interfaceProgramming/01_problem/main.go)
@@ -317,9 +326,7 @@ Note:目录同级为 代码展示，可在Goland中运行
   - [3.2 crypto_rand使用](chapter17_dataStructure_n_algorithm/03_rand/02_crypto_rand/main.go)
   - [3.3 fastrand优化使用](chapter17_dataStructure_n_algorithm/03_rand/03_fastrand/main.go)
 - [4 排序算法分类及图解(sort包源码分析)](chapter17_dataStructure_n_algorithm/04_sort/algorithm.md)
-  - [4.1 map排序 ](chapter17_dataStructure_n_algorithm/04_sort/sorted_map/map_sort.go)
-  - [4.2 排序接口实现（反射方式）](chapter17_dataStructure_n_algorithm/04_sort/sortByReflect/sort.go)
-  - [4.3 slice排序](chapter17_dataStructure_n_algorithm/04_sort/sorted_slice/main.go)
+  - [4.1 不同结构体切片根据反射排序，map根据key排序](chapter17_dataStructure_n_algorithm/04_sort/sorted_info/main.go)
 - [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
 - [6 Privacy Enhanced Mail Certificate (pem文件)生成](chapter17_dataStructure_n_algorithm/06_pem_generate/main.go)
 - [7 Base64编码解析](chapter17_dataStructure_n_algorithm/07_base64_encoding/base64.md)

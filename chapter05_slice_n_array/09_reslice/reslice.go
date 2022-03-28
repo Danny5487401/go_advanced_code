@@ -17,7 +17,8 @@ func lastNumsBySlice(origin []int) []int {
 // 推荐做法：copy
 func lastNumsByCopy(origin []int) []int {
 	result := make([]int, 2)
-	copy(result, origin[len(origin)-2:])
+	num := copy(result, origin[len(origin)-2:])
+	fmt.Printf("拷贝的数量有%v\n", num)
 	return result
 
 }
