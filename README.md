@@ -207,11 +207,11 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [1.1 闭包基本使用](chapter10_function/01_func_application/01_closure/main.go)
     - [1.2 匿名函数应用:回调函数](chapter10_function/01_func_application/02_anonymousFunc/main.go)
     - [1.3 函数模版:定义行为](chapter10_function/01_func_application/03_func_template/main.go)
-- 2 [高级函数](chapter10_function/02_advanced_function/introduction.md)
+- [2 高级函数filter,map,reduce](chapter10_function/02_advanced_function/introduction.md)
     - 2.1 简单实现filter,map,reduce
-    - 2.2 简单案例
+    - [2.2 简单案例](chapter10_function/02_advanced_function/02_example/main.go)
     - 2.3 复杂实现：泛型及类型检查
-    - [2.4 一个应用首页可能依托于很多服务,在没有强依赖关系下,优雅地实现并发编排任务](chapter10_function/02_advanced_function/04_mapReduce/main.go)
+    - [2.4 一个应用依托于很多服务,在没有强依赖关系下,优雅地实现并发编排任务](chapter10_function/02_advanced_function/04_mapReduce/main.go)
 - 3 一等公民案例
     - [网络管理中问题需求](chapter10_function/03_Firstclassfunction/problem_desc.md)
     - 网络管理中三种处理对比
