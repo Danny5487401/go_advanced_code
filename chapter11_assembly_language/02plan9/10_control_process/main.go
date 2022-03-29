@@ -5,9 +5,9 @@ import (
 )
 
 func main() {
-	//1。If
+	// 1. If
 	println(control_package.If(0, 1, 2))
-	// 2。汇编循环
+	// 2. 汇编循环
 	println(control_package.Sum([]int64{1, 2, 3, 4, 5}))
 	println(control_package.LoopAdd(10, 0, 2))
 }
