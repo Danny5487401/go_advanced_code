@@ -1,5 +1,9 @@
 # Golang 汇编(基于 Plan9 汇编)
 
+Go 编译器会输出一种抽象可移植的汇编代码，这种汇编并不对应某种真实的硬件架构。Go 的汇编器会使用这种伪汇编，再为目标硬件生成具体的机器指令。
+
+伪汇编这一个额外层可以带来很多好处，最主要的一点是方便将 Go 移植到新的架构上。
+
 ## 1. 通用寄存器
 下面是通用通用寄存器的名字在 IA64(英特尔安腾架构（Intel Itanium architecture）) 和 plan9 中的对应关系：
 ```css
@@ -54,11 +58,13 @@ Go 的汇编还引入了 4 个伪寄存器:用来维护上下文、特殊标识�
 
     另外，官方文档虽然将伪寄存器 FP 称之为 frame pointer，实际上它根本不是 frame pointer，按照传统的 x86 的习惯来讲，frame pointer 是指向整个 stack frame 底部的 BP 寄存器。
     假如当前的 callee 函数是 add，在 add 的代码中引用 FP，该 FP 指向的位置不在 callee 的 stack frame 之内，而是在 caller 的 stack frame 上。
+
+    尽管官方文档说 "All user-defined symbols are written as offsets to the pseudo-register FP(arguments and locals)"，实际这个原则只是在手写的代码场景下才是有效的。 与大多数最近的编译器做法一样，Go 工具链总是在其生成的代码中，使用相对栈指针(stack-pointer)的偏移量来引用参数和局部变量。
     与伪SP寄存器的关系是:
     - a. 若本地变量或者栈调用存严格split关系(无NOSPLIT)，伪FP=伪SP+16,否则 伪FP=伪SP+8
     - b. FP是访问入参、出参的基址，一般用正向偏移来寻址，SP是访问本地变量的起始基址，一般用负向偏移来寻址,修改硬件SP，会引起伪SP、FP同步变化 ,eg: SUBQ $16, SP // 这里golang解引用时，伪SP/FP都会-16
   
-3. SP->Stack pointer: top of stack. (栈指针)    
+4. SP->Stack pointer: top of stack. (栈指针)    
     plan9 的这个 SP 寄存器指向当前栈帧的局部变量的开始位置，使用形如 symbol+offset(SP) 的方式，offset 的合法取值是 [-framesize, 0)，注意是个左闭右开的区间。
     假如局部变量都是 8 字节，那么第一个局部变量就可以用 localvar0-8(SP) 来表示。在栈帧 size 为 0 的情况下，伪寄存器 SP 和硬件寄存器 SP 指向同一位置。
     引用函数的局部变量，注意：这个寄存器与上文的寄存器是不一样的，这里是伪寄存器，而我们展示出来的都是硬件寄存器.
@@ -69,7 +75,7 @@ Go 的汇编还引入了 4 个伪寄存器:用来维护上下文、特殊标识�
     - 伪SP：本地变量最高起始地址
     - 硬件SP：函数栈真实栈顶地址
   
-4. PC-> Program counter: jumps and branches.    
+5. PC-> Program counter: jumps and branches.    
     实际上就是在体系结构的知识中常见的PC寄存器，在x86平台下对应ip寄存器，amd64上则是rip。
 
 ### 真假 SP/FP/BP关系
@@ -147,7 +153,7 @@ Noted:所有用户空间的数据都可以通过FP/SP(局部数据、输入参�
 
 !["虚拟内存分布图"](.introduction_images/virtual_mem_distribution.jpg)
  
-```css
+
 1. 静态数据区：存放的是全局变量与常量。这些变量的地址编译的时候就确定了（这也是使用虚拟地址的好处，如果是物理地址，这些地址编译的时候是不可能确定的）。
 	Data 与 BSS 都属于这一部分。这部分只有程序中止（kill 掉、crasg 掉等）才会被销毁。
 	a. BSS段->BSS segment:通常是指用来存放程序中未初始化的全局变量的一块内存区域。BSS是英文BlockStarted by Symbol的简称。
@@ -164,7 +170,6 @@ Noted:所有用户空间的数据都可以通过FP/SP(局部数据、输入参�
 4. 堆区->heap：像 C/C++ 语言，堆完全是程序员自己控制的。但是 Golang 里边由于有 GC 机制，我们写代码的时候并不需要关心内存是在栈还是堆上分配。
 	Golang 会自己判断如果变量的生命周期在函数退出后还不能销毁或者栈上资源不够分配等等情况，就会被放到堆上。堆的性能会比栈要差一些。
 
-```
 
 
 ### 运行分析
@@ -173,7 +178,8 @@ Noted:所有用户空间的数据都可以通过FP/SP(局部数据、输入参�
 ```go
 // 编译   
 	1. go build -gcflags="-S"  hello.go 生成最终二进制文件    
-	2. go tool compile -S hello.go  生成obj文件    
+	2. GOOS=linux GOARCH=amd64 go tool compile -S hello.go  // 生成obj文件,并输出到终端    
+	   GOOS=linux GOARCH=amd64 go tool compile -S hello.go>hello.s  // 生成obj文件,并输出到文件   
 	   go tool compile -N -S hello.go // -N 禁止优化 -S 输出汇编代码 -l 禁止内联   
 // 反编译   
 	3. 先go build然后在go tool objdump 对二进制文件进行反汇编   
@@ -191,8 +197,9 @@ go编译器会智能判断对代码进行优化和使用汇编
 go build -gcflags="-N -l -S" file来获得汇编代码。
 
 ## 4. 常见指令
+数据宽度-Bit、Byte、Word、Dword、Qword
 
-1. 栈扩大、缩小：栈的调整是通过对硬件 SP 寄存器进行运算来实现的,plan9 中栈操作并没有使用push，pop，而是采用sub 跟add SP。  
+1. 栈扩大、缩小：栈的增长和收缩是通过在栈指针寄存器 SP 上分别执行减法和加法指令来实现的,plan9 中，Go 编译器不会生成任何 PUSH/POP 族的指令，而是采用sub 跟add SP。  
 ```cgo
 SUBQ $0x18, SP // 对 SP 做减法，为函数分配函数栈帧
 ADDQ $0x18, SP // 对 SP 做加法，清除函数栈帧

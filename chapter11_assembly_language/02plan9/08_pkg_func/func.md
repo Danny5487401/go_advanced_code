@@ -4,6 +4,17 @@ Go汇编语言其实是一种高级的汇编语言。在这里高级一词并没
 Go汇编语言中一个指令在最终的目标代码中可能会被编译为其它等价的机器指令。Go汇编实现的函数或调用函数的指令在最终代码中也会被插入额外的指令。
 要彻底理解Go汇编语言就需要彻底了解汇编器到底插入了哪些指令。
 
+
+## 栈
+由于 Go 程序中的 goroutine 数目是不可确定的，并且实际场景可能会有百万级别的 goroutine，runtime 必须使用保守的思路来给 goroutine 分配空间以避免吃掉所有的可用内存。
+
+也由于此，每个新的 goroutine 会被 runtime 分配初始为 2KB 大小的栈空间(Go 的栈在底层实际上是分配在堆空间上的)。
+
+随着一个 goroutine 进行自己的工作，可能会超出最初分配的栈空间限制(就是栈溢出的意思)。 为了防止这种情况发生，runtime 确保 goroutine 在超出栈范围时，会创建一个相当于原来两倍大小的新栈，并将原来栈的上下文拷贝到新栈上。 这个过程被称为 栈分裂(stack-split)，这样使得 goroutine 栈能够动态调整大小
+
+## 栈分裂
+为了使栈分裂正常工作，编译器会在每一个函数的开头和结束位置插入指令来防止 goroutine 爆栈。 像我们本章早些看到的一样，为了避免不必要的开销，一定不会爆栈的函数会被标记上 NOSPLIT 来提示编译器不要在这些函数的开头和结束部分插入这些检查指令
+
 ## 栈结构
 典型的函数的栈结构图
 ```css
@@ -87,6 +98,8 @@ argN, ... arg3, arg2, arg1, arg0
 ![](func_package/func_call_frame.png)
 ![](func_package/layout_of_function_args_n_return_value.png)
 ![](func_package/swap.png)
+
+
 
 ## 栈的初始化
 // src/runtime/stack.go

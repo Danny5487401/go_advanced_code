@@ -253,6 +253,8 @@ add %rdx,%rax    # 直接寻址。rax = rax + rdx
 addl $0x1,-0x8(%rbp) # 源操作数是立即操作数，目的操作数间接寻址。内存中的值加1（addl后缀字母l表示操作内存中的4个字节）
 ```
 
+指令类ADD由四条加法指令组成:addb、addw、addl和addq,分别是字节加法、字加法、双字加法和四字加法。
+
 ### call/ret指令
 ![](.introduction_images/retf.png) 
 ```shell
