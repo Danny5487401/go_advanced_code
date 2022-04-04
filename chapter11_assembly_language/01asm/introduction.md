@@ -57,6 +57,7 @@ INT n是软中断指令，n可以是0到255之间的数，用于指示中断向�
 7. 串操作指令:这部分指令用于对数据串进行操作，包括串传送指令MOVS、串比较指令CMPS、串扫描指令SCANS、串加载指令LODS、串保存指令STOS，
 这些指令可以有选择地使用REP/REPE/REPZ/REPNE和REPNZ的前缀以连续操作
 ![](.introduction_images/movsb.png)
+
 si:源寄存器  di:目标寄存器
 movsb -> move string byte(以字节单元传送): 将ds:si指向的内存单元中的字节 送入 es:di中，然后根据标志寄存器DF位的值，将si和di递增1或则递减1。
 movsw -> move string word(以字单元传送): 将ds:si指向的内存单元中的字节 送入 es:di中，然后根据标志寄存器DF位的值，将si和di递增2或则递减2。
@@ -67,9 +68,9 @@ movsw -> move string word(以字单元传送): 将ds:si指向的内存单元中�
 ## cpu可以直接读取数据的地方
 1. cpu 内部寄存器
 2. 内存单元
-![img.png](chapter11_assembly_language/01asm/.introduction_images/cpu_read_mem.png)
+![](.introduction_images/cpu_read_mem.png)
 3. 硬件端口
-![img_1.png](chapter11_assembly_language/01asm/.introduction_images/cpu_read_port.png)
+![](.introduction_images/cpu_read_port.png)
 
 ## cpu对存储器(内存)的读写操作过程
 
@@ -311,6 +312,7 @@ SF	符号	0表示最高位为0 1表示最高位为1
 ### jmp/je/jle/jg/jge等等j开头的指令--转移指令，例如可以修改8086cpu的cs段寄存器，ip指令寄存器
 ![](.introduction_images/jmp.png)
 ![](.introduction_images/jmp_english.png)
+
 这些都属于跳转指令，操作码后面直接跟要跳转到的地址或存有地址的寄存器，这些指令与高级编程语言中的 goto 和 if 等语句对应。用法示例：
 ```shell
 jmp    0x4005f2 #-->相当于jmp IP  0x4005f2,仅仅修改ip指令寄存器
@@ -327,23 +329,28 @@ pop 目的操作数
 ![](.introduction_images/push.png)
 
 专用于函数调用栈的入栈出栈指令，这两个指令都会自动修改rsp寄存器
-push入栈时rsp寄存器的值先减去8把栈位置留出来，然后把操作数复制到rsp所指位置。push指令相当于
+1. push入栈时rsp寄存器的值先减去8把栈位置留出来，然后把操作数复制到rsp所指位置。push指令相当于
+```shell
+sub $8,%rsp
+mov 源操作数,(%rsp)
+```
+push指令需要重点注意rsp寄存器的变化。
 
-    sub $8,%rsp
-    mov 源操作数,(%rsp)
-    push指令需要重点注意rsp寄存器的变化。
+2. pop出栈时先把rsp寄存器所指位置的数据复制到目的操作数中，然后rsp寄存器的值加8。pop指令相当于
 
-pop出栈时先把rsp寄存器所指位置的数据复制到目的操作数中，然后rsp寄存器的值加8。pop指令相当于
-
-    mov (%rsp),目的操作数
-    add $8,%rsp
-    同样，pop指令也需要重点注意rsp寄存器的变化
+```assembly
+mov (%rsp),目的操作数
+add $8,%rsp
+```
+同样，pop指令也需要重点注意rsp寄存器的变化
 
 ### leave指令
 leave指令没有操作数，它一般放在函数的尾部ret指令之前，用于调整rsp和rbp，这条指令相当于如下两条指令
+```assembly
+mov %rbp,%rsp
+pop %rbp
+```
 
-    mov %rbp,%rsp
-    pop %rbp
     
 ### loop指令
 ![](.introduction_images/loop.png)
@@ -416,13 +423,13 @@ mov   %rax,0x10(%rsp)  //把寄存器rax中的值写回变量c所在的内存
 
 对这个图做个简单的说明：
 
-    这里假定rsp寄存器的值是X
+- 这里假定rsp寄存器的值是X
     
-    图中的内存部分，每一行有8个内存单元，它们的地址从右向左依次加一，即如果最右边的内存单元的地址为X的话，则同一行最左边的内存单元的地址为X+7。
+- 图中的内存部分，每一行有8个内存单元，它们的地址从右向左依次加一，即如果最右边的内存单元的地址为X的话，则同一行最左边的内存单元的地址为X+7。
     
-    灰色箭头表述数据流动方向
+- 灰色箭头表述数据流动方向
     
-    紫红色数字n表示上述代码片段中的第n条指令
+- 紫红色数字n表示上述代码片段中的第n条指令
 
 对内存部分介绍
     
