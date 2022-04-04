@@ -12,8 +12,8 @@
 ![高级go编程](./img/golang.jpeg)
 
 # *目录*
-Note:目录同级为 代码展示，可在Goland中运行
-## *goVersion==1.16*
+Note:目录同级为 *代码展示*，可在Goland中运行
+## *推荐: goVersion==1.16*
 
 ## [第一章 I/O操作](chapter01_input_output/io.md)
 - 1 os操作系统模块
@@ -31,7 +31,7 @@ Note:目录同级为 代码展示，可在Goland中运行
 ---
 ## 第二章 协程Goroutine
 - 1 [线程模型分类及Goroutine切换原则(GPM模型)](chapter02_goroutine/01_GPM/GPM.md)
-    - 1.1 [trace查看宏观调度流程(Goroutine启动时长)](chapter02_goroutine/01_GPM/trace/trace.md)
+    - [1.1 trace查看宏观调度流程(Goroutine启动时长)](chapter02_goroutine/01_GPM/trace/trace.md)
 - 2 [runtime模块和GC](chapter02_goroutine/02_runtime/runtime.md)
     - [2.1 runtime核心功能及系统信息调用](chapter02_goroutine/02_runtime/01basic_use/main.go)
     - [2.2 Goexit()终止线程](chapter02_goroutine/02_runtime/02GoExit/main.go)
@@ -51,7 +51,7 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [2.7 prometheus监控程序](chapter02_goroutine/02_runtime/07prometheus/prometheus.md)
 - 3 [多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
 - 4 [线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
-    - [4.1 使用channe实现Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
+    - [4.1 使用channel实现Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
     - [4.2 百万请求处理案例](chapter02_goroutine/04_concurrent_pool/02_millionRequests/main.go)
     - [4.3 第三方包线程池ants](chapter02_goroutine/04_concurrent_pool/03_antsPool/ants.md)
     - [4.4 标准库连接池database/sql实现](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
@@ -146,11 +146,11 @@ Note:目录同级为 代码展示，可在Goland中运行
     - 2.1 组合模式
         - [2.1.1 修改前：使用面向对象处理](chapter09_design_pattern/02_structure/01_Composite/01_modify_before/composite.go)
         - [2.1.2 修改后：使用组合模式处理](chapter09_design_pattern/02_structure/01_Composite/02_modify_after/conposite.go)
-    - 2.2 [装饰模式-->grpc源码体现](chapter09_design_pattern/02_structure/02_Decorate/decorate.md)
+    - [2.2 装饰模式-->grpc源码体现](chapter09_design_pattern/02_structure/02_Decorate/decorate.md)
         - [2.2.1 闭包实现--多个装饰器同时使用](chapter09_design_pattern/02_structure/02_Decorate/01_closure_decorate/main.go)
         - [2.2.2 结构体装饰](chapter09_design_pattern/02_structure/02_Decorate/02_struct_decorate_inGrpc/main.go)
         - [2.2.3 反射实现--泛型装饰器](chapter09_design_pattern/02_structure/02_Decorate/03_reflect_decorate/decorate.go)
-    - 2.3 [享元模式-->线程池,缓存思想](chapter09_design_pattern/02_structure/03_FlyweightPattern/flyWeightPattern.md)
+    - [2.3 享元模式-->线程池,缓存思想](chapter09_design_pattern/02_structure/03_FlyweightPattern/flyWeightPattern.md)
     - [2.4 适配器模式](chapter09_design_pattern/02_structure/04_adopter/adopter.md)
     - [2.5 桥接模式](chapter09_design_pattern/02_structure/05_bridgeMethod/bridge_method.md)
     - [2.6 门面模式(外观模式)-->在gin中render应用(封装多个子服务)](chapter09_design_pattern/02_structure/06_facade_pattern/facade.md)
@@ -207,11 +207,11 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [1.1 闭包基本使用](chapter10_function/01_func_application/01_closure/main.go)
     - [1.2 匿名函数应用:回调函数](chapter10_function/01_func_application/02_anonymousFunc/main.go)
     - [1.3 函数模版:定义行为](chapter10_function/01_func_application/03_func_template/main.go)
-- 2 [高级函数](chapter10_function/02_advanced_function/introduction.md)
+- [2 高级函数filter,map,reduce](chapter10_function/02_advanced_function/introduction.md)
     - 2.1 简单实现filter,map,reduce
-    - 2.2 简单案例
+    - [2.2 简单案例](chapter10_function/02_advanced_function/02_example/main.go)
     - 2.3 复杂实现：泛型及类型检查
-    - [2.4 一个应用首页可能依托于很多服务,在没有强依赖关系下,优雅地实现并发编排任务](chapter10_function/02_advanced_function/04_mapReduce/main.go)
+    - [2.4 一个应用依托于很多服务,在没有强依赖关系下,优雅地实现并发编排任务](chapter10_function/02_advanced_function/04_mapReduce/main.go)
 - 3 一等公民案例
     - [网络管理中问题需求](chapter10_function/03_Firstclassfunction/problem_desc.md)
     - 网络管理中三种处理对比
@@ -310,7 +310,7 @@ Note:目录同级为 代码展示，可在Goland中运行
 
 ## 第十七章 数据结构及算法
 - 1 [queue双端单向队列(泛型)](chapter17_dataStructure_n_algorithm/01_queue/queue_test.go)
-- 2 [加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/encryption.md)
+- [2 加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/encryption.md)
   - 2.1 对称式加密
     - [aes高级加密标准](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/aes.md)
       - [Cipher FeedBack密码反馈模式](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/01_cfb/aes_cfb.go)
@@ -320,7 +320,7 @@ Note:目录同级为 代码展示，可在Goland中运行
     - [MD5信息摘要算法](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/md5/md5.md)
     - [hmac](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/hmac/hmac.md)
     - [SHA安全散列算法secure Hash Algorithm](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/sha1_n_sha256/sha.md)
-  - 2.3 [非对称加密算法rsa](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/03_rsa/rsa.md)
+  - [2.3 非对称加密算法rsa](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/03_rsa/rsa.md)
     - [分段与不分段进行加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/03_rsa/main.go)
 - [3 随机算法（伪随机和真随机)](chapter17_dataStructure_n_algorithm/03_rand/rand.md)
   - [3.1 math_rand使用](chapter17_dataStructure_n_algorithm/03_rand/01_math_rand/main.go)
@@ -342,7 +342,7 @@ Note:目录同级为 代码展示，可在Goland中运行
 - [5 error如何正确比较](chapter18_error_n_panic/05_err_comparision/main.go)
 - [6 收集多个errors-->go-multierror实现](chapter18_error_n_panic/06_multi_error/01_one_goroutine_n_errors/main.go)
 ## 第十九章 nil预定义标识
-- 1 不同类型为nil时的地址和大小
+- 1 不同类型为nil时的地址和size大小
 - 2 不同类型与nil的比较
   - [interface为nil时:数据段和类型](chapter19_nil/02_comparison/interface/interface.go)
   - [nil==nil不可以比较](chapter19_nil/02_comparison/nil/main.go)
@@ -367,3 +367,6 @@ Note:目录同级为 代码展示，可在Goland中运行
 ## 第二十三章 调试内部对象
 - [1 fmt打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)
 - [2 go-spew优化调试](chapter23_debug_program/02_go_spew/main.go)
+
+## [第二十四章 Flag命令行参数](chapter24_flag/flag.md)
+- [1 基本使用及自定义帮助信息](chapter24_flag/nginx.go) 
