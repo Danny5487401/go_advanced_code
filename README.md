@@ -13,7 +13,7 @@
 
 # *目录*
 Note:目录同级为 *代码展示*，可在Goland中运行
-## *推荐: goVersion==1.16*
+## *推荐: goVersion==1.18*
 
 ## [第一章 I/O操作](chapter01_input_output/io.md)
 - 1 os操作系统模块
@@ -370,3 +370,6 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 
 ## [第二十四章 Flag命令行参数](chapter24_flag/flag.md)
 - [1 基本使用及自定义帮助信息](chapter24_flag/nginx.go) 
+
+## 第二十四章 GoVersion新特性
+- 1 interface新含义-->type set(类型集合),specific type(特定类型)和structural type(结构类型)
