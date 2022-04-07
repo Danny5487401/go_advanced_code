@@ -14,6 +14,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/pkg/profile v1.6.0
 	github.com/prometheus/client_golang v1.11.0
+	github.com/smallnest/chanx v1.0.0
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasthttp v1.29.0
 	github.com/zeromicro/go-zero v1.3.0

@@ -77,6 +77,7 @@ Note:目录同级为 *代码展示*，可在Goland中运行
     - [1.10 happened before](chapter03_channel/01_channel_use/10_happened_before/happened_before.md)
     - [1.11 循环读取关闭的通道值是否阻塞](chapter03_channel/01_channel_use/11_read_closed_chan/readCloseChan.go)
     - [1.12 select中实现channel优先级-->k8s中实现](chapter03_channel/01_channel_use/12_priority_channel/priority_chan.md)
+    - [1.13 使用RingBuffer实现无限容量的channel](chapter03_channel/01_channel_use/13_unbounded_chan/unbounder_chan.md)
 - [ channel应用:TimerChan模块源码分析及使用陷阱](chapter03_channel/02_TimerChan/timer.md)
     - [2.1 reset重新等待被触发](chapter03_channel/02_TimerChan/01_TimerReset/timer_reset.md)
     - [2.2 timerStop使用](chapter03_channel/02_TimerChan/02_TimerStop/timer_stop.md)
