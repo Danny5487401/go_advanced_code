@@ -8,5 +8,5 @@ GLOBL ·Ch(SB),RODATA,$8 // var ch chan int
 DATA  ·Ch+0(SB)/8,$0
 
 //其实在runtime包中为汇编提供了一些辅助函数。比如在汇编中可以通过runtime.makemap和runtime.makechan内部函数来创建map和chan变量。辅助函数的签名如
-//func makemap(mapType *byte, hint int, mapbuf *any) (hmap map[any]any)
+// func makemap(mapType *byte, hint int, mapbuf *any) (hmap map[any]any)
 // func makechan(chanType *byte, size int) (hchan chan any)
