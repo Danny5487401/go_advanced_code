@@ -1,5 +1,6 @@
 # Linux的文件系统
 ![](.io_images/linux_file_system.png)
+
 ## 文件系统的特点
 1. 文件系统要有严格的组织形式，使得文件能够以块为单位进行存储。
 
@@ -84,6 +85,7 @@ ssize_t __generic_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 
 * 当然，我们右上角还看到一个缺口，应用程序除了可以使用公共函数库，其实是可以直接调用系统调用的，但是由此带来的复杂性又应用自己承担。这种需求也是很常见的，
 标准库封装了通用的东西，同样割舍了很多系统调用的功能，这种情况下，只能通过系统调用来获取;
+  
 ## fd文件描述符
 文件描述符File descriptor是一个非负整数，本质上是一个索引值（这句话非常重要）。
 
@@ -103,20 +105,76 @@ ulimit -n
 ![](.io_images/io_realized.png)
 
 ###  IO 接口描述（语义）
+包括四个接口: Reader/Writer/Closer/Seeker,分别对应io的读写关闭和偏移.
+1. Reader
 ```go
 type Reader interface {
+	
     Read(p []byte) (n int, err error)
 }
+
+```
+Read方法说明:
+
+- 读数据到切片p,长度最多是len(p)
+   - 返回值是具体读到的字节数,或任何错误
+   - 如果要读的数据长度不足len(p),会返回实际长度，不会等待
+
+
+- 不管是读中出错,还是遇到文件尾,第一个返回值n会返回实际已读字节数
+   - 对于第二个返回值err就有些不同了
+      - 可能会返回EOF,也可能返回non-nil
+      - 再次调用Read的返回值是确定的: 0,EOF
+
+- 调用者正确的处理返回值姿势应该是这样的
+   - 先判断n是否大于0,再判断err
+   
+- 对于实现
+   - 除非len(p)是0,否则不推荐返回 0,nil
+   - 因为0,nil表示什么都没发生
+   - 实际处理中，EOF就是EOF，不能用0,nil来代替
+
+Note：额外说明,Read方法的参数是切片,是引用,所以是可以在内部修改值的. 当然是有前提的:实现类型的指针方法集匹配Reader. 值方法集实现Reader接口是没有意义的
+
+2. Writer 
+```go
 type Writer interface {
     Write(p []byte) (n int, err error)
 }
 ```
+- 将切片数据p写道相关的流中,写的字节数是len(p)
+   - 返回值n表示实际写的字节数，如果n小于len(p),err就是non-nil
+- 方法是不会改变切片p的数据，临时性的也不行
+- 在实现上
+   - 要确保不会修改切片p
 
+Note: 额外说明,对Writer的实现,最好是通过值方法集来匹配, 如果非要用指针方法集来匹配,那就一定要注意不能修改切片数据
+
+
+3. Closer接口
+```go
+type Closer interface {
+  Close() error
+}
+
+```
+
+4. Seeker接口
+```go
+type Seeker interface {
+  Seek(offset int64, whence int) (int64, error)
+}
+```
+- 这个偏移是针对下次读或下次写
+- 参数offset和whence确定了具体的偏移地址
+   - whence定义了三个值(SeekStart/SeekCurrent/SeekEnd)
+   - 第一个返回值是基于文档头的偏移量
+### 分类
 io 库的内容，如果按照接口的定义维度大致可以分为 3 大类：
 1. 基础类型
-   1. Reader、Writer、Closer、ReaderAt、WriterAt、Seeker、ByteReader、ByteWrieter、RuneReader、StringWriter
+   - Reader、Writer、Closer、ReaderAt、WriterAt、Seeker、ByteReader、ByteWriter、RuneReader、StringWriter
 2. 组合类型
-   1. ReaderCloser、WriteCloser、WriteSeeker
+   - ReaderCloser、WriteCloser、WriteSeeker
 ```go
 type ReadWriter interface {
     Reader
@@ -124,7 +182,62 @@ type ReadWriter interface {
 }
 ```
 3. 进阶类型
-   1. TeeReader: 这是一个分流器的实现，如果把数据比作一个水流，那么通过 TeeReader 之后，将会分叉出一个新的数据流
-   2. LimitReader: 则是给 Reader 加了一个边界期限
-   3. MultiReader:则是把多个数据流合成一股
-   4. SectionReader、MultiWriter、PipeReader、PipeWriter 等
+   - TeeReader: 这是一个分流器的实现，如果把数据比作一个水流，那么通过 TeeReader 之后，将会分叉出一个新的数据流
+   - LimitReader: 则是给 Reader 加了一个边界期限
+   - MultiReader:则是把多个数据流合成一股
+   - SectionReader、MultiWriter、PipeReader、PipeWriter 等
+   
+
+## 源码分析
+
+### 数据结构
+```go
+// /Users/python/go/go1.16/src/os/types.go
+// File represents an open file descriptor.
+type File struct {
+    *file // os specific
+}
+```
+```go
+// /Users/python/go/go1.16/src/os/file_unix.go
+type file struct {
+	pfd         poll.FD  // 文件描述符
+	name        string
+	dirinfo     *dirInfo // nil unless directory being read
+	nonblock    bool     // whether we set nonblocking mode
+	stdoutOrErr bool     // whether this is stdout or stderr
+	appendMode  bool     // whether file is opened for appending
+}
+```
+```go
+type FD struct {
+	// Lock sysfd and serialize access to Read and Write methods.
+	fdmu fdMutex
+
+	// 系统文件描述符，不可变直到关闭
+	Sysfd int
+
+	// I/O poller.
+	pd pollDesc
+
+	// Writev cache.
+	iovecs *[]syscall.Iovec
+
+	// Semaphore signaled when file is closed.
+	csema uint32
+
+	// Non-zero if this file has been set to blocking mode.
+	isBlocking uint32
+
+	// Whether this is a streaming descriptor, as opposed to a
+	// packet-based descriptor like a UDP socket. Immutable.
+	IsStream bool
+
+	// Whether a zero byte read indicates EOF. This is false for a
+	// message based socket connection.
+	ZeroReadIsEOF bool
+
+	// Whether this is a file rather than a network socket.
+	isFile bool
+}
+```
