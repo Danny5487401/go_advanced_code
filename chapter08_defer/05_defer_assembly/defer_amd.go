@@ -19,3 +19,7 @@ func main() {
 }
 
 //汇编命令：go tool compile -N -S -L defer_amd.go>defer_amd.s 2>&1
+
+// -N表示禁用优化
+// -l禁用内联
+// -S打印结果
