@@ -2,8 +2,8 @@
 ![](.sort_images/sort_category.png)
 我们常见的排序算法可以分为两大类：
 
-    比较类排序：通过比较来决定元素间的相对次序，由于其时间复杂度不能突破O(nlogn)，因此也称为非线性时间比较类排序。
-    非比较类排序：不通过比较来决定元素间的相对次序，它可以突破基于比较排序的时间下界，以线性时间运行，因此也称为线性时间非比较类排序。
+- 比较类排序：通过比较来决定元素间的相对次序，由于其时间复杂度不能突破O(nlogn)，因此也称为非线性时间比较类排序。
+- 非比较类排序：不通过比较来决定元素间的相对次序，它可以突破基于比较排序的时间下界，以线性时间运行，因此也称为线性时间非比较类排序。
 
 ```css
 排序算法	时间复杂度(平均)	时间复杂度(最坏)	时间复杂度(最优)	空间复杂度           稳定性
@@ -47,15 +47,129 @@
 3. 堆排序heapSort
 4. 快速排序quickSort
 ```go
-// 插入排序
-func insertionSort(data Interface, a, b int)
-// 堆排序
-func heapSort(data Interface, a, b int)
+
 // 快速排序
 func quickSort(data Interface, a, b, maxDepth int)
-// 归并排序
-func symMerge(data Interface, a, m, b int)
+
 ```
+
+
+```go
+// 插入排序
+func insertionSort(data Interface, a, b int) {
+	for i := a + 1; i < b; i++ {
+		for j := i; j > a && data.Less(j, j-1); j-- {
+			data.Swap(j, j-1)
+		}
+	}
+}
+
+```
+
+```go
+// 归并排序
+func symMerge(data Interface, a, m, b int) {
+	// Avoid unnecessary recursions of symMerge
+	// by direct insertion of data[a] into data[m:b]
+	// if data[a:m] only contains one element.
+	if m-a == 1 {
+		// Use binary search to find the lowest index i
+		// such that data[i] >= data[a] for m <= i < b.
+		// Exit the search loop with i == b in case no such index exists.
+		i := m
+		j := b
+		for i < j {
+			h := int(uint(i+j) >> 1)
+			if data.Less(h, a) {
+				i = h + 1
+			} else {
+				j = h
+			}
+		}
+		// Swap values until data[a] reaches the position before i.
+		for k := a; k < i-1; k++ {
+			data.Swap(k, k+1)
+		}
+		return
+	}
+
+	// Avoid unnecessary recursions of symMerge
+	// by direct insertion of data[m] into data[a:m]
+	// if data[m:b] only contains one element.
+	if b-m == 1 {
+		// Use binary search to find the lowest index i
+		// such that data[i] > data[m] for a <= i < m.
+		// Exit the search loop with i == m in case no such index exists.
+		i := a
+		j := m
+		for i < j {
+			h := int(uint(i+j) >> 1)
+			if !data.Less(m, h) {
+				i = h + 1
+			} else {
+				j = h
+			}
+		}
+		// Swap values until data[m] reaches the position i.
+		for k := m; k > i; k-- {
+			data.Swap(k, k-1)
+		}
+		return
+	}
+
+	mid := int(uint(a+b) >> 1)
+	n := mid + m
+	var start, r int
+	if m > mid {
+		start = n - b
+		r = mid
+	} else {
+		start = a
+		r = m
+	}
+	p := n - 1
+
+	for start < r {
+		c := int(uint(start+r) >> 1)
+		if !data.Less(p-c, c) {
+			start = c + 1
+		} else {
+			r = c
+		}
+	}
+
+	end := n - start
+	if start < m && m < end {
+		rotate(data, start, m, end)
+	}
+	if a < start && start < mid {
+		symMerge(data, a, start, mid)
+	}
+	if mid < end && end < b {
+		symMerge(data, mid, end, b)
+	}
+}
+```
+```go
+// 堆排序
+func heapSort(data Interface, a, b int) {
+	first := a
+	lo := 0
+	hi := b - a
+
+	// Build heap with greatest element at top.
+	for i := (hi - 1) / 2; i >= 0; i-- {
+		siftDown(data, i, hi, first)
+	}
+
+	// Pop elements, largest first, into end of data.
+	for i := hi - 1; i >= 0; i-- {
+		data.Swap(first, first+i)
+		siftDown(data, lo, i, first)
+	}
+}
+```
+
 
 sort包内置的四种排序方法是不公开的，只能被用于sort包内部使用。因此，对数据集合排序时， 不必考虑应当选择哪一种，只需要实现sort.Interface接口定义三个接口即可
 ```go

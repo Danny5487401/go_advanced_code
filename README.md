@@ -14,6 +14,7 @@
 # *目录*
 Note:目录同级为 *代码展示*，可在Goland中运行
 ## *推荐: goVersion==1.16*
+## [必备知识:module包管理](module.md)
 
 ## [第一章 I/O操作](chapter01_input_output/io.md)
 - 1 os操作系统模块
