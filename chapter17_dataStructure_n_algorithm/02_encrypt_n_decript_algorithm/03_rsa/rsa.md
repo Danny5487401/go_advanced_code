@@ -38,14 +38,118 @@ RSA 算法需要的计算量比 AES 高，但速度要慢得多。它比较适�
 
 ## 相关概念
 
-### .509
+### x.509
 
-这是由国际电信联盟（ITU-T）制定的ASN.1规范下数字证书标准，它规定了证书应包含哪些信息和使用什么样的编码格式（默认DER二进制编码）。
+X.509标准是密码学里公钥证书的格式标准。X.509 证书己应用在包括TLS/SSL（WWW万维网安全浏览的基石）在内的众多 Internet协议里，同时它也有很多非在线的应用场景，比如电子签名服务。
 
-### PKCS
+X.509证书含有公钥和标识（主机名、组织或个人），并由证书颁发机构（CA）签名（或自签名）。对于一份经由可信的证书签发机构签名（或者可以通过其它方式验证）的证书，证书的拥有者就可以用证书及相应的私钥来创建安全的通信，以及对文档进行数字签名。
+X.509证书的结构是用ASN.1(Abstract Syntax Notation One：抽象语法标记)来描述其数据结构，并使用ASN1语法进行编码。
 
-    The Public-Key Cryptography Standards，公钥密码学标准，由美帝的RSA公司制定的一系列标准，这里我们只讨论#7/#8/#12，
-    #7/#12是对X.509证书进行扩展、加密用于交换。#8是一种私钥格式标准。openssl生成的私钥，可以转换成pkcs8格式
+X.509 v3数字证书的结构如下：
+```
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            10:e6:fc:62:b7:41:8a:d5:00:5e:45:b6
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=BE, O=GlobalSign nv-sa, CN=GlobalSign Organization Validation CA - SHA256 - G2
+        Validity
+            Not Before: Nov 21 08:00:00 2016 GMT
+            Not After : Nov 22 07:59:59 2017 GMT
+        Subject: C=US, ST=California, L=San Francisco, O=Wikimedia Foundation, Inc., CN=*.wikipedia.org
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub: 
+                    04:c9:22:69:31:8a:d6:6c:ea:da:c3:7f:2c:ac:a5:
+                    af:c0:02:ea:81:cb:65:b9:fd:0c:6d:46:5b:c9:1e:
+                    ed:b2:ac:2a:1b:4a:ec:80:7b:e7:1a:51:e0:df:f7:
+                    c7:4a:20:7b:91:4b:20:07:21:ce:cf:68:65:8c:c6:
+                    9d:3b:ef:d5:c1
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Key Agreement
+            Authority Information Access: 
+                CA Issuers - URI:http://secure.globalsign.com/cacert/gsorganizationvalsha2g2r1.crt
+                OCSP - URI:http://ocsp2.globalsign.com/gsorganizationvalsha2g2
+ 
+            X509v3 Certificate Policies: 
+                Policy: 1.3.6.1.4.1.4146.1.20
+                  CPS: https://www.globalsign.com/repository/
+                Policy: 2.23.140.1.2.2
+ 
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 CRL Distribution Points: 
+ 
+                Full Name:
+                  URI:http://crl.globalsign.com/gs/gsorganizationvalsha2g2.crl
+ 
+            X509v3 Subject Alternative Name: 
+                DNS:*.wikipedia.org, DNS:*.m.mediawiki.org, DNS:*.m.wikibooks.org, DNS:*.m.wikidata.org, DNS:*.m.wikimedia.org, DNS:*.m.wikimediafoundation.org, DNS:*.m.wikinews.org, DNS:*.m.wikipedia.org, DNS:*.m.wikiquote.org, DNS:*.m.wikisource.org, DNS:*.m.wikiversity.org, DNS:*.m.wikivoyage.org, DNS:*.m.wiktionary.org, DNS:*.mediawiki.org, DNS:*.planet.wikimedia.org, DNS:*.wikibooks.org, DNS:*.wikidata.org, DNS:*.wikimedia.org, DNS:*.wikimediafoundation.org, DNS:*.wikinews.org, DNS:*.wikiquote.org, DNS:*.wikisource.org, DNS:*.wikiversity.org, DNS:*.wikivoyage.org, DNS:*.wiktionary.org, DNS:*.wmfusercontent.org, DNS:*.zero.wikipedia.org, DNS:mediawiki.org, DNS:w.wiki, DNS:wikibooks.org, DNS:wikidata.org, DNS:wikimedia.org, DNS:wikimediafoundation.org, DNS:wikinews.org, DNS:wikiquote.org, DNS:wikisource.org, DNS:wikiversity.org, DNS:wikivoyage.org, DNS:wiktionary.org, DNS:wmfusercontent.org, DNS:wikipedia.org
+            X509v3 Extended Key Usage: 
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Subject Key Identifier: 
+                28:2A:26:2A:57:8B:3B:CE:B4:D6:AB:54:EF:D7:38:21:2C:49:5C:36
+            X509v3 Authority Key Identifier: 
+                keyid:96:DE:61:F1:BD:1C:16:29:53:1C:C0:CC:7D:3B:83:00:40:E6:1A:7C
+ 
+    Signature Algorithm: sha256WithRSAEncryption
+         8b:c3:ed:d1:9d:39:6f:af:40:72:bd:1e:18:5e:30:54:23:35:
+         ...
+```
+- Certificate 证书
+
+    - Version Number版本号
+    
+    - Serial Number序列号
+
+    - ID Signature Algorithm ID签名算法
+
+        - Issuer Name颁发者名称
+        
+        - Validity period 有效期 
+        
+            - Not before起始日期 
+            - Not after截至日期
+    
+        - Subject Name主题名称
+        
+        - Subject pbulic Key Info 主题公钥信息 
+    
+            - Public Key Algorithm公钥算法
+    
+                - Subject Public Key主题公钥
+
+    - Issuer Unique Identifier (optional)颁发者唯一标识符（可选）
+    
+    - Subject Unique Identifier (optional)主题唯一标识符（可选）
+
+    - Extensions (optional) 证书的扩展项（可选）
+
+    - Certificate Sigature Algorithm证书签名算法
+    
+    - Certificate Signature证书的签名
+
+Note：对于所有的版本，同一个CA颁发的证书序列号都必须是唯一的。
+
+### PKCS（The Public-Key Cryptography Standards）公钥密码学标准
+PKCS代表“公钥密码学标准”。这是一组由RSA Security Inc.设计和发布的公钥密码标准，始于20世纪90年代初，该公司发布这些标准是为了推广使用他们拥有专利的密码技术，如RSA算法、Schnorr签名算法和其他一些算法。
+
+尽管不是行业标准（因为该公司保留了对它们的控制权），但近年来某些标准已经开始进入IETF和PKIX工作组等相关标准化组织的“标准跟踪”过程
+
+● PKCS＃8 1.2私钥信息语法标准，请参见RFC5958。用于携带私钥证书密钥对（加密或未加密）。
+
+● PKCS＃9 2.0选定的属性类型[，请参见RFC2985。定义选定的属性类型，以便在PKCS＃6扩展证书、PKCS＃7数字签名消息、PKCS＃8私钥信息和PKCS＃10证书签名请求中使用。
+
+● PKCS＃10 1.7认证请求标准，请参阅RFC2986。发送给认证机构以请求公钥证书的消息格式，请参阅证书签名请求。
+
+● PKCS＃11 2.40密码令牌接口，也称为“ Cryptoki”。定义密码令牌通用接口的API（另请参阅硬件安全模块）。常用于单点登录，公共密钥加密和磁盘加密[10]系统。 RSA Security已将PKCS＃11标准的进一步开发移交给了OASIS PKCS 11技术委员会。
+
+● PKCS＃12 1.1个人信息交换语法标准，请参阅RFC7292。定义一种文件格式，个人信息交换语法标准[11]见RFC 7292。定义一种文件格式，通常用于存储私钥和附带的公钥证书，并使用基于Password的对称密钥进行保护。PFX是PKCS#12的前身。
 
 ## 密钥
 常见的几种秘钥存储格式有：字符串、证书文件、n/e参数等
@@ -77,13 +181,17 @@ privateKey, err := x509.ParsePKCS8PrivateKey(key)
 
 ```
 
-2. 证书文件格式
+### 2. 证书文件扩展名
+
+Note: 其中一些扩展名也有其它用途，就是说具有这个扩展名的文件可能并不是证书，比如说可能只是保存了私钥。
 
 （1）.pem、.cert、.cer、.crt
 
 .pem、.cert、.cer、.crt等都是pem格式的文件，只是文件后缀不一。
 
-PEM是Privacy Enhance Mail的缩写，PEM实质上是Base64编码的二进制内容(即对字符串格式私钥的文件化处理)，再加上开始和结束行。
+- PEM是Privacy Enhance Mail(隐私增强型电子邮件)的缩写，DER编码的证书再进行Base64编码(即对字符串格式私钥的文件化处理)，再加上开始和结束行,即数据存放于“--- BEGIN CERTIFICATE ---”和“ --- END CERTIFICATE ---”之间
+
+- .cer，.crt，.der：通常采用二进制DER形式，但Base64编码也很常见
 
 解析方式：读取文件，调用pem.Decode，然后按照base64解码，再解析成公钥/私钥。
 ```go
@@ -103,13 +211,15 @@ publicKey, _ := x509.ParsePKIXPublicKey(key)
 
 .pkcs12、.pfx、.p12这些文件格式存储的是已加密后的内容，可以通过openssl转换成pem文件后进行处理。
 
+-  .p12-PKCS＃12：可以包含证书（公钥），也可同时包含受密码保护的私钥
+-  .pfx ：PKCS＃12的前身（通常用PKCS＃12格式，例如IIS产生的PFX文件）
 
 提取密钥对：
 ```shell
 openssl pkcs12 -in in.p12 -out out.pem -nodes
 ```
 
-3. N,E参数
+### 3. N,E参数
 
 例如：login with apple keys的公钥就是这种格式的，需要根据n,e构造出公钥。
 ```shell
