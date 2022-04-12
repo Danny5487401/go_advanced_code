@@ -50,8 +50,8 @@ func (obj *square) accept(v visitor){
 
 最后， 形状结构体只需要修改一次， 并且所有未来针对不同行为的请求都可以使用相同的 accept 函数来进行处理。 如果团队成员请求 get Area行为， 我们只需简单地定义访问者接口的具体实现， 并在其中编写面积的计算逻辑即可
 
-## [代码参考1：案例](chapter09_design_pattern/03_motion/01_visitor/example1/main.go)
-## [代码参考2：根据类型断言实现访问者](chapter09_design_pattern/03_motion/01_visitor/example2)
+## [代码参考1：案例](https://github.com/Danny5487401/go_advanced_code/tree/main/chapter09_design_pattern/03_motion/01_visitor/example1/main.go)
+## [代码参考2：根据类型断言实现访问者](https://github.com/Danny5487401/go_advanced_code/tree/main/chapter09_design_pattern/03_motion/01_visitor/example2)
 
 ## 示意图
 
