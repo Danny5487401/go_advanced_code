@@ -276,18 +276,18 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
 [cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)
 
-**_Note:内部运行代码待优化_**
+**_Note:内部c代码需要自己编译成对应本地 静态库 或则 动态库 _**
 
 - [1 Go调用自定义C函数-未模块化](chapter13_Go_call_C_or_C++/01_call_C_func/main.go)
-- 2 Go调用自定义C函数-模块化
+- [2 Go调用自定义C函数-模块化](chapter13_Go_call_C_or_C++/02_call_C_module/main.go)
 - 3 Go重写C定义函数
-- 4 cgo引入其他包的变量错误
-- 5 #Cgo语句
+- [4 cgo错误用法：引入其他包的变量](chapter13_Go_call_C_or_C++/04_import_other_pkg/main.go)
+- [5 #Cgo语句](chapter13_Go_call_C_or_C++/05_cgo/main.go)
 - [6 Go获取C函数的errno](chapter13_Go_call_C_or_C++/06_return_err/main.go)
 - [7 C的void返回](chapter13_Go_call_C_or_C++/07_void_return/main.go)
 - 8 Go调用模块化C++库
 - [9 调用静态C库](chapter13_Go_call_C_or_C++/09_static_c_lib/main.go)
-- 10 调用动态C库
+- [10 调用动态C库](chapter13_Go_call_C_or_C++/10_dynamic_c_lib/main.go)
 - [11 Golang使用pkg-config自动获取头文件和链接库的方法](chapter13_Go_call_C_or_C++/11_pkg_config/pkg_config.md)
 
 ## [第十四章 Context上下文-源码分析涉及父类EmptyCtx](chapter14_context/introduction.md)

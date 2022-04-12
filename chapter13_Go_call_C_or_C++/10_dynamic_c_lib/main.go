@@ -1,9 +1,8 @@
 package main
 
 //#cgo CFLAGS: -I./number
-//#cgo LDFLAGS: -L${SRCDIR}/number -lnumber
-//
-//#include "./number.h"
+//#cgo LDFLAGS: -L./number -lnumber
+//#include "number.h"
 import "C"
 import "fmt"
 

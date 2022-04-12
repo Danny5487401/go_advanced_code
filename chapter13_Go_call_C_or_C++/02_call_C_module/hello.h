@@ -1,6 +1,6 @@
-#ifndef _HELLO_H_
-#define _HELLO_H_
+#ifndef __HELLO_H__
+#define __HELLO_H__
 
-extern void SayHello( char* s);
+void SayHello(const char* s);
 
 #endif
