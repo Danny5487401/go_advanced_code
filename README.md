@@ -162,7 +162,7 @@
     - [3.2  迭代器-->标准库container/ring中实现](chapter09_design_pattern/03_motion/02_Iterator/main.go)
     - [3.3  状态模式](chapter09_design_pattern/03_motion/03_State/introduction.md)
     - [3.4  责任链模式](chapter09_design_pattern/03_motion/04_duty_chain_method/duty_chain.md)
-    - [3.5  模版模式](chapter09_design_pattern/03_motion/05_templateMethod/template.go)
+    - [3.5  模版模式](chapter09_design_pattern/03_motion/05_templateMethod/templateMethod.md)
     - [3.6  策略模式-->if-else的另类写法(内部算法封装)](chapter09_design_pattern/03_motion/06_strategyMethod/strategy.md)
     - [3.7  解释器模式](chapter09_design_pattern/03_motion/07_InterpreterMethod/interpreter.md)
     - [3.8  命令模式-->go-redis中实现](chapter09_design_pattern/03_motion/08_CommandMethod/command.md)
