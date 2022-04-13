@@ -329,7 +329,11 @@
   - [3.2 crypto_rand使用](chapter17_dataStructure_n_algorithm/03_rand/02_crypto_rand/main.go)
   - [3.3 fastrand优化使用](chapter17_dataStructure_n_algorithm/03_rand/03_fastrand/main.go)
 - [4 排序算法分类及图解(sort包源码分析)](chapter17_dataStructure_n_algorithm/04_sort/algorithm.md)
-  - [4.1 不同结构体切片根据反射排序，map根据key排序](chapter17_dataStructure_n_algorithm/04_sort/sorted_info/main.go)
+  - [4.1 sort包使用](chapter17_dataStructure_n_algorithm/04_sort/sorted_info/main.go)
+    - 不同结构体切片根据反射reflect实现自定义排序 
+    - map根据key实现排序
+    - sort.Search根据排序切片找索引
+    
 - [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
 - [6 Privacy Enhanced Mail Certificate (pem文件)生成](chapter17_dataStructure_n_algorithm/06_pem_generate/main.go)
 - [7 Base64编码解析](chapter17_dataStructure_n_algorithm/07_base64_encoding/base64.md)
