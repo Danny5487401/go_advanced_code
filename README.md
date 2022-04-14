@@ -374,5 +374,6 @@
 - [1 fmt打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)
 - [2 go-spew优化调试](chapter23_debug_program/02_go_spew/main.go)
 
-## [第二十四章 Flag命令行参数](chapter24_flag/flag.md)
-- [1 基本使用及自定义帮助信息](chapter24_flag/nginx.go) 
+## [第二十四章 Flag命令行参数及源码分析](chapter24_flag/flag.md)
+- [1 标准包flag基本使用及自定义帮助信息](chapter24_flag/01_flag/nginx.go)
+- [2 第三方包pflag：兼容标准包flag](chapter24_flag/02_pflag/pflag.md)
