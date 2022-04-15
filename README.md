@@ -103,6 +103,7 @@
         - *一个nil值的map和非nil值但是空的map*是否“深度”相等
         - *一个nil值的map和非nil值但是空的map*是否“深度”相等
         - *带有环的数据对比*是否“深度”相等
+    - [2.7 通过反射判断struct类型是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
 ---
 
 ## 第五章 切片和数组
