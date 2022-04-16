@@ -96,7 +96,7 @@
     - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01three_laws/threeLaw.md)
     - [2.2 类型断言及性能分析](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
     - [2.3 获取结构体字段及获取方法](chapter04_interface_n_reflect/02_reflect/03StructField_n_method/main.go)
-    - [2.4 reflect.Value修改值，调用结构体方法，调用普通方法](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
+    - [2.4 reflect.Value修改值，调用结构体方法，调用普通函数](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
     - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05PerformanceInprove/main.go)
     - [2.6 通过反射进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
         - *底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
