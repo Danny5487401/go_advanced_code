@@ -319,10 +319,10 @@
 - 1 [queue双端单向队列(泛型)](chapter17_dataStructure_n_algorithm/01_queue/queue_test.go)
 - [2 加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/encryption.md)
   - 2.1 对称式加密
-    - [aes高级加密标准](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/aes.md)
+    - [2.1.1 AES高级加密标准(Advanced Encryption Standard)](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/aes.md)
       - [Cipher FeedBack密码反馈模式](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/01_cfb/aes_cfb.go)
       - [Cipher Block Chaining密码分组链接模式](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/02_cbc/aes_cbc.go)
-    - [des美国数据加密标准](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/des/des.md)
+    - [2.1.2 des美国数据加密标准(不推荐)](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/des/des.md)
   - 2.2 数字签名(hmac,md5,sha1,sha256)
     - [MD5信息摘要算法](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/md5/md5.md)
     - [hmac](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/hmac/hmac.md)

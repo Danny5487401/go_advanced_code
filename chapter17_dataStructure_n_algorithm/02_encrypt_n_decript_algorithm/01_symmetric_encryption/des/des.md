@@ -1,11 +1,15 @@
 # DES美国数据加密标准(Data Encryption Standard)
-参考链接: https://blog.csdn.net/qq_44143499/article/details/105821846?spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-2.no_search_link&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-2.no_search_link&utm_relevant_index=5
 
 是一种使用密钥加密的块算,DES算法明文分组长度为64 bit，密钥长度也为64 bit，但是实际密钥长度只有56位，其中第8、16、24、32、40、48、56、64位是奇偶校验位，用于检查密钥在产生、分配及存储过程中可能发生的错误。
 
-DES有ECB（电子密码本）和CBC（加密块）等加密模式。
+美国在FIPS PUS 74和81中定义了DES的4种运行模式：
 
-DES算法的安全性很高，目前除了穷举搜索破解外，尚无更好的的办法来破解。其密钥长度越长，破解难度就越大。不过已经发现DES容易受到非常强大的攻击，因此DES的普及程度略有下降。
+ECB，CBC(Cipher Block Chaining, 密码块链)是块模式，CFB、OFB是流模式。ECB安全性比较差，先不学了，Go的包中也没有。
+
+
+
+DES算法的安全性很高，目前除了穷举搜索破解外，尚无更好的的办法来破解。
+其密钥长度越长，破解难度就越大。不过已经发现DES容易受到非常强大的攻击，因此DES的普及程度略有下降。
 
 
 ## 规则
@@ -37,3 +41,6 @@ R0 = 00000000 01111110 10000000 00001101
 Kn = PC_2(CnDn)，PC_2为固定置换，用于从 CnDn 中选取48 bit作为子密钥Kn，CnDn 表示从左到右将 Dn 排在 Cn 的后面，CnDn 的长度为56 bit。
 
 至此，子密钥全部生成，进入轮函数。
+
+## 参考链接
+1. 参考链接: https://blog.csdn.net/qq_44143499/article/details/105821846?spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-2.no_search_link&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-2.no_search_link&utm_relevant_index=5
