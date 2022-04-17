@@ -96,9 +96,14 @@
     - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01three_laws/threeLaw.md)
     - [2.2 类型断言及性能分析](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
     - [2.3 获取结构体字段及获取方法](chapter04_interface_n_reflect/02_reflect/03StructField_n_method/main.go)
-    - [2.4 reflect.Value修改值，调用结构体方法，调用普通方法](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
+    - [2.4 reflect.Value修改值，调用结构体方法，调用普通函数](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
     - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05PerformanceInprove/main.go)
-    - [2.6 反射深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
+    - [2.6 通过反射进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
+        - *底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
+        - *一个nil值的map和非nil值但是空的map*是否“深度”相等
+        - *一个nil值的map和非nil值但是空的map*是否“深度”相等
+        - *带有环的数据对比*是否“深度”相等
+    - [2.7 通过反射判断struct类型是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
 ---
 
 ## 第五章 切片和数组
@@ -374,5 +379,6 @@
 - [1 fmt打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)
 - [2 go-spew优化调试](chapter23_debug_program/02_go_spew/main.go)
 
-## [第二十四章 Flag命令行参数](chapter24_flag/flag.md)
-- [1 基本使用及自定义帮助信息](chapter24_flag/nginx.go) 
+## [第二十四章 Flag命令行参数及源码分析](chapter24_flag/flag.md)
+- [1 标准包flag基本使用及自定义帮助信息](chapter24_flag/01_flag/nginx.go)
+- [2 第三方包pflag：兼容标准包flag](chapter24_flag/02_pflag/pflag.md)

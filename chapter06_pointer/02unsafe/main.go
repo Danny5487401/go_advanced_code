@@ -20,13 +20,13 @@ func main() {
 	// 基本操作
 	BasicOperation()
 
-	// 一。结构体操作
+	// 一. 结构体操作
 	StructOperation()
 
-	// 二。切片操作
+	// 二. 切片操作
 	SliceOperation()
 
-	// 三。获取map的长度
+	// 三. 获取map的长度
 	MapOperation()
 }
 
