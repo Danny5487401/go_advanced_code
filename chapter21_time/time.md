@@ -6,13 +6,44 @@
 - time.Duration
 - time.C
 
-## 两个重要概念
-- wall time:
-  就是挂在墙上的时钟，我们在计算机中能看到的当前时间就是 wall time ，但是这个时间是可以通过 人为设置 或者 NTP服务同步 被修改，常见的场景就是通过修改时间延长收费软件的试用期。
-- monotonic time:
-  一个单调递增的时间，当操作系统被初始化时， jiffies 变量被初始化为 0 ，每当接收到一个 timer interrupt ，则 jiffies 自增 1 ，所以它必然是一个不可修改的单调递增时间。
+## 两个重要概念:单调时间和壁挂时间
+- wall time壁挂时间:
+  挂钟时间，实际上就是指的是现实的时间，这是由变量xtime来记录的。系统每次启动时将CMOS上的RTC时间读入xtime，
+  这个值是"自1970-01-01起经历的秒数、本秒中经历的纳秒数"，每来一个timer interrupt，也需要去更新xtime。，常见的场景就是通过修改时间延长收费软件的试用期。
+- monotonic time单调时间:
+  是单调时间,实际它指的是系统启动以后流逝的时间,这是由变量jiffies记录系统每次启动时jiffies初始化为0，
+  每来一个timer interrupt，jiffies加1，也就是说它代表系统启动后流逝的tick数。jiffies一定是单调递增的，因为时间不够逆
 
-应用：在操作系统中如果需要 显示 时间的时候，会使用 wall time ，而需要 测量 时间的时候，会使用 monotonic time 
+CLOCK_MONOTONIC是monotonic time;CLOCK_REALTIME是wall time。
+
+### 应用
+在操作系统中如果需要 显示 时间的时候，会使用 wall time ，而需要 测量 时间的时候，会使用 monotonic time 
+
+### wall time 相关函数
+- time.Since(start)
+- time.Until(deadline)
+- time.Now().Before(deadline)
+
+### monotonic time 相关函数
+time.Since(start)
+time.Until(deadline)
+time.Now().Before(deadline)
+
+### CLOCK_MONOTONIC 和 CLOCK_REALTIME
+
+
+
+
+### monotonic time Vs. wall time
+wall time不一定单调递增的。wall time是指现实中的实际时间，如果系统要与网络中某个节点时间同步、或者由系统管理员觉得这个wall time与现实时间不一致，
+有可能任意的改变这个wall time。最简单的例子是，我们用户可以去任意修改系统时间，这个被修改的时间应该就是wall time，即xtime，它甚至可以被写入RTC而永久保存。
+
+### Time时注意事项
+- Time能够代表纳秒精度的时间。
+- 因为Time并非并发安全,所以在存储或者传递的时候,都应该使用值引用。
+- 在Go中, == 运算符不仅仅比较时刻,还会比较Location以及单调时钟,因此在不保证所有时间设置为相同的位置的时候,不应该将time.Time作为map或者database的健。如果必须要使用,应该通过UTC或者Local方法将单调时间剥离。
+
+## time源码结构
 ```go
 // src/time/time.go
 
@@ -117,7 +148,7 @@ func (t *Time) stripMono() {
     }
 }
 ```
-时间比较
+### 时间比较
 ```go
 // src/time/time.go
 
@@ -153,7 +184,7 @@ func (t Time) Equal(u Time) bool {
     return t.sec() == u.sec() && t.nsec() == u.nsec()
 }
 ```
-当前时间
+Now函数：当前时间
 ```go
 // src/time/time.go
 
