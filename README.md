@@ -13,7 +13,7 @@
 
 # *目录*
 **Note:目录同级为 *代码展示*，可在Goland中运行**
-## *推荐GoVersion: 1.16*
+## *推荐GoVersion: 1.18(涉及泛型)*
 ## [必备知识:module包管理](module.md)
 
 ## [第一章 I/O操作](chapter01_input_output/io.md)
@@ -385,4 +385,7 @@
 - [1 标准包flag基本使用及自定义帮助信息](chapter24_flag/01_flag/nginx.go)
 - [2 第三方包pflag：兼容标准包flag](chapter24_flag/02_pflag/pflag.md)
 
-## [第二十五章 Makefile](chapter24_flag/flag.md)
+## [第二十五章 Makefile](chapter25_makefile/Makefile_info.md)
+
+## [第二十六章 Generic泛型](chapter26_generic/generic.md)
+Note: Go 1.18将移除用于泛型的constraints包
