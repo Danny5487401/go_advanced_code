@@ -386,3 +386,5 @@
 - [2 第三方包pflag：兼容标准包flag](chapter24_flag/02_pflag/pflag.md)
 
 ## [第二十五章 Makefile](chapter24_flag/flag.md)
+
+## [第二十六章 strconv字符串和数值型转换源码分析](chapter26_strconv/strconv.md)
