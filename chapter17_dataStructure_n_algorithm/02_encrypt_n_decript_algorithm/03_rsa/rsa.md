@@ -240,6 +240,7 @@ ASN.1是一种 ISO/ITU-T 标准，描述了一种对数据进行表示、编码�
 这是最常见的一种形式，通常RSA的秘钥都是以hex、base64编码后的字符串提供，如证书内的秘钥格式即是base64编码的字符串，然后添加前后的具体标识实现的。可以通过解码字符串，构建公钥/私钥。
 
 Note:base64存在几种细节不同的编码格式，StdEncoding、URLEncoding、RawStdEncoding、RawURLEncoding，使用时还需要进一步确认秘钥具体编码格式，避免解码出错。
+
 以下未特殊说明的例子中均默认使用StdEncoding。
 
 （1）公钥
@@ -251,13 +252,14 @@ publicKey, _ := x509.ParsePKIXPublicKey(key)
 ```
 
 （2）私钥
-由于RSA私钥存在PKCS1和PKCS8两种格式，因此解码后需要根据格式类型调用对应的方法即可。一般java使用pkcs8格式的私钥，其他语言使用pkcs1格式的私钥。使用时，记得确认下格式。
+由于RSA私钥存在PKCS1和PKCS8两种格式，因此解码后需要根据格式类型调用对应的方法即可。
+Note: 一般java使用pkcs8格式的私钥，其他语言使用pkcs1格式的私钥。使用时，记得确认下格式。
 ```go
-//解析pkcs1格式私钥
+// 1. 解析pkcs1格式私钥
 key, _ := base64.StdEncoding.DecodeString(pkcs1keyStr)
 privateKey, _ := x509.ParsePKCS1PrivateKey(key)
 
-//解析pkcs8格式私钥
+//2. 解析pkcs8格式私钥
 key, _ := hex.DecodeString(pkcs8keyStr)
 privateKey, err := x509.ParsePKCS8PrivateKey(key)
 
@@ -282,7 +284,7 @@ block, _ := pem.Decode(key)
 //解析成pkcs8格式私钥
 privateKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 //解析成pkcs1格式私钥
-privateKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 //解析成公钥
 publicKey, _ := x509.ParsePKIXPublicKey(key)
 
@@ -296,10 +298,59 @@ publicKey, _ := x509.ParsePKIXPublicKey(key)
 -  .p12-PKCS＃12：可以包含证书（公钥），也可同时包含受密码保护的私钥
 -  .pfx ：PKCS＃12的前身（通常用PKCS＃12格式，例如IIS产生的PFX文件）
 
+
 提取密钥对：
 ```shell
 openssl pkcs12 -in in.p12 -out out.pem -nodes
 ```
+OpenSSL命令分为以下3个部分:
+```shell
+(⎈ |teleport.gllue.com-test:danny-xia)➜  go_advanced_code git:(main) ✗ openssl help                                                         
+openssl:Error: 'help' is an invalid command.
+
+Standard commands
+asn1parse         ca                certhash          ciphers           
+crl               crl2pkcs7         dgst              dh                
+dhparam           dsa               dsaparam          ec                
+ecparam           enc               errstr            gendh             
+gendsa            genpkey           genrsa            nseq              
+ocsp              passwd            pkcs12            pkcs7             
+pkcs8             pkey              pkeyparam         pkeyutl           
+prime             rand              req               rsa               
+rsautl            s_client          s_server          s_time            
+sess_id           smime             speed             spkac             
+ts                verify            version           x509              
+
+Message Digest commands (see the `dgst' command for more details)
+gost-mac          md4               md5               md_gost94         
+ripemd160         sha1              sha224            sha256            
+sha384            sha512            streebog256       streebog512       
+whirlpool         
+
+Cipher commands (see the `enc' command for more details)
+aes-128-cbc       aes-128-ecb       aes-192-cbc       aes-192-ecb       
+aes-256-cbc       aes-256-ecb       base64            bf                
+bf-cbc            bf-cfb            bf-ecb            bf-ofb            
+camellia-128-cbc  camellia-128-ecb  camellia-192-cbc  camellia-192-ecb  
+camellia-256-cbc  camellia-256-ecb  cast              cast-cbc          
+cast5-cbc         cast5-cfb         cast5-ecb         cast5-ofb         
+chacha            des               des-cbc           des-cfb           
+des-ecb           des-ede           des-ede-cbc       des-ede-cfb       
+des-ede-ofb       des-ede3          des-ede3-cbc      des-ede3-cfb      
+des-ede3-ofb      des-ofb           des3              desx              
+rc2               rc2-40-cbc        rc2-64-cbc        rc2-cbc           
+rc2-cfb           rc2-ecb           rc2-ofb           rc4               
+rc4-40            
+
+
+```
+* 标准命令Standard commands
+
+openssl参数解析
+* pkcs12:PKCS#12数据的管理
+* -in file ：需要进行处理的PEM格式的证书
+* -out file ：处理结束后输出的证书文件
+* -nodes  :  不加密私钥
 
 ### 3. N,E参数
 
@@ -317,6 +368,14 @@ openssl pkcs12 -in in.p12 -out out.pem -nodes
 ```
 
 使用时就需要，将N，E解析成big.Int格式，注意N、E的base64的具体编码格式：
+```go
+// /Users/python/go/go1.16/src/crypto/rsa/rsa.go
+// A PublicKey represents the public part of an RSA key.
+type PublicKey struct {
+	N *big.Int // modulus
+	E int      // public exponent
+}
+```
 
 ```go
 pubN, _ := parse2bigInt(n)
@@ -341,19 +400,6 @@ func parse2bigInt(s string) (bi *big.Int, err error) {
 
 
 ## Go源码RSA
-
-### encoding/pem包
-```go
-var pemStart = []byte("\n-----BEGIN ")
-var pemEnd = []byte("\n-----END ")
-var pemEndOfLine = []byte("-----")
-
-
-// /usr/local/go/src/encoding/pem/pem.go
-func Decode(data []byte) (p *Block, rest []byte)
-```
-Decode函数会从输入里查找到下一个PEM格式的块（证书、私钥等）。
-它返回解码得到的Block和剩余未解码的数据。如果未发现PEM数据，返回(nil, data)
 
 ### crypto/x509包
 #### 序列化

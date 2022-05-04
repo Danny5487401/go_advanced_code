@@ -340,9 +340,10 @@
     - 不同结构体切片根据反射reflect实现自定义排序 
     - map根据key实现排序
     - sort.Search根据排序切片找索引
-    
 - [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
-- [6 生成.pem文件(Privacy Enhanced Mail Certificate-->生成RSA密钥对)](chapter17_dataStructure_n_algorithm/06_pem_generate/main.go)
+- [6 pem(Privacy Enhanced Mail Certificate保密增强邮件协议](chapter17_dataStructure_n_algorithm/06_pem/pem.md)
+  - [6.1 生成.pem文件(RSA密钥对)](chapter17_dataStructure_n_algorithm/06_pem/01_pem_generate/main.go)
+  - [6.2 解析.pem文件](chapter17_dataStructure_n_algorithm/06_pem/02_get_pem_info/main.go) 
 - [7 Base64编码解析](chapter17_dataStructure_n_algorithm/07_base64_encoding/base64.md)
 - [8 trie前缀树](chapter17_dataStructure_n_algorithm/08_trie/trie.md)
 

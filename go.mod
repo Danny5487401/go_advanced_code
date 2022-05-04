@@ -1,6 +1,6 @@
 module go_advanced_code
 
-go 1.15
+go 1.16
 
 require (
 	github.com/NebulousLabs/fastrand v0.0.0-20181203155948-6fb6489aac4e
