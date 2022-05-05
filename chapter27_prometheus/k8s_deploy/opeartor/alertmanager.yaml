@@ -1,0 +1,29 @@
+global:
+  resolve_timeout: 5m
+route:
+  group_by: ['job']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  receiver: 'webhook'
+receivers:
+  - name: 'webhook'
+    webhook_configs:
+      - url: 'http://alertmanagerwh:30500/'
+
+
+# kubectl -n monitoring create secret generic alertmanager-danny-alert-instance --from-file=alertmanager.yaml
+
+# 结果
+# apiVersion: v1
+# data:
+#  alertmanager.yaml: Z2xvYmFsOgogIHJlc29sdmVfdGltZW91dDogNW0Kcm91dGU6CiAgZ3JvdXBfYnk6IFsnam9iJ10KICBncm91cF93YWl0OiAzMHMKICBncm91cF9pbnRlcnZhbDogNW0KICByZXBlYXRfaW50ZXJ2YWw6IDEyaAogIHJlY2VpdmVyOiAnd2ViaG9vaycKcmVjZWl2ZXJzOgogIC0gbmFtZTogJ3dlYmhvb2snCiAgICB3ZWJob29rX2NvbmZpZ3M6CiAgICAgIC0gdXJsOiAnaHR0cDovL2FsZXJ0bWFuYWdlcndoOjMwNTAwLycKCgojIGt1YmVjdGwgLW4gbW9uaXRvcmluZyBjcmVhdGUgc2VjcmV0IGdlbmVyaWMgZGFubnktYWxlcnQtaW5zdGFuY2UtY29uZmlnIC0tZnJvbS1maWxlPWFsZXJ0bWFuYWdlci1kYW5ueS1hbGVydC1pbnN0YW5jZS55YW1s
+#kind: Secret
+#metadata:
+#  creationTimestamp: "2022-05-05T09:11:43Z"
+#  name: danny-alert-instance-config
+#  namespace: monitoring
+#  resourceVersion: "985282485"
+#  selfLink: /api/v1/namespaces/monitoring/secrets/danny-alert-instance-config
+#  uid: 2ef1f8ba-4b93-4863-8c38-a2ce1e505f79
+#type: Opaque

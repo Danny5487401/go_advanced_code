@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: danny-service-monitor-example-app
+  namespace: monitoring
+  labels:
+    team: frontend
+spec:
+  # namespaceSelector定义让其可以跨命名空间
+  namespaceSelector:
+    matchNames:
+      - danny-xia
+  selector:
+    matchLabels:
+      app: danny-example-app
+  endpoints:
+    - port: web
