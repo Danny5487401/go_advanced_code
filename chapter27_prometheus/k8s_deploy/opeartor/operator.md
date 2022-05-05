@@ -51,10 +51,179 @@ prometheus-operator-6db8dbb7dd-2hz55   1/1       Running   0          19s
 
 
 ##  操作
-1. 部署正常的业务服务
-2. 定义monitoring服务
-3. 定义账号给prometheus
-4. 关联prometheus服务和service monitor：通过label
+1. 部署正常的业务http 服务:deployment-app.yaml
+```yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: danny-example-app
+  labels:
+    app: danny-example-app
+spec:
+  selector:
+    app: danny-example-app
+  ports:
+    - name: web
+      port: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: danny-example-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: danny-example-app
+  template:
+    metadata:
+      labels:
+        app: danny-example-app
+    spec:
+      containers:
+        - name: danny-example-app
+          image: fabxc/instrumented_app
+          ports:
+            - name: web
+              containerPort: 8080
+```
+
+2. 部署监听服务serviceMonitor.yaml：使用matchlabels中的app: danny-example-app去监听业务服务
+```yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: danny-service-monitor-example-app
+  namespace: monitoring
+  labels:
+    team: frontend
+spec:
+  # namespaceSelector定义让其可以跨命名空间
+  namespaceSelector:
+    matchNames:
+      - danny-xia
+  selector:
+    matchLabels:
+      app: danny-example-app
+  endpoints:
+    - port: web
+```
+3. 配置serviceAccount方便promethues拉取数据:主要是nonResourceURLs: ["/metrics"]获取资源
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: danny-prometheus
+  namespace: monitoring
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: danny-prometheus-cluster-role
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources:
+      - configmaps
+    verbs: ["get"]
+  - nonResourceURLs: ["/metrics"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: danny-prometheus-cluster-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: danny-prometheus-cluster-role
+subjects:
+  - kind: ServiceAccount
+    name: danny-prometheus
+    namespace: monitoring
+```
+4. 配置prometheus rules:alert_rules.yaml,其中设置标签prometheus: example，role: alert-rules
+```
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: example
+    role: alert-rules
+  name: danny-prometheus-example-rules
+  namespace: monitoring
+spec:
+  groups:
+    - name: ./example.rules
+      rules:
+        - alert: ExampleAlert
+          expr: vector(1)
+```
+5. 定义alert manager的全局配置secret:alertmanager.yaml,注意alertmanager-danny-alert-instance这名字是固定的，在默认情况下，会通过alertmanager-{ALERTMANAGER_NAME}的命名规则去查找Secret配置并以文件挂载的方式
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: alertmanager-danny-alert-instance
+  namespace: monitoring
+type: Opaque
+stringData:
+  alertmanager.yaml: |-
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by: ['job']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      receiver: 'webhook'
+    receivers:
+      - name: 'webhook'
+        webhook_configs:
+          - url: 'http://alertmanagerwh:30500/'
+```
+6. 开启alert manager实例
+```yaml
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: danny-alert-instance
+  namespace: monitoring
+spec:
+  replicas: 3
+```
+7. 定义prometheus实例：serviceAccountName指定步骤3的danny-prometheus账号，ruleSelector指定步骤4的规则，使用serviceMonitorSelector中的team: frontend去关联步骤2的monitor实例，
+```yaml
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: danny-instance
+  namespace: monitoring
+spec:
+  serviceAccountName: danny-prometheus
+  serviceMonitorSelector:
+    matchLabels:
+      team: frontend
+  ruleSelector:
+    matchLabels:
+      role: alert-rules
+      prometheus: example
+  alerting:
+    alertmanagers:
+      - name: danny-alert-instance
+        namespace: monitoring
+        port: web
+  resources:
+    requests:
+      memory: 400Mi
+
+```
 
 ### 使用后效果
 1. 配置变化
