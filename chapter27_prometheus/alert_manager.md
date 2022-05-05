@@ -1,6 +1,7 @@
 # alert告警
 ![](.alert_images/alert_property.png)
-在Prometheus的架构中被划分成两个独立的部分。Prometheus负责产生告警，而Alertmanager负责告警产生后的后续处理.
+
+在Prometheus的架构中被划分成两个独立的部分。Prometheus负责产生告警，而AlertManager负责告警产生后的后续处理.
 
 ## 操作
 1. 搭建配置 Alertmanager
@@ -74,11 +75,8 @@ receivers:
 - group_by :alertmanager可以对告警通知进行分组，将多条告警合合并为一个通知。这里我们可以使用group_by来定义分组规则。
 基于告警中包含的标签，如果满足group_by中定义标签名称，那么这些告警将会合并为一个通知发送给接收器。
 
-- group_wait:有的时候为了能够一次性收集和发送更多的相关信息时，可以通过group_wait参数设置等待时间，如果在等待时间内当前group接收到了新的告警，这些告警将会合并为一个通知向receiver发送。
-
+- group_wait: 有的时候为了能够一次性收集和发送更多的相关信息时，可以通过group_wait参数设置等待时间，如果在等待时间内当前group接收到了新的告警，这些告警将会合并为一个通知向receiver发送。
 - group_interval :而group_interval配置，则用于定义相同的Group之间发送告警通知的时间间隔。
-
-
 
 
 

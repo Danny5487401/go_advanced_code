@@ -49,9 +49,6 @@
     - 2.6 Linux内存及Go内存结构管理
       - [2.6.1 Linux内存管理](chapter02_goroutine/02_runtime/06memory/linux_mem.md)
       - [2.6.2 Go内存结构管理](chapter02_goroutine/02_runtime/06memory/go_mem.md)
-    - [2.7 prometheus(涉及架构及docker安装)](chapter02_goroutine/02_runtime/07prometheus/prometheus.md)
-      - [2.7.1 内置collector](chapter02_goroutine/02_runtime/07prometheus/client/01_embeded_collector/main.go)  
-      - [2.7.2 使用自定义collector](chapter02_goroutine/02_runtime/07prometheus/client/02_customized_collector/main.go)  
 - 3 [多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
 - 4 [线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
     - [4.1 使用channel实现Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
@@ -386,6 +383,14 @@
 - [1 标准包flag基本使用及自定义帮助信息](chapter24_flag/01_flag/nginx.go)
 - [2 第三方包pflag：兼容标准包flag](chapter24_flag/02_pflag/pflag.md)
 
-## [第二十五章 Makefile](chapter24_flag/flag.md)
+## [第二十五章 Makefile](chapter25_makefile/Makefile_info.md)
 
 ## [第二十六章 strconv字符串和数值型转换源码分析](chapter26_strconv/strconv.md)
+
+## [第二十七章 Prometheus](chapter27_prometheus/prometheus.md)
+- [1 exporter](chapter27_prometheus/01_exporter/exporter.md)
+  - [1.1 内置collector](chapter27_prometheus/01_exporter/01_embeded_collector/main.go)  
+  - [1.2 使用自定义collector](chapter27_prometheus/01_exporter/02_customized_collector/main.go)
+- [2 Prometheus Operator](chapter27_prometheus/k8s_deploy/opeartor/operator.md)
+- [3 AlertManager](chapter27_prometheus/alert_manager.md)
+- [4 PromQL](chapter27_prometheus/alert_manager.md)
