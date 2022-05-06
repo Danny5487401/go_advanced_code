@@ -14,7 +14,8 @@ spec:
       prometheus: example
   alerting:
     alertmanagers:
-      - name: danny-alert-instance
+      # 需要暴露endpoint，需要有个service暴露
+      - name: alertmanager-danny-alert-instance
         namespace: monitoring
         port: web
   resources:

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"alertmanager":"danny-alert-instance"},"name":"alertmanager-danny-alert-instance","namespace":"monitoring"},"spec":{"ports":[{"name":"web","port":9093,"targetPort":"web"}],"selector":{"alertmanager":"danny-alert-instance","app":"alertmanager"},"sessionAffinity":"ClientIP"}}
+  labels:
+    alertmanager: danny-alert-instance
+  name: alertmanager-danny-alert-instance
+  namespace: monitoring
+
+spec:
+  ports:
+  - name: web
+    port: 9093
+    protocol: TCP
+    targetPort: web
+  selector:
+    alertmanager: danny-alert-instance
+    app: alertmanager
+

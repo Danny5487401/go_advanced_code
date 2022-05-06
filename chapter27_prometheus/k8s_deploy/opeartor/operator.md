@@ -188,7 +188,7 @@ stringData:
         webhook_configs:
           - url: 'http://alertmanagerwh:30500/'
 ```
-6. 开启alert manager实例
+6. 开启alert manager实例:alert-manager-instance.yaml
 ```yaml
 apiVersion: monitoring.coreos.com/v1
 kind: Alertmanager
@@ -198,7 +198,34 @@ metadata:
 spec:
   replicas: 3
 ```
-7. 定义prometheus实例：serviceAccountName指定步骤3的danny-prometheus账号，ruleSelector指定步骤4的规则，使用serviceMonitorSelector中的team: frontend去关联步骤2的monitor实例，
+7. 暴露alert manager 的service:alertmanager-danny-alert-instance-srv.yaml
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"alertmanager":"danny-alert-instance"},"name":"alertmanager-danny-alert-instance","namespace":"monitoring"},"spec":{"ports":[{"name":"web","port":9093,"targetPort":"web"}],"selector":{"alertmanager":"danny-alert-instance","app":"alertmanager"},"sessionAffinity":"ClientIP"}}
+  labels:
+    alertmanager: danny-alert-instance
+  name: alertmanager-danny-alert-instance
+  namespace: monitoring
+
+spec:
+  ports:
+    - name: web
+      port: 9093
+      protocol: TCP
+      targetPort: web
+  selector:
+    alertmanager: danny-alert-instance
+    app: alertmanager
+
+
+```
+
+
+8. 定义prometheus实例：serviceAccountName指定步骤3的danny-prometheus账号，ruleSelector指定步骤4的规则，使用serviceMonitorSelector中的team: frontend去关联步骤2的monitor实例，alerting找步骤7暴露的endpoint
 ```yaml
 apiVersion: monitoring.coreos.com/v1
 kind: Prometheus
@@ -216,7 +243,7 @@ spec:
       prometheus: example
   alerting:
     alertmanagers:
-      - name: danny-alert-instance
+      - name: alertmanager-danny-alert-instance
         namespace: monitoring
         port: web
   resources:

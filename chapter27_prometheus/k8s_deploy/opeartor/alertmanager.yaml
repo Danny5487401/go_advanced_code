@@ -17,7 +17,7 @@ stringData:
     receivers:
       - name: 'webhook'
         webhook_configs:
-          - url: 'http://alertmanagerwh:30500/'
+          - url: 'http://prometheus-webhook-dingtalk:8080/dingtalk/danny-alert/send'
 
 
 
