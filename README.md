@@ -13,7 +13,7 @@
 
 # *目录*
 **Note:目录同级为 *代码展示*，可在Goland中运行**
-## *推荐GoVersion: 1.16*
+## *推荐GoVersion: 1.17*
 ## [必备知识:module包管理](module.md)
 
 ## [第一章 I/O操作](chapter01_input_output/io.md)
@@ -31,9 +31,9 @@
 
 ---
 ## 第二章 协程Goroutine
-- 1 [线程模型分类及Goroutine切换原则(GPM模型)](chapter02_goroutine/01_GPM/GPM.md)
+- [1 线程模型分类及Goroutine切换原则(GPM模型)](chapter02_goroutine/01_GPM/GPM.md)
     - [1.1 trace查看宏观调度流程(Goroutine启动时长)](chapter02_goroutine/01_GPM/trace/trace.md)
-- 2 [runtime模块和GC](chapter02_goroutine/02_runtime/runtime.md)
+- [2 runtime模块和GC](chapter02_goroutine/02_runtime/runtime.md)
     - [2.1 runtime核心功能及系统信息调用](chapter02_goroutine/02_runtime/01basic_use/main.go)
     - [2.2 Goexit()终止线程](chapter02_goroutine/02_runtime/02GoExit/main.go)
     - [2.3 资源竞争一致性问题分析](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/resource_competion.md)
@@ -49,12 +49,13 @@
     - 2.6 Linux内存及Go内存结构管理
       - [2.6.1 Linux内存管理](chapter02_goroutine/02_runtime/06memory/linux_mem.md)
       - [2.6.2 Go内存结构管理](chapter02_goroutine/02_runtime/06memory/go_mem.md)
-- 3 [多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
-- 4 [线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
+- [3 多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
+- [4 线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
     - [4.1 使用channel实现Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
     - [4.2 百万请求处理案例](chapter02_goroutine/04_concurrent_pool/02_millionRequests/main.go)
     - [4.3 第三方包线程池ants](chapter02_goroutine/04_concurrent_pool/03_antsPool/ants.md)
-    - [4.4 标准库连接池database/sql实现](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
+    - [4.4 标准库连接池database/sql源码分析](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
+      - [4.4.1 连接池Benchmark对比](chapter02_goroutine/04_concurrent_pool/04_database_sql/database_pool_test.go)
 - [5 channel导致goroutine泄漏分析及处理](chapter02_goroutine/05_goroutine_leaks/goroutine_leak.md)
   - [5.1 channel未正常关闭导致goroutine泄漏](chapter02_goroutine/05_goroutine_leaks/01_leaks_happen/main.go)
   - [5.2 channel监听避免goroutine泄漏](chapter02_goroutine/05_goroutine_leaks/02_avoid_leaks/main.go)
