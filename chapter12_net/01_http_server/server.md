@@ -66,6 +66,21 @@ func (mux *ServeMux) Handle(pattern string, handler Handler) {
 ```
 
 ## 开启服务
+### 重要的server结构体
+```go
+type Server struct {
+    // 地址
+	Addr string
+
+	Handler Handler // handler to invoke, http.DefaultServeMux if nil
+
+    
+	TLSConfig *tls.Config
+
+	// ...
+}
+```
+
 ```go
 func (srv *Server) Serve(l net.Listener) error { 
     ...

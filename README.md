@@ -258,9 +258,9 @@
 - [epoll多路复用底层实现及Golang封装](chapter12_net/io_multiplexing.md)
 
 - 1 http服务端高级封装演变
-  - [1.1 使用DefaultServeMux](chapter12_net/01_http_server/01_use_DefaultServeMux/main.go)
-  - [1.2 使用内置serveMux生成函数](chapter12_net/01_http_server/02_use_http_NewServeMux/main.go)
-  - [1.3 自定义实现serveMux](chapter12_net/01_http_server/03_use_cutomized_mux/main.go)
+  - [1.1 高级封装：使用DefaultServeMux](chapter12_net/01_http_server/01_use_DefaultServeMux/main.go)
+  - [1.2 中级封装：使用内置serveMux生成函数](chapter12_net/01_http_server/02_use_http_NewServeMux/main.go)
+  - [1.3 原始封装：自定义实现serveMux](chapter12_net/01_http_server/03_use_cutomized_mux/main.go)
 - [2 爬虫获取邮箱案例(http客户端源码分析)](chapter12_net/02_http_client/client.go)
   - [2.1 request源码](chapter12_net/02_http_client/http_request.md)
   - [2.2 response源码](chapter12_net/02_http_client/http_response.md)
@@ -277,6 +277,7 @@
 - [6 优雅退出原理分析-涉及linux信号介绍（go-zero实践）](chapter12_net/06_grateful_stop/grateful_stop.md)
   - [6.1 信号监听处理](chapter12_net/06_grateful_stop/signal.go)
 - [7 URL的解析 Parse，query 数据的转义与反转义](chapter12_net/07_url/url.md)
+- [8 使用alice优雅编排中间件](chapter12_net/08_middleware/middlerware.md)
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
 [cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)
