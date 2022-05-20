@@ -112,6 +112,7 @@ Note:在生成server.csr(Certificate Signing Request)时，主机名填写的是
 
 ## 验证方式
 
+
 验证方式分为单向验证和双向验证。
 
 
@@ -131,7 +132,7 @@ PC 中的浏览器（火狐、IE、chrome等）已经包含了很多 CA 的根�
 
 
 ### 双向验证
-
+![](.pem_images/ca_process.png)
 双向验证是指通信双方需要互相验证对方是否合法。服务器验证客户端，客户端验证服务器。
 
 服务器需要：ca.crt，server.crt，server.key
