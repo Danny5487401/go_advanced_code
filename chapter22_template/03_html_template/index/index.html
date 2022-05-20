@@ -1,0 +1,10 @@
+{{ define "index/index" }}
+{{/*引用其他模板 注意后面的 . */}}
+{{ template "header" . }}
+<body>
+<div>
+    hello, {{ .Name }}, age {{ .Age }}
+</div>
+</body>
+{{ template "footer" . }}
+{{ end }}

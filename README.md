@@ -373,9 +373,10 @@
 
 ## [第二十一章 time标准包源码分析](chapter21_time/time.md)
 - [1 比time.Now()更优雅获取时间戳（go:link技术）](chapter21_time/time.go)
-## [第二十二章 数据驱动模板-kratos工具生成](chapter22_template/text_template.md)
-- [1 加载多个模版](chapter22_template/01_multi_template/main.go)
+## [第二十二章 数据驱动模板源码分析-->kratos工具](chapter22_template/text_template.md)
+- [1 加载多个模版并指定模版](chapter22_template/01_multi_template/main.go)
 - [2 自定义模版函数](chapter22_template/02_template_func/main.go)
+- [3 html模版](chapter22_template/03_html_template/main.go)
 
 ## 第二十三章 调试内部对象
 - [1 fmt打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)
