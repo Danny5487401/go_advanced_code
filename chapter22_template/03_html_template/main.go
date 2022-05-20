@@ -40,6 +40,16 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		map[string]interface{}{"PageTitle": "首页", "Name": "danny", "Age": 25},
 	)
 }
+func testHandler(w http.ResponseWriter, r *http.Request) {
+	check := func(err error) {
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	t, err := template.New("foo").Parse(`{{define "T"}}Hello, {{.}}!{{end}}`)
+	check(err)
+	err = t.ExecuteTemplate(w, "T", "<script>alert('you have been pwned')</script>")
+}
 
 // news
 func NewsHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,6 +74,7 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/", IndexHandler)
 	http.HandleFunc("/news", NewsHandler)
+	http.HandleFunc("/test", testHandler)
 
 	serverErr := http.ListenAndServe(":8085", nil)
 

@@ -1,5 +1,8 @@
 # template 
 
+## 应用场景
+- kratos应用：https://github.com/go-kratos/kratos/blob/main/cmd/kratos/internal/proto/add/template.go
+
 ## Text/template
 实现数据驱动模板以生成文本输出，可以理解为一组文字按照特定格式动态嵌入另一组文字中
 
@@ -208,8 +211,11 @@ template内置了一系列函数，但这些函数毕竟有限，可能无法满
 自定义函数的优先级高于内置的函数优先级，即先检索自定义函数，再检索内置函数。也就是说，如果自定义函数的函数名和内置函数名相同，则内置函数将失效。
 
 
-## 第三方应用
-- kratos应用：https://github.com/go-kratos/kratos/blob/main/cmd/kratos/internal/proto/add/template.go
+## html/template
+Html包 提供了用于转义和修改 HTML 文本的功能。
+
+模板包（html/template）实现了数据驱动的模板，以便在代码注入过程中安全地生成 HTML 输出。它提供了与包 text/template 相同的接口，只要输出是 HTML，就应该使用它来代替 text/template。
+
 
 
 ## 参考链接
