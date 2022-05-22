@@ -117,7 +117,7 @@
 - [6 扩容策略](chapter05_slice_n_array/06GrowSlice/grow_size_policy.md)
 - [7 不同类型的切片间互转](chapter05_slice_n_array/07Transfer_slice_in_different_type/main.go)
 - [8 带索引初始化数组和切片](chapter05_slice_n_array/08_make_slice_with_index/make_slice_with_index.go)
-- [9 使用copy替代原切片进行切片](chapter05_slice_n_array/09_reslice/reslice.go)
+- [9 切片的复制方式对比: copy和=复制](chapter05_slice_n_array/09_reslice/reslice.go)
 ---
 
 ## 第六章 指针
