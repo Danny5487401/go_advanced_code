@@ -197,43 +197,17 @@ docker run -p 9090:9090 -v /Users/python/Desktop/go_advanced_code/chapter02_goro
 
 ## prometheus/client_golang 源码分析
 ![](.prometheus_images/client_golang_structure.png)
-### collector
-接口定义
-```go
-type Collector interface {
-    // Describe 暴露全部可能的 Metric 描述列表
-	Describe(chan<- *Desc)
 
-	// 获取采样数据，然后通过 HTTP 接口暴露给 Prom Server
-	Collect(chan<- Metric)
-}
-```
-### counter相关函数
-```go
-func (c *counter) Add(v float64) {
-	if v < 0 {
-		panic(errors.New("counter cannot decrease in value"))
-	}
+prometheus包提供了用于实现监控代码的metric原型和用于注册metric的registry。子包（promhttp）允许通过HTTP来暴露注册的metric或将注册的metric推送到Pushgateway。
 
-	ival := uint64(v)
-	if float64(ival) == v {
-		atomic.AddUint64(&c.valInt, ival)
-		return
-	}
+### Metrics
 
-	for {
-		oldBits := atomic.LoadUint64(&c.valBits)
-		newBits := math.Float64bits(math.Float64frombits(oldBits) + v)
-		if atomic.CompareAndSwapUint64(&c.valBits, oldBits, newBits) {
-			return
-		}
-	}
-}
-```
-Add 中修改共享数据时采用了“无锁”实现，相比“有锁 (Mutex)”实现可以更充分利用多核处理器的并行计算能力，性能相比加 Mutex 的实现会有很大提升
+- prometheus一共有5种metric类型，前四种为：Counter，Gauge，Summary 和Histogram，每种类型都有对应的vector版本：GaugeVec, CounterVec, SummaryVec, HistogramVec，vector版本细化了prometheus数据模型，增加了label维度。第5种metric为Untyped，它的运作方式类似Gauge，区别在于它只向prometheus服务器发送类型信号。
 
+- 只有基础metric类型实现了Metric接口，metric和它们的vector版本都实现了collector接口。collector负责一系列metrics的采集，但是为了方便，metric也可以“收集自己”。注意：Gauge, Counter, Summary, Histogram, 和Untyped自身就是接口，而GaugeVec, CounterVec, SummaryVec, HistogramVec, 和UntypedVec则不是接口。
 
-### opts
+- 为了创建metric和它们的vector版本，需要选择合适的opts结构体，如GaugeOpts, CounterOpts, SummaryOpts, HistogramOpts, 或UntypedOpts.
+
 ```go
 // 其中 GaugeOpts, CounterOpts 实际上均为 Opts 的别名
 type CounterOpts Opts
@@ -297,6 +271,63 @@ type SummaryOpts struct {
 }
 ```
 
+### collector
+接口定义
+```go
+type Collector interface {
+    // Describe 暴露全部可能的 Metric 描述列表
+	Describe(chan<- *Desc)
+
+	// 获取采样数据，然后通过 HTTP 接口暴露给 Prom Server
+	Collect(chan<- Metric)
+}
+```
+
+### Custom Collectors and constant Metrics
+
+实现自己的metric，一般只需要实现自己的collector即可。
+如果已经有了现成的metric（prometheus上下文之外创建的），则无需使用Metric类型接口，只需要在采集期间将现有的metric映射到prometheus metric即可，此时可以使用 NewConstMetric, NewConstHistogram, and NewConstSummary (以及对应的Must… 版本)来创建metric实例，以上操作在collect方法中实现。
+describe方法用于返回独立的Desc实例，NewDesc用于创建这些metric实例。（NewDesc用于创建prometheus识别的metric）
+
+
+### Advanced Uses of the Registry
+
+- MustRegister 是注册collector最通用的方式。如果需要捕获注册时产生的错误，可以使用Register 函数，该函数会返回错误。
+
+- 如果注册的collector与已经注册的metric不兼容或不一致时就会返回错误。registry用于使收集的metric与prometheus数据模型保持一致。不一致的错误会在注册时而非采集时检测到。前者会在系统的启动时检测到，而后者只会在采集时发生（可能不会在首次采集时发生），这也是为什么collector和metric必须向Registry describe它们的原因。
+
+- 以上提到的registry都被称为默认registry，可以在全局变量DefaultRegisterer中找到。使用NewRegistry可以创建custom registry，或者可以自己实现Registerer 或Gatherer接口。custom registry的Register和Unregister运作方式类似，默认registry则使用全局函数Register和Unregister。
+
+- custom registry的使用方式还有很多：可以使用NewPedanticRegistry来注册特殊的属性；可以避免由DefaultRegisterer限制的全局状态属性；也可以同时使用多个registry来暴露不同的metrics
+
+- DefaultRegisterer注册了Go runtime metrics （通过NewGoCollector）和用于process metrics 的collector（通过NewProcessCollector）。通过custom registry可以自己决定注册的collector。
+
+### counter相关函数
+```go
+func (c *counter) Add(v float64) {
+	if v < 0 {
+		panic(errors.New("counter cannot decrease in value"))
+	}
+
+	ival := uint64(v)
+	if float64(ival) == v {
+		atomic.AddUint64(&c.valInt, ival)
+		return
+	}
+
+	for {
+		oldBits := atomic.LoadUint64(&c.valBits)
+		newBits := math.Float64bits(math.Float64frombits(oldBits) + v)
+		if atomic.CompareAndSwapUint64(&c.valBits, oldBits, newBits) {
+			return
+		}
+	}
+}
+```
+Add 中修改共享数据时采用了“无锁”实现，相比“有锁 (Mutex)”实现可以更充分利用多核处理器的并行计算能力，性能相比加 Mutex 的实现会有很大提升
+
+
+
 ### WithLabelValues方法
 1个指标由Metric name + Labels共同确定。
 
@@ -359,6 +390,7 @@ prometheus 包提供了 MustRegister() 函数用于注册 Collector, 但如果�
 prometheus 通过 NewGoCollector() 和 NewProcessCollector() 函数创建 Go 运行时数据指标的 Collector 和进程数据指标的 Collector.
 
 ## Prometheus拉取Exporter的哪些数据
+
 ### promhttp 包
 promhttp 包允许创建 http.Handler 实例通过 HTTP 公开 Prometheus 数据指标
 
