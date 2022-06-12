@@ -244,7 +244,7 @@
     - [2.12 结构体方法](chapter11_assembly_language/02plan9/12_struct_method/main.go)
     - [2.13 递归函数](chapter11_assembly_language/02plan9/13_recursive_func/main.go)
     - [2.14 闭包函数](chapter11_assembly_language/02plan9/14_closure/main.go)
-    - [2.15 GoroutineId获取](chapter11_assembly_language/02plan9/15_GoroutineId/main.go)
+    - [2.15 两种方式获取GoroutineId](chapter11_assembly_language/02plan9/15_GoroutineId/main.go)
     - [2.16 汇编调用非汇编Go函数](chapter11_assembly_language/02plan9/16_assembly_call_NonassemblyFunc/main.go)
 - 3 [Golang底层数据结构-涉及数值类型占用的bit](chapter11_assembly_language/03Golang_data_structure/data.md)
     - [3.1 Map底层结构](chapter11_assembly_language/03Golang_data_structure/map_structure/map_intro.md)
@@ -400,3 +400,5 @@
 - [2 Prometheus Operator](chapter27_prometheus/k8s_deploy/opeartor/operator.md)
 - [3 AlertManager](chapter27_prometheus/alert_manager.md)
 - [4 PromQL](chapter27_prometheus/alert_manager.md)
+
+## 第二十八章 如何进行测试
