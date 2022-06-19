@@ -402,3 +402,5 @@
 - [4 PromQL](chapter27_prometheus/alert_manager.md)
 
 ## 第二十八章 如何进行测试
+- [1 gomonkey打桩测试(暂不支持arm)](chapter28_test/01_gomonkey/gomonkey.md)
+- [2 go-mock接口测试](chapter28_test/02_mock/gomock.md)

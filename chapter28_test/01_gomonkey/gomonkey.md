@@ -1,4 +1,4 @@
-# 测试
+# go-monkey测试
 
 ## 背景
 1. 不容易测试的代码，结果不固定
@@ -45,7 +45,7 @@ func main() {
 ```
 
 ## 如何动态修改函数的行为
-![](.test_images/modify_action.png)
+![](../.test_images/modify_action.png)
 
 编译器会把函数中的每一条语句翻译成机器码，存到可执行文件的代码段。我们在执行函数的时候会把对应的代码段加载到内存的某个位置。
 机器码说白了也是内存里的数据。我们能不能在执行foo()函数之前把它的机器码替换成一段跳转指令，让CPU跳转到bar()函数的机器码继续执行呢？能！
@@ -72,7 +72,7 @@ reflect.ValueOf(f).Pointer()
 
 
 ### 如何获取函数body的地址
-![](.test_images/func_info_in_go.png)
+![](../.test_images/func_info_in_go.png)
 
 函数变量f实际是个指针，指向底层的结构体funcval ,第一个成员是个二级指针，指向数据。 
 
@@ -133,7 +133,7 @@ func rawMemoryAccess(p uintptr, length int) []byte {
 ```
 
 ### 函数跳转指令
-![](.test_images/go_asm_info.png)
+![](../.test_images/go_asm_info.png)
 ```assembly
 movabs rdx,ox;
 jmp DWORD PTR [rdx];   // Intel 的 x86/amd64 处理器都不支持绝对跳转，只能先把目标地址存到寄存器，再根据寄存器的内容完成跳转
@@ -165,8 +165,8 @@ func jmpToFn(to uintptr) []byte {
 
 
 ## 多协程打桩
-![](.test_images/multigoroutine_patch.png)
-![](.test_images/mutigoroutine_patch2.png)
+![](../.test_images/multigoroutine_patch.png)
+![](../.test_images/mutigoroutine_patch2.png)
 
 
 

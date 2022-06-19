@@ -1,4 +1,4 @@
-//go:generate stringer -type ErrCode -linecomment -output code_string.go
+//go:generate stringer -type ErrCode -linecomment -output code_gen.go
 
 /*
 注意点
