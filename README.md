@@ -14,7 +14,7 @@
 # *目录*
 **Note:目录同级为 *代码展示*，可在Goland中运行**
 ## *推荐GoVersion: 1.17*
-## [必备知识:module包管理](module.md)
+## [必备知识:module包管理](chapter29_module/02_discipline/module.md)
 
 ## [第一章 I/O操作](chapter01_input_output/io.md)
 - 1 os操作系统模块
@@ -353,7 +353,7 @@
 - 1 自定义错误类型打印错误栈
 - [2 扩展包pkg.errors](chapter18_error_n_panic/02_pkg_errors/pkg_errors.md)
 - [3 Gin的错误recover分析(panic和recover源码分析)](chapter18_error_n_panic/03_recover/panic.md)
-- [4 errCode错误码自动化生成](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
+- [4 stringer +generate 工具自动化生成errCode错误码及信息](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
 - [5 error如何正确比较](chapter18_error_n_panic/05_err_comparision/main.go)
 - [6 收集多个errors-->go-multierror实现](chapter18_error_n_panic/06_multi_error/01_one_goroutine_n_errors/main.go)
 ## 第十九章 nil预定义标识
@@ -404,3 +404,11 @@
 ## 第二十八章 如何进行测试
 - [1 gomonkey打桩测试(暂不支持arm)](chapter28_test/01_gomonkey/gomonkey.md)
 - [2 go-mock接口测试](chapter28_test/02_mock/gomock.md)
+
+## 第二十九章 module包管理
+- [1 go-module 实践篇](chapter29_module/01_use/godule_operation.md)
+  - 模块缓存
+  - GOPROXY
+- [2 go-module原理篇](chapter29_module/02_discipline/module.md)
+  - Minimal Version Selection 最小版本选择算法
+    
