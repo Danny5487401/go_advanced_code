@@ -185,11 +185,13 @@ B.D=null;//B到D的引用被切断A.xx=D;//A到D的引用被建立
 
 ### 如何解决上述**漏标**问题
 满足三色不变性
+
 ![](.gc_images/three_colors.png)
 - 强三色不变性： 黑对象不能直接引用白对象
-- 弱三色不变性：黑对象可以引用白对象，但是必须多一条灰色指向白色。
+- 弱三色不变性： 黑对象可以引用白对象，但是必须多一条灰色指向白色。
 
 如何满足三色不变性？使用屏障技术（偏向硬件）
+
 #### 内存屏障
 
 不应出现对象的丢失，也不应错误的回收还不需要回收的对象
@@ -202,9 +204,9 @@ B.D=null;//B到D的引用被切断A.xx=D;//A到D的引用被建立
 
 只要能够避免其中任何一个条件，则不会出现对象丢失的情况，因为：
     
-    如果条件 1 被避免，则所有白色对象均被灰色对象引用，没有白色对象会被遗漏；
-    
-    如果条件 2 被避免，即便白色对象的指针被写入到黑色对象中，但从灰色对象出发，总存在一条没有访问过的路径，从而找到到达白色对象的路径，白色对象最终不会被遗漏 
+- 如果条件 1 被避免，则所有白色对象均被灰色对象引用，没有白色对象会被遗漏；
+
+- 如果条件 2 被避免，即便白色对象的指针被写入到黑色对象中，但从灰色对象出发，总存在一条没有访问过的路径，从而找到到达白色对象的路径，白色对象最终不会被遗漏 
 
 这就需要用到屏障技术，golang 采用了写屏障，作用就是为了避免这类误清扫问题. 写屏障即在内存写操作前，维护一个约束，从而确保清扫开始前，黑色的对象不能引用白色对象.
 
@@ -246,7 +248,7 @@ writePointer(slot, ptr)
 
 Yuasa 删除屏障的优势则在于不需要标记结束阶段的重新扫描，缺陷是依然会产生丢失的对象，需要在标记开始前对整个对象图进行快照
 
-##### Hybrid write barrier
+##### Hybrid write barrier 混合写屏障
 
 Go 在 1.8 的时候使用 Hybrid write barrier（混合写屏障），结合了 Yuasa write barrier 和 Dijkstra write barrier ，实现的伪代码如下：
 ```go
@@ -261,10 +263,17 @@ writePointer(slot, ptr):
 
 
 
-
 ## GC phase 垃圾收集阶段
 ![](.gc_images/gc_cycle.png)  
-GC 相关的代码在runtime/mgc.go文件下。通过注释介绍我们可以知道 GC 一共分为4个阶段：
+
+GC 相关的代码在 runtime/mgc.go 文件下。通过注释介绍我们可以知道 GC 一共分为4个阶段：
+```go
+const (
+	_GCoff             = iota // GC not running; sweeping in background, write barrier disabled
+	_GCmark                   // GC marking roots and workbufs: allocate black, write barrier ENABLED
+	_GCmarktermination        // GC mark termination: allocate black, P's help GC, write barrier ENABLED
+)
+```
 
 1. sweep termination（清理终止）
 
@@ -302,11 +311,11 @@ GC 相关的代码在runtime/mgc.go文件下。通过注释介绍我们可以知
 
 ## GC 触发条件
 
-1. 主动触发，通过调用 runtime.GC 来触发 GC，此调用阻塞式地等待当前 GC 运行完毕。
+1. 主动触发，通过调用 runtime.GC() 来触发 GC，此调用阻塞式地等待当前 GC 运行完毕。
 
 2. 被动触发，分为两种方式：
 
-    * 使用系统监控，当超过两分钟没有产生任何 GC 时，强制触发 GC。
+    * 使用系统 sysmon 监控，当超过两分钟没有产生任何 GC 时，强制触发 GC。
     
     * 使用步调（Pacing）算法，其核心思想是控制内存增长的比例
 
