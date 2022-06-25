@@ -24,9 +24,10 @@ func main() {
 	t := reflect.TypeOf(u)
 
 	//将nil转成Tester接口指针，然后再通过反射,Elem()方法获取指针对应的接口类型
-	fmt.Println(reflect.TypeOf((*Tester)(nil)).Elem().String())
+	ele := reflect.TypeOf((*Tester)(nil)).Elem()
+	fmt.Println("打印接口名称", ele.String()) // 获得接口类型
 
-	if t.Implements(reflect.TypeOf((*Tester)(nil)).Elem()) {
+	if t.Implements(ele) {
 		fmt.Println("实现了Tester接口 !!!")
 	}
 }
