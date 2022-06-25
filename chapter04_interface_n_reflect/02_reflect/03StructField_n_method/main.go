@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-//很多情况下，我们可能并不知道其具体类型，那么这个时候，该如何做呢？需要我们进行遍历探测其Filed来得知
+// 很多情况下，我们可能并不知道其具体类型，那么这个时候，该如何做呢？需要我们进行遍历探测其Filed来得知
 
 // 定义结构体及tag
 type Person struct {
@@ -26,6 +26,8 @@ func main() {
 
 	// 传实体
 	doFiledAndMethod(p1)
+
+	fmt.Println("---------------")
 
 	// 传指针
 	doFiledAndMethod(&p1)
@@ -60,7 +62,7 @@ func doFiledAndMethod(input interface{}) {
 	// 3. 最后通过Field的Interface()得到对应的value
 	for i := 0; i < getType.NumField(); i++ {
 		field := getType.Field(i)
-		value := getValue.Field(i).Interface() //获取第i个值
+		value := getValue.Field(i).Interface() //获取第i个值,后面需要断言获取不同的具体类型
 		// 字段名称:Name, 字段类型:string, 字段数值:danny,tag标签:json:"name"
 		tagName := "json"
 		tagValue := field.Tag.Get(tagName)
@@ -76,5 +78,5 @@ func doFiledAndMethod(input interface{}) {
 		// 方法名称:Say, 方法类型:func(main.Person, string)
 		fmt.Printf("方法名称:%s, 方法类型:%v \n", method.Name, method.Type)
 	}
-	fmt.Println("---------------")
+
 }

@@ -67,7 +67,7 @@
     - [1.2 父子通信](chapter03_channel/01_channel_use/02ParentChildrenCommunication/main.go)
     - [1.3 死锁](chapter03_channel/01_channel_use/03deadlock/main.go)
     - [1.4 优雅关闭channel](chapter03_channel/01_channel_use/04channelClose/ChanClose.md)
-      - [1.4.1 N 个 sender，一个 receiver](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
+      - [1.4.1 N 个 sender，1 个 receiver](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
       - [1.4.2 N 个 sender， M 个 receiver ](chapter03_channel/01_channel_use/04channelClose/case4_nsender_nreceiver/nsender_nreceiver.go)
     - [1.5 通道遍历range](chapter03_channel/01_channel_use/05ChannelRange/main.go)
     - [1.6 有缓冲channel增强并发](chapter03_channel/01_channel_use/06bufferChan/main.go)
@@ -94,15 +94,15 @@
 - [2 反射](chapter04_interface_n_reflect/02_reflect/reflect.md)
     - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01three_laws/threeLaw.md)
     - [2.2 类型断言及性能分析](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
-    - [2.3 获取结构体字段及获取方法](chapter04_interface_n_reflect/02_reflect/03StructField_n_method/main.go)
-    - [2.4 reflect.Value修改值，调用结构体方法，调用普通函数](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
+    - [2.3 获取结构体字段及获取方法名字](chapter04_interface_n_reflect/02_reflect/03StructField_n_method/main.go)
+    - [2.4 通过 reflect.Value 修改值，调用结构体方法，调用普通函数](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
     - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05PerformanceInprove/main.go)
     - [2.6 通过反射进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
         - 底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
         - 一个nil值的map和非nil值但是空的map*是否“深度”相等
         - 一个nil值的map和非nil值但是空的map*是否“深度”相等
         - 带有环的数据对比*是否“深度”相等
-    - [2.7 通过反射判断struct类型是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
+    - [2.7 通过reflect.implements判断struct类型是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
 ---
 
 ## 第五章 切片和数组
