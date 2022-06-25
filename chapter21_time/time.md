@@ -32,8 +32,6 @@ time.Now().Before(deadline)
 ### CLOCK_MONOTONIC 和 CLOCK_REALTIME
 
 
-
-
 ### monotonic time Vs. wall time
 wall time不一定单调递增的。wall time是指现实中的实际时间，如果系统要与网络中某个节点时间同步、或者由系统管理员觉得这个wall time与现实时间不一致，
 有可能任意的改变这个wall time。最简单的例子是，我们用户可以去任意修改系统时间，这个被修改的时间应该就是wall time，即xtime，它甚至可以被写入RTC而永久保存。
