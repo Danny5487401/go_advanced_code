@@ -1,4 +1,5 @@
 # Golang指针
+
 ## 分类
 分为3种
 ![](pointer_transfer.png)

@@ -33,22 +33,21 @@
 ## 第二章 协程Goroutine
 - [1 线程模型分类及Goroutine切换原则(GPM模型)](chapter02_goroutine/01_GPM/GPM.md)
     - [1.1 trace查看宏观调度流程(Goroutine启动时长)](chapter02_goroutine/01_GPM/trace/trace.md)
-- [2 runtime模块和GC](chapter02_goroutine/02_runtime/runtime.md)
+- [2 runtime运行时模块](chapter02_goroutine/02_runtime/runtime.md)
     - [2.1 runtime核心功能及系统信息调用](chapter02_goroutine/02_runtime/01basic_use/main.go)
     - [2.2 Goexit()终止线程](chapter02_goroutine/02_runtime/02GoExit/main.go)
     - [2.3 资源竞争一致性问题分析](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/resource_competion.md)
-      - [2.3.1 问题产生](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/main.go)
-      - [2.3.2 问题解决](chapter02_goroutine/02_runtime/03ResourceCompetition/02Fix_Resource_data_consistency/main.go)
-    - [2.4 GC垃圾回收机制(trace查看map垃圾回收)](chapter02_goroutine/02_runtime/04GC/gc.md)
-      - [2.4.1 下次GC的时机](chapter02_goroutine/02_runtime/04GC/01_next_gc_stage/main.go)
-      - [2.4.2 删除Map元素查看GC回收流程](chapter02_goroutine/02_runtime/04GC/02_map_GC/main.go)
+        - [2.3.1 问题产生](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/main.go)
+        - [2.3.2 问题解决](chapter02_goroutine/02_runtime/03ResourceCompetition/02Fix_Resource_data_consistency/main.go)
+    - [2.4 逃逸分析](chapter02_goroutine/02_runtime/04_escape_to_heap/escape_to_heap.md)
+        - [2.4.1 argument content escapes(fmt参数内容逃逸)](chapter02_goroutine/02_runtime/04_escape_to_heap/01_fmt_interface.go)
+        - [2.4.2 局部变量指针返回时被外部引用](chapter02_goroutine/02_runtime/04_escape_to_heap/02_params_ptr_return.go)
+        - [2.4.3 接口类型](chapter02_goroutine/02_runtime/04_escape_to_heap/03_interface_method.go)
     - [2.5 监控代码性能pprof](chapter02_goroutine/02_runtime/05pprof/intro.md)
-      - [2.5.1 标准包runtime/pprof及net/http/pprof使用](chapter02_goroutine/02_runtime/05pprof/01_pprof/main.go)
-      - [2.5.2 第三方包pkg/profile](chapter02_goroutine/02_runtime/05pprof/02_pkg_profile/cpu.go)
-      - [2.5.3 debug时添加pprof标签定位goroutine](chapter02_goroutine/02_runtime/05pprof/03_pprof_label/client/main.go)
-    - 2.6 Linux内存及Go内存结构管理
-      - [2.6.1 Linux内存管理](chapter02_goroutine/02_runtime/06memory/linux_mem.md)
-      - [2.6.2 Go内存结构管理](chapter02_goroutine/02_runtime/06memory/go_mem.md)
+        - [2.5.1 标准包runtime/pprof及net/http/pprof使用](chapter02_goroutine/02_runtime/05pprof/01_pprof/main.go)
+        - [2.5.2 第三方包pkg/profile](chapter02_goroutine/02_runtime/05pprof/02_pkg_profile/cpu.go)
+        - [2.5.3 debug时添加pprof标签定位goroutine](chapter02_goroutine/02_runtime/05pprof/03_pprof_label/client/main.go)
+
 - [3 多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
 - [4 线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
     - [4.1 使用channel实现Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
@@ -79,7 +78,7 @@
     - [1.11 循环读取关闭的通道值是否阻塞](chapter03_channel/01_channel_use/11_read_closed_chan/readCloseChan.go)
     - [1.12 select中实现channel优先级-->k8s中实现](chapter03_channel/01_channel_use/12_priority_channel/priority_chan.md)
     - [1.13 使用RingBuffer实现无限容量的channel](chapter03_channel/01_channel_use/13_unbounded_chan/unbounder_chan.md)
-- [ channel应用:TimerChan模块源码分析及使用陷阱](chapter03_channel/02_TimerChan/timer.md)
+- [2 channel应用:TimerChan模块源码分析及使用陷阱](chapter03_channel/02_TimerChan/timer.md)
     - [2.1 reset重新等待被触发](chapter03_channel/02_TimerChan/01_TimerReset/timer_reset.md)
     - [2.2 timerStop使用](chapter03_channel/02_TimerChan/02_TimerStop/timer_stop.md)
     - [2.3 TimerAfter给数据库操作增加超时](chapter03_channel/02_TimerChan/03_TimeAfter/main.go)
@@ -99,10 +98,10 @@
     - [2.4 reflect.Value修改值，调用结构体方法，调用普通函数](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
     - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05PerformanceInprove/main.go)
     - [2.6 通过反射进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
-        - *底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
-        - *一个nil值的map和非nil值但是空的map*是否“深度”相等
-        - *一个nil值的map和非nil值但是空的map*是否“深度”相等
-        - *带有环的数据对比*是否“深度”相等
+        - 底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
+        - 一个nil值的map和非nil值但是空的map*是否“深度”相等
+        - 一个nil值的map和非nil值但是空的map*是否“深度”相等
+        - 带有环的数据对比*是否“深度”相等
     - [2.7 通过反射判断struct类型是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
 ---
 
@@ -123,9 +122,10 @@
 ## 第六章 指针
 - [1 指针类型转换及修改值](chapter06_pointer/01ptrOperation/main.go)
 - [2 指针分类及unsafe包使用](chapter06_pointer/02unsafe/unsafe.md)
-  - 指针修改结构体成员
-  - 指针获取切片长度和容量
-  - 指针获取Map的元素数量
+    - [2.1 sizeof获取类型其占用的字节数，unsafe.Offsetof修改结构体私有成员](chapter06_pointer/02unsafe/01_basic_api/unsafe.go)
+    - [2.2 指针获取切片长度和容量](chapter06_pointer/02unsafe/02_slice_operaion/slice_len_n_cap.go)
+    - [2.3 指针获取Map的元素数量](chapter06_pointer/02unsafe/03_map_count/main.go)
+    - [2.4 使用指针来访问数组里的所有元素](chapter06_pointer/02unsafe/04_array_filed/array_field.go)
 - [3 获取并修改结构体私有变量值](chapter06_pointer/03PointerSetPrivateValue/main.go)
 - [4 切片与字符串零拷贝互转(指针和反射方式)](chapter06_pointer/04SliceToString/sliceToString.go)
 - [5 结构体的内存对齐](chapter06_pointer/05_struct_align/align.go)
@@ -374,7 +374,8 @@
 - [3 遍历Map(增加或删除map元素时)](chapter20_for_range/03_for_range_map/main.go)
 
 ## [第二十一章 time标准包源码分析](chapter21_time/time.md)
-- [1 比time.Now()更优雅获取时间戳（go:link技术）](chapter21_time/time.go)
+- [1 比time.Now()更优雅获取时间戳（go:link技术）](chapter21_time/01_time_sec.go)
+- 2 time.Format()优化写法
 
 ## [第二十二章 数据驱动模板源码分析-->kratos工具](chapter22_template/template.md)
 - [1 加载多个模版并指定模版](chapter22_template/01_multi_template/main.go)
@@ -412,3 +413,10 @@
 - [2 go-module原理篇](chapter29_module/02_discipline/module.md)
   - Minimal Version Selection 最小版本选择算法
     
+## 第三十章 内存管理
+- 1 Linux内存及Go内存结构管理
+  - [1.1 Linux内存管理](chapter30_memory_management/01_memory/linux_mem.md)
+  - [1.2 Go内存结构管理](chapter30_memory_management/01_memory/go_mem.md)
+- [2 GC垃圾回收机制(trace查看map垃圾回收)](chapter30_memory_management/02_GC/gc.md)
+  - [2.1 下次GC的时机](chapter30_memory_management/02_GC/01_next_gc_stage/main.go)
+  - [2.2 删除Map元素查看GC回收流程](chapter30_memory_management/02_GC/02_map_GC/main.go)

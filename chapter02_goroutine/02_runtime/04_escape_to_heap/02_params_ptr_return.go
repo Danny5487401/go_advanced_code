@@ -21,7 +21,7 @@ func main() {
 	fmt.Println(c) //这个fmt参数是个interface，所以c会逃逸到堆上
 }
 
-// go build -gcflags '-m -l -N' 01_params_ptr_return.go
+// go build -gcflags '-m -l -N' 02_params_ptr_return.go
 
 /*
 ./01_params_ptr_return.go:10:10: leaking param: s

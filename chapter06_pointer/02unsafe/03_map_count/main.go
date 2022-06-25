@@ -5,18 +5,12 @@ import (
 	"unsafe"
 )
 
-type Programmer struct {
-	Name     string //名字
-	Language string //爱好
-}
-
 func main() {
-
 	// 三. 获取map的长度
-	MapOperation()
+	mapOperation()
 }
 
-func MapOperation() {
+func mapOperation() {
 	/*
 		type hmap struct{
 			count int
@@ -31,6 +25,7 @@ func MapOperation() {
 	mp := make(map[string]int)
 	mp["danny"] = 1
 	mp["Joy"] = 2
+	delete(mp, "joy") // 删除不会减少长度
 	count := **(**int)(unsafe.Pointer(&mp))
 	// 转换过程&mp->pointer->**int->int
 	fmt.Println("长度", count, len(mp))
