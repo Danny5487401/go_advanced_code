@@ -7,7 +7,6 @@ import (
 
 func main() {
 	code := errcode.ERR_CODE_TIMEOUT
-	fmt.Println(code)
+	fmt.Println(code) // 输出: 1 无效参数
 
-	// 输出: 1 无效参数
 }

@@ -1,11 +1,13 @@
 # 错误码生成方式
 go generate + stringer
-# 安装stringer
+
+
+## 安装stringer
 ```shell script
 
- go get golang.org/x/tools/cmd/stringer
+go get golang.org/x/tools/cmd/stringer
 ```
-# 使用方式
+## 使用方式
 ```go
 //go:generate stringer -type ErrCode
 
@@ -19,5 +21,5 @@ go generate + stringer
 //go:generate stringer -type ErrCode -linecomment -output code_string.go
 ```
 
-# 好处
+# #好处
 生成的代码做了一些优化，减少了字符串对象的数量
