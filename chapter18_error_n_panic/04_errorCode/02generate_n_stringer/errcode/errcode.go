@@ -1,11 +1,5 @@
 //go:generate stringer -type ErrCode -linecomment -output code_gen.go
 
-/*
-注意点
-	go:generate前面只能使用//注释，注释必须在行首，前面不能有空格且//与go:generate之间不能有空格！！！
-	go:generate可以在任何 Go 源文件中，最好在类型定义的地方
-*/
-
 package errcode
 
 type ErrCode int
