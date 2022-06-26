@@ -353,9 +353,12 @@
 - 1 自定义错误类型打印错误栈
 - [2 扩展包pkg.errors](chapter18_error_n_panic/02_pkg_errors/pkg_errors.md)
 - [3 Gin的错误recover分析(panic和recover源码分析)](chapter18_error_n_panic/03_recover/panic.md)
-- [4 stringer +generate 工具自动化生成errCode错误码及信息](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
+- [4 生成errCode错误码及信息](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
+  - [4.1 传统方式：命名错误码、状态码的同时，又要同步写码对应的翻译](chapter18_error_n_panic/04_errorCode/01traditional/main.go)
+  - [4.2 stringer + go generate 自带工具生成errCode错误码及信息](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
 - [5 error如何正确比较](chapter18_error_n_panic/05_err_comparision/main.go)
 - [6 收集多个errors-->go-multierror实现](chapter18_error_n_panic/06_multi_error/01_one_goroutine_n_errors/main.go)
+
 ## 第十九章 nil预定义标识
 - 1 不同类型为nil时的地址和size大小
 - 2 不同类型与nil的比较
