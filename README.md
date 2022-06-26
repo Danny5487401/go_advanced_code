@@ -246,7 +246,7 @@
     - [2.14 闭包函数](chapter11_assembly_language/02plan9/14_closure/main.go)
     - [2.15 两种方式获取GoroutineId](chapter11_assembly_language/02plan9/15_GoroutineId/main.go)
     - [2.16 汇编调用非汇编Go函数](chapter11_assembly_language/02plan9/16_assembly_call_NonassemblyFunc/main.go)
-- 3 [Golang底层数据结构-涉及数值类型占用的bit](chapter11_assembly_language/03Golang_data_structure/data.md)
+- [3 Golang底层数据结构-涉及数值类型占用的bit](chapter11_assembly_language/03Golang_data_structure/data.md)
     - [3.1 Map底层结构](chapter11_assembly_language/03Golang_data_structure/map_structure/map_intro.md)
       - [map的指针优化场景](chapter11_assembly_language/03Golang_data_structure/map_structure/Improvement/map_test.go)
     - [3.2 String底层结构,字符集和字符编码,性能分析及内存泄漏分析](chapter11_assembly_language/03Golang_data_structure/string_structure/str.md)
@@ -353,7 +353,7 @@
 - 1 自定义错误类型打印错误栈
 - [2 扩展包pkg.errors](chapter18_error_n_panic/02_pkg_errors/pkg_errors.md)
 - [3 Gin的错误recover分析(panic和recover源码分析)](chapter18_error_n_panic/03_recover/panic.md)
-- [4 生成errCode错误码及信息](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
+- 4 生成errCode错误码及信息
   - [4.1 传统方式：命名错误码、状态码的同时，又要同步写码对应的翻译](chapter18_error_n_panic/04_errorCode/01traditional/main.go)
   - [4.2 stringer + go generate 自带工具生成errCode错误码及信息](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
 - [5 error如何正确比较](chapter18_error_n_panic/05_err_comparision/main.go)
