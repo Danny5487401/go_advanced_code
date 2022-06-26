@@ -384,6 +384,7 @@
 - [1 加载多个模版并指定模版](chapter22_template/01_multi_template/main.go)
 - [2 自定义模版函数](chapter22_template/02_template_func/main.go)
 - [3 html模版](chapter22_template/03_html_template/main.go)
+- [4 generate 根据模版代码生成](chapter22_template/04_gen_template/gen_main.go)
 
 ## 第二十三章 调试内部对象
 - [1 fmt打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)
