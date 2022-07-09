@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go_advanced_code/chapter02_goroutine/02_runtime/05pprof/01_pprof/data"
+	"github.com/Danny5487401/go_advanced_code/chapter02_goroutine/02_runtime/05pprof/01_pprof/data"
 	"log"
 	"net/http"
 	_ "net/http/pprof" //引入init就注册了路由

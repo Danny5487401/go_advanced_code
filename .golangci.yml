@@ -1,0 +1,68 @@
+# Refer to golangci-lint's example config file for more options and information:
+# https://github.com/golangci/golangci-lint/blob/master/.golangci.example.yml
+
+run:
+  # 分析的timeout 事件，默认 1m
+  timeout: 2m
+  # 包管理模式 Allowed values: readonly|vendor|mod
+  modules-download-mode: readonly
+  # 忽略的目录
+  skip-dirs:
+    - common
+  # 忽略的文件
+  skip-files:
+    - ".*_test.go"
+    - vendor
+  issue-exit-code: 1
+linters:
+  disable-all: true
+  enable:
+    - bodyclose
+    - deadcode
+    # 检测Golang代码中无法检查到的错误
+    - errcheck
+    - goimports
+    # only minor issues
+    # - errorlint
+    - exportloopref
+    # seems to have bugs in recent version, also slow
+    # - gci
+    - gosec
+    - gosimple
+    # go vet工具可用于检测无法被编译捕获的有问题的代码
+    - govet
+    - ineffassign
+    - misspell
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unparam
+    # 用于检查Golang代码中未使用的常量、变量、函数和类型
+    - unused
+    - varcheck
+linters-settings:
+  errcheck:
+    check-type-assertions: true  #  这里建议设置为true，如果确实不需要检查，可以写成`num, _ := strconv.Atoi(numStr)`
+  # Goconst 查找可以被常量替换的重复字符串
+  goconst:
+    min-len: 2
+    min-occurrences: 3
+  gocritic:
+    enabled-tags:
+      - experimental
+  govet:
+    check-shadowing: true
+  nolintlint:
+    require-explanation: true
+    require-specific: true
+  # 设置拼写检测的语言为 US
+  misspell:
+    locale: US
+
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0

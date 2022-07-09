@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go_advanced_code/chapter11_assembly_language/02plan9/14_closure/closure_package"
+	"github.com/Danny5487401/go_advanced_code/chapter11_assembly_language/02plan9/14_closure/closure_package"
 )
 
 func main() {

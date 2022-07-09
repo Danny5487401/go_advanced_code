@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go_advanced_code/chapter17_dataStructure_n_algorithm/08_trie/trie"
+	"github.com/Danny5487401/go_advanced_code/chapter17_dataStructure_n_algorithm/08_trie/trie"
 )
 
 func main() {

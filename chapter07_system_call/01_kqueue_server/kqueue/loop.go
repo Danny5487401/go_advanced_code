@@ -2,7 +2,7 @@ package kqueue
 
 import (
 	"fmt"
-	"go_advanced_code/chapter07_system_call/08_kqueue_server/socket"
+	"github.com/Danny5487401/go_advanced_code/chapter07_system_call/08_kqueue_server/socket"
 
 	"syscall"
 )

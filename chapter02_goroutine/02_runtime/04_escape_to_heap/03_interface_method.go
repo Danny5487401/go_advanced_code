@@ -19,7 +19,7 @@ func main() {
 
 // go build -gcflags '-m' 03_interface_method.go
 /*
-# command-line-arguments
+
 ./03_interface_method.go:9:17: inlining call to fnv.New64a
 ./03_interface_method.go:17:12: inlining call to fmt.Printf
 ./03_interface_method.go:10:9: devirtualizing h.Write to *fnv.sum64a

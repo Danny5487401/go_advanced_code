@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go_advanced_code/chapter11_assembly_language/02plan9/15_GoroutineId/GId_Package"
+	"github.com/Danny5487401/go_advanced_code/chapter11_assembly_language/02plan9/15_GoroutineId/GId_Package"
 	"runtime"
 	"strconv"
 	"strings"

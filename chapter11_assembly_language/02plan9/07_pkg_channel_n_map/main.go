@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go_advanced_code/chapter11_assembly_language/02plan9/07_pkg_channel_n_map/channel_n_map_package"
+	"github.com/Danny5487401/go_advanced_code/chapter11_assembly_language/02plan9/07_pkg_channel_n_map/channel_n_map_package"
 )
 
 // map/channel类型变量

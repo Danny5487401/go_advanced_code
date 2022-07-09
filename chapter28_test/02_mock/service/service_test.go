@@ -1,8 +1,8 @@
 package service
 
 import (
+	mock_dao "github.com/Danny5487401/go_advanced_code/chapter28_test/02_mock/dao"
 	"github.com/golang/mock/gomock"
-	mock_dao "go_advanced_code/chapter28_test/02_mock/dao"
 	"testing"
 )
 

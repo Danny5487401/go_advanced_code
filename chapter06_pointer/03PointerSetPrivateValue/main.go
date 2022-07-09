@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go_advanced_code/chapter06_pointer/03PointerSetPrivateValue/p"
+	"github.com/Danny5487401/go_advanced_code/chapter06_pointer/03PointerSetPrivateValue/p"
 	"runtime"
 	"strconv"
 	"unsafe"

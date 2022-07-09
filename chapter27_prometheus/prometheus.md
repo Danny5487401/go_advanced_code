@@ -185,7 +185,7 @@ scrape_configs:
 可以看到配置文件中指定了一个job_name，所要监控的任务即视为一个job, scrape_interval和scrape_timeout是pro进行数据采集的时间间隔和频率，metrics_path指定了访问数据的http路径，target是目标的ip:port,这里使用的是同一台主机上的8888端口
 
 ```shell
-docker run -p 9090:9090 -v /Users/python/Desktop/go_advanced_code/chapter02_goroutine/02_runtime/07prometheus/client/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+docker run -p 9090:9090 -v /Users/python/Desktop/github.com/Danny5487401/go_advanced_code/chapter02_goroutine/02_runtime/07prometheus/client/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
 ```
 ![](.prometheus_images/prometheus_panel.png)
 启动之后可以访问web页面http://localhost:9090/graph,在status下拉菜单中可以看到配置文件和目标的状态，此时目标状态为DOWN，因为我们所需要监控的服务还没有启动起来，那就赶紧步入正文，用pro golang client来实现程序吧。
