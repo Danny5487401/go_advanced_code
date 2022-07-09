@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/Danny5487401/go_advanced_code/chapter11_assembly_language/02plan9/15_GoroutineId/GId_Package"
 	"runtime"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/Danny5487401/go_advanced_code/chapter11_assembly_language/02plan9/15_GoroutineId/GId_Package"
 )
 
 //获取goroutineId

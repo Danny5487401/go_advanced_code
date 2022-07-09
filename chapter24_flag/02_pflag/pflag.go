@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	flag "github.com/spf13/pflag"
 	"strings"
+
+	flag "github.com/spf13/pflag"
 )
 
 // 定义命令行参数对应的变量

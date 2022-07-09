@@ -12,13 +12,13 @@ package main
 import "fmt"
 
 // 收银员
-type CashSuper interface{
+type CashSuper interface {
 	AcceptCash(money float64) float64
 }
 
-
 // 正常收费
-type Normal struct {}
+type Normal struct{}
+
 func (n *Normal) AcceptCash(money float64) float64 {
 	return money
 }
@@ -27,6 +27,7 @@ func (n *Normal) AcceptCash(money float64) float64 {
 type CashRebate struct {
 	Rebate float64
 }
+
 func (c *CashRebate) SetRebate(rebate float64) {
 	c.Rebate = rebate
 }
@@ -38,8 +39,9 @@ func (c *CashRebate) AcceptCash(money float64) float64 {
 // 满 x 返 y
 type CashReturn struct {
 	MoneyCondition float64
-	MoneyReturn float64
+	MoneyReturn    float64
 }
+
 func (c *CashReturn) SetCashReturn(moneyCondition float64, moneyReturn float64) {
 	c.MoneyCondition = moneyCondition
 	c.MoneyReturn = moneyReturn
@@ -55,6 +57,7 @@ func (c *CashReturn) AcceptCash(money float64) float64 {
 type CashContext struct {
 	Strategy CashSuper
 }
+
 func (c *CashContext) SetCashContext(t string) {
 	switch t {
 	case "正常收费":
@@ -67,7 +70,9 @@ func (c *CashContext) SetCashContext(t string) {
 	case "满300返100":
 		r := new(CashReturn)
 		r.SetCashReturn(200, 100)
-		c.Strategy = r }}
+		c.Strategy = r
+	}
+}
 
 // 收钱
 func (c *CashContext) GetMoney(money float64) float64 {
@@ -79,9 +84,9 @@ func main() {
 
 	cs.SetCashContext("打八折")
 	result := cs.GetMoney(100)
-	fmt.Println("100元打八折结果:",result)
+	fmt.Println("100元打八折结果:", result)
 
 	cs.SetCashContext("满300返100")
 	result = cs.GetMoney(400)
-	fmt.Println("400元满200返100结果:",result)
+	fmt.Println("400元满200返100结果:", result)
 }

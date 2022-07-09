@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/dlsniper/debugger"
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -9,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/dlsniper/debugger"
 )
 
 func main() {

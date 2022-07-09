@@ -37,7 +37,7 @@ func Reduce(slice, pairFunc, zero interface{}) interface{} {
 // 检验是否是函数
 func verifyFuncSignature(fn reflect.Value, types ...reflect.Type) bool {
 
-	//Check it is a funciton
+	//Check it is a function
 	if fn.Kind() != reflect.Func {
 		return false
 	}

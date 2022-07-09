@@ -3,6 +3,7 @@ package main
 import (
 	_ "expvar"
 	"fmt"
+
 	"github.com/valyala/fasthttp"
 
 	_ "net/http/pprof"
