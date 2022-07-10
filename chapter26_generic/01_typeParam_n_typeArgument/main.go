@@ -1,37 +1,28 @@
 package main
 
-import (
-	"fmt"
-	"golang.org/x/exp"
-	"math/rand"
-)
+import "fmt"
 
-// 为函数声明类型参数T, 其类型为any
-func ZeroValue[T any]() {
-	var x T
-	fmt.Printf("zero value of %T type: %v\n", x, x)
+type C1 interface{
+	~int|~int32
+	M1()
 }
 
-func main() {
-	ZeroValue[bool]()           // zero value of bool type: false
-	ZeroValue[complex64]()      // zero value of complex64 type: (0+0i)
-	ZeroValue[[3]int]()         // zero value of [3]int type: [0 0 0]
-	ZeroValue[map[string]int]() // zero value of map[string]int type: map[]
-	ZeroValue[struct {
-		b bool
-		e error
-	}]() // zero value of struct { b bool; e error } type: {false <nil>}
+type T struct{}
+func (t T) M1()  {
 }
 
-// 作为函数输入参数或返回值的类型
-func Fn0[T, U any](t T, u U) {
-	fmt.Println(t, u)
+type T1 int
+func (t T1) M1()  {
 }
 
-func Fn1[T constraints.Integer]() (t T) {
-	return T(rand.Int()) // 使用类型参数强制转换类型
+func foo[P C1](t P)  {
+	fmt.Println("泛型初步测试",t)
 }
 
-func Fn2[K comparable, V any](m map[K]V) {
-	fmt.Println(m)
+func main(){
+	var t1 T1
+	foo(t1)
+
+	//var t2 T
+	//foo(t2)  // ./main.go:27:5: T does not implement C1
 }
