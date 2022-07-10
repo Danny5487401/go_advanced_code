@@ -441,8 +441,8 @@ Note: Go 1.18 移除用于泛型的constraints包
 - 1 build
     - [1.1 编译时 -X 传递参数值](chapter31_tool/01_build/build.go)
 
-## [第三十二章 Generic泛型](chapter26_generic/generic.md)
-- [1 interface新含义使用-->type set(类型集合),specific type(特定类型)和structural type(结构类型)](chapter26_generic/01_typeParam_n_typeArgument/main.go)
-- [2 泛型性能测试](chapter26_generic/02_performance/generic_test.go)
+## [第三十二章 Generic泛型](chapter32_generic/generic.md)
+- [1 interface新含义使用-->type set(类型集合),specific type(特定类型)和structural type(结构类型)](chapter32_generic/01_typeParam_n_typeArgument/main.go)
+- [2 泛型性能测试](chapter32_generic/02_performance/generic_test.go)
 
 

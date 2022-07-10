@@ -32,7 +32,7 @@ Go 1.18版本增加了对泛型的支持,
 ### 2. 模版(stenciling)：为每次调用生成代码实例，即便类型参数相同。
 同一个泛型函数，为每一个实例化的类型参数生成一套独立的代码，感觉和rust的泛型特化一样。
 
-![](chapter26_generic/.generic_images/stencile.gif)
+![](/.generic_images/stencile.gif)
 
 
 比如下面一个泛型方法:
