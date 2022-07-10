@@ -1,4 +1,4 @@
-prefix=/Users/xiaxin/Desktop/go_advanced_code/chapter13_Go_call_C_or_C++/11_pkg_config/number
+prefix=/Users/python/Desktop/github.com/Danny5487401/go_advanced_code/chapter13_Go_call_C_or_C++/11_pkg_config/number
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${exec_prefix}/include

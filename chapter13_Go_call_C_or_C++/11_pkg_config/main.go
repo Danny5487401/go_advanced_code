@@ -1,8 +1,8 @@
 package main
 
-// #cgo pkg-config: libhello
-// #include < stdlib.h >
-// #include < hello_world.h >
+//#cgo pkg-config: libnumber
+//#include <stdlib.h>
+//#include <number.h>
 import "C"
 import (
 	"fmt"

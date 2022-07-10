@@ -1,0 +1,26 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: danny-instance
+  namespace: monitoring
+spec:
+  serviceAccountName: danny-prometheus
+  serviceMonitorSelector:
+    matchLabels:
+      team: frontend
+  ruleSelector:
+    matchLabels:
+      role: alert-rules
+      prometheus: example
+  alerting:
+    alertmanagers:
+      # 需要暴露endpoint，需要有个service暴露
+      - name: alertmanager-danny-alert-instance
+        namespace: monitoring
+        port: web
+  resources:
+    requests:
+      memory: 400Mi
+
+
+

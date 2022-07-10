@@ -6,19 +6,29 @@ Go汇编语言中一个指令在最终的目标代码中可能会被编译为其
 
 
 ## 栈
+![](.func_images/stack_memery_info.png)
+调用栈call stack，简称栈，是一种栈数据结构，用于存储有关计算机程序的活动 subroutines 信息。在计算机编程中，subroutines 是执行特定任务的一系列程序指令，打包为一个单元。
+
+栈帧stack frame又常被称为帧frame是在调用栈中储存的函数之间的调用关系，每一帧对应了函数调用以及它的参数数据。
+
+有了函数调用自然就要有调用者 caller 和被调用者 callee ，如在 函数 A 里 调用 函数 B，A 是 caller，B 是 callee。
+
+
+## 栈分裂stack-split
 由于 Go 程序中的 goroutine 数目是不可确定的，并且实际场景可能会有百万级别的 goroutine，runtime 必须使用保守的思路来给 goroutine 分配空间以避免吃掉所有的可用内存。
-
 也由于此，每个新的 goroutine 会被 runtime 分配初始为 2KB 大小的栈空间(Go 的栈在底层实际上是分配在堆空间上的)。
+随着一个 goroutine 进行自己的工作，可能会超出最初分配的栈空间限制(就是栈溢出的意思)。 
 
-随着一个 goroutine 进行自己的工作，可能会超出最初分配的栈空间限制(就是栈溢出的意思)。 为了防止这种情况发生，runtime 确保 goroutine 在超出栈范围时，会创建一个相当于原来两倍大小的新栈，并将原来栈的上下文拷贝到新栈上。 这个过程被称为 栈分裂(stack-split)，这样使得 goroutine 栈能够动态调整大小
+为了防止这种情况发生，runtime 确保 goroutine 在超出栈范围时，会创建一个相当于原来两倍大小的新栈，并将原来栈的上下文拷贝到新栈上。
+这个过程被称为 栈分裂(stack-split)，这样使得 goroutine 栈能够动态调整大小.
 
-## 栈分裂
-为了使栈分裂正常工作，编译器会在每一个函数的开头和结束位置插入指令来防止 goroutine 爆栈。 像我们本章早些看到的一样，为了避免不必要的开销，一定不会爆栈的函数会被标记上 NOSPLIT 来提示编译器不要在这些函数的开头和结束部分插入这些检查指令
+为了使栈分裂正常工作，编译器会在每一个函数的开头和结束位置插入指令来防止 goroutine 爆栈。
+像我们本章早些看到的一样，为了避免不必要的开销，一定不会爆栈的函数会被标记上 NOSPLIT 来提示编译器不要在这些函数的开头和结束部分插入这些检查指令
 
 ## 栈结构
 典型的函数的栈结构图
 ```css
-高地址
+低地址
                        -----------------                                           
                        current func arg0                                           
                        ----------------- <----------- FP(pseudo FP)                
@@ -64,7 +74,7 @@ Go汇编语言中一个指令在最终的目标代码中可能会被编译为其
                          return addr                                               
                        +---------------+                                           
                                                                                    
-低地址
+高地址
 ```
 从原理上来讲，如果当前函数调用了其它函数，那么 return addr 也是在 caller 的栈上的，不过往栈上插 return addr 的过程是由 CALL 指令完成的，在 RET 时，SP 又会恢复到图上位置。我们在计算 SP 和参数相对位置时，可以认为硬件 SP 指向的就是图上的位置。
 
@@ -100,10 +110,106 @@ argN, ... arg3, arg2, arg1, arg0
 ![](func_package/swap.png)
 
 
+## Goroutine 栈操作
+![](.func_images/stack_high_n_low.png)
+在 Goroutine 中有一个 stack 数据结构，里面有两个属性 lo 与 hi，描述了实际的栈内存地址：
+
+- stack.lo：栈空间的低地址；
+- stack.hi：栈空间的高地址
+
+在 Goroutine 中会通过 stackguard0 来判断是否要进行栈增长：
+
+- stackguard0：stack.lo + StackGuard, 用于stack overlow的检测；
+- StackGuard：保护区大小，常量Linux上为 928 字节；
+- StackSmall：常量大小为 128 字节，用于小函数调用的优化；
+- StackBig：常量大小为 4096 字节；
+
+需要注意的是，由于栈是由高地址向低地址增长的，所以对比的时候，都是小于才执行扩容，这里需要大家品品。
+
+
+## G 的创建
+因为栈都是在 Goroutine 上的，所以先从 G 的创建开始看如何创建以及初始化栈空间的。
+
+G 的创建会调用 runtime·newproc进行创建：
+```go
+func newproc(siz int32, fn *funcval) {
+    argp := add(unsafe.Pointer(&fn), sys.PtrSize)
+    gp := getg()
+    // 获取 caller 的 PC 寄存器
+    pc := getcallerpc()
+    // 切换到 G0 进行创建
+    systemstack(func() {
+        newg := newproc1(fn, argp, siz, gp, pc)
+        ...
+    })
+}
+```
+newproc 方法会切换到 G0 上调用 newproc1 函数进行 G 的创建。
+```go
+const _StackMin = 2048
+func newproc1(fn *funcval, argp unsafe.Pointer, narg int32, callergp *g, callerpc uintptr) *g {
+    _g_ := getg()
+    ...
+    _p_ := _g_.m.p.ptr()
+    // 从 P 的空闲链表中获取一个新的 G
+    newg := gfget(_p_)
+    // 获取不到则调用 malg 进行创建
+    if newg == nil {
+        newg = malg(_StackMin)
+        casgstatus(newg, _Gidle, _Gdead)
+        allgadd(newg) // publishes with a g->status of Gdead so GC scanner doesn't look at uninitialized stack.
+    }
+    ...
+    return newg
+}
+```
+
+newproc1 方法很长，里面主要是获取 G ，然后对获取到的 G 做一些初始化的工作。我们这里只看 malg 函数的调用。
+
+在调用 malg 函数的时候会传入一个最小栈大小的值：_StackMin（2048）。
+```go
+func malg(stacksize int32) *g {
+    // 创建 G 结构体
+    newg := new(g)
+    if stacksize >= 0 {
+        // 这里会在 stacksize 的基础上为每个栈预留系统调用所需的内存大小 _StackSystem
+        // 在 Linux/Darwin 上（ _StackSystem == 0 ）本行不改变 stacksize 的大小
+        stacksize = round2(_StackSystem + stacksize)
+        // 切换到 G0 为 newg 初始化栈内存
+        systemstack(func() {
+            newg.stack = stackalloc(uint32(stacksize))
+        })
+        // 设置 stackguard0 ，用来判断是否要进行栈扩容
+        newg.stackguard0 = newg.stack.lo + _StackGuard
+        newg.stackguard1 = ^uintptr(0) 
+        *(*uintptr)(unsafe.Pointer(newg.stack.lo)) = 0
+    }
+    return newg
+}
+```
+在调用 malg 的时候会将传入的内存大小加上一个 _StackSystem 值预留给系统调用使用，round2 函数会将传入的值舍入为 2 的指数。然后会切换到 G0 执行 stackalloc 函数进行栈内存分配。
+
+分配完毕之后会设置 stackguard0 为 stack.lo + _StackGuard，作为判断是否需要进行栈扩容使用
+
 
 ## 栈的初始化
-// src/runtime/stack.go
 ```go
+const (
+    // Number of orders that get caching. Order 0 is FixedStack
+    // and each successive order is twice as large.
+    // We want to cache 2KB, 4KB, 8KB, and 16KB stacks. Larger stacks
+    // will be allocated directly.
+    // Since FixedStack is different on different systems, we
+    // must vary NumStackOrders to keep the same maximum cached size.
+    //   OS               | FixedStack | NumStackOrders
+    //   -----------------+------------+---------------
+    //   linux/darwin/bsd | 2KB        | 4
+    //   windows/32       | 4KB        | 3
+    //   windows/64       | 8KB        | 2
+    //   plan9            | 4KB        | 3
+    _NumStackOrders = 4 - sys.PtrSize/4*sys.GoosWindows - 1*sys.GoosPlan9
+)
+// src/runtime/stack.go
 // 全局的栈缓存，分配 32KB以下内存
 var stackpool [_NumStackOrders]struct {
     item stackpoolItem
@@ -137,6 +243,11 @@ func stackinit() {
     }
 }
 ```
+
+需要注意的是，stackinit 是在调用 runtime·schedinit初始化的，是在调用 runtime·newproc之前进行的。
+
+在执行栈初始化的时候会初始化两个全局变量 stackpool 和 stackLarge。stackpool 可以分配小于 32KB 的内存，stackLarge 用来分配大于 32KB 的栈空间。
+
 
 ## 栈的分配
 源码路径：src/runtime/stack.go
@@ -190,6 +301,14 @@ func stackalloc(n uint32) stack {
 }
 ```
 
+stackalloc 会根据传入的参数 n 的大小进行分配，在 Linux 上如果 n 小于 32768 bytes，也就是 32KB ，那么会进入到小栈的分配逻辑中。
+
+小栈指大小为 2K/4K/8K/16K 的栈，在分配的时候，会根据大小计算不同的 order 值，如果栈大小是 2K，那么 order 就是 0，4K 对应 order 就是 1，以此类推。这样一方面可以减少不同 Goroutine 获取不同栈大小的锁冲突，另一方面可以预先缓存对应大小的 span ，以便快速获取。
+
+thisg.m.p == 0可能发生在系统调用 exitsyscall 或改变 P 的个数 procresize 时，thisg.m.preemptoff != ""会发生在 GC 的时候。也就是说在发生在系统调用 exitsyscall 或改变 P 的个数在变动，亦或是在 GC 的时候，会从 stackpool 分配栈空间，否则从 mcache 中获取。
+
+如果 mcache 对应的 stackcache 获取不到，那么调用 stackcacherefill 从堆上申请一片内存空间填充到stackcache中。
+
 
 ### 大栈内存分配
 
@@ -199,7 +318,7 @@ func stackalloc(n uint32) stack {
     var v unsafe.Pointer
 
     if n < _FixedStack<<_NumStackOrders && n < _StackCacheSize {
-        ...
+        // 32k...
     } else {
         // 申请的内存空间过大，从 runtime.stackLarge 中检查是否有剩余的空间
         var s *mspan
@@ -235,7 +354,6 @@ func stackalloc(n uint32) stack {
     return stack{uintptr(v), uintptr(v) + uintptr(n)}
 }
 ```
-
 
 ## 案例
 为了便于分析，我们先构造一个禁止栈分裂的printnl函数。printnl函数内部都通过调用runtime.printnl函数输出换行：
@@ -329,45 +447,114 @@ type stack struct {
 
 1. 扩容：在 Goroutine 中会通过 stackguard0 来判断是否要进行栈增长：
 ```go
-func malg(stacksize int32) *g {
-    // 创建 G 结构体
-    newg := new(g)
-    if stacksize >= 0 {
-        // 这里会在 stacksize 的基础上为每个栈预留系统调用所需的内存大小 _StackSystem
-        // 在 Linux/Darwin 上（ _StackSystem == 0 ）本行不改变 stacksize 的大小
-        stacksize = round2(_StackSystem + stacksize)
-        // 切换到 G0 为 newg 初始化栈内存
-        systemstack(func() {
-            newg.stack = stackalloc(uint32(stacksize))
-        })
-        // 设置 stackguard0 ，用来判断是否要进行栈扩容
-        newg.stackguard0 = newg.stack.lo + _StackGuard
-        newg.stackguard1 = ^uintptr(0) 
-        *(*uintptr)(unsafe.Pointer(newg.stack.lo)) = 0
+func newstack() {
+    thisg := getg() 
+
+    gp := thisg.m.curg
+
+    // 初始化寄存器相关变量
+    morebuf := thisg.m.morebuf
+    thisg.m.morebuf.pc = 0
+    thisg.m.morebuf.lr = 0
+    thisg.m.morebuf.sp = 0
+    thisg.m.morebuf.g = 0
+    ...
+    // 校验是否被抢占
+    preempt := atomic.Loaduintptr(&gp.stackguard0) == stackPreempt
+
+    // 如果被抢占
+    if preempt {
+        // 校验是否可以安全的被抢占
+        // 如果 M 上有锁
+        // 如果正在进行内存分配
+        // 如果明确禁止抢占
+        // 如果 P 的状态不是 running
+        // 那么就不执行抢占了
+        if !canPreemptM(thisg.m) {
+            // 到这里表示不能被抢占？
+            // Let the goroutine keep running for now.
+            // gp->preempt is set, so it will be preempted next time.
+            gp.stackguard0 = gp.stack.lo + _StackGuard
+            // 触发调度器的调度
+            gogo(&gp.sched) // never return
+        }
     }
-    return newg
+
+    if gp.stack.lo == 0 {
+        throw("missing stack in newstack")
+    }
+    // 寄存器 sp
+    sp := gp.sched.sp
+    if sys.ArchFamily == sys.AMD64 || sys.ArchFamily == sys.I386 || sys.ArchFamily == sys.WASM {
+        // The call to morestack cost a word.
+        sp -= sys.PtrSize
+    } 
+    ...
+    if preempt {
+        //需要收缩栈
+        if gp.preemptShrink { 
+            gp.preemptShrink = false
+            shrinkstack(gp)
+        }
+        // 被 runtime.suspendG 函数挂起
+        if gp.preemptStop {
+            // 被动让出当前处理器的控制权
+            preemptPark(gp) // never returns
+        }
+
+        //主动让出当前处理器的控制权
+        gopreempt_m(gp) // never return
+    }
+
+    // 计算新的栈空间是原来的两倍
+    oldsize := gp.stack.hi - gp.stack.lo
+    newsize := oldsize * 2 
+    ... 
+    //将 Goroutine 切换至 _Gcopystack 状态
+    casgstatus(gp, _Grunning, _Gcopystack)
+
+    //开始栈拷贝
+    copystack(gp, newsize) 
+    casgstatus(gp, _Gcopystack, _Grunning)
+    gogo(&gp.sched)
+}
+```
+在开始执行栈拷贝之前会先计算新栈的大小是原来的两倍，然后将 Goroutine 状态切换至 _Gcopystack 状态。
+
+
+2. 收缩
+
+   我们知道Go运行时会定期进行垃圾回收操作，这其中包含栈的回收工作。如果栈使用到比例小于一定到阈值，则分配一个较小到栈空间，然后将栈上面到数据移动到新的栈中，
+   栈移动的过程和栈扩容的过程类似.
+```go
+func scanstack(gp *g, gcw *gcWork) {
+    ... 
+    // 进行栈收缩
+    shrinkstack(gp)
+    ...
 }
 ```
 
-- stackguard0：stack.lo + StackGuard, 用于stack overlow的检测；
-- StackGuard：保护区大小，常量Linux上为 928 字节；
-- StackSmall：常量大小为 128 字节，用于小函数调用的优化；
-- StackBig：常量大小为 4096 字节；
+```go
+func shrinkstack(gp *g) {
+    ...
+    oldsize := gp.stack.hi - gp.stack.lo
+    newsize := oldsize / 2 
+    // 当收缩后的大小小于最小的栈的大小时，不再进行收缩
+    if newsize < _FixedStack {
+        return
+    }
+    avail := gp.stack.hi - gp.stack.lo
+    // 计算当前正在使用的栈数量，如果 gp 使用的当前栈少于四分之一，则对栈进行收缩
+    // 当前使用的栈包括到 SP 的所有内容以及栈保护空间，以确保有 nosplit 功能的空间
+    if used := gp.stack.hi - gp.sched.sp + _StackLimit; used >= avail/4 {
+        return
+    }
+    // 将旧栈拷贝到新收缩后的栈上
+    copystack(gp, newsize)
+}
+```
+新栈的大小会缩小至原来的一半，如果小于 _FixedStack （2KB）那么不再进行收缩。除此之外还会计算一下当前栈的使用情况是否不足 1/4 ，如果使用超过 1/4 那么也不会进行收缩。
 
-根据被调用函数栈帧的大小来判断是否需要扩容：
-* 当栈帧大小（FramSzie）小于等于 StackSmall（128）时，如果 SP 小于 stackguard0 那么就执行栈扩容；
-* 当栈帧大小（FramSzie）大于 StackSmall（128）时，就会根据公式 SP - FramSzie + StackSmall 和 stackguard0 比较，如果小于 stackguard0 则执行扩容；
-* 当栈帧大小（FramSzie）大于StackBig（4096）时，首先会检查 stackguard0 是否已转变成 StackPreempt 状态了；然后根据公式 SP-stackguard0+StackGuard <= framesize + (StackGuard-StackSmall)判断，如果是 true 则执行扩容；
-
-
-需要注意的是，由于栈是由高地址向低地址增长的，所以对比的时候，都是小于才执行扩容，这里需要大家品品.
-
-stackguard0的偏移量是16个字节.因此上述代码中的`CMPQ SP, 16(AX)`表示将当前的真实SP和爆栈警戒线比较，
-如果超出警戒线则表示需要进行栈扩容，也就是跳转到L_MORE_STK。在L_MORE_STK标号处，先调用runtime·morestack_noctxt进行栈扩容，然后又跳回到函数的开始位置，
-此时此刻函数的栈已经调整了。然后再进行一次栈大小的检测，如果依然不足则继续扩容，直到栈足够大为止。
-
-2. 收缩
-   我们知道Go运行时会定期进行垃圾回收操作，这其中包含栈的回收工作。如果栈使用到比例小于一定到阈值，则分配一个较小到栈空间，然后将栈上面到数据移动到新的栈中，
-   栈移动的过程和栈扩容的过程类似.
-
+最后判断确定要进行收缩则调用 copystack 函数进行栈拷贝的逻辑
 

@@ -48,7 +48,7 @@ func transform(slice, function interface{}, inPlace bool) interface{} {
 // 检验是否是函数
 func verifyFuncSignature(fn reflect.Value, types ...reflect.Type) bool {
 
-	//Check it is a funciton
+	//Check it is a function
 	if fn.Kind() != reflect.Func {
 		return false
 	}
@@ -81,21 +81,21 @@ type Employee struct {
 }
 
 // 入口函数
-func main()  {
+func main() {
 	// 可以用于字符串数组
 	list := []string{"1", "2", "3", "4", "5", "6"}
-	result := Transform(list, func(str string) string{
+	result := Transform(list, func(str string) string {
 		return str + str + str
 	})
-	fmt.Printf("原始切片:%+v\n",list)
-	fmt.Printf("%+v\n",result)
+	fmt.Printf("原始切片:%+v\n", list)
+	fmt.Printf("%+v\n", result)
 
 	//// 可以用于整形数组
 	list1 := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
-	TransformInPlace(list1, func (a int) int {
-		return a*3
+	TransformInPlace(list1, func(a int) int {
+		return a * 3
 	})
-	fmt.Printf("%+v\n",list1)
+	fmt.Printf("%+v\n", list1)
 
 	//
 	//// 用于结构体

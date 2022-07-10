@@ -6,7 +6,7 @@ import "reflect"
 // 检验是否是函数
 func verifyFuncSignature(fn reflect.Value, types ...reflect.Type) bool {
 
-	//Check it is a funciton
+	//Check it is a function
 	if fn.Kind() != reflect.Func {
 		return false
 	}
@@ -75,7 +75,6 @@ func filter(slice, function interface{}, inPlace bool) (interface{}, int) {
 	return out.Interface(), len(which)
 }
 
-
 /* 以下作者原话
 I wanted to see how hard it was to implement this sort of thing in Go, with as nice an API as I could manage. It wasn't hard.
 
@@ -85,4 +84,4 @@ You shouldn't use it either.
 
 其实，在全世界范围内，有大量的程序员都在问Go语言官方什么时候在标准库中支持 Map/Reduce，Rob Pike说，这种东西难写吗？
 还要我们官方来帮你们写么？这种代码我多少年前就写过了，但是，我从来一次都没有用过，我还是喜欢用“For循环”，我觉得你最好也跟我一起用 “For循环”
- */
+*/

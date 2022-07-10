@@ -19,7 +19,7 @@ type FileInfo interface {
     Sys() interface{}   // 底层数据来源（可以返回nil）
 }
 
- */
+*/
 
 func main() {
 
@@ -30,19 +30,19 @@ func main() {
 		return
 	}
 	/*
-	// A fileStat is the implementation of FileInfo returned by Stat and Lstat.
-	type fileStat struct {
-		name    string
-		size    int64
-		mode    FileMode
-		modTime time.Time
-		sys     syscall.Stat_t
-	}
-	 */
+		// A fileStat is the implementation of FileInfo returned by Stat and Lstat.
+		type fileStat struct {
+			name    string
+			size    int64
+			mode    FileMode
+			modTime time.Time
+			sys     syscall.Stat_t
+		}
+	*/
 	fmt.Printf("%T\n", fileInfo) // *os.fileStat 具体实现
 
 	//文件名
-	fmt.Println(fileInfo.Name())  // danny.txt
+	fmt.Println(fileInfo.Name()) // danny.txt
 	//文件大小
 	fmt.Println(fileInfo.Size()) // 10
 	//是否是目录

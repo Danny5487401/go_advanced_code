@@ -1,19 +1,24 @@
-# ***高级Goland学习代码*** _go_advanced_code_
+# ***高级Goland学习代码*** _github.com/Danny5487401/go_advanced_code_
 ![](https://changkun.de/urlstat?mode=github&repo=)
-[![Go Report Card](https://goreportcard.com/badge/github.com/talkgo/night?style=flat-square)](https://goreportcard.com/report/github.com/Danny5487401/go_advanced_code)
-[![GitHub stars](https://img.shields.io/github/stars/talkgo/night.svg?label=Stars&style=flat-square)](https://github.com/Danny5487401/go_advanced_code)
-[![GitHub forks](https://img.shields.io/github/forks/talkgo/night.svg?label=Fork&style=flat-square)](https://github.com/Danny5487401/go_advanced_code)
+[![Go Report Card](https://goreportcard.com/badge/github.com/talkgo/night?style=flat-square)](https://goreportcard.com/report/github.com/Danny5487401/github.com/Danny5487401/go_advanced_code)
+[![GitHub stars](https://img.shields.io/github/stars/talkgo/night.svg?label=Stars&style=flat-square)](https://github.com/Danny5487401/github.com/Danny5487401/go_advanced_code)
+[![GitHub forks](https://img.shields.io/github/forks/talkgo/night.svg?label=Fork&style=flat-square)](https://github.com/Danny5487401/github.com/Danny5487401/go_advanced_code)
 ![](https://img.shields.io/github/contributors/talkgo/night.svg?style=flat-square&color=orange&label=all%20contributors)
-[![Documentation](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](http://godoc.org/github.com/Danny5487401/go_advanced_code)
-[![GitHub issues](https://img.shields.io/github/issues/talkgo/night.svg?label=Issue&style=flat-square)](https://github.com/Danny5487401/go_advanced_code/issues)
-![](https://changkun.de/urlstat?mode=github&repo=Danny5487401/go_advanced_code)
-[![license](https://img.shields.io/github/license/talkgo/night.svg?style=flat-square)](https://github.com/Danny5487401/go_advanced_code/blob/master/LICENSE)
+[![Documentation](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](http://godoc.org/github.com/Danny5487401/github.com/Danny5487401/go_advanced_code)
+[![GitHub issues](https://img.shields.io/github/issues/talkgo/night.svg?label=Issue&style=flat-square)](https://github.com/Danny5487401/github.com/Danny5487401/go_advanced_code/issues)
+![](https://changkun.de/urlstat?mode=github&repo=Danny5487401/github.com/Danny5487401/go_advanced_code)
+[![license](https://img.shields.io/github/license/talkgo/night.svg?style=flat-square)](https://github.com/Danny5487401/github.com/Danny5487401/go_advanced_code/blob/master/LICENSE)
 
 ![高级go编程](./img/golang.jpeg)
 
 # *目录*
+
 Note:目录同级为 *代码展示*，可在Goland中运行
 ## *推荐: goVersion==1.18*
+
+## 必备知识:
+- [module包管理](chapter29_module/02_discipline/module.md)
+- [golangci 规范并优化代码 + pre-commit工具](golangci.md)
 
 ## [第一章 I/O操作](chapter01_input_output/io.md)
 - 1 os操作系统模块
@@ -30,31 +35,30 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 
 ---
 ## 第二章 协程Goroutine
-- 1 [线程模型分类及Goroutine切换原则(GPM模型)](chapter02_goroutine/01_GPM/GPM.md)
+- [1 线程模型分类及Goroutine切换原则(GPM模型)](chapter02_goroutine/01_GPM/GPM.md)
     - [1.1 trace查看宏观调度流程(Goroutine启动时长)](chapter02_goroutine/01_GPM/trace/trace.md)
-- 2 [runtime模块和GC](chapter02_goroutine/02_runtime/runtime.md)
+- [2 runtime运行时模块](chapter02_goroutine/02_runtime/runtime.md)
     - [2.1 runtime核心功能及系统信息调用](chapter02_goroutine/02_runtime/01basic_use/main.go)
     - [2.2 Goexit()终止线程](chapter02_goroutine/02_runtime/02GoExit/main.go)
     - [2.3 资源竞争一致性问题分析](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/resource_competion.md)
-      - [2.3.1 问题产生](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/main.go)
-      - [2.3.2 问题解决](chapter02_goroutine/02_runtime/03ResourceCompetition/02Fix_Resource_data_consistency/main.go)
-    - [2.4 GC垃圾回收机制(trace查看map垃圾回收)](chapter02_goroutine/02_runtime/04GC/gc.md)
-      - [2.4.1 下次GC的时机](chapter02_goroutine/02_runtime/04GC/01_next_gc_stage/main.go)
-      - [2.4.2 删除Map元素查看GC回收流程](chapter02_goroutine/02_runtime/04GC/02_map_GC/main.go)
+        - [2.3.1 问题产生](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/main.go)
+        - [2.3.2 问题解决](chapter02_goroutine/02_runtime/03ResourceCompetition/02Fix_Resource_data_consistency/main.go)
+    - [2.4 逃逸分析](chapter02_goroutine/02_runtime/04_escape_to_heap/escape_to_heap.md)
+        - [2.4.1 argument content escapes(fmt参数内容逃逸)](chapter02_goroutine/02_runtime/04_escape_to_heap/01_fmt_interface.go)
+        - [2.4.2 局部变量指针返回时被外部引用](chapter02_goroutine/02_runtime/04_escape_to_heap/02_params_ptr_return.go)
+        - [2.4.3 接口类型](chapter02_goroutine/02_runtime/04_escape_to_heap/03_interface_method.go)
     - [2.5 监控代码性能pprof](chapter02_goroutine/02_runtime/05pprof/intro.md)
-      - [2.5.1 标准包runtime/pprof及net/http/pprof使用](chapter02_goroutine/02_runtime/05pprof/01_pprof/main.go)
-      - [2.5.2 第三方包pkg/profile](chapter02_goroutine/02_runtime/05pprof/02_pkg_profile/cpu.go)
-      - [2.5.3 debug时添加pprof标签定位goroutine](chapter02_goroutine/02_runtime/05pprof/03_pprof_label/client/main.go)
-    - 2.6 Linux内存及Go内存结构管理
-      - [2.6.1 Linux内存管理](chapter02_goroutine/02_runtime/06memory/linux_mem.md)
-      - [2.6.2 Go内存结构管理](chapter02_goroutine/02_runtime/06memory/go_mem.md)
-    - [2.7 prometheus监控程序](chapter02_goroutine/02_runtime/07prometheus/prometheus.md)
-- 3 [多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
-- 4 [线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
+        - [2.5.1 标准包runtime/pprof及net/http/pprof使用](chapter02_goroutine/02_runtime/05pprof/01_pprof/main.go)
+        - [2.5.2 第三方包pkg/profile](chapter02_goroutine/02_runtime/05pprof/02_pkg_profile/cpu.go)
+        - [2.5.3 debug时添加pprof标签定位goroutine](chapter02_goroutine/02_runtime/05pprof/03_pprof_label/client/main.go)
+
+- [3 多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
+- [4 线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
     - [4.1 使用channel实现Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
     - [4.2 百万请求处理案例](chapter02_goroutine/04_concurrent_pool/02_millionRequests/main.go)
     - [4.3 第三方包线程池ants](chapter02_goroutine/04_concurrent_pool/03_antsPool/ants.md)
-    - [4.4 标准库连接池database/sql实现](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
+    - [4.4 标准库连接池database/sql源码分析](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
+      - [4.4.1 连接池Benchmark对比](chapter02_goroutine/04_concurrent_pool/04_database_sql/database_pool_test.go)
 - [5 channel导致goroutine泄漏分析及处理](chapter02_goroutine/05_goroutine_leaks/goroutine_leak.md)
   - [5.1 channel未正常关闭导致goroutine泄漏](chapter02_goroutine/05_goroutine_leaks/01_leaks_happen/main.go)
   - [5.2 channel监听避免goroutine泄漏](chapter02_goroutine/05_goroutine_leaks/02_avoid_leaks/main.go)
@@ -67,7 +71,7 @@ Note:目录同级为 *代码展示*，可在Goland中运行
     - [1.2 父子通信](chapter03_channel/01_channel_use/02ParentChildrenCommunication/main.go)
     - [1.3 死锁](chapter03_channel/01_channel_use/03deadlock/main.go)
     - [1.4 优雅关闭channel](chapter03_channel/01_channel_use/04channelClose/ChanClose.md)
-      - [1.4.1 N 个 sender，一个 receiver](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
+      - [1.4.1 N 个 sender，1 个 receiver](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
       - [1.4.2 N 个 sender， M 个 receiver ](chapter03_channel/01_channel_use/04channelClose/case4_nsender_nreceiver/nsender_nreceiver.go)
     - [1.5 通道遍历range](chapter03_channel/01_channel_use/05ChannelRange/main.go)
     - [1.6 有缓冲channel增强并发](chapter03_channel/01_channel_use/06bufferChan/main.go)
@@ -77,7 +81,8 @@ Note:目录同级为 *代码展示*，可在Goland中运行
     - [1.10 happened before](chapter03_channel/01_channel_use/10_happened_before/happened_before.md)
     - [1.11 循环读取关闭的通道值是否阻塞](chapter03_channel/01_channel_use/11_read_closed_chan/readCloseChan.go)
     - [1.12 select中实现channel优先级-->k8s中实现](chapter03_channel/01_channel_use/12_priority_channel/priority_chan.md)
-- [ channel应用:TimerChan模块源码分析及使用陷阱](chapter03_channel/02_TimerChan/timer.md)
+    - [1.13 使用RingBuffer实现无限容量的channel](chapter03_channel/01_channel_use/13_unbounded_chan/unbounder_chan.md)
+- [2 channel应用:TimerChan模块源码分析及使用陷阱](chapter03_channel/02_TimerChan/timer.md)
     - [2.1 reset重新等待被触发](chapter03_channel/02_TimerChan/01_TimerReset/timer_reset.md)
     - [2.2 timerStop使用](chapter03_channel/02_TimerChan/02_TimerStop/timer_stop.md)
     - [2.3 TimerAfter给数据库操作增加超时](chapter03_channel/02_TimerChan/03_TimeAfter/main.go)
@@ -93,10 +98,15 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 - [2 反射](chapter04_interface_n_reflect/02_reflect/reflect.md)
     - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01three_laws/threeLaw.md)
     - [2.2 类型断言及性能分析](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
-    - [2.3 获取结构体字段及获取方法](chapter04_interface_n_reflect/02_reflect/03StructField_n_method/main.go)
-    - [2.4 reflect.Value修改值，调用结构体方法，调用普通方法](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
+    - [2.3 获取结构体字段及获取方法名字](chapter04_interface_n_reflect/02_reflect/03StructField_n_method/main.go)
+    - [2.4 通过 reflect.Value 修改值，调用结构体方法，调用普通函数](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
     - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05PerformanceInprove/main.go)
-    - [2.6 反射深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
+    - [2.6 通过反射进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
+        - 底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
+        - 一个nil值的map和非nil值但是空的map*是否“深度”相等
+        - 一个nil值的map和非nil值但是空的map*是否“深度”相等
+        - 带有环的数据对比*是否“深度”相等
+    - [2.7 通过reflect.implements判断struct类型是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
 ---
 
 ## 第五章 切片和数组
@@ -110,15 +120,16 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 - [6 扩容策略](chapter05_slice_n_array/06GrowSlice/grow_size_policy.md)
 - [7 不同类型的切片间互转](chapter05_slice_n_array/07Transfer_slice_in_different_type/main.go)
 - [8 带索引初始化数组和切片](chapter05_slice_n_array/08_make_slice_with_index/make_slice_with_index.go)
-- [9 使用copy替代原切片进行切片](chapter05_slice_n_array/09_reslice/reslice.go)
+- [9 切片的复制方式对比: copy和=复制](chapter05_slice_n_array/09_reslice/reslice.go)
 ---
 
 ## 第六章 指针
 - [1 指针类型转换及修改值](chapter06_pointer/01ptrOperation/main.go)
 - [2 指针分类及unsafe包使用](chapter06_pointer/02unsafe/unsafe.md)
-  - 指针修改结构体成员
-  - 指针获取切片长度和容量
-  - 指针获取Map的元素数量
+    - [2.1 sizeof获取类型其占用的字节数，unsafe.Offsetof修改结构体私有成员](chapter06_pointer/02unsafe/01_basic_api/unsafe.go)
+    - [2.2 指针获取切片长度和容量](chapter06_pointer/02unsafe/02_slice_operaion/slice_len_n_cap.go)
+    - [2.3 指针获取Map的元素数量](chapter06_pointer/02unsafe/03_map_count/main.go)
+    - [2.4 使用指针来访问数组里的所有元素](chapter06_pointer/02unsafe/04_array_filed/array_field.go)
 - [3 获取并修改结构体私有变量值](chapter06_pointer/03PointerSetPrivateValue/main.go)
 - [4 切片与字符串零拷贝互转(指针和反射方式)](chapter06_pointer/04SliceToString/sliceToString.go)
 - [5 结构体的内存对齐](chapter06_pointer/05_struct_align/align.go)
@@ -160,7 +171,7 @@ Note:目录同级为 *代码展示*，可在Goland中运行
     - [3.2  迭代器-->标准库container/ring中实现](chapter09_design_pattern/03_motion/02_Iterator/main.go)
     - [3.3  状态模式](chapter09_design_pattern/03_motion/03_State/introduction.md)
     - [3.4  责任链模式](chapter09_design_pattern/03_motion/04_duty_chain_method/duty_chain.md)
-    - [3.5  模版模式](chapter09_design_pattern/03_motion/05_templateMethod/template.go)
+    - [3.5  模版模式](chapter09_design_pattern/03_motion/05_templateMethod/templateMethod.md)
     - [3.6  策略模式-->if-else的另类写法(内部算法封装)](chapter09_design_pattern/03_motion/06_strategyMethod/strategy.md)
     - [3.7  解释器模式](chapter09_design_pattern/03_motion/07_InterpreterMethod/interpreter.md)
     - [3.8  命令模式-->go-redis中实现](chapter09_design_pattern/03_motion/08_CommandMethod/command.md)
@@ -237,9 +248,9 @@ Note:目录同级为 *代码展示*，可在Goland中运行
     - [2.12 结构体方法](chapter11_assembly_language/02plan9/12_struct_method/main.go)
     - [2.13 递归函数](chapter11_assembly_language/02plan9/13_recursive_func/main.go)
     - [2.14 闭包函数](chapter11_assembly_language/02plan9/14_closure/main.go)
-    - [2.15 GoroutineId获取](chapter11_assembly_language/02plan9/15_GoroutineId/main.go)
+    - [2.15 两种方式获取GoroutineId](chapter11_assembly_language/02plan9/15_GoroutineId/main.go)
     - [2.16 汇编调用非汇编Go函数](chapter11_assembly_language/02plan9/16_assembly_call_NonassemblyFunc/main.go)
-- 3 [Golang底层数据结构-涉及数值类型占用的bit](chapter11_assembly_language/03Golang_data_structure/data.md)
+- [3 Golang底层数据结构-涉及数值类型占用的bit](chapter11_assembly_language/03Golang_data_structure/data.md)
     - [3.1 Map底层结构](chapter11_assembly_language/03Golang_data_structure/map_structure/map_intro.md)
       - [map的指针优化场景](chapter11_assembly_language/03Golang_data_structure/map_structure/Improvement/map_test.go)
     - [3.2 String底层结构,字符集和字符编码,性能分析及内存泄漏分析](chapter11_assembly_language/03Golang_data_structure/string_structure/str.md)
@@ -251,13 +262,15 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 - [epoll多路复用底层实现及Golang封装](chapter12_net/io_multiplexing.md)
 
 - 1 http服务端高级封装演变
-  - [1.1 使用DefaultServeMux](chapter12_net/01_http_server/01_use_DefaultServeMux/main.go)
-  - [1.2 使用内置serveMux生成函数](chapter12_net/01_http_server/02_use_http_NewServeMux/main.go)
-  - [1.3 自定义实现serveMux](chapter12_net/01_http_server/03_use_cutomized_mux/main.go)
-- [2 爬虫获取邮箱案例(http客户端源码分析)](chapter12_net/02_http_client/client.go)
+  - [1.1 高级封装：使用DefaultServeMux](chapter12_net/01_http_server/01_use_DefaultServeMux/main.go)
+  - [1.2 中级封装：使用内置serveMux生成函数](chapter12_net/01_http_server/02_use_http_NewServeMux/main.go)
+  - [1.3 原始封装：自定义实现serveMux](chapter12_net/01_http_server/03_use_cutomized_mux/main.go)
+- 2 http客户端高级封装演变
   - [2.1 request源码](chapter12_net/02_http_client/http_request.md)
   - [2.2 response源码](chapter12_net/02_http_client/http_response.md)
   - [2.3 transport源码](chapter12_net/02_http_client/http_transport.md)
+  - [2.4 官方库版(爬虫获取邮箱案例-未封装)](chapter12_net/02_http_client/01_standard_pkg/client.go)
+  - [2.5 go-resty(推荐使用)](chapter12_net/02_http_client/02_go_resty/rest_client.go)
 - [3 Tcp实现客户端及服务端(服务端netpoll分析)](chapter12_net/03_tcp/tcp_server.md)
   - [客户端](chapter12_net/03_tcp/client/main.go)
   - [服务端](chapter12_net/03_tcp/server/main.go)
@@ -270,22 +283,23 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 - [6 优雅退出原理分析-涉及linux信号介绍（go-zero实践）](chapter12_net/06_grateful_stop/grateful_stop.md)
   - [6.1 信号监听处理](chapter12_net/06_grateful_stop/signal.go)
 - [7 URL的解析 Parse，query 数据的转义与反转义](chapter12_net/07_url/url.md)
+- [8 使用alice优雅编排中间件](chapter12_net/08_middleware/middlerware.md)
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
 [cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)
 
-**_Note:内部运行代码待优化_**
+**Note: 内部c代码需要自己编译成对应本地 静态库 或则 动态库,[可参考C基本知识](https://github.com/Danny5487401/c_learning)**
 
 - [1 Go调用自定义C函数-未模块化](chapter13_Go_call_C_or_C++/01_call_C_func/main.go)
-- 2 Go调用自定义C函数-模块化
+- [2 Go调用自定义C函数-模块化](chapter13_Go_call_C_or_C++/02_call_C_module/main.go)
 - 3 Go重写C定义函数
-- 4 cgo引入其他包的变量错误
-- 5 #Cgo语句
+- [4 cgo错误用法：引入其他包的变量](chapter13_Go_call_C_or_C++/04_import_other_pkg/main.go)
+- [5 #Cgo语句](chapter13_Go_call_C_or_C++/05_cgo/main.go)
 - [6 Go获取C函数的errno](chapter13_Go_call_C_or_C++/06_return_err/main.go)
 - [7 C的void返回](chapter13_Go_call_C_or_C++/07_void_return/main.go)
 - 8 Go调用模块化C++库
 - [9 调用静态C库](chapter13_Go_call_C_or_C++/09_static_c_lib/main.go)
-- 10 调用动态C库
+- [10 调用动态C库](chapter13_Go_call_C_or_C++/10_dynamic_c_lib/main.go)
 - [11 Golang使用pkg-config自动获取头文件和链接库的方法](chapter13_Go_call_C_or_C++/11_pkg_config/pkg_config.md)
 
 ## [第十四章 Context上下文-源码分析涉及父类EmptyCtx](chapter14_context/introduction.md)
@@ -312,10 +326,10 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 - 1 [queue双端单向队列(泛型)](chapter17_dataStructure_n_algorithm/01_queue/queue_test.go)
 - [2 加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/encryption.md)
   - 2.1 对称式加密
-    - [aes高级加密标准](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/aes.md)
+    - [2.1.1 AES高级加密标准(Advanced Encryption Standard)](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/aes.md)
       - [Cipher FeedBack密码反馈模式](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/01_cfb/aes_cfb.go)
       - [Cipher Block Chaining密码分组链接模式](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/02_cbc/aes_cbc.go)
-    - [des美国数据加密标准](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/des/des.md)
+    - [2.1.2 des美国数据加密标准(不推荐)](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/des/des.md)
   - 2.2 数字签名(hmac,md5,sha1,sha256)
     - [MD5信息摘要算法](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/md5/md5.md)
     - [hmac](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/02_digital_signature/hmac/hmac.md)
@@ -327,9 +341,14 @@ Note:目录同级为 *代码展示*，可在Goland中运行
   - [3.2 crypto_rand使用](chapter17_dataStructure_n_algorithm/03_rand/02_crypto_rand/main.go)
   - [3.3 fastrand优化使用](chapter17_dataStructure_n_algorithm/03_rand/03_fastrand/main.go)
 - [4 排序算法分类及图解(sort包源码分析)](chapter17_dataStructure_n_algorithm/04_sort/algorithm.md)
-  - [4.1 不同结构体切片根据反射排序，map根据key排序](chapter17_dataStructure_n_algorithm/04_sort/sorted_info/main.go)
+  - [4.1 sort包使用](chapter17_dataStructure_n_algorithm/04_sort/sorted_info/main.go)
+    - 不同结构体切片根据反射reflect实现自定义排序 
+    - map根据key实现排序
+    - sort.Search根据排序切片找索引
 - [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
-- [6 Privacy Enhanced Mail Certificate (pem文件)生成](chapter17_dataStructure_n_algorithm/06_pem_generate/main.go)
+- [6 pem(Privacy Enhanced Mail Certificate保密增强邮件协议](chapter17_dataStructure_n_algorithm/06_pem/pem.md)
+  - [6.1 生成.pem文件(RSA密钥对)](chapter17_dataStructure_n_algorithm/06_pem/01_pem_generate/main.go)
+  - [6.2 解析.pem文件](chapter17_dataStructure_n_algorithm/06_pem/02_get_pem_info/main.go) 
 - [7 Base64编码解析](chapter17_dataStructure_n_algorithm/07_base64_encoding/base64.md)
 - [8 trie前缀树](chapter17_dataStructure_n_algorithm/08_trie/trie.md)
 
@@ -338,9 +357,12 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 - 1 自定义错误类型打印错误栈
 - [2 扩展包pkg.errors](chapter18_error_n_panic/02_pkg_errors/pkg_errors.md)
 - [3 Gin的错误recover分析(panic和recover源码分析)](chapter18_error_n_panic/03_recover/panic.md)
-- [4 errCode错误码自动化生成](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
+- 4 生成errCode错误码及信息
+  - [4.1 传统方式：命名错误码、状态码的同时，又要同步写码对应的翻译](chapter18_error_n_panic/04_errorCode/01traditional/main.go)
+  - [4.2 stringer + go generate 自带工具生成errCode错误码及信息](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
 - [5 error如何正确比较](chapter18_error_n_panic/05_err_comparision/main.go)
 - [6 收集多个errors-->go-multierror实现](chapter18_error_n_panic/06_multi_error/01_one_goroutine_n_errors/main.go)
+
 ## 第十九章 nil预定义标识
 - 1 不同类型为nil时的地址和size大小
 - 2 不同类型与nil的比较
@@ -359,17 +381,60 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 - [3 遍历Map(增加或删除map元素时)](chapter20_for_range/03_for_range_map/main.go)
 
 ## [第二十一章 time标准包源码分析](chapter21_time/time.md)
-- [1 比time.Now()更优雅获取时间戳（go:link技术）](chapter21_time/time.go)
-## [第二十二章 数据驱动模板-kratos工具生成](chapter22_template/text_template.md)
-- [1 加载多个模版](chapter22_template/01_multi_template/main.go)
+- [1 比time.Now()更优雅获取时间戳（go:link技术）](chapter21_time/01_time_sec.go)
+- 2 time.Format()优化写法
+
+## [第二十二章 数据驱动模板源码分析-->kratos工具](chapter22_template/template.md)
+- [1 加载多个模版并指定模版](chapter22_template/01_multi_template/main.go)
 - [2 自定义模版函数](chapter22_template/02_template_func/main.go)
+- [3 html模版](chapter22_template/03_html_template/main.go)
 
 ## 第二十三章 调试内部对象
 - [1 fmt打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)
 - [2 go-spew优化调试](chapter23_debug_program/02_go_spew/main.go)
+
 
 ## [第二十四章 Flag命令行参数](chapter24_flag/flag.md)
 - [1 基本使用及自定义帮助信息](chapter24_flag/nginx.go) 
 
 ## 第二十四章 GoVersion新特性
 - 1 interface新含义-->type set(类型集合),specific type(特定类型)和structural type(结构类型)
+
+## [第二十四章 Flag命令行参数及源码分析](chapter24_flag/flag.md)
+- [1 标准包flag基本使用及自定义帮助信息](chapter24_flag/01_flag/nginx.go)
+- [2 第三方包pflag：兼容标准包flag](chapter24_flag/02_pflag/pflag.md)
+
+## [第二十五章 Makefile](chapter25_makefile/Makefile_info.md)
+
+## [第二十六章 strconv字符串和数值型转换源码分析](chapter26_strconv/strconv.md)
+
+## [第二十七章 Prometheus](chapter27_prometheus/prometheus.md)
+- [1 exporter](chapter27_prometheus/01_exporter/exporter.md)
+  - [1.1 内置collector](chapter27_prometheus/01_exporter/01_embeded_collector/main.go)  
+  - [1.2 使用自定义collector](chapter27_prometheus/01_exporter/02_customized_collector/main.go)
+- [2 Prometheus Operator](chapter27_prometheus/k8s_deploy/opeartor/operator.md)
+- [3 AlertManager](chapter27_prometheus/alert_manager.md)
+- [4 PromQL](chapter27_prometheus/alert_manager.md)
+
+## 第二十八章 如何进行测试
+- [1 gomonkey打桩测试(暂不支持arm)](chapter28_test/01_gomonkey/gomonkey.md)
+- [2 go-mock接口测试](chapter28_test/02_mock/gomock.md)
+
+## 第二十九章 module包管理
+- [1 go-module 实践篇](chapter29_module/01_use/godule_operation.md)
+  - 模块缓存
+  - GOPROXY
+- [2 go-module原理篇](chapter29_module/02_discipline/module.md)
+  - Minimal Version Selection 最小版本选择算法
+    
+## 第三十章 内存管理
+- 1 Linux内存及Go内存结构管理
+  - [1.1 Linux内存管理](chapter30_memory_management/01_memory/linux_mem.md)
+  - [1.2 Go内存结构管理](chapter30_memory_management/01_memory/go_mem.md)
+- [2 GC垃圾回收机制(trace查看map垃圾回收)](chapter30_memory_management/02_GC/gc.md)
+  - [2.1 下次GC的时机](chapter30_memory_management/02_GC/01_next_gc_stage/main.go)
+  - [2.2 删除Map元素查看GC回收流程](chapter30_memory_management/02_GC/02_map_GC/main.go)
+    
+## [第三十一章 Go tool 自带工具](chapter31_tool/tool.md)
+- 1 build
+    - [1.1 编译时 -X 传递参数值](chapter31_tool/01_build/build.go)

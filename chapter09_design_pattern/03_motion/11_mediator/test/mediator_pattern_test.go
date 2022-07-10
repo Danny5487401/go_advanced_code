@@ -1,7 +1,7 @@
 package test
 
 import (
-	mediator "go_advanced_code/chapter09_design_pattern/03_motion/11_Mediator"
+	mediator "github.com/Danny5487401/go_advanced_code/chapter09_design_pattern/03_motion/11_Mediator"
 	"testing"
 )
 

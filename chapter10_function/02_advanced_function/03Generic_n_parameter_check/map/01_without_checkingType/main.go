@@ -29,17 +29,16 @@ func Map(data interface{}, fn interface{}) []interface{} {
 }
 
 // 主体逻辑
-func main()  {
+func main() {
 	// 乘方
 	square := func(x int) int {
 		return x * x
 	}
 
 	nums := []int{1, 2, 3, 4}
-	squaredArr := Map(nums,square)
+	squaredArr := Map(nums, square)
 	fmt.Println(squaredArr)
 	//[1 4 9 16]
-
 
 	// 大写
 	upcase := func(s string) string {

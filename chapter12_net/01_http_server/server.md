@@ -66,6 +66,20 @@ func (mux *ServeMux) Handle(pattern string, handler Handler) {
 ```
 
 ## 开启服务
+### 重要的server结构体
+```go
+type Server struct {
+    // 地址
+	Addr string
+
+	Handler Handler // handler to invoke, http.DefaultServeMux if nil
+	
+	TLSConfig *tls.Config
+
+	// ...
+}
+```
+
 ```go
 func (srv *Server) Serve(l net.Listener) error { 
     ...
@@ -151,14 +165,29 @@ func (mux *ServeMux) ServeHTTP(w ResponseWriter, r *Request) {
 }
 ```
 ```go
+func (mux *ServeMux) Handler(r *Request) (h Handler, pattern string) {
+
+    // ...
+
+	// All other requests have any port stripped and path cleaned
+	// before passing to mux.handler.
+	host := stripHostPort(r.Host)
+	path := cleanPath(r.URL.Path)
+
+    // ... 
+
+	return mux.handler(host, r.URL.Path)
+}
+
 func (mux *ServeMux) handler(host, path string) (h Handler, pattern string) {
 	mux.mu.RLock()
 	defer mux.mu.RUnlock()
 
-	// Host-specific pattern takes precedence over generic ones
+	// 先匹配host
 	if mux.hosts {
 		h, pattern = mux.match(host + path)
 	}
+	// 再匹配路径
 	if h == nil {
 		h, pattern = mux.match(path)
 	}

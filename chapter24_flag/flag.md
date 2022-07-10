@@ -21,7 +21,7 @@ git log --stat -n 10
 - 非flag（non-flag）命令行参数（或保留的命令行参数）
   - ./nginx - -c 或 ./nginx build -c,这两种情况，-c 都不会被正确解析。像该例子中的"-"或build（以及之后的参数），我们称之为 non-flag 参数。
 
-## flag包源码分析
+## 标准包flag包源码分析
 flag 用法有如下三种形式
 ```shell
 -flag // 只支持bool类型
@@ -30,6 +30,13 @@ flag 用法有如下三种形式
 ```
 
 Golang的命令行参数解析使用的是flag包，支持布尔、整型、字符串，以及时间格式的标识解析.
+Flag原生支持8种命令行参数类型：bool、int、int64、uint、uint64、string、float64和duration。 这些类型都需要实现Value接口：
+```go
+type Value interface {
+	String() string // 将该类型变量的值，转化为string
+	Set(string) error //将string类型的value解析出来，并赋值给该类型的变量；
+}
+```
 
 下面我们以一个echoflag程序为例，演示flag包的用法。这个程序接收来自命令行的输入，并回显命令行标识的值，程序的执行效果如下：
 ```go
@@ -62,7 +69,8 @@ time:    1m40s
 - 标记与标记值之间可以用空格或等号分隔，如时间参数我们则使用了等号
 - 最后一个参数argv不带连接线，因此被当做普通参数处理，flag包对此不做解析
 
-## 数据结构flagSet
+### 有两重要的数据结构来表示flag
+1. FlagSet
 ```go
 type FlagSet struct {
     Usage func() // 帮助函数，在命令行标志输入不符合预期时被调用，并提示用户正确的输入方式
@@ -90,6 +98,7 @@ func NewFlagSet(name string, errorHandling ErrorHandling) *FlagSet {
 }
 ```
 
+2. Flag
 ```go
 type Flag struct {
 	Name     string // Name就是标记名称，也就是命令行输入的类似-int 10中的int
@@ -102,6 +111,7 @@ type Value interface {
     Set(string) error //Set则用于记录标志的值
 }
 ```
+
 Flag 类型代表一个 flag 的状态，比如，对于命令：./nginx -c /etc/nginx.conf，相应代码是：
 ```go
 flag.StringVar(&c, "c", "conf/nginx.conf", "set configuration `file`")
@@ -137,7 +147,25 @@ func (s *stringValue) Get() interface{} { return string(*s) }
 func (s *stringValue) String() string { return string(*s) }
 ```
 
-使用时
+初始化时    
+```go
+func StringVar(p *string, name string, value string, usage string) {
+	CommandLine.Var(newStringValue(value, p), name, usage)
+}
+
+var CommandLine = NewFlagSet(os.Args[0], ExitOnError)
+
+func NewFlagSet(name string, errorHandling ErrorHandling) *FlagSet {
+	f := &FlagSet{
+		name:          name,
+		errorHandling: errorHandling,
+	}
+	f.Usage = f.defaultUsage
+	return f
+}
+```
+定义的每个flag，都会添加到CommandLine这个全局的FlagSet中。
+
 ```go
 func (f *FlagSet) String(name string, value string, usage string) *string {
 	p := new(string)
@@ -148,9 +176,7 @@ func (f *FlagSet) String(name string, value string, usage string) *string {
 func (f *FlagSet) StringVar(p *string, name string, value string, usage string) {
 	f.Var(newStringValue(value, p), name, usage)
 }
-```
 
-```go
 func (f *FlagSet) Var(value Value, name string, usage string) {
 	// Remember the default value as a string; it won't change.
 	flag := &Flag{name, usage, value, value.String()}
@@ -174,7 +200,7 @@ func (f *FlagSet) Var(value Value, name string, usage string) {
 ```
 最终在调用到FlagSet的Var方法时，字符串类型的标志被记录到了CommandLine的formal里面了
 
-## 参数解析
+### 参数解析
 ```go
 func Parse() {
 	// Ignore errors; CommandLine is set for ExitOnError.
@@ -301,7 +327,7 @@ func (f *FlagSet) parseOne() (bool, error) {
 }
 ```
 
-## 错误处理方式
+### 错误处理方式
 ```go
 type ErrorHandling int
 
