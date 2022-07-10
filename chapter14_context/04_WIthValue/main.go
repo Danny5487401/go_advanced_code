@@ -7,7 +7,6 @@ import (
 	"time"
 )
 
-
 /*
 context.WithValue
 
@@ -40,8 +39,7 @@ context.WithValue
 		}
 		return &valueCtx{parent, key, val}
 	}
- */
-
+*/
 
 type TraceCode string
 

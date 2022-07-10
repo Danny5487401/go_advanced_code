@@ -5,8 +5,6 @@ import (
 	"sync"
 )
 
-
-
 func main() {
 
 	m := &sync.Map{}
@@ -43,7 +41,6 @@ func main() {
 
 	// 删除元素
 	m.Delete(3)
-
 
 	// 迭代所有元素
 	fmt.Println("-----开始遍历------")

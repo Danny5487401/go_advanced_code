@@ -10,7 +10,6 @@ func main() {
 // go build -gcflags '-m -m'  01_fmt_interface.go
 
 /*
-# command-line-arguments
 ./01_fmt_interface.go:7:13: inlining call to fmt.Println
 ./01_fmt_interface.go:7:13: x escapes to heap
 ./01_fmt_interface.go:7:13: []interface {}{...} does not escape

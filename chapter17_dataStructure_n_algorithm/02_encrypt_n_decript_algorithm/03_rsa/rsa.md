@@ -305,7 +305,7 @@ openssl pkcs12 -in in.p12 -out out.pem -nodes
 ```
 OpenSSL命令分为以下3个部分:
 ```shell
-(⎈ |teleport.gllue.com-test:danny-xia)➜  go_advanced_code git:(main) ✗ openssl help                                                         
+(⎈ |teleport.gllue.com-test:danny-xia)➜  github.com/Danny5487401/go_advanced_code git:(main) ✗ openssl help                                                         
 openssl:Error: 'help' is an invalid command.
 
 Standard commands

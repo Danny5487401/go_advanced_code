@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/Danny5487401/go_advanced_code/chapter28_test/01_gomonkey/fake"
 	. "github.com/agiledragon/gomonkey/v2"
 	. "github.com/smartystreets/goconvey/convey"
-	"go_advanced_code/chapter28_test/01_gomonkey/fake"
 	"testing"
 )
 

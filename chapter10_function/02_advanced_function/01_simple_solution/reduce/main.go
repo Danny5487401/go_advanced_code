@@ -10,7 +10,7 @@ func Reduce(arr []string, fn func(s string) int) int {
 	return sum
 }
 
-func main()  {
+func main() {
 	var list = []string{"Danny", "Joy", "Michael"}
 	// 求字符串总长
 	x := Reduce(list, func(s string) int {

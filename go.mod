@@ -1,4 +1,4 @@
-module go_advanced_code
+module github.com/Danny5487401/go_advanced_code
 
 go 1.17
 

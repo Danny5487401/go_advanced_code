@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"go_advanced_code/chapter10_function/02_advanced_function/04_mapReduce/mapReduce"
-	"go_advanced_code/chapter10_function/02_advanced_function/04_mapReduce/product_srv"
-	"go_advanced_code/chapter10_function/02_advanced_function/04_mapReduce/user_srv"
 	"sync"
+
+	"github.com/Danny5487401/go_advanced_code/chapter10_function/02_advanced_function/04_mapReduce/mapReduce"
+	"github.com/Danny5487401/go_advanced_code/chapter10_function/02_advanced_function/04_mapReduce/product_srv"
+	"github.com/Danny5487401/go_advanced_code/chapter10_function/02_advanced_function/04_mapReduce/user_srv"
 )
 
 func main() {

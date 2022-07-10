@@ -3,9 +3,10 @@ package main
 import (
 	"bytes"
 	"encoding/csv"
-	"github.com/hashicorp/go-multierror"
 	"io"
 	"log"
+
+	"github.com/hashicorp/go-multierror"
 )
 
 var data = []byte(
