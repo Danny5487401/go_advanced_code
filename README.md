@@ -429,4 +429,4 @@
     
 ## [第三十一章 Go tool 自带工具](chapter31_tool/tool.md)
 - 1 build
-    - [1.1 用-X来指定版本号等编译时才决定的参数值](chapter31_tool/01_build/build.go)
+    - [1.1 编译时 -X 传递参数值](chapter31_tool/01_build/build.go)
