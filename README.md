@@ -426,3 +426,7 @@
 - [2 GC垃圾回收机制(trace查看map垃圾回收)](chapter30_memory_management/02_GC/gc.md)
   - [2.1 下次GC的时机](chapter30_memory_management/02_GC/01_next_gc_stage/main.go)
   - [2.2 删除Map元素查看GC回收流程](chapter30_memory_management/02_GC/02_map_GC/main.go)
+    
+## [第三十一章 Go tool 自带工具](chapter31_tool/tool.md)
+- 1 build
+    - [1.1 用-X来指定版本号等编译时才决定的参数值](chapter31_tool/01_build/build.go)
