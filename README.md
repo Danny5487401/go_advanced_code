@@ -12,13 +12,15 @@
 ![高级go编程](./img/golang.jpeg)
 
 # *目录*
+<<<<<<< HEAD
 
 Note:目录同级为 *代码展示*，可在Goland中运行
-## *推荐: goVersion==1.18*
+## *推荐GoVersion: 1.18(涉及泛型)*
 
 ## 必备知识:
 - [module包管理](chapter29_module/02_discipline/module.md)
 - [golangci 规范并优化代码 + pre-commit工具](golangci.md)
+
 
 ## [第一章 I/O操作](chapter01_input_output/io.md)
 - 1 os操作系统模块
@@ -406,6 +408,7 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 
 ## [第二十五章 Makefile](chapter25_makefile/Makefile_info.md)
 
+<<<<<<< HEAD
 ## [第二十六章 strconv字符串和数值型转换源码分析](chapter26_strconv/strconv.md)
 
 ## [第二十七章 Prometheus](chapter27_prometheus/prometheus.md)
@@ -438,3 +441,7 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 ## [第三十一章 Go tool 自带工具](chapter31_tool/tool.md)
 - 1 build
     - [1.1 编译时 -X 传递参数值](chapter31_tool/01_build/build.go)
+=======
+## [第二十六章 Generic泛型](chapter26_generic/generic.md)
+Note: Go 1.18将移除用于泛型的constraints包
+>>>>>>> feature/generic
