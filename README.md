@@ -16,6 +16,7 @@
 
 Note:目录同级为 *代码展示*，可在Goland中运行
 ## *推荐GoVersion: 1.18(涉及泛型)*
+Note: Go 1.18 移除用于泛型的constraints包
 
 ## 必备知识:
 - [module包管理](chapter29_module/02_discipline/module.md)
@@ -399,8 +400,7 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 ## [第二十四章 Flag命令行参数](chapter24_flag/flag.md)
 - [1 基本使用及自定义帮助信息](chapter24_flag/nginx.go) 
 
-## 第二十四章 GoVersion新特性
-- 1 interface新含义-->type set(类型集合),specific type(特定类型)和structural type(结构类型)
+
 
 ## [第二十四章 Flag命令行参数及源码分析](chapter24_flag/flag.md)
 - [1 标准包flag基本使用及自定义帮助信息](chapter24_flag/01_flag/nginx.go)
@@ -408,7 +408,6 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 
 ## [第二十五章 Makefile](chapter25_makefile/Makefile_info.md)
 
-<<<<<<< HEAD
 ## [第二十六章 strconv字符串和数值型转换源码分析](chapter26_strconv/strconv.md)
 
 ## [第二十七章 Prometheus](chapter27_prometheus/prometheus.md)
@@ -441,7 +440,9 @@ Note:目录同级为 *代码展示*，可在Goland中运行
 ## [第三十一章 Go tool 自带工具](chapter31_tool/tool.md)
 - 1 build
     - [1.1 编译时 -X 传递参数值](chapter31_tool/01_build/build.go)
-=======
-## [第二十六章 Generic泛型](chapter26_generic/generic.md)
-Note: Go 1.18将移除用于泛型的constraints包
->>>>>>> feature/generic
+
+## [第三十二章 Generic泛型](chapter26_generic/generic.md)
+- [1 interface新含义使用-->type set(类型集合),specific type(特定类型)和structural type(结构类型)](chapter26_generic/01_typeParam_n_typeArgument/main.go)
+- [2 泛型性能测试](chapter26_generic/02_performance/generic_test.go)
+
+
