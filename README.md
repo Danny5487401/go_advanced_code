@@ -12,8 +12,12 @@
 ![高级go编程](./img/golang.jpeg)
 
 # *目录*
-**Note:目录同级为 *代码展示*，可在Goland中运行**
-## *推荐GoVersion: 1.17*
+<<<<<<< HEAD
+
+Note:目录同级为 *代码展示*，可在Goland中运行
+## *推荐GoVersion: 1.18(涉及泛型)*
+Note: Go 1.18 移除用于泛型的constraints包
+
 ## 必备知识:
 - [module包管理](chapter29_module/02_discipline/module.md)
 - [golangci 规范并优化代码 + pre-commit工具](golangci.md)
@@ -392,6 +396,12 @@
 - [1 fmt打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)
 - [2 go-spew优化调试](chapter23_debug_program/02_go_spew/main.go)
 
+
+## [第二十四章 Flag命令行参数](chapter24_flag/flag.md)
+- [1 基本使用及自定义帮助信息](chapter24_flag/nginx.go) 
+
+
+
 ## [第二十四章 Flag命令行参数及源码分析](chapter24_flag/flag.md)
 - [1 标准包flag基本使用及自定义帮助信息](chapter24_flag/01_flag/nginx.go)
 - [2 第三方包pflag：兼容标准包flag](chapter24_flag/02_pflag/pflag.md)
@@ -429,4 +439,10 @@
     
 ## [第三十一章 Go tool 自带工具](chapter31_tool/tool.md)
 - 1 build
-    - [1.1 用-X来指定版本号等编译时才决定的参数值](chapter31_tool/01_build/build.go)
+    - [1.1 编译时 -X 传递参数值](chapter31_tool/01_build/build.go)
+
+## [第三十二章 Generic泛型](chapter32_generic/generic.md)
+- [1 interface新含义使用-->type set(类型集合),specific type(特定类型)和structural type(结构类型)](chapter32_generic/01_typeParam_n_typeArgument/main.go)
+- [2 泛型性能测试](chapter32_generic/02_performance/generic_test.go)
+
+

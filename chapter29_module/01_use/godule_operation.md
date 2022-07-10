@@ -71,6 +71,11 @@ go mod tidy
 ## 模块缓存
 Global Caching这个主要是针对 Go modules 的全局缓存数据说明，如
 
+```shell
+go_advanced_code git:(feature/new-version) ✗ go env
+GOMODCACHE="/Users/python/go/pkg/mod"
+```
+
 - 同一个模块版本的数据只缓存一份，所有其他模块共享使用
 - 目前所有模块版本数据均缓存在 $GOPATH/pkg/mod和 $GOPATH/pkg/sum下，未来或将移至 $GOCACHE/mod和$GOCACHE/sum下( 可能会在当 $GOPATH 被淘汰后)
 - 可以使用 go clean -modcache 清理所有已缓存的模块版本数据
