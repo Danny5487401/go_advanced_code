@@ -1,0 +1,35 @@
+{{ define "news/index" }}
+{{ template "header" . }}
+<body>
+{{/* 页面变量定义 */}}
+{{ $pageTitle := "news title" }}
+{{ $pageTitleLen := len $pageTitle }}
+{{/* 长度 > 4 才输出 eq ne gt lt ge le */}}
+{{ if gt $pageTitleLen 4 }}
+<h4>{{ $pageTitle }}</h4>
+{{ end }}
+
+{{ $c1 := gt 4 3}}
+{{ $c2 := lt 2 3 }}
+{{/*and or not 条件必须为标量值 不能是逻辑表达式 如果需要逻辑表达式请先求值*/}}
+{{ if and $c1 $c2 }}
+<h4>1 == 1 3 > 2 4 < 5</h4>
+{{ end }}
+
+<div>
+    <ul>
+        {{ range .List }}
+        {{ $title := .Title }}
+        {{/* .Title 上下文变量调用  func param1 param2 方法/函数调用  $.根节点变量调用 */}}
+        <li>{{ $title }} -- {{ .CreatedAt.Format "2006-01-02 15:04:05" }} -- Author {{ $.Author }}</li>
+        {{end}}
+    </ul>
+    {{/* !empty Total 才输出*/}}
+    {{ with .Total }}
+    <div>总数：{{ . }}</div>
+    {{ end }}
+</div>
+</body>
+{{ template "footer" . }}
+{{ end }}
+

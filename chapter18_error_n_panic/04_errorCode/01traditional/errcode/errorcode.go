@@ -3,14 +3,8 @@ package errcode
 import "fmt"
 
 // 传统方式
-//1. 定义错误码
-// 定义错误码
-//const (
-//	ERR_CODE_OK             = 0 // OK
-//	ERR_CODE_INVALID_PARAMS = 1 // 无效参数
-//	ERR_CODE_TIMEOUT        = 2 // 超时
-//	// ...
-//)
+// 1. 定义错误码
+
 type ErrCode int
 
 const (
@@ -19,7 +13,7 @@ const (
 	ERR_CODE_TIMEOUT        ErrCode = 2 // 超时
 )
 
-// 定义错误码与描述信息的映射
+// 2. 定义错误码与描述信息的映射
 var mapErrDesc = map[ErrCode]string{
 	ERR_CODE_OK:             "OK",
 	ERR_CODE_INVALID_PARAMS: "无效参数",
@@ -27,8 +21,8 @@ var mapErrDesc = map[ErrCode]string{
 	// ...
 }
 
-// 根据错误码返回描述信息
-// 不可倒出 使用string()导出
+// 3.  根据错误码返回描述信息
+// 不可导出 使用string()导出
 func getDescription(errCode ErrCode) string {
 	if desc, exist := mapErrDesc[errCode]; exist {
 		return desc

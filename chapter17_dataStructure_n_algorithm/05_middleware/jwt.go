@@ -8,7 +8,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 
-	"go_advanced_code/chapter17_dataStructure_n_algorithm/05_middleware/models"
+	"github.com/Danny5487401/go_advanced_code/chapter17_dataStructure_n_algorithm/05_middleware/models"
 )
 
 type JWTConfig struct {

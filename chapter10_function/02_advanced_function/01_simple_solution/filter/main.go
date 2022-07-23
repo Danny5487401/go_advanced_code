@@ -11,7 +11,7 @@ func Filter(arr []int, fn func(n int) bool) []int {
 	}
 	return newArray
 }
-func main()  {
+func main() {
 	var intset = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	out := Filter(intset, func(n int) bool {
 		return n%2 == 1
@@ -21,7 +21,5 @@ func main()  {
 		return n > 5
 	})
 	fmt.Printf("%v\n", out)
-	
+
 }
-
-

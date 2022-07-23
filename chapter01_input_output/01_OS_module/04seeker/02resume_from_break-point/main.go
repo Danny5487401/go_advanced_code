@@ -16,17 +16,17 @@ func main() {
 	/*
 		断点续传：
 			文件传递：文件复制
-				E:\\go_advanced_code\\chapter01_fileOperation\\resume_from_breakingPoint.jpg"
+				E:\\github.com/Danny5487401/go_advanced_code\\chapter01_fileOperation\\resume_from_breakingPoint.jpg"
 
 			复制到
-				E:\go_advanced_code\chapter01_fileOperation\dest.jpg
+				E:\github.com/Danny5487401/go_advanced_code\chapter01_fileOperation\dest.jpg
 
 		思路：
 			边复制，边记录复制的总量
 	*/
 
-	srcFile := "E:\\go_advanced_code\\chapter01_fileOperation\\resume_from_breakingPoint.jpg"
-	destFile := "E:\\go_advanced_code\\chapter01_fileOperation\\dest.jpg"
+	srcFile := "E:\\github.com/Danny5487401/go_advanced_code\\chapter01_fileOperation\\resume_from_breakingPoint.jpg"
+	destFile := "E:\\github.com/Danny5487401/go_advanced_code\\chapter01_fileOperation\\dest.jpg"
 	tempFile := destFile + "temp.txt"
 	//fmt.Println(tempFile)
 	file1, _ := os.Open(srcFile)
