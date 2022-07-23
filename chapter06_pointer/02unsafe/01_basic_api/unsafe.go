@@ -52,7 +52,7 @@ func basicOperation() {
 
 	fmt.Println(unsafe.Alignof(b))   //1
 	fmt.Println(unsafe.Alignof(i8))  //1
-	fmt.Println(unsafe.Alignof(i16)) // 2
+	fmt.Println(unsafe.Alignof(i16)) //2
 	fmt.Println(unsafe.Alignof(i64)) //8
 	fmt.Println(unsafe.Alignof(f32)) //4
 	fmt.Println(unsafe.Alignof(s))   //8

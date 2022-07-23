@@ -26,7 +26,6 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasthttp v1.38.0
 	github.com/zeromicro/go-zero v1.3.5
-	golang.org/x/exp v0.0.0-20220706164943-b4a6d9510983
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
 )
 
