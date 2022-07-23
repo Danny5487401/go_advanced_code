@@ -357,6 +357,8 @@ Note: Go 1.18 移除用于泛型的constraints包
     - map根据key实现排序
     - sort.Search根据排序切片找索引
 - [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
+  - Symmetric 对称加密->HSA
+  - asymmetric 非对称加密->RSA
 - [6 pem(Privacy Enhanced Mail Certificate保密增强邮件协议](chapter17_dataStructure_n_algorithm/06_pem/pem.md)
   - [6.1 生成.pem文件(RSA密钥对)](chapter17_dataStructure_n_algorithm/06_pem/01_pem_generate/main.go)
   - [6.2 解析.pem文件](chapter17_dataStructure_n_algorithm/06_pem/02_get_pem_info/main.go) 

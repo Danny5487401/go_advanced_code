@@ -1,23 +1,23 @@
-package middlewares
+package _1_symmetric
 
 import (
-	"errors"
 	"net/http"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/Danny5487401/go_advanced_code/chapter17_dataStructure_n_algorithm/05_middleware/tokenErr"
+
+	"github.com/golang-jwt/jwt/v4"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/Danny5487401/go_advanced_code/chapter17_dataStructure_n_algorithm/05_middleware/models"
 )
 
 type JWTConfig struct {
-	SigningKey string `mapstructure:"key" json:"key"`
+	SigningKey string `json:"key"`
 }
 
-var JwtConfigInfo = &JWTConfig{SigningKey: "dhsakjdhsajkdhiuw"}
-
-func JWTAuth() gin.HandlerFunc {
+func JWTAuth(key []byte) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 我们这里jwt鉴权取头部信息 x-token 登录时回返回token信息 这里前端需要把token存储到cookie或者本地localSstorage中 不过需要跟后端协商过期时间 可以约定刷新令牌或者重新登录
 		token := c.Request.Header.Get("x-token")
@@ -28,12 +28,12 @@ func JWTAuth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		j := NewJWT()
+		j := NewJWT(key)
 		// parseToken 解析token包含的信息
 		claims, err := j.ParseToken(token)
 		if err != nil {
-			if err == TokenExpired {
-				if err == TokenExpired {
+			if err == tokenErr.TokenExpired {
+				if err == tokenErr.TokenExpired {
 					c.JSON(http.StatusUnauthorized, map[string]string{
 						"msg": "授权已过期",
 					})
@@ -47,32 +47,30 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 		c.Set("claims", claims)
-		c.Set("userId", claims.ID)
+		c.Set("userId", claims.UserID)
 		c.Next()
 	}
 }
 
 type JWT struct {
-	// 在hmac中key必须是Key must be []byte
+	// 在hmac中key 必须是Key must be []byte
 	// 在rsa中key 必须是*rsa.PrivateKey 对象
 	SigningKey []byte
 }
 
-var (
-	TokenExpired     = errors.New("Token is expired")
-	TokenNotValidYet = errors.New("Token not active yet")
-	TokenMalformed   = errors.New("That's not even a token")
-	TokenInvalid     = errors.New("Couldn't handle this token:")
-)
-
-func NewJWT() *JWT {
+func NewJWT(secret []byte) *JWT {
 	return &JWT{
-		[]byte(JwtConfigInfo.SigningKey), //可以设置过期时间
+		secret, //可以设置过期时间
 	}
 }
 
 // 创建一个token
-func (j *JWT) CreateToken(claims models.CustomClaims) (string, error) {
+func (j *JWT) CreateToken(user *models.User) (string, error) {
+	claims := models.CustomClaims{
+		User: user,
+	}
+	claims.RegisteredClaims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(1 * time.Hour)) // 过期时间，必须设置,
+	claims.Issuer = "danny"
 	// 1.组成token结构体 ,使用hmac方法
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -89,14 +87,14 @@ func (j *JWT) ParseToken(tokenString string) (*models.CustomClaims, error) {
 	if err != nil {
 		if ve, ok := err.(*jwt.ValidationError); ok {
 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-				return nil, TokenMalformed
+				return nil, tokenErr.TokenMalformed
 			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
 				// Token is expired
-				return nil, TokenExpired
+				return nil, tokenErr.TokenExpired
 			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
-				return nil, TokenNotValidYet
+				return nil, tokenErr.TokenNotValidYet
 			} else {
-				return nil, TokenInvalid
+				return nil, tokenErr.TokenInvalid
 			}
 		}
 	}
@@ -104,12 +102,10 @@ func (j *JWT) ParseToken(tokenString string) (*models.CustomClaims, error) {
 		if claims, ok := token.Claims.(*models.CustomClaims); ok && token.Valid {
 			return claims, nil
 		}
-		return nil, TokenInvalid
-
-	} else {
-		return nil, TokenInvalid
+		return nil, tokenErr.TokenInvalid
 
 	}
+	return nil, tokenErr.TokenInvalid
 
 }
 
@@ -125,10 +121,7 @@ func (j *JWT) RefreshToken(tokenString string) (string, error) {
 		return "", err
 	}
 	if claims, ok := token.Claims.(*models.CustomClaims); ok && token.Valid {
-		jwt.TimeFunc = time.Now
-		claims.StandardClaims.ExpiresAt = time.Now().Add(1 * time.Hour).Unix() // 过期时间，必须设置,
-		claims.Issuer = "danny"                                                //非必须，也可以填充用户名，
-		return j.CreateToken(*claims)
+		return j.CreateToken(claims.User)
 	}
-	return "", TokenInvalid
+	return "", tokenErr.TokenInvalid
 }

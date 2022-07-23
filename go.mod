@@ -7,11 +7,11 @@ require (
 	github.com/agiledragon/gomonkey/v2 v2.8.0
 	github.com/cheekybits/genny v1.0.0
 	github.com/davecgh/go-spew v1.1.1
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dlsniper/debugger v0.6.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/golang/mock v1.6.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/justinas/alice v1.2.0
