@@ -26,8 +26,8 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasthttp v1.38.0
 	github.com/zeromicro/go-zero v1.3.5
+	go.uber.org/goleak v1.1.12
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
-	golang.org/x/tools v0.1.5
 )
 
 require (

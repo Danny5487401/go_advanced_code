@@ -62,7 +62,7 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [4.4 标准库连接池database/sql源码分析](chapter02_goroutine/04_concurrent_pool/04_database_sql/sql.md)
       - [4.4.1 连接池Benchmark对比](chapter02_goroutine/04_concurrent_pool/04_database_sql/database_pool_test.go)
 - [5 channel导致goroutine泄漏分析及处理](chapter02_goroutine/05_goroutine_leaks/goroutine_leak.md)
-  - [5.1 channel未正常关闭导致goroutine泄漏](chapter02_goroutine/05_goroutine_leaks/01_leaks_happen/main.go)
+  - [5.1 channel未正常关闭导致goroutine泄漏-->使用 goleak 工具检查](chapter02_goroutine/05_goroutine_leaks/01_leaks_happen/goroutine_leak_test.go)
   - [5.2 channel监听避免goroutine泄漏](chapter02_goroutine/05_goroutine_leaks/02_avoid_leaks/main.go)
 ---
 
