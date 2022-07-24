@@ -12,7 +12,6 @@
 ![高级go编程](./img/golang.jpeg)
 
 # *目录*
-<<<<<<< HEAD
 
 Note:目录同级为 *代码展示*，可在Goland中运行
 ## *推荐GoVersion: 1.18(涉及泛型)*
@@ -100,7 +99,15 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [1.3 打印出接口的动态类型和值](chapter04_interface_n_reflect/01_interface/03_print_dynamic_value_n_type/main.go)
 - [2 反射](chapter04_interface_n_reflect/02_reflect/reflect.md)
     - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01three_laws/threeLaw.md)
-    - [2.2 类型断言及性能分析](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
+    - [2.2 类型断言](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
+        - [2.2.1 断言的类型T是一个**具体类型** 或则 **接口类型**](chapter04_interface_n_reflect/02_reflect/02TypeAssert/01_eface_n_iface_type_assert/main.go)
+        - [类型断言性能分析](chapter04_interface_n_reflect/02_reflect/02TypeAssert/02_type_assert_performance/typeAssert_test.go)
+            - 空接口类型直接类型断言具体的类型
+            - 空接口类型使用TypeSwitch 只有部分类型
+            - 空接口类型使用TypeSwitch 所有类型
+            - 直接使用类型转换
+            - 非空接口类型判断一个类型是否实现了该接口 12个方法
+            - 直接调用方法
     - [2.3 获取结构体字段及获取方法名字](chapter04_interface_n_reflect/02_reflect/03StructField_n_method/main.go)
     - [2.4 通过 reflect.Value 修改值，调用结构体方法，调用普通函数](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
     - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05PerformanceInprove/main.go)

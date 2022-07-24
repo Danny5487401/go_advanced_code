@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	// 1.空接口断言 eface
+	// 1. 空接口断言 eface
 	var u interface{}
 	u = Person{"Danny"}
 	val, ok := u.(int)
@@ -14,7 +14,7 @@ func main() {
 		fmt.Printf("空接口断言为int类型的零值:%v\n", val)
 	}
 
-	// 2.非空接口断言 iface
+	// 2. 非空接口断言 iface
 	var t Tester
 	t = Person{"Danny"}
 
@@ -28,20 +28,20 @@ func main() {
 		check2(t)
 	}
 
-	//2.反射断言
-	ReflectToGetType()
+	// 2.反射断言
+	reflectToGetType()
 }
 
-func ReflectToGetType() {
+func reflectToGetType() {
 
 	var num float64 = 1.2345
-	pointer := reflect.ValueOf(&num)
-	value := reflect.ValueOf(num)
-	fmt.Println("指针的值:", pointer, "float64的值:", value) // 指针的值: 0xc0000160b0 float64的值: 1.2345
+	numPtr := reflect.ValueOf(&num)
+	numVal := reflect.ValueOf(num)
+	fmt.Println("指针的值:", numPtr, "float64的值:", numVal) // 指针的值: 0xc0000160b0 float64的值: 1.2345
 
 	// 转换成interface进行断言
-	convertPointer := pointer.Interface().(*float64)
-	convertValue := value.Interface().(float64)
+	convertPointer := numPtr.Interface().(*float64)
+	convertValue := numVal.Interface().(float64)
 
 	fmt.Println("类型断言后，指针的值:", convertPointer, "float64的值:", convertValue) // 类型断言后，指针的值: 0xc0000160b0 float64的值: 1.2345
 

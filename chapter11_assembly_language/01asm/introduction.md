@@ -366,8 +366,15 @@ mov %rbp,%rsp
 pop %rbp
 ```
 
+<<<<<<< HEAD
+    mov %rbp,%rsp
+    pop %rbp
+
+### loop指令   
+=======
     
 ### loop指令
+>>>>>>> main
 ![](.introduction_images/loop.png)
 cx存储循环的次数,s为标号
 
