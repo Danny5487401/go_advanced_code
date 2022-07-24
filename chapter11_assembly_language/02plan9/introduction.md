@@ -12,7 +12,7 @@ Plan9	AX	BX	CX	DX	DI	SI	BP	SP	R8	R9	R10	R11	R12	R13	R14	PC
 ```
 应用代码层面会用到的通用寄存器主要是: rax, rbx, rcx, rdx, rdi, rsi, r8~r15 这 14 个寄存器，虽然 rbp 和 rsp 也可以用，不过 bp 和 sp 会被用来管理栈顶和栈底，最好不要拿来进行运算。
 
-plan9 中使用寄存器不需要带 r 或 e 的前缀，例如 rax，只要写 AX 即可
+Note: plan9 中使用寄存器不需要带 r 或 e 的前缀，例如 rax，只要写 AX 即可
 ```assembly
 MOVQ $101, AX = mov rax, 101
 ```
@@ -33,11 +33,12 @@ MOVQ $101, AX = mov rax, 101
 
 Noted: Plan9 汇编的操作数方向和 Intel 汇编相反的，与 AT&T 类似。
 ```shell script
-//plan9 汇编
-MOVQ $123, AX
+# plan9 汇编           # intel汇编
+MOVQ $0x10, AX ===== mov rax, 0x10
+       |    |------------|      |
+       |------------------------|
+       
 
-//intel汇编
-mov rax, 123
 ```
 
 ## 2. 伪寄存器
@@ -211,6 +212,22 @@ MOVW $0x10, BX   // 2 bytes
 MOVD $1, DX      // 4 bytes
 MOVQ $-10, AX     // 8 bytes
 ```
+- byte，即8位
+- word，即16位
+- double word
+- quadra word
+
+
+搬运的长度是由 MOV 的后缀决定的，这一点与 intel 汇编稍有不同，看看类似的 X64 汇编:
+```assem
+mov rax, 0x1   // 8 bytes
+mov eax, 0x100 // 4 bytes
+mov ax, 0x22   // 2 bytes
+mov ah, 0x33   // 1 byte
+mov al, 0x44   // 1 byte
+```
+
+
 
 还有一点区别是在使用 MOVQ 的时候会有看到带括号和不带括号的区别。
 ```assembly
@@ -235,7 +252,7 @@ IMULQ AX, BX   // BX *= AX
 JMP addr   // 跳转到地址，地址可为代码中的地址，不过实际上手写不会出现这种东西
 JMP label  // 跳转到标签，可以跳转到同一函数内的标签位置
 JMP 2(PC)  // 以当前指令为基础，向前跳转 x 行
-JMP -2(PC) // 以当前指令为基础，向前跳转 x 行
+JMP -2(PC) // 以当前指令为基础，向后跳转 x 行
 
 // 有条件跳转
 JNZ target // 如果 zero flag (ZF标志寄存器)被 set 过，则跳转
@@ -389,4 +406,8 @@ LEAQ 16(BX)(AX*1), CX
 // ./a.s:13: expected end of operand, found 
 
 ```
+
+
+## 参考资料
+1. [曹大汇编](https://go.xargin.com/docs/assembly/assembly/#%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4)
 

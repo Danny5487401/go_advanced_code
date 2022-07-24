@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/panjf2000/ants/v2"
 	"sync"
 	"time"
+
+	"github.com/panjf2000/ants/v2"
 )
 
 func wrapper(i int, wg *sync.WaitGroup) func() {

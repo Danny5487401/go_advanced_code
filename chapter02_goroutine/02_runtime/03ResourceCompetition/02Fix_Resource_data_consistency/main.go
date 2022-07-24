@@ -25,7 +25,6 @@ func main() {
 	go saleTickets("售票口4") //g4,10
 	wg.Wait()              // main要等待。。。
 
-
 }
 
 func saleTickets(name string) {
@@ -50,4 +49,3 @@ func saleTickets(name string) {
 		mutex.Unlock() //解锁
 	}
 }
-

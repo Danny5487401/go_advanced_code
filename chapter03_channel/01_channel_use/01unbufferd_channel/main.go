@@ -2,7 +2,6 @@ package main
 
 import "fmt"
 
-
 func main() {
 	var ch1 chan bool       //声明，没有创建
 	fmt.Println(ch1)        //<nil>

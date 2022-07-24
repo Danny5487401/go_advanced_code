@@ -264,7 +264,7 @@ spec:
 
 Note:不使用账号会报没有权限
 ```shell
-(⎈ |teleport.gllue.com-test:danny-xia)➜  go_advanced_code git:(feature/monitor) ✗ kubectl logs prometheus-danny-instance-0 prometheus -n monitoring --tail 2 
+(⎈ |teleport.gllue.com-test:danny-xia)➜  github.com/Danny5487401/go_advanced_code git:(feature/monitor) ✗ kubectl logs prometheus-danny-instance-0 prometheus -n monitoring --tail 2 
 level=error ts=2022-05-05T08:17:55.023Z caller=klog.go:94 component=k8s_client_runtime func=ErrorDepth msg="/app/discovery/kubernetes/kubernetes.go:263: Failed to list *v1.Pod: pods is forbidden: User \"system:serviceaccount:monitoring:default\" cannot list resource \"pods\" in API group \"\" in the namespace \"danny-xia\""
 level=error ts=2022-05-05T08:17:55.030Z caller=klog.go:94 component=k8s_client_runtime func=ErrorDepth msg="/app/discovery/kubernetes/kubernetes.go:262: Failed to list *v1.Service: services is forbidden: User \"system:serviceaccount:monitoring:default\" cannot list resource \"services\" in API group \"\" in the namespace \"danny-xia\""
 

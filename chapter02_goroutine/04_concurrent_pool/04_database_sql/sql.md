@@ -6,7 +6,7 @@
 ```shell
 goos: darwin
 goarch: arm64
-pkg: go_advanced_code/chapter02_goroutine/04_concurrent_pool/04_database_sql
+pkg: github.com/Danny5487401/go_advanced_code/chapter02_goroutine/04_concurrent_pool/04_database_sql
 BenchmarkConnectMySQL
 BenchmarkConnectMySQL/noConnPool
 BenchmarkConnectMySQL/noConnPool-8         	      10	 120167933 ns/op	    7211 B/op	      53 allocs/op

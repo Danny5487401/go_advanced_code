@@ -27,8 +27,8 @@ const (
 )
 
 var (
-	// ErrCancelWithNil is an error that mapreduce was cancelled with nil.
-	ErrCancelWithNil = errors.New("mapreduce cancelled with nil")
+	// ErrCancelWithNil is an error that mapreduce was canceled with nil.
+	ErrCancelWithNil = errors.New("mapreduce canceled with nil")
 	// ErrReduceNoOutput is an error that reduce did not output a value.
 	ErrReduceNoOutput = errors.New("reduce not writing value")
 )
@@ -83,7 +83,7 @@ type (
 	}
 )
 
-// Finish runs fns parallelly, cancelled on any error.
+// Finish runs fns parallelly, canceled on any error.
 // 1. 并发执行func，发生任何错误将会立即终止流程
 func Finish(fns ...func() error) error {
 	if len(fns) == 0 {

@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/base64"
-	"go_advanced_code/chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/03_rsa/security"
 	"log"
+
+	"github.com/Danny5487401/go_advanced_code/chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/03_rsa/security"
 )
 
 func main() {

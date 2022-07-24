@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/smallnest/chanx"
 	"sync"
+
+	"github.com/smallnest/chanx"
 )
 
 func main() {

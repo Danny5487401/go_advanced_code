@@ -16,8 +16,10 @@ interface的定义在1.15.3源码包runtime中,interface的定义分为两种，
 - 不带方法的runtime.eface
 - 带方法的runtime.iface
 
-### 1. runtime.eface表示不含方法的interface{}类型
+尽管空接口理论上可以重用 iface 数据结构(因为 iface 可以算是 eface 的一个超集)，runtime 还是选择对这两种 interface 进行区分，
+主要有两个理由: 为了节省空间，以及代码清晰
 
+### 1. runtime.eface表示不含方法的interface{}类型
 ![](.interface_images/eface.png)
 
 结构体包含可以表示任意数据类型的_type和存储指定的数据data,data用指针来表示
@@ -26,9 +28,11 @@ type eface struct {
     _type *_type  // 表示空接口所承载的具体的实体类型
     data  unsafe.Pointer
 }
+
+//_type 结构对 Go 的类型给出了完成的描述。 其定义在 (src/runtime/type.go)
 type _type struct {
-	//  // 类型大小
-    size       uintptr //占用的字节大小
+
+    size       uintptr //类型大小,占用的字节大小
     ptrdata uintptr //指针数据 size of memory prefix holding all pointers
     
     hash       uint32 //计算的hash
@@ -47,6 +51,17 @@ type _type struct {
     ptrToThis typeOff //指针的偏移量
 }
 ```
+- nameOff 和 typeOff 类型是 int32 ，这两个值是链接器负责嵌入的，相对于可执行文件的元信息的偏移量。
+元信息会在运行期，加载到 runtime.moduledata 结构体中 (src/runtime/symtab.go), 如果你曾经研究过 ELF 文件的内容的话，看起来会显得很熟悉。
+runtime 提供了一些 helper 函数，这些函数能够帮你找到相对于 moduledata 的偏移量，比如 resolveNameOff (src/runtime/type.go) and resolveTypeOff (src/runtime/type.go):
+```go
+func resolveNameOff(ptrInModule unsafe.Pointer, off nameOff) name {}
+func resolveTypeOff(ptrInModule unsafe.Pointer, off typeOff) *_type {}
+```
+也就是说，假设 t 是 _type 的话，只要调用 resolveTypeOff(t, t.ptrToThis) 就可以返回 t 的一份拷贝了
+
+
+
 
 Go 语言各种数据类型都是在 _type 字段的基础上，增加一些额外的字段来进行管理的：
 ```go
@@ -85,8 +100,14 @@ type iface struct {
     data unsafe.Pointer // 数据指针，则指向具体的数据 --> 动态值
 }
 ```
-结构体包含itab和data数据,它们分别被称为动态类型和动态值。而接口值包括动态类型和动态值。
+一个 interface 就是这样一个非常简单的结构体，内部维护两个指针:
+- itab,被称为动态类型。
+- data数据，被称为动态值。
+接口值包括动态类型和动态值。
+  
+虽然很简单，不过数据结构的定义已经提供了重要的信息: 由于 interface 只能持有指针，任何用 interface 包装的具体类型，都会被取其地址。
 
+itab 是这样定义的 (src/runtime/runtime2.go),itab 是 interface 的核心:
 ```go
 type itab struct {
     inter  *interfacetype // inter 字段则描述了接口的类型
@@ -96,12 +117,15 @@ type itab struct {
     bad    bool   // type does not implement interface
     inhash bool   // has this itab been added to hash?
     unused [2]byte
-    fun    [1]uintptr // variable sized, fun 字段放置和接口方法对应的具体数据类型的方法地址，实现接口调用方法的动态分派，一般在每次给接口赋值发生转换时会更新此表，或者直接拿缓存的 itab。
+
+    // fun 字段放置和接口方法对应的具体数据类型的方法地址，实现接口调用方法的动态分派，一般在每次给接口赋值发生转换时会更新此表，或者直接拿缓存的 itab。
+    fun    [1]uintptr // variable sized,即“变长”，这表示这里数组所声明的长度是 非精确的.
+   
 }
 ```
-itab包含的是
-- 接口类型interfacetype
-- 装载实体的任意类型_type
+itab包含的是  
+- 接口类型interfacetype,这只是一个包装了 _type 和额外的与 interface 相关的信息的字段
+- _type这个类型是 runtime 对任意 Go 语言类型的内部表示._type 类型描述了一个“类型”的每一个方面: 类型名字，特性(e.g. 大小，对齐方式...)，某种程度上类型的行为(e.g. 比较，哈希...) 也包含在内了。
 - 实现接口的方法fun,fun是可变大小,go在编译期间就会对接口实现校验检查,并将对应的方法存储fun。
 
 你可能会觉得奇怪，为什么 fun 数组的大小为 1，要是接口定义了多个方法可怎么办？实际上，这里存储的是第一个方法的函数指针，如果有更多的方法，在它之后的内存空间里继续存储。
@@ -115,8 +139,13 @@ type interfacetype struct {
     pkgpath name  // 定义了接口的包名
     mhdr    []imethod // 表示接口所定义的函数列表
 }
+
+type imethod struct {
+    name nameOff
+    ityp typeOff
+}
 ```
-interfacetype包装了 _type 类型，_type 实际上是描述 Go 语言中各种数据类型的结构体。
+interfacetype 只是对于 _type 的一种包装，在其顶部空间还包装了额外的 interface 相关的元信息。 在最近的实现中，这部分元信息一般是由一些指向相应名字的 offset 的列表和 interface 所暴露的方法的类型所组成([]imethod)。
 
 ### 接口类型和 nil 作比较
 

@@ -1,7 +1,7 @@
 package test
 
 import (
-	facade "go_advanced_code/chapter09_design_pattern/02_structure/06_facade_pattern"
+	facade "github.com/Danny5487401/go_advanced_code/chapter09_design_pattern/02_structure/06_facade_pattern"
 	"testing"
 	"time"
 )

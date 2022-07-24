@@ -15,7 +15,7 @@ import (
 			ab.txt
 			相对于当前工程
 		绝对路径：absolute
-			E:\go_advanced_code\chapter01_fileOperation\danny.txt
+			E:\github.com/Danny5487401/go_advanced_code\chapter01_fileOperation\danny.txt
 
 		.当前目录
 		..上一层
@@ -48,17 +48,17 @@ func main() {
 	fileName2 := "./chapter01_fileOperation/danny.txt"
 	fmt.Println("绝对目录情况", filepath.IsAbs(fileName1)) //true
 	fmt.Println("绝对目录情况", filepath.IsAbs(fileName2)) //false
-	fmt.Println(filepath.Abs(fileName1))             // /Users/python/Desktop/go_advanced_code/chapter01_fileOperation/danny.txt <nil>
-	fmt.Println(filepath.Abs(fileName2))             // /Users/python/Desktop/go_advanced_code/chapter01_fileOperation/danny.txt <nil>
+	fmt.Println(filepath.Abs(fileName1))             // /Users/python/Desktop/github.com/Danny5487401/go_advanced_code/chapter01_fileOperation/danny.txt <nil>
+	fmt.Println(filepath.Abs(fileName2))             // /Users/python/Desktop/github.com/Danny5487401/go_advanced_code/chapter01_fileOperation/danny.txt <nil>
 
 	//2.创建目录
-	//err := os.Mkdir("E:\\go_advanced_code\\chapter01_fileOperation\\testDir",os.ModePerm)
+	//err := os.Mkdir("E:\\github.com/Danny5487401/go_advanced_code\\chapter01_fileOperation\\testDir",os.ModePerm)
 	//if err != nil{
 	//	fmt.Println("err:",err)
 	//	return
 	//}
 	//fmt.Println("文件夹创建成功。。")
-	//err =os.MkdirAll("E:\\go_advanced_code\\chapter01_fileOperation\\testDir\\aa\\cc\\dd\\ee",os.ModePerm)
+	//err =os.MkdirAll("E:\\github.com/Danny5487401/go_advanced_code\\chapter01_fileOperation\\testDir\\aa\\cc\\dd\\ee",os.ModePerm)
 	//if err != nil{
 	//	fmt.Println("err:",err)
 	//	return
@@ -66,7 +66,7 @@ func main() {
 	//fmt.Println("多层文件夹创建成功")
 
 	//3.创建文件:Create采用模式0666（任何人都可读写，不可执行）创建一个名为name的文件，如果文件已存在会截断它（为空文件）
-	//file1,err :=os.Create("E:\\go_advanced_code\\chapter01_fileOperation\\danny2.txt")
+	//file1,err :=os.Create("E:\\github.com/Danny5487401/go_advanced_code\\chapter01_fileOperation\\danny2.txt")
 	//if err != nil{
 	//	fmt.Println("err：",err)
 	//	return
@@ -81,7 +81,7 @@ func main() {
 	//fmt.Println(file2)
 
 	//4.打开文件：
-	file3, err := os.Open("E:\\go_advanced_code\\chapter01_fileOperation\\danny2.txt") //只读的
+	file3, err := os.Open("E:\\github.com/Danny5487401/go_advanced_code\\chapter01_fileOperation\\danny2.txt") //只读的
 	if err != nil {
 		fmt.Println("err:", err)
 		return
@@ -123,7 +123,7 @@ func main() {
 	}
 	fmt.Println("删除文件成功。。")
 	// 删除目录 ：最后一个目录
-	//err :=  os.RemoveAll("E:\\go_advanced_code\\chapter01_fileOperation\\testDir\\aa\\cc\\dd\\ee")
+	//err :=  os.RemoveAll("E:\\github.com/Danny5487401/go_advanced_code\\chapter01_fileOperation\\testDir\\aa\\cc\\dd\\ee")
 	//if err != nil{
 	//	fmt.Println("err:",err)
 	//	return

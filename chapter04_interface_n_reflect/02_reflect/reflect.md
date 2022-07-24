@@ -63,6 +63,7 @@ Go语言的反射就是建立在类型之上的，Golang的指定类型的变量
 - 第三方包： proto reflect,sqlx scanAll
 
 ## 三. 源码分析
+
 ### 1. iface 非空接口
 
 ![](.reflect_images/iface_struct.png)
@@ -82,6 +83,7 @@ type itab struct {
 }
 
 ```
+
 ### 2. eface 空接口
 
 ![](.reflect_images/eface_struct.png)
@@ -406,6 +408,7 @@ type Value struct {
 	flag  //元信息
 }
 ```
+
 Valueof函数
 ```go
 func ValueOf(i interface{}) Value {
@@ -414,9 +417,7 @@ func ValueOf(i interface{}) Value {
 	}
 
 	// TODO: Maybe allow contents of a Value to live on the stack.
-	// For now we make the contents always escape to the heap. It
-	// makes life easier in a few places (see chanrecv/mapassign
-	// comment below).
+	// reflect.escapes 保证当前值逃逸到堆上
 	escapes(i)
 
 	return unpackEface(i)
@@ -426,12 +427,12 @@ func unpackEface(i interface{}) Value {
     //先将 i 转换成 *emptyInterface 类型
     e := (*emptyInterface)(unsafe.Pointer(&i))
     
-    // NOTE: don't read e.word until we know whether it is really a pointer or not.
     // 再将它的 typ 字段和 word 字段以及一个标志位字段组装成一个 Value 结构体，
     t := e.typ
     if t == nil {
         return Value{}
     }
+    
     f := flag(t.Kind())
     if ifaceIndir(t) {
         f |= flagIndir
@@ -466,7 +467,7 @@ func (v Value) FieldByName(name string) Value
 总结:
 ![](.reflect_images/rtype_emptyface_value_relation.png)
 
-rtye 实现了 Type 接口，是所有类型的公共部分。
+rtype 实现了 Type 接口，是所有类型的公共部分。
 
 emptyface 结构体和 eface 其实是一个东西， 而 rtype 其实和 _type 是一个东西，只是一些字段稍微有点差别，
 比如 emptyface 的 word 字段和 eface 的 data 字段名称不同，但是数据型是一样的。

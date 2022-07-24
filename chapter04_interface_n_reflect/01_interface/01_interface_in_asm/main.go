@@ -7,11 +7,11 @@ import (
 func main() {
 	x := 200
 
-	// 不带方法 eface
+	// 1. 不带方法 eface
 	var any interface{} = x
 	fmt.Println(any) //200
 
-	// 带方法的interface iface
+	// 2. 带方法的interface iface
 	g := Gopher{"Go", 1}
 	var c coder = g
 	fmt.Println(c) //{Go 1}

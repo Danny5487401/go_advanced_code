@@ -17,9 +17,11 @@ func main() {
 
 	//3.获取逻辑cpu的数量
 	fmt.Println("逻辑CPU的核数：", runtime.NumCPU()) //4
+
 	//4.设置最大可同时执行的最大CPU数：[1,256]
 	n := runtime.GOMAXPROCS(runtime.NumCPU())
 	fmt.Println("最大CPU数:", n)
+
 	// 5. Gosched()
 	go func() {
 		for i := 0; i < 5; i++ {
@@ -33,8 +35,10 @@ func main() {
 		runtime.Gosched()
 		fmt.Printf("main。%d\n", i)
 	}
+
 	// 6. 获取版本号
 	fmt.Println(runtime.Version())
+
 	// 7. 变量绑定方法,当垃圾回收的时候进行监听
 	var i *Student = new(Student)
 	runtime.SetFinalizer(i, func(i *Student) {
@@ -43,6 +47,7 @@ func main() {
 	// 立即执行一次垃圾回收
 	runtime.GC()
 	time.Sleep(time.Second)
+
 	// 8. 获取程序调用go协程的栈踪迹历史 func Stack(buf []byte, all bool) int
 	//Stack将调用其的go程的调用栈踪迹格式化后写入到buf中并返回写入的字节数。
 	//若all为true，函数会在写入当前go程的踪迹信息后，将其它所有go程的调用栈踪迹都格式化写入到buf中
