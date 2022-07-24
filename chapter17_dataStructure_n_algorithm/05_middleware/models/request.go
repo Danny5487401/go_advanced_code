@@ -13,4 +13,5 @@ type CustomClaims struct {
 type User struct {
 	UserID   uint64
 	NickName string
+	Age      int32
 }

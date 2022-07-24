@@ -16,19 +16,19 @@ x.(T)，这里x表示一个接口的类型，T表示一个类型（也可为接�
   1. 如果这个检查成功，则检查结果的接口值的动态类型和动态值不变，但是该接口值的类型被转换为接口类型T。换句话说，对一个接口类型的类型断言改变了类型的表述方式，改变了可以获取的方法集合（通常更大），但是它保护了接口值内部的动态类型和值的部分。
   2. 如果检查失败，接下来这个操作会抛出panic，除非用两个变量来接收检查结果，如：f, ok := w.(io.ReadWriter)
 
-注意：
+### 注意
 
-    如果断言的操作对象x是一个nil接口值，那么不论被断言的类型T是什么这个类型断言都会失败。
-    我们几乎不需要对一个更少限制性的接口类型（更少的方法集合）做断言，因为它表现的就像赋值操作一样，除了对于nil接口值的情况。
+如果断言的操作对象x是一个nil接口值，那么不论被断言的类型T是什么这个类型断言都会失败。
+我们几乎不需要对一个更少限制性的接口类型（更少的方法集合）做断言，因为它表现的就像赋值操作一样，除了对于nil接口值的情况。
 
-    表达式是t,ok:=i.(T)，这个表达式也是可以断言一个接口对象（i）里不是nil，并且接口对象（i）存储的值的类型是 T，如果断言成功，就会返回其类型给t，并且此时 ok 的值 为true，表示断言成功。
-    如果接口值的类型，并不是我们所断言的 T，就会断言失败，但和第一种表达式不同的是这个不会触发 panic，而是将 ok 的值设为false，表示断言失败，此时t为T的零值。所以推荐使用这种方式，可以保证代码的健壮性
+表达式是t,ok:=i.(T)，这个表达式也是可以断言一个接口对象（i）里不是nil，并且接口对象（i）存储的值的类型是 T，如果断言成功，就会返回其类型给t，并且此时 ok 的值 为true，表示断言成功。
+如果接口值的类型，并不是我们所断言的 T，就会断言失败，但和第一种表达式不同的是这个不会触发 panic，而是将 ok 的值设为false，表示断言失败，此时t为T的零值。所以推荐使用这种方式，可以保证代码的健壮性
 
 ## 三. 反射reflect类型断言
 
 从reflect.Value中获取接口interface的信息
 ```go
-    realValue := value.Interface().(已知的类型)
+realValue := value.Interface().(已知的类型)
 ```
 可以理解为“强制转换”，但是需要注意的时候，转换的时候，如果转换的类型不完全符合，则直接panic
 
@@ -39,16 +39,13 @@ Golang 对类型要求非常严格，类型一定要完全符合,如下两个，
     该方法最通用，用来将 Value 转换为空接口，该空接口内部存放具体类型实例
     可以使用接口类型查询去还原为具体的类型
 ```go
-    //func (v Value) Interface() （i interface{})
+//func (v Value) Interface() （i interface{})
 ```
 
 
 ## 四. 性能比较
 
-* 空接口类型的类型断言代价并不高，与直接类型转换几乎没有性能差异
-* 空接口类型使用type switch进行类型断言时，随着case的增多性能会直线下降
-* 非空接口类型进行类型断言时，随着接口中方法的增多，性能会直线下降
-* 直接进行方法调用要比非接口类型进行类型断言要高效很多
+
 ```go
 var dst int64
 
@@ -136,3 +133,41 @@ func Benchmark_DirectlyUseMethod(b *testing.B) {
 }
 
 ```
+
+```shell
+/private/var/folders/sk/m49vysmj3ss_y50cv9cvcn800000gn/T/___gobench_github_com_Danny5487401_go_advanced_code_chapter04_interface_n_reflect_02_reflect_02TypeAssert_02_type_assert_performance -test.v -test.paniconexit0 -test.bench . -test.run ^$
+goos: darwin
+goarch: arm64
+pkg: github.com/Danny5487401/go_advanced_code/chapter04_interface_n_reflect/02_reflect/02TypeAssert/02_type_assert_performance
+Benchmark_efaceToType
+Benchmark_efaceToType/efaceToType
+Benchmark_efaceToType/efaceToType-8      	1000000000	         0.5087 ns/op
+Benchmark_efaceWithSwitchOnlyIntType
+Benchmark_efaceWithSwitchOnlyIntType/efaceWithSwitchOnlyIntType
+Benchmark_efaceWithSwitchOnlyIntType/efaceWithSwitchOnlyIntType-8         	1000000000	         1.134 ns/op
+Benchmark_efaceWithSwitchAllType
+Benchmark_efaceWithSwitchAllType/efaceWithSwitchAllType
+Benchmark_efaceWithSwitchAllType/efaceWithSwitchAllType-8                 	792969007	         1.512 ns/op
+Benchmark_TypeConversion
+Benchmark_TypeConversion/typeConversion
+Benchmark_TypeConversion/typeConversion-8                                 	1000000000	         0.3209 ns/op
+Benchmark_ifaceToType
+Benchmark_ifaceToType/ifaceToType
+Benchmark_ifaceToType/ifaceToType-8                                       	536824480	         2.234 ns/op
+Benchmark_ifaceToTypeWithMoreMethod
+Benchmark_ifaceToTypeWithMoreMethod/ifaceToTypeWithMoreMethod
+Benchmark_ifaceToTypeWithMoreMethod/ifaceToTypeWithMoreMethod-8           	148931016	         8.136 ns/op
+Benchmark_DirectlyUseMethod
+Benchmark_DirectlyUseMethod/directlyUseMethod
+Benchmark_DirectlyUseMethod/directlyUseMethod-8                           	1000000000	         0.0000001 ns/op
+PASS
+```
+
+结论
+* 空接口类型的类型断言代价并不高，与直接类型转换几乎没有性能差异
+* 空接口类型使用type switch进行类型断言时，随着case的增多性能会直线下降
+* 非空接口类型进行类型断言时，随着接口中方法的增多，性能会直线下降
+* 直接进行方法调用要比非接口类型进行类型断言要高效很多
+
+## 参考资料
+1. [asong关于interface的类型断言是如何实现](https://segmentfault.com/a/1190000039894161)

@@ -17,11 +17,7 @@ var (
 )
 
 func GenerateJWT(user *models.User) (tokenString string, err error) {
-	var (
-		privatePath = "chapter17_dataStructure_n_algorithm/06_pem/pem_file/private.pem"
-		pubPath     = "chapter17_dataStructure_n_algorithm/06_pem/pem_file/public.pem"
-	)
-	InitJWT(privatePath, pubPath)
+
 	claims := models.CustomClaims{
 		User: user,
 	}
@@ -72,6 +68,7 @@ func ParseToken(tokenString string) (*models.CustomClaims, error) {
 				return nil, tokenErr.TokenInvalid
 			}
 		}
+		return nil, err
 	}
 	if token != nil {
 		if claims, ok := token.Claims.(*models.CustomClaims); ok && token.Valid {
