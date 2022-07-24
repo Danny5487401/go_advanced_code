@@ -7,7 +7,13 @@ type stringStruct struct {
     len int            // 字符串的字节长度，非字符个数
 }
 ```
+注意，len存储实际的字节数，而非字符数。所以对于非单字节编码的字符，结果可能让人疑惑
 
+
+## 类型转换
+![](.str_images/slice_to_string.png)
+我们经常需要将 string 转为 []byte，或者从 []byte 转换回 string。
+这中间都会涉及一次内存拷贝，所以要注意转换频次不宜过高。string 转换为 []byte，转换语法为[]byte(str)。首先创建一个[]byte并分配足够的空间，然后将 string 内容拷贝过去。
 
 ## 举例
 ```go

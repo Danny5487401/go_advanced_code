@@ -4,8 +4,8 @@ import "fmt"
 
 // 在 Go 中，与 C 数组变量隐式作为指针使用不同，Go 数组是值类型，赋值和函数传参操作都会复制整个数组数据
 
-func main()  {
-	arrayA :=[2]int{100,200}
+func main() {
+	arrayA := [2]int{100, 200}
 	var arrayB [2]int
 	// 地址变化
 	arrayB = arrayA

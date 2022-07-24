@@ -27,7 +27,7 @@ func MapWithPointer() {
 	}
 	now := time.Now()
 	runtime.GC()
-	fmt.Printf("With a map of strings, GC took: %s\n", time.Since(now))
+	fmt.Printf("With a map of strings, GC took: %s\n", time.Since(now)) // With a map of strings, GC took: 90.62775ms
 
 	// 引用一下防止被 GC 回收掉
 	_ = m["0"]
@@ -44,7 +44,7 @@ func MapWithoutPointer() {
 	}
 	now := time.Now()
 	runtime.GC()
-	fmt.Printf("With a map of int, GC took: %s\n", time.Since(now))
+	fmt.Printf("With a map of int, GC took: %s\n", time.Since(now)) // With a map of int, GC took: 2.727125ms
 
 	_ = m[0]
 }

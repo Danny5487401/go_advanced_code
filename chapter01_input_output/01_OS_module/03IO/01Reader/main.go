@@ -15,7 +15,7 @@ import (
 */
 func main() {
 
-	//1. os库用法：读取本地aa.txt文件中的数据
+	// 1. os库用法：读取本地aa.txt文件中的数据
 	osRead()
 
 	// 2. bytes库用法

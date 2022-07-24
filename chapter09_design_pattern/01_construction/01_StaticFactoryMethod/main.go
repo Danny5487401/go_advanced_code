@@ -2,8 +2,6 @@ package main
 
 import "fmt"
 
-
-
 // 看example.png实例流程，FactoryPatternDemo，我们的演示类使用 ShapeFactory 来获取 Shape 对象。它将向 ShapeFactory 传递信息（CIRCLE / RECTANGLE / SQUARE），以便获取它所需对象的类型
 
 // 步骤一： 创建一个接口

@@ -232,6 +232,7 @@ static__poll_t ep_send_events_proc(struct eventpoll *ep, struct list_head *head,
 一旦 kernel 中的数据准备好了，并且又再次收到了用户进程的 system call，那么它马上就将数据拷贝到了用户内存，然后返回。
 
 所以，non-blocking I/O 的特点是用户进程需要不断的主动询问 kernel 数据好了没有。
+
 ## Go源码分析
 
 Go netpoll 通过在底层对 epoll/kqueue/iocp 的封装，比如，在 Linux 系统下基于 epoll，freeBSD 系统下基于 kqueue，以及 Windows 系统下基于 iocp,
@@ -644,28 +645,7 @@ func socket(ctx context.Context, net string, family, sotype, proto int, ipv6only
 		poll.CloseFunc(s)
 		return nil, err
 	}
-
-	// This function makes a network file descriptor for the
-	// following applications:
-	//
-	// - An endpoint holder that opens a passive stream
-	//   connection, known as a stream listener
-	//
-	// - An endpoint holder that opens a destination-unspecific
-	//   datagram connection, known as a datagram listener
-	//
-	// - An endpoint holder that opens an active stream or a
-	//   destination-specific datagram connection, known as a
-	//   dialer
-	//
-	// - An endpoint holder that opens the other connection, such
-	//   as talking to the protocol stack inside the kernel
-	//
-	// For stream and datagram listeners, they will only require
-	// named sockets, so we can assume that it's just a request
-	// from stream or datagram listeners when laddr is not nil but
-	// raddr is nil. Otherwise we assume it's just for dialers or
-	// the other connection holders.
+	
 
 	if laddr != nil && raddr == nil {
 		switch sotype {

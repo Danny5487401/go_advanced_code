@@ -9,19 +9,18 @@ import (
 //写出数据
 func main() {
 
-	fileName := "chapter01_input_output/files/dannyWrite.txt"
 	//step1：打开文件
-	//step2：写出数据
-	//step3：关闭文件
+	fileName := "chapter01_input_output/files/dannyWrite.txt"
 	//file,err := os.Open(fileName)
 	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	//step3：关闭文件
 	defer file.Close()
 
-	//写出数据
+	//step2：写出数据
 	//bs :=[]byte{65,66,67,68,69,70}//A,B,C,D,E,F
 	bs := []byte{97, 98, 99, 100} //a,b,c,d
 	//n,err := file.Write(bs)

@@ -1,13 +1,54 @@
-#Jwt（JSON Web Token）
+# Jwt（JSON Web Token）
 JSON Web Token（JWT）是一个开放标准（RFC 7519），它定义了一种紧凑且自包含的方式，用于在各方之间以JSON方式安全地传输信息。
 由于此信息是经过数字签名的，因此可以被验证和信任。可以使用秘密（使用HMAC算法）或使用RSA或ECDSA的公钥/私钥对对JWT进行签名
 
 直白的讲jwt就是一种用户认证（区别于session、cookie）的解决方案。
 
-## jwt构成：
-- Header：TOKEN 的类型，就是JWT，签名的算法，如 HMAC SHA256、HS384
+## jwt构成
+
+- Header：TOKEN 的类型，就是JWT; 签名的算法，如 HMAC SHA256、HS384
+```shell
+# JWT头部分是一个描述JWT元数据的JSON对象，通常如下所示。
+{
+"alg": "HS256",
+"type": "JWT"
+}
+# 1）alg属性表示签名使用的算法，默认为HMAC SHA256（写为HS256）；
+# 2）type属性表示令牌的类型，JWT令牌统一写为JWT。
+# 3）最后，使用Base64 URL算法将上述JSON对象转换为字符串保存。
+```
 - Payload：载荷又称为Claim，携带的信息，比如用户名、过期时间等，一般叫做 Claim
+```shell
+'''
+iss：发行人
+exp：到期时间
+sub：主题
+aud：用户
+nbf：在此之前不可用
+iat：发布时间
+jti：JWT ID用于标识该JWT
+'''
+
+#2、除以上默认字段外，我们还可以自定义私有字段，如下例：
+{
+"sub": "1234567890",
+"name": "chongchong",
+"admin": true
+}
+
+#3、注意
+默认情况下JWT是未加密的，任何人都可以解读其内容，因此不要构建隐私信息字段，存放保密信息，以防止信息泄露。
+JSON对象也使用Base64 URL算法转换为字符串保存。
+```
+
 - Signature：签名，是由header、payload 和你自己维护的一个 secret 经过加密得来的
+```shell
+# 1.签名哈希部分是对上面两部分数据签名，通过指定的算法生成哈希，以确保数据不会被篡改。
+# 2.首先，需要指定一个密码（secret），该密码仅仅为保存在服务器中，并且不能向用户公开。
+# 3.然后，使用标头中7指定的签名算法（默认情况下为HMAC SHA256）根据以下公式生成签名。
+# 4.HMACSHA256(base64UrlEncode(header) + "." + base64UrlEncode(payload),secret)
+# 5.在计算出签名哈希后，JWT头，有效载荷和签名哈希的三个部分组合成一个字符串，每个部分用"."分隔，就构成整个JWT对象。
+```
 
 
 ## go-jwt源码分析

@@ -1,11 +1,11 @@
 package main
 
-//#include "./hello.h"
+//#cgo CFLAGS: -I./hello
+//#cgo LDFLAGS: -L./ -lhello
+//#include "hello.h"
 import "C"
 
-
-
-func main()  {
+func main() {
 	C.SayHello(C.CString("Hello World\n"))
-	
+
 }

@@ -1,45 +1,61 @@
 # http server 
 
-## 流程
+## 搭建流程
+搭建http server的大概步骤包括：
+
+1. 编写handler处理函数
+2. 注册路由
+3. 创建服务并开启监听
+
+## 具体监听处理服务流程
+![](.server_images/mutex_process_handler.png)
 ![](.server_images/server_process.png)
 1. 注册处理器到一个 hash 表中，可以通过键值路由匹配；
 2. 注册完之后就是开启循环监听，每监听到一个连接就会创建一个 Goroutine；
 3. 在创建好的 Goroutine 里面会循环的等待接收请求数据，然后根据请求的地址去处理器路由表中匹配对应的处理器，然后将请求交给处理器处理；
 
 
-ServeMux结构体 
+## 路由处理对象ServeMux结构体 
+![](.server_images/serveMux_info.png)
 ```go
 type ServeMux struct {
 	mu    sync.RWMutex
-	m     map[string]muxEntry
-	es    []muxEntry // slice of entries sorted from longest to shortest.
-	hosts bool       // whether any patterns contain hostnames
+	m     map[string]muxEntry // 存储路由和handler的对应关系
+	es    []muxEntry // 将muxEntry排序存放，排序按照路由表达式由长到短排序
+	hosts bool       // 路由表达式是否包含主机名
+}
+
+type muxEntry struct {
+    h       Handler // 路由处理函数
+    pattern string  // 路由表达式
 }
 ```
-hash 表是用于路由精确匹配，[]muxEntry用于部分匹配
+- m : hash 表是用于路由精确匹配，
+- es : []muxEntry用于部分匹配
 
+## 路由注册接口
 注册路由方法
 ```go
 func (mux *ServeMux) Handle(pattern string, handler Handler) {
 	mux.mu.Lock()
 	defer mux.mu.Unlock()
-
-	if pattern == "" {
-		panic("http: invalid pattern")
-	}
-	if handler == nil {
-		panic("http: nil handler")
-	}
+	    
+	
 	if _, exist := mux.m[pattern]; exist {
 		panic("http: multiple registrations for " + pattern)
 	}
 
+	// 创建ServeMux的m实例
 	if mux.m == nil {
 		mux.m = make(map[string]muxEntry)
 	}
+    // 根据路由表达式和路由处理函数，构造muxEntry对象
 	e := muxEntry{h: handler, pattern: pattern}
+    // muxEntry保存到map中
 	mux.m[pattern] = e
+	
 	if pattern[len(pattern)-1] == '/' {
+		// 如果表达式以 '/' 结尾，加入到排序列表中
 		mux.es = appendSorted(mux.es, e)
 	}
 
@@ -49,17 +65,33 @@ func (mux *ServeMux) Handle(pattern string, handler Handler) {
 }
 ```
 
-服务
+## 开启服务
+### 重要的server结构体
+```go
+type Server struct {
+    // 地址
+	Addr string
+
+	Handler Handler // handler to invoke, http.DefaultServeMux if nil
+	
+	TLSConfig *tls.Config
+
+	// ...
+}
+```
+
 ```go
 func (srv *Server) Serve(l net.Listener) error { 
     ...
-    baseCtx := context.Background()  
+    baseCtx := context.Background()
+	// 创建上下文对象
     ctx := context.WithValue(baseCtx, ServerContextKey, srv)
     for {
         // 接收 listener 过来的网络连接
         rw, err := l.Accept()
-        ... 
+        // ... 
         tempDelay = 0
+		// 连接建立时，创建连接对象
         c := srv.newConn(rw)
         c.setState(c.rwc, StateNew) 
         // 创建协程处理连接
@@ -70,7 +102,7 @@ func (srv *Server) Serve(l net.Listener) error {
 Serve 这个方法里面会用一个循环去接收监听到的网络连接，然后创建协程处理连接。所以难免就会有一个问题，如果并发很高的话，可能会一次性创建太多协程，导致处理不过来的情况
 
 
-处理请求
+## 处理请求
 ```go
 func (c *conn) serve(ctx context.Context) {
     c.remoteAddr = c.rwc.RemoteAddr().String()
@@ -105,11 +137,13 @@ type serverHandler struct {
 func (sh serverHandler) ServeHTTP(rw ResponseWriter, req *Request) {
     handler := sh.srv.Handler
     if handler == nil {
+        // 如果handler为空，就用默认的DefaultServeMux
         handler = DefaultServeMux
     }
     if req.RequestURI == "*" && req.Method == "OPTIONS" {
         handler = globalOptionsHandler{}
     }
+    // 这里就是调用ServeMux的ServeHTTP
     handler.ServeHTTP(rw, req)
 }
 ```
@@ -131,14 +165,29 @@ func (mux *ServeMux) ServeHTTP(w ResponseWriter, r *Request) {
 }
 ```
 ```go
-unc (mux *ServeMux) handler(host, path string) (h Handler, pattern string) {
+func (mux *ServeMux) Handler(r *Request) (h Handler, pattern string) {
+
+    // ...
+
+	// All other requests have any port stripped and path cleaned
+	// before passing to mux.handler.
+	host := stripHostPort(r.Host)
+	path := cleanPath(r.URL.Path)
+
+    // ... 
+
+	return mux.handler(host, r.URL.Path)
+}
+
+func (mux *ServeMux) handler(host, path string) (h Handler, pattern string) {
 	mux.mu.RLock()
 	defer mux.mu.RUnlock()
 
-	// Host-specific pattern takes precedence over generic ones
+	// 先匹配host
 	if mux.hosts {
 		h, pattern = mux.match(host + path)
 	}
+	// 再匹配路径
 	if h == nil {
 		h, pattern = mux.match(path)
 	}
@@ -148,16 +197,19 @@ unc (mux *ServeMux) handler(host, path string) (h Handler, pattern string) {
 	return
 }
 ```
+
+匹配路由函数
 ```go
-unc (mux *ServeMux) match(path string) (h Handler, pattern string) {
-	// Check for exact match first.
+func (mux *ServeMux) match(path string) (h Handler, pattern string) {
+	//  先从前面介绍的ServeMux的m中精确查找路由表达式
 	v, ok := mux.m[path]
 	if ok {
+		// 如果找到，直接返回handler
 		return v.h, v.pattern
 	}
 
-	// Check for longest valid match.  mux.es contains all patterns
-	// that end in / sorted from longest to shortest.
+    // 如果不能精确匹配，就去列表中找到最接近的路由
+    // mux.es中的路由是按照从长到短排序的
 	for _, e := range mux.es {
 		if strings.HasPrefix(path, e.pattern) {
 			return e.h, e.pattern

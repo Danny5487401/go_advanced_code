@@ -1,4 +1,4 @@
-# 高级加密标准（Advanced Encryption Standard，AES）
+# AES高级加密标准（Advanced Encryption Standard）
 又称Rijndael加密法，一个对称分组密码算法，是美国联邦政府采用的一种区块加密标准。这个标准用来替代原先的DES（Data Encryption Standard），已经被多方分析且广为全世界所使用。
 AES中常见的有三种解决方案，分别为AES-128、AES-192和AES-256。
 
@@ -22,9 +22,29 @@ Note:
 - AES对加密key的长度要求必须固定为16、24、32位，也就是128、192、256比特，所以又有一个AES-128、AES-192、AES-256这种叫法，位数越大安全性越高但加密速度越慢.
 - 最关键是对明文长度也有要求，必须是分组长度长度的倍数，AES加密数据块分组长度必须为128bit也就是16位，所以这块又涉及到一个填充问题，而这个填充方式可以分为PKCS7和PKCS5等方式
 
+## 背景
+RSA公司举办过破译DES的比赛（DES Challenge)：
+
+- 1997年的DES ChallengeI中用了96天；
+- 1998年的DES ChallengeII-1中用了41天；
+- 1998年的DES ChallengeII-2中用了56小时；
+- 1999年的DES ChallengeII中用了22小时15分钟。
+
+
 ## 主要介绍：密码分组链接模式（Cipher Block Chaining (CBC)）
 
 之所以叫这个名字，是因为密文分组像链条一样相互连接在一起。
 
 在CBC模式中，每个明文块先与前一个密文块进行异或后，再进行加密。在这种方法中，每个密文块都依赖于它前面的所有明文块。
-同时，为了保证每条消息的唯一性，在第一个块中需要使用初始化向量。 若第一个块的下标为1，则CBC模式的加密过程为： Ci = Ek (P ⊕ Ci-1), C0 = IV. 而其解密过程则为： Pi = Dk (Ci) ⊕Ci-1, C0 = IV. CBC模式运算过程示意图：
+同时，为了保证每条消息的唯一性，在第一个块中需要使用初始化向量。
+若第一个块的下标为1，则CBC模式的加密过程为： Ci = Ek (P ⊕ Ci-1), C0 = IV. 
+而其解密过程则为： Pi = Dk (Ci) ⊕Ci-1, C0 = IV. 
+
+
+## AES的Go实现
+```go
+// /usr/local/go/src/crypto/aes/cipher.go
+func NewCipher(key []byte) (cipher.Block, error)
+```
+创建一个cipher.Block接口。参数key为密钥，长度只能是16、24、32字节，用以选择AES-128、AES-192、AES-256。
+

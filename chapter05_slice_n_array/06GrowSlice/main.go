@@ -4,9 +4,7 @@ import (
 	"fmt"
 )
 
-
-
-func main()  {
+func main() {
 	// 看扩容策略
 	slice := []int{10, 20, 30, 40}
 	newSlice := append(slice, 50)
@@ -25,4 +23,3 @@ func main()  {
 	fmt.Printf("After newSlice = %v, Pointer = %p, len = %d, cap = %d\n", newSlice, &newSlice, len(newSlice), cap(newSlice))
 
 }
-

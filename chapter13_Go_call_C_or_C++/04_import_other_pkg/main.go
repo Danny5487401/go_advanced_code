@@ -2,7 +2,7 @@ package main
 
 //static const char* cs = "hello";
 import "C"
-import "go_advanced_code/chapter13_Go_call_C_or_C++/04_import_other_pkg/cgo_helper"
+import "github.com/Danny5487401/go_advanced_code/chapter13_Go_call_C_or_C++/04_import_other_pkg/cgo_helper"
 
 func main() {
 	cgo_helper.PrintCString(C.cs)

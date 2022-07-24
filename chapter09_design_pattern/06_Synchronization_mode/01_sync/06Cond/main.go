@@ -7,32 +7,31 @@ import (
 )
 
 func main() {
-	locker := new(sync.Mutex)
-	cond := sync.NewCond(locker)
+	var (
+		locker sync.Mutex
+		cond   = sync.NewCond(&locker)
+		wg     sync.WaitGroup
+	)
 
-	// 多个协程
-	for i := 0; i < 30; i++ {
-		go func(x int) {
-			// 加锁才能使用wait()
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func(number int) {
+			// wait()方法内部是先释放锁 然后在加锁 所以这里需要先 Lock()
 			cond.L.Lock()
-			fmt.Println(x, " 获取锁")
 			defer cond.L.Unlock()
-			cond.Wait()
-			fmt.Println(x, " 被唤醒")
-			time.Sleep(time.Second)
+			cond.Wait() // 等待通知,阻塞当前 goroutine
+			fmt.Printf("g %v ok~ \n", number)
+			wg.Done()
 		}(i)
 	}
-
-	time.Sleep(time.Second)
-	fmt.Println("Signal...")
-	cond.Signal()
-
-	time.Sleep(time.Second)
-	cond.Signal()
-
-	time.Sleep(time.Second * 3)
+	for i := 0; i < 5; i++ {
+		// 每过 50毫秒 唤醒一个 goroutine
+		cond.Signal()
+		time.Sleep(time.Millisecond * 50)
+	}
+	time.Sleep(time.Millisecond * 50)
+	// 剩下5个 goroutine 一起唤醒
 	cond.Broadcast()
-
 	fmt.Println("Broadcast...")
-	time.Sleep(time.Minute)
+	wg.Wait()
 }

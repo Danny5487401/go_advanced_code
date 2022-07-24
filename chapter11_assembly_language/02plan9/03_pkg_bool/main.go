@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"go_advanced_code/chapter11_assembly_language/02plan9/03_pkg_bool/bool_package"
+
+	"github.com/Danny5487401/go_advanced_code/chapter11_assembly_language/02plan9/03_pkg_bool/bool_package"
 )
 
 func main() {

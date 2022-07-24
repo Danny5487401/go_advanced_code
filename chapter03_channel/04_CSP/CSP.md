@@ -1,6 +1,8 @@
 # CSP(Communicating Sequential Process )
 中文可以叫做通信顺序进程，是一种并发编程模型，是一个很强大的并发数据模型.
 
+有2个支持高并发的模型：CSP和Actor。鉴于Occam和Erlang都选用了CSP(来自Go FAQ)，并且效果不错，Go也选了CSP，但与前两者不同的是，Go把channel作为头等公民。
+
 CSP 也是一门自定义的编程语言，作者定义了输入输出语句，用于 processes 间的通信（communicatiton）。
 processes 被认为是需要输入驱动，并且产生输出，供其他 processes 消费，processes 可以是进程、线程、甚至是代码块。
 输入命令是：!，用来向 processes 写入；输出是：?，用来从 processes 读出。
@@ -8,7 +10,8 @@ processes 被认为是需要输入驱动，并且产生输出，供其他 proces
 ## 并发编程模型
 
 大多数的编程语言的并发编程模型是基于线程和内存同步访问控制，Go 的并发编程的模型则用 goroutine 和 channel 来替代。
-Goroutine 和线程类似，channel 和 mutex (用于内存同步访问控制)类似
+goroutine来自协程的概念，让一组可复用的函数运行在一组线程之上，即使有协程阻塞，该线程的其他协程也可以被runtime调度，转移到其他可运行的线程上。
+最关键的是，程序员看不到这些底层的细节，这就降低了编程的难度，提供了更容易的并发。
 
 
 Golang，其实只用到了 CSP 的很小一部分，即理论中的 Process/Channel（对应到语言中的 goroutine/channel）：

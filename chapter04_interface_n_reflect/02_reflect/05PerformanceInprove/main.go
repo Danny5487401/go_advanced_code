@@ -19,13 +19,13 @@ func IncX(d interface{}) int64 {
 	v := reflect.ValueOf(d).Elem()
 	f := v.FieldByName("X")
 
-	// 转换成int64处理
+	// int转换成int64处理
 	x := f.Int()
 
 	// 加一操作
 	x++
 
-	// 设置值
+	// 设置值int64到int
 	f.SetInt(x)
 	return x
 }

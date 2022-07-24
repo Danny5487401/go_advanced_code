@@ -11,7 +11,6 @@ import (
 
 //通过map保存注册的handler
 //然后通过底层的serveHTTP进行转发，这是效率最高的，因为没有进任何封装
-//参考beego的那些路由
 
 var mux map[string]func(http.ResponseWriter, *http.Request)
 

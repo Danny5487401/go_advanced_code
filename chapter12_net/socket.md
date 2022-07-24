@@ -1,33 +1,28 @@
 # socket
 ![](.socket_images/socket_buffer.png)
 
-    socket 在操作系统层面，可以理解为一个文件。
-    
-    我们可以对这个文件进行一些方法操作。
-    
-    用listen方法，可以让程序作为服务器监听其他客户端的连接。
-    
-    用connect，可以作为客户端连接服务器。
-    
-    用send或write可以发送数据，recv或read可以接收数据
-# socket缓冲区
+socket 在操作系统层面，可以理解为一个文件。 我们可以对这个文件进行一些方法操作。
 
-    在建立好连接之后，这个 socket 文件就像是远端机器的 "代理人" 一样。比如，如果我们想给远端服务发点什么东西，那就只需要对这个文件执行写操作就行了
-    
-    那写到了这个文件之后，剩下的发送工作自然就是由操作系统内核来完成了。
+用listen方法，可以让程序作为服务器监听其他客户端的连接。
 
-    既然是写给操作系统，那操作系统就需要提供一个地方给用户写。同理，接收消息也是一样。
+用connect，可以作为客户端连接服务器。
+
+用send或write可以发送数据，recv或read可以接收数据
+
+## socket缓冲区
+
+在建立好连接之后，这个 socket 文件就像是远端机器的 "代理人" 一样。比如，如果我们想给远端服务发点什么东西，那就只需要对这个文件执行写操作就行了。 那写到了这个文件之后，剩下的发送工作自然就是由操作系统内核来完成了。
+
+既然是写给操作系统，那操作系统就需要提供一个地方给用户写。同理，接收消息也是一样。 这个地方就是 socket 缓冲区。
     
-    这个地方就是 socket 缓冲区。
+- 用户发送消息的时候写给 send buffer（发送缓冲区）
     
-    用户发送消息的时候写给 send buffer（发送缓冲区）
+- 用户接收消息的时候写给 recv buffer（接收缓冲区）
     
-    用户接收消息的时候写给 recv buffer（接收缓冲区）
-    
-    也就是说一个socket ，会带有两个缓冲区，一个用于发送，一个用于接收。因为这是个先进先出的结构，有时候也叫它们发送、接收队列
+也就是说一个socket ，会带有两个缓冲区，一个用于发送，一个用于接收。因为这是个先进先出的结构，有时候也叫它们发送、接收队列
 ## 观察 socket 缓冲区
 
-    在linux环境下执行 netstat -nt 
+在linux环境下执行 netstat -nt 
 ```shell
 # netstat -nt
 Active Internet connections (w/o servers)
@@ -35,15 +30,17 @@ Proto Recv-Q Send-Q Local Address           Foreign Address         State
 tcp        0     60 172.22.66.69:22         122.14.220.252:59889    ESTABLISHED
 
 ```
-    这上面表明了，这里有一个协议（Proto）类型为 TCP 的连接，同时还有本地（Local Address）和远端（Foreign Address）的IP信息，状态（State）是已连接。
+这上面表明了，这里有一个协议（Proto）类型为 TCP 的连接，同时还有本地（Local Address）和远端（Foreign Address）的IP信息，状态（State）是已连接。
 
-    还有Send-Q 是发送缓冲区，下面的数字60是指，当前还有60 Byte在发送缓冲区中未发送。而 Recv-Q 代表接收缓冲区，此时是空的，数据都被应用进程接收干净了
+还有Send-Q 是发送缓冲区，下面的数字60是指，当前还有60 Byte在发送缓冲区中未发送。
+而 Recv-Q 代表接收缓冲区，此时是空的，数据都被应用进程接收干净了
 
 ## tcp四次握手
 ## 执行 send 发送的字节，会立马发送吗
 ![](.socket_images/socket_send.png)
 
-    答案是不确定！执行 send 之后，数据只是拷贝到了socket 缓冲区。至 于什么时候会发数据，发多少数据，全听操作系统安排
+答案是不确定！执行 send 之后，数据只是拷贝到了socket 缓冲区。至 于什么时候会发数据，发多少数据，全听操作系统安排
+
 ## 如果缓冲区满了会怎么办
 首先，socket在创建的时候，是可以设置是阻塞的还是非阻塞的。
 ![](.socket_images/send_block.png)
@@ -60,9 +57,9 @@ socket close 时，主要的逻辑在 tcp_close() 里实现。
 
 先说结论，关闭过程主要有两种情况：
 
-    如果接收缓冲区还有数据未读，会先把接收缓冲区的数据清空，然后给对端发一个RST。
+- 如果接收缓冲区还有数据未读，会先把接收缓冲区的数据清空，然后给对端发一个RST。
     
-    如果接收缓冲区是空的，那么就调用 tcp_send_fin() 开始进行四次挥手过程的第一次挥手
+- 如果接收缓冲区是空的，那么就调用 tcp_send_fin() 开始进行四次挥手过程的第一次挥手
 
 ```C
 void tcp_close(struct sock *sk, long timeout)
@@ -113,7 +110,7 @@ void tcp_send_fin(struct sock *sk)
     
     有一点需要注意的是，只有在接收缓冲区为空的前提下，我们才有可能走到 tcp_send_fin() 。而只有在进入了这个方法之后，我们才有可能考虑发送缓冲区是否为空的场景。
 
-# UDP也有缓冲区吗
+## UDP也有缓冲区吗
 UDP socket 也是 socket，一个socket 就是会有收和发两个缓冲区，跟用什么协议关系不大
 ```shell
 int udp_sendmsg()

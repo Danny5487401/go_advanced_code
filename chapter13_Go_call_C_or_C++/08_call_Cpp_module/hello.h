@@ -1,5 +1,5 @@
-#ifndef _HELLO_H
-#define _HELLO_H
+#ifndef __HELLO_H__
+#define __HELLO_H__
 
 extern void SayHello( char* s);
 

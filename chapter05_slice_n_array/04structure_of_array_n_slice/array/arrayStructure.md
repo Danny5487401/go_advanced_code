@@ -1,5 +1,6 @@
 # 数组结构：
-	一组相同元素类型的集合,数组是一块固定大小的连续的内存空间
+一组相同元素类型的集合,数组是一块固定大小的连续的内存空间
+
 ## 源码：cmd/compile/internal/types.Array
 ```go
 type Array struct {

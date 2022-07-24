@@ -6,13 +6,20 @@
 1. 助记符（Mnemonics）代替机器指令的操作码
 2. 用地址符号（Symbol）或标号（Label）代替指令或操作数的地址
 
-## 汇编器和链接器：
+## 汇编器,链接器,调试器,编译器
 
 - 汇编器（assembler）是一种工具程序，用于将汇编语言源程序转换为机器语言
   1. windows: Microsoft 宏汇编器（称为 MASM）,TASM（Turbo 汇编器），NASM（Netwide 汇编器）和 MASM32（MASM 的一种变体）
   2. linux: GAS（GNU 汇编器）和 NASM,NASM 的语法与 MASM 的最相似
 - 链接器（linker）把汇编器生成的单个文件 组合 为一个可执行程序。
 - 调试器（debugger），使程序员可以在程序运行时，单步执行程序并检查寄存器和内存状态。
+
+- 编译器：编译器就是将“一种语言（通常为高级语言）”翻译为“另一种语言（通常为低级语言）”的程序。
+  一个现代编译器的主要工作流程：
+```css
+源代码 (source code) → 预处理器(preprocessor) → 编译器 (compiler) → 目标代码 (object code) → 链接器 (Linker) → 可执行程序(executables)
+
+```  
 
 ## 汇编语言与机器语言有什么关系:
 
@@ -57,6 +64,7 @@ INT n是软中断指令，n可以是0到255之间的数，用于指示中断向�
 7. 串操作指令:这部分指令用于对数据串进行操作，包括串传送指令MOVS、串比较指令CMPS、串扫描指令SCANS、串加载指令LODS、串保存指令STOS，
 这些指令可以有选择地使用REP/REPE/REPZ/REPNE和REPNZ的前缀以连续操作
 ![](.introduction_images/movsb.png)
+
 si:源寄存器  di:目标寄存器
 movsb -> move string byte(以字节单元传送): 将ds:si指向的内存单元中的字节 送入 es:di中，然后根据标志寄存器DF位的值，将si和di递增1或则递减1。
 movsw -> move string word(以字单元传送): 将ds:si指向的内存单元中的字节 送入 es:di中，然后根据标志寄存器DF位的值，将si和di递增2或则递减2。
@@ -65,11 +73,19 @@ movsw -> move string word(以字单元传送): 将ds:si指向的内存单元中�
 8. 输入输出指令: 这部分指令用于同外围设备交换数据，包括端口输入指令IN/INS、端口输出指令OUT/OUTS
 
 ## cpu可以直接读取数据的地方
+- RAM(Random-Access Memory)即运行内存
+- ROM(Read-Only Memory)即只读内存都是来存储东西
+  
+比如我们熟悉的CPU缓存，电脑手机的内存就属于RAM，而固态硬盘，u盘还有手机时所说的32G.64G的存储空间就属于ROM
+
+我们RAM之所以断电后会数据丢失，是因为RAM是通过电容存储的电荷，来保存数据的。那么RAM又分为动态和静态的。电脑内存就是动态RAM。像CPU的缓存就属于静态RAM，静态RAM的好处是速度块不用像动态RAM一样不用给电容充电来维持数据
+
+
 1. cpu 内部寄存器
 2. 内存单元
-![img.png](chapter11_assembly_language/01asm/.introduction_images/cpu_read_mem.png)
+![](.introduction_images/cpu_read_mem.png)
 3. 硬件端口
-![img_1.png](chapter11_assembly_language/01asm/.introduction_images/cpu_read_port.png)
+![](.introduction_images/cpu_read_port.png)
 
 ## cpu对存储器(内存)的读写操作过程
 
@@ -222,6 +238,20 @@ retq
 ```
 
 ## 常用指令详解
+```
+MOVQ	传送	数据传送        MOVQ 48, AX表示把48传送AX中    
+LEAQ	传送	地址传送        LEAQ AX, BX表示把AX有效地址传送到BX中    
+PUSHQ	传送	栈压入         PUSHQ AX表示先修改栈顶指针，将AX内容送入新的栈顶位置(在go汇编中使用SUBQ代替)    
+POPQ	传送	栈弹出         POPQ AX表示先弹出栈顶的数据，然后修改栈顶指针(在go汇编中使用ADDQ代替)   
+ADDQ	运算	相加并赋值       ADDQ BX, AX表示BX和AX的值相加并赋值给AX    
+SUBQ	运算	相减并赋值       略，同上   
+IMULQ	运算	无符号乘法       略，同上   
+IDIVQ	运算	无符号除法       IDIVQ CX除数是CX，被除数是AX，结果存储到AX中   
+CMPQ	运算	对两数相减，比较大小	CMPQ SI CX表示比较SI和CX的大小。与SUBQ类似，只是不返回相减的结果   
+CALL	转移	调用函数        CALL runtime.printnl(SB)表示通过<mark>printnl</mark>函数的内存地址发起调用   
+JMP     转移	无条件转移指令     JMP 389无条件转至0x0185地址处(十进制389转换成十六进制0x0185)   
+JLS     转移	条件转移指令      JLS 389上一行的比较结果，左边小于右边则执行跳到0x0185地址处(十进制389转换成十六进制0x0185)   
+```
 ### mov指令-传送指令
 ```shell
 
@@ -238,6 +268,8 @@ sub $0x350,%rsp  # 源操作数是立即操作数，目的操作数直接寻址�
 add %rdx,%rax    # 直接寻址。rax = rax + rdx
 addl $0x1,-0x8(%rbp) # 源操作数是立即操作数，目的操作数间接寻址。内存中的值加1（addl后缀字母l表示操作内存中的4个字节）
 ```
+
+指令类ADD由四条加法指令组成:addb、addw、addl和addq,分别是字节加法、字加法、双字加法和四字加法。
 
 ### call/ret指令
 ![](.introduction_images/retf.png) 
@@ -266,23 +298,36 @@ ret指令从被调用函数返回调用函数，它的实现原理是把call指�
 
 ![](.introduction_images/callq_0x400526.png)
 
-    从上图可以看到call指令执行之初rip寄存器的值是紧跟call后面那一条指令的地址，即0x40055e，但当call指令完成后但还未开始执行下一条指令之前，
-    rip寄存器的值变成了call指令的操作数，即被调用函数的地址0x400526，这样CPU就会跳转到被调用函数去执行了。
-    
-    同时还需要注意的是这里的call指令执行时把call指令后面那一条指令的地址 0x40055e PUSH到了栈上，所以一条call指令修改了3个地方的值：rip寄存器、rsp和栈
+从上图可以看到call指令执行之初rip寄存器的值是紧跟call后面那一条指令的地址，即0x40055e，但当call指令完成后但还未开始执行下一条指令之前，
+rip寄存器的值变成了call指令的操作数，即被调用函数的地址0x400526，这样CPU就会跳转到被调用函数去执行了。
+
+同时还需要注意的是这里的call指令执行时把call指令后面那一条指令的地址 0x40055e PUSH到了栈上，所以一条call指令修改了3个地方的值：rip寄存器、rsp和栈
 ![](.introduction_images/retq.png)
 
-    可以看到ret指令执行的操作跟call指令执行的操作完全相反，ret指令开始执行时rip寄存器的值是紧跟ret指令后面的那个地址，也就是0x400540，
-    但ret指令执行过程中会把之前call指令PUSH到栈上的返回地址 0x40055e POP给rip寄存器，这样，当ret执行完成后就会从被调用函数返回到调用函数的call指令的下一条指令继续执行。
-    这里同样要注意的是retq指令也会修改rsp寄存器的
+可以看到ret指令执行的操作跟call指令执行的操作完全相反，ret指令开始执行时rip寄存器的值是紧跟ret指令后面的那个地址，也就是0x400540，
+但ret指令执行过程中会把之前call指令PUSH到栈上的返回地址 0x40055e POP给rip寄存器，这样，当ret执行完成后就会从被调用函数返回到调用函数的call指令的下一条指令继续执行。
+这里同样要注意的是retq指令也会修改rsp寄存器的
 
 ### cmp指令：影响标志寄存器
 ![](.introduction_images/cmp.png)
 通过做减法运算，影响标志寄存器，标志寄存器的相关位记录了比较的结果
 
+#### 标志位flag
+```css
+助记符	名字	用途    
+OF	溢出	0为无溢出 1为溢出    
+CF	进位	0为最高位无进位或错位 1为有       
+PF	奇偶	0表示数据最低8位中1的个数为奇数，1则表示1的个数为偶数   
+AF	辅助进位	   
+ZF	零	0表示结果不为0 1表示结果为0   
+SF	符号	0表示最高位为0 1表示最高位为1   
+
+```
+
 ### jmp/je/jle/jg/jge等等j开头的指令--转移指令，例如可以修改8086cpu的cs段寄存器，ip指令寄存器
 ![](.introduction_images/jmp.png)
 ![](.introduction_images/jmp_english.png)
+
 这些都属于跳转指令，操作码后面直接跟要跳转到的地址或存有地址的寄存器，这些指令与高级编程语言中的 goto 和 if 等语句对应。用法示例：
 ```shell
 jmp    0x4005f2 #-->相当于jmp IP  0x4005f2,仅仅修改ip指令寄存器
@@ -299,25 +344,37 @@ pop 目的操作数
 ![](.introduction_images/push.png)
 
 专用于函数调用栈的入栈出栈指令，这两个指令都会自动修改rsp寄存器
-push入栈时rsp寄存器的值先减去8把栈位置留出来，然后把操作数复制到rsp所指位置。push指令相当于
+1. push入栈时rsp寄存器的值先减去8把栈位置留出来，然后把操作数复制到rsp所指位置。push指令相当于
+```shell
+sub $8,%rsp
+mov 源操作数,(%rsp)
+```
+push指令需要重点注意rsp寄存器的变化。
 
-    sub $8,%rsp
-    mov 源操作数,(%rsp)
-    push指令需要重点注意rsp寄存器的变化。
+2. pop出栈时先把rsp寄存器所指位置的数据复制到目的操作数中，然后rsp寄存器的值加8。pop指令相当于
 
-pop出栈时先把rsp寄存器所指位置的数据复制到目的操作数中，然后rsp寄存器的值加8。pop指令相当于
-
-    mov (%rsp),目的操作数
-    add $8,%rsp
-    同样，pop指令也需要重点注意rsp寄存器的变化
+```assembly
+mov (%rsp),目的操作数
+add $8,%rsp
+```
+同样，pop指令也需要重点注意rsp寄存器的变化
 
 ### leave指令
 leave指令没有操作数，它一般放在函数的尾部ret指令之前，用于调整rsp和rbp，这条指令相当于如下两条指令
+```assembly
+mov %rbp,%rsp
+pop %rbp
+```
 
+<<<<<<< HEAD
     mov %rbp,%rsp
     pop %rbp
 
 ### loop指令   
+=======
+    
+### loop指令
+>>>>>>> main
 ![](.introduction_images/loop.png)
 cx存储循环的次数,s为标号
 
@@ -388,13 +445,13 @@ mov   %rax,0x10(%rsp)  //把寄存器rax中的值写回变量c所在的内存
 
 对这个图做个简单的说明：
 
-    这里假定rsp寄存器的值是X
+- 这里假定rsp寄存器的值是X
     
-    图中的内存部分，每一行有8个内存单元，它们的地址从右向左依次加一，即如果最右边的内存单元的地址为X的话，则同一行最左边的内存单元的地址为X+7。
+- 图中的内存部分，每一行有8个内存单元，它们的地址从右向左依次加一，即如果最右边的内存单元的地址为X的话，则同一行最左边的内存单元的地址为X+7。
     
-    灰色箭头表述数据流动方向
+- 灰色箭头表述数据流动方向
     
-    紫红色数字n表示上述代码片段中的第n条指令
+- 紫红色数字n表示上述代码片段中的第n条指令
 
 对内存部分介绍
     

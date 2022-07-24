@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/pkg/profile"
 	"time"
+
+	"github.com/pkg/profile"
 )
 
 func joinSlice1() []string {

@@ -1,6 +1,9 @@
 # 线程模型
 
-线程是处理器调度和分配的基本单位，进程则作为资源拥有的基本单位
+线程是处理器调度和分配的基本单位，进程则作为资源拥有的基本单位。
+
+操作系统调度器会将系统中的多个线程按照一定算法调度到物理CPU上去运行。
+虽然线程比较轻量，但是在调度时也有比较大的额外开销。每个线程会都占用 1M 以上的内存空间，线程切换和恢复寄存器中的内容也需要向系统申请资源。
 
 ## 一. 体系架构
 操作系统根据资源访问权限的不同，体系架构可分为用户空间和内核空间；
@@ -9,9 +12,21 @@
 
 ## 二. 线程
 
-所谓的“线程”，往往是用户态的线程user space，和操作系统本身内核态的线程（简称KSE)kernel space。
-	
-协程跟线程是有区别的，线程由CPU调度是抢占式的，协程由用户态调度是协作式的
+线程分为内核态线程（简称KSE)kernel space和用户态线程user space，用户态线程需要绑定内核态线程，CPU并不能感知用户态线程的存在，它只知道它在运行1个线程，这个线程实际是内核态线程。
+
+用户态线程实际有个名字叫协程（co-routine），为了容易区分，我们使用协程指用户态线程，使用线程指内核态线程。
+
+User-level threads, Application-level threads, Green threads都指一样的东西，就是不受OS感知的线程。
+
+协程跟线程是有区别的，线程由CPU调度是抢占式的，协程由用户态调度是协作式的，一个协程让出CPU后，才执行下一个协程。
+
+
+### 协程和线程有3种映射关系
+
+- N:1，N个协程绑定1个线程，优点就是协程在用户态线程即完成切换，不会陷入到内核态，这种切换非常的轻量快速。
+  但也有很大的缺点，1个进程的所有协程都绑定在1个线程上，一是某个程序用不了硬件的多核加速能力，二是一旦某协程阻塞，造成线程阻塞，本进程的其他协程都无法执行了，根本就没有并发的能力了。
+- 1:1，1个协程绑定1个线程，这种最容易实现。协程的调度都由CPU完成了，不存在N:1缺点，但有一个缺点是协程的创建、删除和切换的代价都由CPU完成，有点略显昂贵了。
+- M:N，M个协程绑定N个线程，是N:1和1:1类型的结合，克服了以上2种模型的缺点，但实现起来最为复杂
 
 ## 三. 线程模型分类：
 
@@ -21,11 +36,11 @@
 
 大部分编程语言的线程库(如linux的pthread，Java的java.lang.Thread，C++11的std::thread等等),都是对操作系统的线程（内核级线程）的一层封装，创建出来的每个线程与一个不同的KSE静态关联.
 
-优点：
+#### 优点
 简单，直接借助OS提供的线程能力，并且不同用户线程之间一般也不会相互影响.
 在多核处理器的硬件的支持下，内核空间线程模型支持了真正的并行，当一个线程被阻塞后，允许另一个线程继续执行，所以并发能力较强
 
-缺点：
+#### 缺点
 但其创建，销毁以及多个线程之间的上下文切换等操作都是直接由OS层面亲自来做，在需要使用大量线程的场景下对OS的性能影响会很大
 
 
@@ -58,9 +73,9 @@ Go语言中支撑整个scheduler实现的主要有4个重要结构，分别是M�
 
 1. Sched结构就是调度器，它维护有存储M和G的队列以及调度器的一些状态信息等
 2. M结构是Machine，系统线程，它由操作系统管理的，goroutine就是跑在M之上的；
-    M是一个很大的结构，里面维护小对象内存cache（mcache）、当前执行的goroutine、随机数发生器等等非常多的信息
-3. P结构是Processor，处理器，它的主要用途就是用来执行goroutine的，它维护了一个goroutine队列，即runqueue。
-    Processor是让我们从N:1调度到M:N调度的重要部分. 也是 context，保存 goroutine 运行所需要的上下文
+    M是一个很大的结构，M 结构体对象除了记录着工作线程的诸如栈的起止位置、当前正在执行的Goroutine 以及是否空闲等等状态信息之外，还通过指针维持着与 P 结构体的实例对象之间的绑定关系。
+3. P结构代表一个虚拟的 Processor 处理器，它的主要用途就是用来执行goroutine的，它维护了一个goroutine队列，即runqueue。
+    Processor是让我们从N:1调度到M:N调度的重要部分. 也是 context，保存 goroutine 运行所需要的上下文。
 4. G是goroutine实现的核心结构，主要保存 goroutine 的一些状态信息以及 CPU 的一些寄存器的值，
     例如 IP 寄存器，以便在轮到本 goroutine 执行时，CPU 知道要从哪一条指令处开始执行。
 
@@ -71,10 +86,39 @@ Go语言中支撑整个scheduler实现的主要有4个重要结构，分别是M�
 当M因为系统调用阻塞或cgo运行一段时间后, sysmon协程会将P与M分离. 由其他的M来结合P进行调度.
 
 
-## 四. goroutine切换
+## 四. 调度
+![](.GPM_images/scheduler_components.png)
+自顶向下是调度器的4个部分：
+
+1. 全局队列（Global Queue）：存放等待运行的G。
+2. P的本地队列：同全局队列类似，存放的也是等待运行的G，存的数量有限，不超过256个。新建G’时，G’优先加入到P的本地队列，如果队列满了，则会把本地队列中一半的G移动到全局队列。
+3. P列表：所有的P都在程序启动时创建，并保存在数组中，最多有GOMAXPROCS个。
+4. M：线程想运行任务就得获取P，从P的本地队列获取G，P队列为空时，M也会尝试从全局队列拿一批G放到P的本地队列，或从其他P的本地队列偷一半放到自己P的本地队列。M运行G，G执行之后，M会从P获取下一个G，不断重复下去。
+
+Goroutine调度器和OS调度器是通过M结合起来的，每个M都代表了1个内核线程，OS调度器负责把内核线程分配到CPU的核上执行。
+
+
+### 调度器思想
+![](.GPM_images/scheduler_idea.png)
+
+调度器的有两大思想：
+
+复用线程：协程本身就是运行在一组线程之上，不需要频繁的创建、销毁线程，而是对线程的复用。在调度器中复用线程还有2个体现：1）work stealing，当本线程无可运行的G时，尝试从其他线程绑定的P偷取G，而不是销毁线程。2）hand off，当本线程因为G进行系统调用阻塞时，线程释放绑定的P，把P转移给其他空闲的线程执行。
+
+利用并行：GOMAXPROCS设置P的数量，当GOMAXPROCS大于1时，就最多有GOMAXPROCS个线程处于运行状态，这些线程可能分布在多个CPU核上同时运行，使得并发利用并行。另外，GOMAXPROCS也限制了并发的程度，比如GOMAXPROCS = 核数/2，则最多利用了一半的CPU核进行并行。
+
+调度器的两小策略：
+
+抢占：在coroutine中要等待一个协程主动让出CPU才执行下一个协程，在Go中，一个goroutine最多占用CPU 10ms，防止其他goroutine被饿死，这就是goroutine不同于coroutine的一个地方。
+
+全局G队列：在新的调度器中依然有全局G队列，但功能已经被弱化了，当M执行work stealing从其他P偷不到G时，它可以从全局G队列获取G。
+
+
+### goroutine切换
 golang调度的职责就是为需要执行的Go代码(G)寻找执行者(M)以及执行的准许和资源(P). 并没有一个调度器的实体, 调度是需要发生调度时由m执行runtime.schedule方法进行的.
 
 调度在计算机中是分配工作所需资源的方法. linux的调度为CPU找到可运行的线程. 而Go的调度是为M(线程)找到P(内存, 执行 票据)和可运行的G.
+
 ![](.GPM_images/schedule.png)
 
 goroutine在go代码中无处不在，go程序会根据不同的情况去调度不同的goroutine，一个goroutine在某个时刻要么在运行，要么在等待，或者死亡
@@ -84,31 +128,36 @@ goroutine的切换一般会在以下几种情况下发生：
 2. 发生系统调用，系统调用会陷入内核，开销不小，暂时解除当前goroutine
 3. channel阻塞，当从channel读不到或者写不进的时候，会切换goroutine
 
-### 调度流程
+### Go语言基于信号抢占式调度
 
-如果有分配到gc mark的工作需要做gc mark. local runq有就运行local的, 没有再看全局的runq是否有, 再看能否从net中poll出来, 从其他P steal一部分过来. 
-实在没有就stopm。
+在 Go 的 1.14 版本之前抢占试调度都是基于协作的，需要自己主动的让出执行，但是这样是无法处理一些无法被抢占的边缘情况。
+例如：for 循环或者垃圾回收长时间占用线程，这些问题中的一部分直到 1.14 才被基于信号的抢占式调度解决。
 
-## 五. sysmon协程
+## 五. Go启动时的特殊协程
+![](.GPM_images/scheduler_lifecycle.png)
+### sysmon协程
 P的数量影响了同时运行go代码的协程数. 如果P被占用很久, 就会影响调度. sysmon协程的一个功能就是进行抢占.
 
 sysmon协程是在go runtime初始化之后, 执行用户编写的代码之前, 由runtime启动的不与任何P绑定, 直接由一个M执行的协程. 类似于 linux中的执行一些系统任务的内核线程.
 
 可认为是10ms执行一次. (初始运行间隔为20us, sysmon运行1ms后逐渐翻倍, 最终每10ms运行一次. 如果有发生过抢占成功, 则又恢复成 初始20us的运行间隔, 如此循环)
 
-## 六. 管理员-g0
+### 管理员-g0
 
 go程序中，每个M都会绑定一个叫g0的初代goroutine，它在M的创建的时候创建，g0的主要工作就是goroutine的调度、垃圾回收等。
 g0和我们常规的goroutine的任务不同，g0的栈是在主线程栈上分配的，并且它的栈空间有64k，m0是runtime创建第一个线程，然后m0关联一个本地的p，
 就可以运行g0了。在g0的栈上不断的调度goroutine来执行，当有新的goroutine关联p准备运行发现没有m的时候，就会去创建一个m，m再关联一个g0，
 g0再去调度.
 
-## 七. Go语言基于信号抢占式调度
+1. p1拥有g1，m1获取p1后开始运行g1，g1使用go func()创建了g2，为了局部性g2优先加入到p1的本地队列
+![](.GPM_images/g0_process1.png)
+   
+2. g1运行完成后(函数：goexit)，m上运行的goroutine切换为g0，g0负责调度时协程的切换（函数：schedule）。从p1的本地队列取g2，从g0切换到g2，并开始运行g2(函数：execute)。实现了线程m1的复用。
+![](.GPM_images/g0_process2.png)
 
-在 Go 的 1.14 版本之前抢占试调度都是基于协作的，需要自己主动的让出执行，但是这样是无法处理一些无法被抢占的边缘情况。
-例如：for 循环或者垃圾回收长时间占用线程，这些问题中的一部分直到 1.14 才被基于信号的抢占式调度解决。
 
 ## 八. G_M_P 源码分析
+![](.GPM_images/full_GPM_process.png)
 ### G
 当 goroutine 被调离 CPU 时，调度器负责把 CPU 寄存器的值保存在 g 对象的成员变量之中。
 当 goroutine 被调度起来运行时，调度器又负责把 g 对象的成员变量所保存的寄存器值恢复到 CPU 的寄存器。
@@ -121,13 +170,13 @@ const (
 	// 刚刚被分配, 还没有初始化
 	_Gidle = iota // 0
 
-	//  表示在runqueue上, 还没有被运行
+	//  表示在runqueue上, 还没有被运行，没有栈的所有权，存储在运行队列中
 	_Grunnable // 1
 
-	//  go协程可能在执行go代码, 不在runqueue上, 与M, P已绑定
+	//  go协程可能在执行go代码, 不在runqueue上, 拥有栈的所有权，被赋予了内核线程 M 和处理器 P
 	_Grunning // 2
 
-	//  go协程在执行系统调用, 没执行go代码, 没有在runqueue上, 只与M绑定
+	//  go协程在执行系统调用, 没执行go代码, 没有在runqueue上, 拥有栈的所有权,只与M绑定
 	_Gsyscall // 3
 
 	// go协程被阻塞(IO, GC, chan阻塞, 锁等). 不在runqueue上, 但是一定在某个地 方, 比如channel中, 锁排队中等.
@@ -153,7 +202,7 @@ const (
 	// ready()ing this G.
 	_Gpreempted // 9
 
-    // 与runnable, running, syscall, waiting等状态结合, 表示GC正在扫描这个G的 栈
+    // 与runnable, running, syscall, waiting等状态结合, 表示GC正在扫描这个G的 栈,没有执行代码
 	_Gscan          = 0x1000
 	_Gscanrunnable  = _Gscan + _Grunnable  // 0x1001
 	_Gscanrunning   = _Gscan + _Grunning   // 0x1002
@@ -162,6 +211,13 @@ const (
 	_Gscanpreempted = _Gscan + _Gpreempted // 0x1009
 )
 ```
+际上只需要关注下面几种就好了：
+
+- 等待中：_ Gwaiting、_Gsyscall 和 _Gpreempted，这几个状态表示G没有在执行；
+- 可运行：_Grunnable，表示G已经准备就绪，
+- 运行中：_Grunning，表示G正在运行；
+
+
 G结构体
 
 ![](.GPM_images/G_struct.png)
@@ -176,10 +232,11 @@ type g struct {
 
 	_panic       *_panic // innermost panic - offset known to liblink
 	_defer       *_defer // innermost defer
-    // 当前与 g 绑定的 m
+	
+    // 当前与 g 占用的线程
 	m            *m      // current m; offset known to arm liblink
 	
-    // goroutine 的运行现场
+    // goroutine 的运行现场,存储 Goroutine 的调度相关的数据
 	sched        gobuf
 	syscallsp    uintptr        // if status==Gsyscall, syscallsp = sched.sp to use during gc
 	syscallpc    uintptr        // if status==Gsyscall, syscallpc = sched.pc to use during gc
@@ -187,6 +244,8 @@ type g struct {
 
 	// wakeup 时传入的参数
 	param        unsafe.Pointer // passed parameter on wakeup
+	
+	// Goroutine 的状态
 	atomicstatus uint32
 	stackLock    uint32 // sigprof/scang lock; TODO: fold in to atomicstatus
 	goid         int64
@@ -200,7 +259,10 @@ type g struct {
 	
 	// 抢占调度标志。这个为 true 时，stackguard0 等于 stackpreempt
 	preempt       bool // preemption signal, duplicates stackguard0 = stackpreempt
+	
+	// 抢占时将状态修改成 `_Gpreempted`
 	preemptStop   bool // transition to _Gpreempted on preemption; otherwise, just deschedule
+	//  在同步安全点收缩栈
 	preemptShrink bool // shrink stack at synchronous safe point
 
 	// asyncSafePoint is set if g is stopped at an asynchronous
@@ -283,7 +345,7 @@ type gobuf struct {
 	// 存储 rsp 寄存器的值
 	sp   uintptr
 
-	// 存储 rip 寄存器的值
+	// 存储 ip 寄存器的值
 	pc   uintptr
 
 	// 指向 goroutine
@@ -298,9 +360,9 @@ type gobuf struct {
 ```
 
 ### M
-当 M 没有工作可做的时候，在它休眠前，会“自旋”地来找工作：检查全局队列，查看 network poller，试图执行 gc 任务，或者“偷”工作
-```go
+当 M 没有工作可做的时候，在它休眠前，会“自旋”地来找工作：检查全局队列，查看 network poller，试图执行 gc 任务，或者“偷”工作.
 ![](.GPM_images/M_struct.png)
+```go
 // m 代表工作线程，保存了自身使用的栈信息
 type m struct {
     // 记录工作线程（也就是内核线程）使用的栈信息。在执行调度代码时需要使用
@@ -311,6 +373,7 @@ type m struct {
 
 	// Fields not known to debuggers.
 	procid        uint64       // for debuggers, but offset not hard-coded
+	//  处理 signal 的 G
 	gsignal       *g           // signal-handling g
 	goSigStack    gsignalStack // Go-allocated signal handling stack
 	sigmask       sigset       // storage for saved signal mask
@@ -322,13 +385,14 @@ type m struct {
 	mstartfn      func()
 
 
-    // 指向正在运行的 gorutine 对象
+    // 指向正在运行的 goroutine 对象
 	curg          *g       // current running goroutine
 	caughtsig     guintptr // goroutine running during fatal signal
 
     // 当前工作线程绑定的 p
 	p             puintptr // attached p for executing go code (nil if not executing go code)
 	nextp         puintptr
+	// 之前使用的P
 	oldp          puintptr // the p that was attached before executing a syscall
 	id            int64
 	mallocing     int32
@@ -415,15 +479,34 @@ type m struct {
 
 ### P
 ![](.GPM_images/P_struct.png)
+
+P的状态
+```go
+const ( 
+    // 表示P没有运行用户代码或者调度器 
+    _Pidle = iota 
+    // 被线程 M 持有，并且正在执行用户代码或者调度器
+    _Prunning 
+    // 没有执行用户代码，当前线程陷入系统调用
+    _Psyscall
+    // 被线程 M 持有，当前处理器由于垃圾回收 STW 被停止
+    _Pgcstop 
+    // 当前处理器已经不被使用
+    _Pdead
+)
+```
+
+
 ```go
 // p 保存 go 运行时所必须的资源
 type p struct {
     // 在 allp 中的索引
 	id          int32
+	//   p 的状态
 	status      uint32 // one of pidle/prunning/...
 	link        puintptr
 	
-	// 每次调用 schedule 时会加一
+	// 调度器调用会+1
 	schedtick   uint32     // incremented on every scheduler call
     // 每次系统调用时加一
 	syscalltick uint32     // incremented on every system call
@@ -435,6 +518,7 @@ type p struct {
 	pcache      pageCache
 	raceprocctx uintptr
 
+	// defer 结构池
 	deferpool    [5][]*_defer // pool of available defer structs of different sizes (see panic.go)
 	deferpoolbuf [5][32]*_defer
 
@@ -453,7 +537,7 @@ type p struct {
     // 这个 G 被 当前 G 修改为 ready 状态，相比 runq 中的 G 有更高的优先级。
     // 如果当前 G 还有剩余的可用时间，那么就应该运行这个 G
     // 运行之后，该 G 会继承当前 G 的剩余时间
-	runnext guintptr
+	runnext guintptr  // 缓存可立即执行的 G
 	
     // 运行完状态为Gdead的状态，可用于复用
 	gFree struct {
@@ -553,6 +637,50 @@ type p struct {
 ### schedt
 ![](.GPM_images/shedt_struct.png)
 
+```go
+type schedt struct {
+    ...
+    lock mutex 
+    // 空闲的 M 列表
+    midle        muintptr  
+    // 空闲的 M 列表数量
+    nmidle       int32      
+    // 下一个被创建的 M 的 id
+    mnext        int64  
+    // 能拥有的最大数量的 M  
+    maxmcount    int32    
+    // 空闲 p 链表
+    pidle      puintptr // idle p's
+    // 空闲 p 数量
+    npidle     uint32
+    // 处于 spinning 状态的 M 的数量
+    nmspinning uint32   
+    // 全局 runnable G 队列
+    runq     gQueue
+    runqsize int32  
+    // 有效 dead G 的全局缓存.
+    gFree struct {
+        lock    mutex
+        stack   gList // Gs with stacks
+        noStack gList // Gs without stacks
+        n       int32
+    } 
+    // sudog 结构的集中缓存
+    sudoglock  mutex
+    sudogcache *sudog 
+    // defer 结构的池
+    deferlock mutex
+    deferpool [5]*_defer 
+    ...
+}
+```
+
 ## 参考链接
-	https://studygolang.com/articles/35104
+
+1. https://studygolang.com/articles/35104
+2. https://www.luozhiyun.com/archives/448
+3. https://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/
+4. https://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/
+5. https://github.com/qyuhen/book
+6. https://reading.developerlearning.cn/reading/12-2018-08-02-goroutine-gpm/
 

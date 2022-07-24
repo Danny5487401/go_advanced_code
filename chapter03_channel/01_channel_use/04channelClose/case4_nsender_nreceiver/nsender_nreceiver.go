@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
@@ -26,7 +25,7 @@ func main() {
 	var stoppedBy string
 	// moderator中间人
 	go func() {
-
+		// 可能没有准备好
 		stoppedBy = <-toStop
 
 		close(stopCh)
@@ -44,6 +43,7 @@ func main() {
 				case toStop <- "sender#" + id:
 				default:
 				}
+				//关闭协程返回，下面自己这个协程就不会接收
 				return
 			}
 			select {
@@ -65,13 +65,14 @@ func main() {
 				case value := <-dataCh:
 					if value == Max-1 {
 						select {
+						//发送结束信号的条件
 						case toStop <- "receiver#" + id:
 						default:
 							//防止阻塞用
 						}
 						return
 					}
-					fmt.Println(value)
+					//fmt.Println("收到的值",value)
 				}
 			}
 		}(strconv.Itoa(i))

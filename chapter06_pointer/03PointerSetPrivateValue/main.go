@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"go_advanced_code/chapter06_pointer/03PointerSetPrivateValue/p"
 	"runtime"
 	"strconv"
 	"unsafe"
+
+	"github.com/Danny5487401/go_advanced_code/chapter06_pointer/03PointerSetPrivateValue/p"
 )
 
 //unsafe.pointer用于访问操作结构体的私有变量
@@ -30,6 +31,6 @@ func main() {
 	var j *int64 = (*int64)(unsafe.Pointer(uintptr(unsafe.Pointer(v)) + uintptr(8)))
 
 	*j = int64(99)
-	v.PutI() // i=98
-	v.PutJ() // 如果j=0 不是99，注意字节数
+	v.PrintJ() // i=98
+	v.PrintJ() // 如果j=0 不是99，注意字节数
 }

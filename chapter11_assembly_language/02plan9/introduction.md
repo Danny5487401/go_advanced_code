@@ -1,11 +1,21 @@
-# Golang 的汇编是基于 Plan9 汇编的
+# Golang 汇编(基于 Plan9 汇编)
+
+Go 编译器会输出一种抽象可移植的汇编代码，这种汇编并不对应某种真实的硬件架构。Go 的汇编器会使用这种伪汇编，再为目标硬件生成具体的机器指令。
+
+伪汇编这一个额外层可以带来很多好处，最主要的一点是方便将 Go 移植到新的架构上。
 
 ## 1. 通用寄存器
-下面是通用通用寄存器的名字在 IA64 和 plan9 中的对应关系：
+下面是通用通用寄存器的名字在 IA64(英特尔安腾架构（Intel Itanium architecture）) 和 plan9 中的对应关系：
+```css
+IA64	RAX	RBX	RCX	RDX	RDI	RSI	RBP	RSP	R8	R9	R10	R11	R12	R13	R14	RIP
+Plan9	AX	BX	CX	DX	DI	SI	BP	SP	R8	R9	R10	R11	R12	R13	R14	PC
+```
+应用代码层面会用到的通用寄存器主要是: rax, rbx, rcx, rdx, rdi, rsi, r8~r15 这 14 个寄存器，虽然 rbp 和 rsp 也可以用，不过 bp 和 sp 会被用来管理栈顶和栈底，最好不要拿来进行运算。
 
-    IA64	RAX	RBX	RCX	RDX	RDI	RSI	RBP	RSP	R8	R9	R10	R11	R12	R13	R14	RIP
-    Plan9	AX	BX	CX	DX	DI	SI	BP	SP	R8	R9	R10	R11	R12	R13	R14	PC
-
+plan9 中使用寄存器不需要带 r 或 e 的前缀，例如 rax，只要写 AX 即可
+```assembly
+MOVQ $101, AX = mov rax, 101
+```
 
 ```html
 <tr>助记符  名字    用途</tr>
@@ -33,45 +43,50 @@ mov rax, 123
 ## 2. 伪寄存器
 Go 的汇编还引入了 4 个伪寄存器:用来维护上下文、特殊标识等作用
 
-- SB-> Static base pointer: global symbols.理解为原始内存,是一个虚拟寄存器，保存了静态基地址(static-base) 指针，即我们程序地址空间的开始地址；
+1. SB-> Static base pointer: global symbols. 理解为原始内存,是一个虚拟寄存器，保存了静态基地址(static-base) 指针，即我们程序地址空间的开始地址；
 
     全局静态基指针，一般用来声明函数或全局变量，foo(SB)可以用来定义全局的function和数据，foo<>(SB)表示foo只在当前文件可见，跟C中的static效果类似。
+    如果在另外文件中引用该变量的话，会报 relocation target not found 的错误。
     此外可以在引用上加偏移量，如foo+4(SB)表示foo+4bytes的地址.
     NOSPLIT：向编译器表明不应该插入 stack-split 的用来检查栈需要扩张的前导指令；
 
-- FP->Frame pointer: arguments and locals.    
-    用来标识函数参数、返回值，编译器维护了基于FP偏移的栈上参数指针，
+2. FP->Frame pointer: arguments and locals.用来标识函数参数、返回值，编译器维护了基于FP偏移的栈上参数指针.
+
+    例如 arg0+0(FP)，arg1+8(FP)，使用 FP 不加 symbol 时，无法通过编译，在汇编层面来讲，symbol 并没有什么用，加 symbol 主要是为了提升代码可读性.
 
     0(FP)表示function的第一个参数，8(FP)表示第二个参数(64位系统上)后台加上偏移量就可以访问更多的参数。
-    使用形如 symbol+offset(FP) 的方式，引用函数的输入参数；
 
+    另外，官方文档虽然将伪寄存器 FP 称之为 frame pointer，实际上它根本不是 frame pointer，按照传统的 x86 的习惯来讲，frame pointer 是指向整个 stack frame 底部的 BP 寄存器。
+    假如当前的 callee 函数是 add，在 add 的代码中引用 FP，该 FP 指向的位置不在 callee 的 stack frame 之内，而是在 caller 的 stack frame 上。
+
+    尽管官方文档说 "All user-defined symbols are written as offsets to the pseudo-register FP(arguments and locals)"，实际这个原则只是在手写的代码场景下才是有效的。 与大多数最近的编译器做法一样，Go 工具链总是在其生成的代码中，使用相对栈指针(stack-pointer)的偏移量来引用参数和局部变量。
     与伪SP寄存器的关系是:
-    - a. 若本地变量或者栈调用存严格split关系(无NOSPLIT)，伪FP=伪SP+16
-              否则 伪FP=伪SP+8
-    - b. FP是访问入参、出参的基址，一般用正向偏移来寻址，SP是访问本地变量的起始基址，一般用负向偏移来寻址
-              修改硬件SP，会引起伪SP、FP同步变化
-              eg: SUBQ $16, SP // 这里golang解引用时，伪SP/FP都会-16
+    - a. 若本地变量或者栈调用存严格split关系(无NOSPLIT)，伪FP=伪SP+16,否则 伪FP=伪SP+8
+    - b. FP是访问入参、出参的基址，一般用正向偏移来寻址，SP是访问本地变量的起始基址，一般用负向偏移来寻址,修改硬件SP，会引起伪SP、FP同步变化 ,eg: SUBQ $16, SP // 这里golang解引用时，伪SP/FP都会-16
   
-- SP->Stack pointer: top of stack. (栈指针)    
-    plan9 的这个 SP 寄存器指向当前栈帧的局部变量的开始位置，使用形如 symbol+offset(SP) 的方式，
+4. SP->Stack pointer: top of stack. (栈指针)    
+    plan9 的这个 SP 寄存器指向当前栈帧的局部变量的开始位置，使用形如 symbol+offset(SP) 的方式，offset 的合法取值是 [-framesize, 0)，注意是个左闭右开的区间。
+    假如局部变量都是 8 字节，那么第一个局部变量就可以用 localvar0-8(SP) 来表示。在栈帧 size 为 0 的情况下，伪寄存器 SP 和硬件寄存器 SP 指向同一位置。
     引用函数的局部变量，注意：这个寄存器与上文的寄存器是不一样的，这里是伪寄存器，而我们展示出来的都是硬件寄存器.
-    所以区分 SP 到底是指硬件 SP 还是指虚拟寄存器，需要以特定的格式来区分。
+    所以区分 SP 到底是指硬件 SP 还是指虚拟寄存器，需要以特定的格式来区分。对于编译输出(go tool compile -S / go tool objdump)的代码来讲，目前所有的 SP 都是硬件寄存器 SP，无论是否带 symbol。
 
     - eg：symbol+offset(SP) 则表示伪寄存器 SP。  
     - eg：offset(SP) 则表示硬件 SP   
     - 伪SP：本地变量最高起始地址
     - 硬件SP：函数栈真实栈顶地址
   
-- PC-> Program counter: jumps and branches.    
+5. PC-> Program counter: jumps and branches.    
     实际上就是在体系结构的知识中常见的PC寄存器，在x86平台下对应ip寄存器，amd64上则是rip。
 
-## 真假 SP/FP/BP关系
+### 真假 SP/FP/BP关系
 调用栈call stack，简称栈，是一种栈数据结构，用于存储有关计算机程序的活动 subroutines 信息。
 在计算机编程中，subroutines 是执行特定任务的一系列程序指令，打包为一个单元
 
 栈帧stack frame又常被称为帧frame是在调用栈中储存的函数之间的调用关系，每一帧对应了函数调用以及它的参数数据。
 
 有了函数调用自然就要有调用者 caller 和被调用者 callee ，如在 函数 A 里 调用 函数 B，A 是 caller，B 是 callee。
+
+FP 和 Go 的官方源代码里的 framepointer 不是一回事，源代码里的 framepointer 指的是 caller BP 寄存器的值，在这里和 caller 的伪 SP 是值是相等的。
 
 ```
 
@@ -136,12 +151,9 @@ Noted:所有用户空间的数据都可以通过FP/SP(局部数据、输入参�
 通常情况会以SB/FP/SP作为基准地址，进行偏移、解引用等操作.
 
 
-
-
-
-!["虚拟内存分布图"](./virtual_mem_distribution.jpg)
+!["虚拟内存分布图"](.introduction_images/virtual_mem_distribution.jpg)
  
-```css
+
 1. 静态数据区：存放的是全局变量与常量。这些变量的地址编译的时候就确定了（这也是使用虚拟地址的好处，如果是物理地址，这些地址编译的时候是不可能确定的）。
 	Data 与 BSS 都属于这一部分。这部分只有程序中止（kill 掉、crasg 掉等）才会被销毁。
 	a. BSS段->BSS segment:通常是指用来存放程序中未初始化的全局变量的一块内存区域。BSS是英文BlockStarted by Symbol的简称。
@@ -158,15 +170,6 @@ Noted:所有用户空间的数据都可以通过FP/SP(局部数据、输入参�
 4. 堆区->heap：像 C/C++ 语言，堆完全是程序员自己控制的。但是 Golang 里边由于有 GC 机制，我们写代码的时候并不需要关心内存是在栈还是堆上分配。
 	Golang 会自己判断如果变量的生命周期在函数退出后还不能销毁或者栈上资源不够分配等等情况，就会被放到堆上。堆的性能会比栈要差一些。
 
-```
-
-
-
-### 逃逸分析：
-
-如果变量被分配到栈上，会伴随函数调用结束自动回收，并且分配效率很高；其次分配到堆上，则需要 GC 进行标记回收。所谓逃逸就是指变量从栈上逃到了堆上。
-go 也提供了更方便的命令来进行逃逸分析：go build -gcflags="-m"，如果真的是做逃逸分析，建议使用该命令，别折腾用汇编
-
 
 ### 运行分析
 
@@ -174,7 +177,8 @@ go 也提供了更方便的命令来进行逃逸分析：go build -gcflags="-m"�
 ```go
 // 编译   
 	1. go build -gcflags="-S"  hello.go 生成最终二进制文件    
-	2. go tool compile -S hello.go  生成obj文件    
+	2. GOOS=linux GOARCH=amd64 go tool compile -S hello.go  // 生成obj文件,并输出到终端    
+	   GOOS=linux GOARCH=amd64 go tool compile -S hello.go>hello.s  // 生成obj文件,并输出到文件   
 	   go tool compile -N -S hello.go // -N 禁止优化 -S 输出汇编代码 -l 禁止内联   
 // 反编译   
 	3. 先go build然后在go tool objdump 对二进制文件进行反汇编   
@@ -185,28 +189,16 @@ go 也提供了更方便的命令来进行逃逸分析：go build -gcflags="-m"�
 ```
 
 ## 3. 内联    
-	如果学过c/c++就知道，通过inline关键字修饰的函数叫做内联函数。内联函数的优势是在编译过程中直接展开函数中的代码，将其替换到源码的函数调用位置，
-	这样可以节省函数调用的消耗，提高运行速度。适用于函数体短小且频繁调用的函数，如果函数体太大了，会增大目标代码。是一种空间换时间的做法。
-	go编译器会智能判断对代码进行优化和使用汇编
-	go build -gcflags="-N -l -S" file来获得汇编代码。
+
+如果学过c/c++就知道，通过inline关键字修饰的函数叫做内联函数。内联函数的优势是在编译过程中直接展开函数中的代码，将其替换到源码的函数调用位置，
+这样可以节省函数调用的消耗，提高运行速度。适用于函数体短小且频繁调用的函数，如果函数体太大了，会增大目标代码。是一种空间换时间的做法。
+go编译器会智能判断对代码进行优化和使用汇编
+go build -gcflags="-N -l -S" file来获得汇编代码。
 
 ## 4. 常见指令
-```css
-   
-MOVQ	传送	数据传送	MOVQ 48, AX表示把48传送AX中    
-LEAQ	传送	地址传送	LEAQ AX, BX表示把AX有效地址传送到BX中    
-PUSHQ	传送	栈压入	PUSHQ AX表示先修改栈顶指针，将AX内容送入新的栈顶位置(在go汇编中使用SUBQ代替)    
-POPQ	传送	栈弹出	POPQ AX表示先弹出栈顶的数据，然后修改栈顶指针(在go汇编中使用ADDQ代替)   
-ADDQ	运算	相加并赋值	ADDQ BX, AX表示BX和AX的值相加并赋值给AX    
-SUBQ	运算	相减并赋值	略，同上   
-IMULQ	运算	无符号乘法	略，同上   
-IDIVQ	运算	无符号除法	IDIVQ CX除数是CX，被除数是AX，结果存储到AX中   
-CMPQ	运算	对两数相减，比较大小	CMPQ SI CX表示比较SI和CX的大小。与SUBQ类似，只是不返回相减的结果   
-CALL	转移	调用函数	CALL runtime.printnl(SB)表示通过<mark>printnl</mark>函数的内存地址发起调用   
-JMP	转移	无条件转移指令	JMP 389无条件转至0x0185地址处(十进制389转换成十六进制0x0185)   
-JLS	转移	条件转移指令	JLS 389上一行的比较结果，左边小于右边则执行跳到0x0185地址处(十进制389转换成十六进制0x0185)   
-```
-1. 栈扩大、缩小：栈的调整是通过对硬件 SP 寄存器进行运算来实现的,plan9 中栈操作并没有使用push，pop，而是采用sub 跟add SP。  
+数据宽度-Bit、Byte、Word、Dword、Qword
+
+1. 栈扩大、缩小：栈的增长和收缩是通过在栈指针寄存器 SP 上分别执行减法和加法指令来实现的,plan9 中，Go 编译器不会生成任何 PUSH/POP 族的指令，而是采用sub 跟add SP。  
 ```cgo
 SUBQ $0x18, SP // 对 SP 做减法，为函数分配函数栈帧
 ADDQ $0x18, SP // 对 SP 做加法，清除函数栈帧
@@ -242,22 +234,33 @@ IMULQ AX, BX   // BX *= AX
 // 无条件跳转
 JMP addr   // 跳转到地址，地址可为代码中的地址，不过实际上手写不会出现这种东西
 JMP label  // 跳转到标签，可以跳转到同一函数内的标签位置
-JMP 2(PC)  // 以当前指令为基础，向前/后跳转 x 行
-JMP -2(PC) // 同上
+JMP 2(PC)  // 以当前指令为基础，向前跳转 x 行
+JMP -2(PC) // 以当前指令为基础，向前跳转 x 行
+
 // 有条件跳转
-JNZ target // 如果 zero flag 被 set 过，则跳转
+JNZ target // 如果 zero flag (ZF标志寄存器)被 set 过，则跳转
 ```
 
 5. 变量声明    
-    在汇编里所谓的变量，一般是存储在 .rodata 或者 .data 段中的只读值。对应到应用层的话，就是已初始化过的全局的 const、var、static 变量/常量。
-    格式：
+
+在汇编里所谓的变量，一般是存储在 .rodata 或者 .data 段中的只读值。对应到应用层的话，就是已初始化过的全局的 const、var、static 变量/常量。
+格式：
 ```cgo
 DATA    symbol+offset(SB)/width, value
 // 在Go汇编语言中，内存是通过SB伪寄存器定位。SB是Static base pointer的缩写，意为静态内存的开始地址。
-// 其中symbol为变量在汇编语言中对应的标识符，offset是符号开始地址的偏移量，width是要初始化内存的宽度大小，value是要初始化的值。
+
 // 其中当前包中Go语言定义的符号symbol，在汇编代码中对应·symbol，其中“·”中点符号为一个特殊的unicode符号
 // 具体的含义是从symbol+offset偏移量开始，width宽度的内存，用value常量对应的值初始化。
+```
+其中symbol为变量在汇编语言中对应的标识符，offset是符号开始地址的偏移量，而不是相对于全局某个地址的偏移，width是要初始化内存的宽度大小，value是要初始化的值。
 
+```cgo
+GLOBL divtab(SB), RODATA, $64
+```
+使用 GLOBL 指令将变量声明为 global，额外接收两个参数，一个是 flag，另一个是变量的总大小。
+
+综合使用
+```cgo
 // 使用 DATA 结合 GLOBL 来定义一个变量
 // GLOBL 必须跟在 DATA 指令之后:
 DATA age+0x00(SB)/4, $18  // forever 18
@@ -271,7 +274,7 @@ GLOBL birthYear(SB), RODATA, $4
 ```
 
 
-DATA初始化内存时，width必须是1、2、4、8几个宽度之一，因为再大的内存无法一次性用一个uint64大小的值表示
+DATA初始化内存时，width必须是1、2、4、8几个宽度之一，因为再大的内存无法一次性用一个uint64大小的值表示，
 对于int32类型的count变量来说，我们既可以逐个字节初始化，也可以一次性初始化
 ```assembly
 
@@ -284,35 +287,35 @@ DATA ·count+3(SB)/1,$4
 DATA ·count+0(SB)/4,$0x04030201
 
 ```
+正如之前所说，所有符号在声明时，其 offset 一般都是 0。有时也可能会想在全局变量中定义数组，或字符串，这时候就需要用上非 0 的 offset 了，例如:
+```cgo
+DATA bio<>+0(SB)/8, $"oh yes i"
+DATA bio<>+8(SB)/8, $"am here "
+GLOBL bio<>(SB), RODATA, $16
+```
+
+
 
 6. 函数声明
-```cgo
-// 该声明一般写在任意一个 .go 文件中，例如：add.go
-func add(a, b int) int
-// 函数实现   
-// 该实现一般写在 与声明同名的 _{Arch}.s 文件中，例如：add_amd64.s
-TEXT pkgname·add(SB), NOSPLIT, $0-16
-    MOVQ a+0(FP), AX
-    MOVQ a+8(FP), BX
-    ADDQ AX, BX
-    MOVQ BX, ret+16(FP)
-    RET
-```
 
 ![](.introduction_images/function_in_plan9.png)
 ```css
 pkgname 包名可以不写，一般都是不写的，可以参考 go 的源码， 另外 add 前的 · 不是 .
 
 代码存储在TEXT段中
-                           参数及返回值大小,例如入参是 3 个 int64 类型，返回值是 1 个 int64 类型，那么返回值就是 sizeof(int64) * 4
+                           argsize参数及返回值大小,例如入参是 3 个 int64 类型，返回值是 1 个 int64 类型，那么返回值就是 sizeof(int64) * 4,不过真实世界永远没有我们假设的这么美好，函数参数往往混合了多种类型，还需要考虑内存对齐问题。
                                  |
- TEXT pkgname·add(SB),NOSPLIT,$0-16
+ TEXT pkgname·add(SB),NOSPLIT,$0-16    -->$framesize-argsize   
          |     |               |
-        包名  函数名    栈帧大小(局部变量+可能需要的额外调用函数的参数空间的总大小，
-                               但不包括调用其它函数时的 ret address 的大小)
+        包名  函数名    framesize栈帧大小(局部变量+如果有对其它函数调用时的话，调用时需要将 callee 的参数、返回值考虑在内。虽然 return address(rip)的值也是存储在 caller 的 stack frame 上的，但是这个过程是由 CALL 指令和 RET 指令完成 PC 寄存器的保存和恢复的，在手写汇编时，同样也是不需要考虑这个 PC 寄存器在栈上所需占用的 8 个字节的)
 ```
+- 为什么要叫 TEXT ？如果对程序数据在文件中和内存中的分段稍有了解的同学应该知道，我们的代码在二进制文件中，是存储在 .text 段中的，这里也就是一种约定俗成的起名方式。实际上在 plan9 中 TEXT 是一个指令，用来定义一个函数。除了 TEXT 之外还有前面变量声明说到的 DATA/GLOBL
 
-以上使用的 RODATA，NOSPLIT flag，还有其他的值，可以参考：https://golang.org/doc/asm#directives  
+- 定义中的 pkgname 部分是可以省略的，非想写也可以写上。不过写上 pkgname 的话，在重命名 package 之后还需要改代码，所以推荐最好还是不要写
+
+- 中点 · 比较特殊，是一个 unicode 的中点，该点在 mac 下的输入方法是 option+shift+9。在程序被链接之后，所有的中点· 都会被替换为句号.，比如你的方法是 runtime·main，在编译之后的程序里的符号则是 runtime.main。
+
+- 以上使用的 RODATA，NOSPLIT flag，还有其他的值，可以参考：https://golang.org/doc/asm#directives  
 
 ```shell
 #include textflag.h
@@ -341,20 +344,27 @@ WRAPPER = 32
 NEEDCTXT = 64
 #(代码段.) 表示需要一个上下文参数，一般用于闭包函数.
 ```
+当使用这些 flag 的字面量时，需要在汇编文件中 #include "textflag.h"
 
-标志位
-```css
-助记符	名字	用途    
-OF	溢出	0为无溢出 1为溢出    
-CF	进位	0为最高位无进位或错位 1为有       
-PF	奇偶	0表示数据最低8位中1的个数为奇数，1则表示1的个数为偶数   
-AF	辅助进位	   
-ZF	零	0表示结果不为0 1表示结果为0   
-SF	符号	0表示最高位为0 1表示最高位为1   
+- framesize:
+  - 原则上来说，调用函数时只要不把局部变量覆盖掉就可以了。稍微多分配几个字节的 framesize 也不会死。
+  - 在确保逻辑没有问题的前提下，你愿意覆盖局部变量也没有问题。只要保证进入和退出汇编函数时的 caller 和 callee 能正确拿到返回值就可以
 
+```cgo
+// 该声明一般写在任意一个 .go 文件中，例如：add.go
+func add(a, b int) int
+// 函数实现   
+// 该实现一般写在 与声明同名的 _{Arch}.s 文件中，例如：add_amd64.s
+TEXT pkgname·add(SB), NOSPLIT, $0-16
+    MOVQ a+0(FP), AX
+    MOVQ a+8(FP), BX
+    ADDQ AX, BX
+    MOVQ BX, ret+16(FP)
+    RET
 ```
-7. 地址运算LEA( Load Effective Address),amd64 平台地址都是 8 个字节，所以直接就用 LEAQ   
 
+
+7. 地址运算LEA(Load Effective Address),amd64 平台地址都是 8 个字节，所以直接就用 LEAQ   
 
 ```assembly
 LEAQ (BX)(AX*8), CX    // => CX = BX + (AX * 8) 
@@ -379,280 +389,4 @@ LEAQ 16(BX)(AX*1), CX
 // ./a.s:13: expected end of operand, found 
 
 ```
-
-## 高级汇编语言--以stack操作为例
-Go汇编语言其实是一种高级的汇编语言。在这里高级一词并没有任何褒义或贬义的色彩，而是要强调Go汇编代码和最终真实执行的代码并不完全等价。
-Go汇编语言中一个指令在最终的目标代码中可能会被编译为其它等价的机器指令。Go汇编实现的函数或调用函数的指令在最终代码中也会被插入额外的指令。
-要彻底理解Go汇编语言就需要彻底了解汇编器到底插入了哪些指令。
-
-
-### 栈的初始化
-// src/runtime/stack.go
-```go
-// 全局的栈缓存，分配 32KB以下内存
-var stackpool [_NumStackOrders]struct {
-    item stackpoolItem
-    _    [cpu.CacheLinePadSize - unsafe.Sizeof(stackpoolItem{})%cpu.CacheLinePadSize]byte
-}
-
-//go:notinheap
-type stackpoolItem struct {
-    mu   mutex
-    span mSpanList
-} 
-
-// 全局的栈缓存，分配 32KB 以上内存
-var stackLarge struct {
-    lock mutex
-    free [heapAddrBits - pageShift]mSpanList // free lists by log_2(s.npages)
-}
-
-// 初始化stackpool/stackLarge全局变量
-func stackinit() {
-    if _StackCacheSize&_PageMask != 0 {
-        throw("cache size must be a multiple of page size")
-    }
-    for i := range stackpool {
-        stackpool[i].item.span.init()
-        lockInit(&stackpool[i].item.mu, lockRankStackpool)
-    }
-    for i := range stackLarge.free {
-        stackLarge.free[i].init()
-        lockInit(&stackLarge.lock, lockRankStackLarge)
-    }
-}
-```
-
-### 栈的分配
-// src/runtime/stack.go
-
-
-#### 小栈内存分配
-```go
-func stackalloc(n uint32) stack { 
-    // 这里的 G 是 G0
-    thisg := getg()
-    ...
-    var v unsafe.Pointer
-    // 在 Linux 上，_FixedStack = 2048、_NumStackOrders = 4、_StackCacheSize = 32768
-    // 如果申请的栈空间小于 32KB
-    if n < _FixedStack<<_NumStackOrders && n < _StackCacheSize {
-        order := uint8(0)
-        n2 := n
-        // 大于 2048 ,那么 for 循环 将 n2 除 2,直到 n 小于等于 2048
-        for n2 > _FixedStack {
-            // order 表示除了多少次
-            order++
-            n2 >>= 1
-        }
-        var x gclinkptr
-        //preemptoff != "", 在 GC 的时候会进行设置,表示如果在 GC 那么从 stackpool 分配
-        // thisg.m.p = 0 会在系统调用和 改变 P 的个数的时候调用,如果发生,那么也从 stackpool 分配
-        if stackNoCache != 0 || thisg.m.p == 0 || thisg.m.preemptoff != "" { 
-            lock(&stackpool[order].item.mu)
-            // 从 stackpool 分配
-            x = stackpoolalloc(order)
-            unlock(&stackpool[order].item.mu)
-        } else {
-            // 从 P 的 mcache 分配内存
-            c := thisg.m.p.ptr().mcache
-            x = c.stackcache[order].list
-            if x.ptr() == nil {
-                // 从堆上申请一片内存空间填充到stackcache中
-                stackcacherefill(c, order)
-                x = c.stackcache[order].list
-            }
-            // 移除链表的头节点
-            c.stackcache[order].list = x.ptr().next
-            c.stackcache[order].size -= uintptr(n)
-        }
-        // 获取到分配的span内存块
-        v = unsafe.Pointer(x)
-    } else {
-        ...
-    }
-    ...
-    return stack{uintptr(v), uintptr(v) + uintptr(n)}
-}
-```
-
-
-#### 大栈内存分配
-
-```go
-func stackalloc(n uint32) stack { 
-    thisg := getg() 
-    var v unsafe.Pointer
-
-    if n < _FixedStack<<_NumStackOrders && n < _StackCacheSize {
-        ...
-    } else {
-        // 申请的内存空间过大，从 runtime.stackLarge 中检查是否有剩余的空间
-        var s *mspan
-        // 计算需要分配多少个 span 页， 8KB 为一页
-        npage := uintptr(n) >> _PageShift
-        // 计算 npage 能够被2整除几次，用来作为不同大小内存的块的索引
-        log2npage := stacklog2(npage)
-
-        lock(&stackLarge.lock)
-        // 如果 stackLarge 对应的链表不为空
-        if !stackLarge.free[log2npage].isEmpty() {
-            //获取链表的头节点，并将其从链表中移除
-            s = stackLarge.free[log2npage].first
-            stackLarge.free[log2npage].remove(s)
-        }
-        unlock(&stackLarge.lock)
-
-        lockWithRankMayAcquire(&mheap_.lock, lockRankMheap)
-        //这里是stackLarge为空的情况
-        if s == nil {
-            // 从堆上申请新的内存 span
-            s = mheap_.allocManual(npage, &memstats.stacks_inuse)
-            if s == nil {
-                throw("out of memory")
-            }
-            // OpenBSD 6.4+ 系统需要做额外处理
-            osStackAlloc(s)
-            s.elemsize = uintptr(n)
-        }
-        v = unsafe.Pointer(s.base())
-    }
-    ...
-    return stack{uintptr(v), uintptr(v) + uintptr(n)}
-}
-```
-
-### 案例
-为了便于分析，我们先构造一个禁止栈分裂的printnl函数。printnl函数内部都通过调用runtime.printnl函数输出换行：
-```
-TEXT ·printnl_nosplit(SB), NOSPLIT, $8
-	CALL runtime·printnl(SB)
-	RET
-```
-
-然后通过`go tool asm -S main_amd64.s`指令查看编译后的目标代码：
-
-```shell
-"".printnl_nosplit STEXT nosplit size=29 args=0xffffffff80000000 locals=0x10
-0x0000 00000 (main_amd64.s:5) TEXT "".printnl_nosplit(SB), NOSPLIT	$16
-0x0000 00000 (main_amd64.s:5) SUBQ $16, SP
-
-0x0004 00004 (main_amd64.s:5) MOVQ BP, 8(SP)
-0x0009 00009 (main_amd64.s:5) LEAQ 8(SP), BP
-
-0x000e 00014 (main_amd64.s:6) CALL runtime.printnl(SB)
-
-0x0013 00019 (main_amd64.s:7) MOVQ 8(SP), BP
-0x0018 00024 (main_amd64.s:7) ADDQ $16, SP
-0x001c 00028 (main_amd64.s:7) RET
-```
-输出代码中我们删除了非指令的部分。为了便于讲述，我们将上述代码重新排版，并根据缩进表示相关的功能：
-
-```shell
-TEXT "".printnl(SB), NOSPLIT, $16
-	SUBQ $16, SP
-		MOVQ BP, 8(SP)
-		LEAQ 8(SP), BP
-			CALL runtime.printnl(SB)
-		MOVQ 8(SP), BP
-	ADDQ $16, SP
-RET
-```
-
-第一层是TEXT指令表示函数开始，到RET指令表示函数返回。第二层是`SUBQ $16, SP`指令为当前函数帧分配16字节的空间，在函数返回前通过`ADDQ $16, SP`指令回收16字节的栈空间。
-我们谨慎猜测在第二层是为函数多分配了8个字节的空间。那么为何要多分配8个字节的空间呢？
-再继续查看第三层的指令：开始部分有两个指令`MOVQ BP, 8(SP)`和`LEAQ 8(SP), BP`，首先是将BP寄存器保持到多分配的8字节栈空间，然后将`8(SP)`地址重新保持到了BP寄存器中；
-结束部分是`MOVQ 8(SP), BP`指令则是从栈中恢复之前备份的前BP寄存器的值。最里面第四次层才是我们写的代码，调用runtime.printnl函数输出换行。
-
-如果去掉NOSPILT标志，再重新查看生成的目标代码，会发现在函数的开头和结尾的地方又增加了新的指令。下面是经过缩进格式化的结果：
-
-```
-TEXT "".printnl_nosplit(SB), $16
-L_BEGIN:
-	MOVQ (TLS), CX
-	CMPQ SP, 16(CX)
-	JLS  L_MORE_STK
-
-		SUBQ $16, SP
-			MOVQ BP, 8(SP)
-			LEAQ 8(SP), BP
-				CALL runtime.printnl(SB)
-			MOVQ 8(SP), BP
-		ADDQ $16, SP
-
-L_MORE_STK:
-	CALL runtime.morestack_noctxt(SB)
-	JMP  L_BEGIN
-RET
-```
-其中开头有三个新指令，`MOVQ (TLS), CX`用于加载g结构体指针，然后第二个指令`CMPQ SP, 16(CX)`SP栈指针和g结构体中stackguard0成员比较，如果比较的结果小于0则跳转到结尾的L_MORE_STK部分。当获取到更多栈空间之后，通过`JMP L_BEGIN`指令跳转到函数的开始位置重新进行栈空间的检测。
-
-g结构体在`$GOROOT/src/runtime/runtime2.go`文件定义，开头的结构成员如下：
-![](.introduction_images/goroutine_stack.png)
-```go
-type g struct {
-	// Stack parameters.
-	stack       stack   // offset known to runtime/cgo
-	stackguard0 uintptr // offset known to liblink
-	stackguard1 uintptr // offset known to liblink
-
-	...
-}
-```
-
-第一个成员是stack类型，表示当前栈的开始和结束地址。stack的定义如下：
-```go
-// Stack describes a Go execution stack.
-// The bounds of the stack are exactly [lo, hi),
-// with no implicit data structures on either side.
-type stack struct {
-	lo uintptr  //栈空间的低地址；
-	hi uintptr  // 栈空间的高地址；
-}
-```
-在g结构体中的stackguard0成员是出现爆栈前的警戒线。 
-
-1. 扩容：在 Goroutine 中会通过 stackguard0 来判断是否要进行栈增长：
-```go
-func malg(stacksize int32) *g {
-    // 创建 G 结构体
-    newg := new(g)
-    if stacksize >= 0 {
-        // 这里会在 stacksize 的基础上为每个栈预留系统调用所需的内存大小 _StackSystem
-        // 在 Linux/Darwin 上（ _StackSystem == 0 ）本行不改变 stacksize 的大小
-        stacksize = round2(_StackSystem + stacksize)
-        // 切换到 G0 为 newg 初始化栈内存
-        systemstack(func() {
-            newg.stack = stackalloc(uint32(stacksize))
-        })
-        // 设置 stackguard0 ，用来判断是否要进行栈扩容
-        newg.stackguard0 = newg.stack.lo + _StackGuard
-        newg.stackguard1 = ^uintptr(0) 
-        *(*uintptr)(unsafe.Pointer(newg.stack.lo)) = 0
-    }
-    return newg
-}
-```
-
-- stackguard0：stack.lo + StackGuard, 用于stack overlow的检测；
-- StackGuard：保护区大小，常量Linux上为 928 字节；
-- StackSmall：常量大小为 128 字节，用于小函数调用的优化；
-- StackBig：常量大小为 4096 字节；
-
-根据被调用函数栈帧的大小来判断是否需要扩容：
-* 当栈帧大小（FramSzie）小于等于 StackSmall（128）时，如果 SP 小于 stackguard0 那么就执行栈扩容；
-* 当栈帧大小（FramSzie）大于 StackSmall（128）时，就会根据公式 SP - FramSzie + StackSmall 和 stackguard0 比较，如果小于 stackguard0 则执行扩容；
-* 当栈帧大小（FramSzie）大于StackBig（4096）时，首先会检查 stackguard0 是否已转变成 StackPreempt 状态了；然后根据公式 SP-stackguard0+StackGuard <= framesize + (StackGuard-StackSmall)判断，如果是 true 则执行扩容；
-
-
-需要注意的是，由于栈是由高地址向低地址增长的，所以对比的时候，都是小于才执行扩容，这里需要大家品品.
-
-stackguard0的偏移量是16个字节.因此上述代码中的`CMPQ SP, 16(AX)`表示将当前的真实SP和爆栈警戒线比较，
-如果超出警戒线则表示需要进行栈扩容，也就是跳转到L_MORE_STK。在L_MORE_STK标号处，先调用runtime·morestack_noctxt进行栈扩容，然后又跳回到函数的开始位置，
-此时此刻函数的栈已经调整了。然后再进行一次栈大小的检测，如果依然不足则继续扩容，直到栈足够大为止。
-	
-2. 收缩
-我们知道Go运行时会定期进行垃圾回收操作，这其中包含栈的回收工作。如果栈使用到比例小于一定到阈值，则分配一个较小到栈空间，然后将栈上面到数据移动到新的栈中，
-栈移动的过程和栈扩容的过程类似.
-
 
