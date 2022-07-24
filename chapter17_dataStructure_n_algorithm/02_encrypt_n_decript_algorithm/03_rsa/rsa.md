@@ -269,13 +269,20 @@ privateKey, err := x509.ParsePKCS8PrivateKey(key)
 
 Note: 其中一些扩展名也有其它用途，就是说具有这个扩展名的文件可能并不是证书，比如说可能只是保存了私钥。
 
-（1）.pem、.cert、.cer、.crt
+xx.crt：证书文件，可以是二进制格式，可以是文本格式，与 .DER 格式相同，不保存私钥。
 
-.pem、.cert、.cer、.crt等都是pem格式的文件，只是文件后缀不一。
+xx.key：私钥文件
 
-- PEM是Privacy Enhance Mail(隐私增强型电子邮件)的缩写，DER编码的证书再进行Base64编码(即对字符串格式私钥的文件化处理)，再加上开始和结束行,即数据存放于“--- BEGIN CERTIFICATE ---”和“ --- END CERTIFICATE ---”之间
+xx.req：请求文件
 
-- .cer，.crt，.der：通常采用二进制DER形式，但Base64编码也很常见
+xx.csr：请求文件(Certificate Signing Request))
+
+xx.pem：一般是文本格式，可保存证书，可保存私钥。Privacy Enhanced Mail，以 -----BEGIN... 开头，以 -----END... 结尾。
+        中间的内容是 BASE64 编码。这种格式可以保存证书和私钥，有时我们也把PEM 格式的私钥的后缀改为 .key 以区别证书与私钥
+
+xx.der：文件是二进制格式，只保存证书，不保存私钥。Java 和 Windows 服务器偏向于使用这种编码格式。
+
+Note: 实际上，上述文件的扩展名可以随意命名。只是为了容易理解文件的功能而选择大家都认识的命名方式。但是，上述文件是有格式的，只能是 pem 格式或者 der 格式。使用什么格式的文件取决于需求。
 
 解析方式：读取文件，调用pem.Decode，然后按照base64解码，再解析成公钥/私钥。
 ```go
@@ -291,7 +298,7 @@ publicKey, _ := x509.ParsePKIXPublicKey(key)
 
 ```
 
-（2）.pkcs12、.pfx、.p12
+2.  .pkcs12、.pfx、.p12
 
 .pkcs12、.pfx、.p12这些文件格式存储的是已加密后的内容，可以通过openssl转换成pem文件后进行处理。
 

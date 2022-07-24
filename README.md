@@ -135,12 +135,17 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [2.4 使用指针来访问数组里的所有元素](chapter06_pointer/02unsafe/04_array_filed/array_field.go)
 - [3 获取并修改结构体私有变量值](chapter06_pointer/03PointerSetPrivateValue/main.go)
 - [4 切片与字符串零拷贝互转(指针和反射方式)](chapter06_pointer/04SliceToString/sliceToString.go)
-- [5 结构体的内存对齐](chapter06_pointer/05_struct_align/align.go)
+- [5 结构体的内存对齐规则](chapter06_pointer/05_struct_align/struct_align.md)
+    - [5.1 结构体排序优化内存占用](chapter06_pointer/05_struct_align/01_struct_mem/align.go)
+    - [5.2 空 struct{} 结构体使用](chapter06_pointer/05_struct_align/02_empty_struct/empty_struct.go)
+        - 空结构体作为第一个元素
+        - 空结构体作为最后一个元素
 ---
 
 ## [第七章 系统调用](chapter07_system_call/Syscall.md)
 - [1 自定义kqueue服务器（涉及各种linux系统调用）](chapter07_system_call/01_kqueue_server/main.go)
 - [2 使用strace工具追踪系统调用](chapter07_system_call/02_ptrace/ptrace.md)
+---
 
 ## [第八章 defer函数及汇编语言理解](chapter08_defer/defer.md)
 - [1 注册延迟调用机制定义及使用](chapter08_defer/01_defer_definiton/main.go)
@@ -148,6 +153,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [3 分阶段解析defer函数](chapter08_defer/03_defer_params_n_return/main.go)
 - [4 defer循环性能问题](chapter08_defer/04_defer_loop_performance/main.go)
 - [5 汇编理解defer函数(AMD)](chapter08_defer/05_defer_assembly/defer_amd.s)
+---
 
 ## [第九章 设计模式-OOP七大准则](chapter09_design_pattern/introduction.md)
 - 1 创建型模式
@@ -215,6 +221,7 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [6.10 SingleFlight避免缓存击穿](chapter09_design_pattern/06_Synchronization_mode/01_sync/10SingleFlight/singleFlight.md)
         - [6.10.1 Do方法](chapter09_design_pattern/06_Synchronization_mode/01_sync/10SingleFlight/01_do/main.go)
         - [6.10.2 DoChan方法](chapter09_design_pattern/06_Synchronization_mode/01_sync/10SingleFlight/02_do_chan/main.go)
+---
 
 ## [第十章 函数式编程](chapter10_function/func.md)
 - 1 函数
@@ -232,6 +239,7 @@ Note: Go 1.18 移除用于泛型的constraints包
         - [3.1 通过同享内存通信](chapter10_function/03_Firstclassfunction/01_communicate_by_sharing_memory/main.go)
         - 3.2 通过通信(具体数据)共享内存
         - 3.3 通过通信(函数)共享内存
+---
 
 ## 第十一章 汇编理解go语言底层源码(AMD芯片运行代码)
 - [1 汇编基本指令](chapter11_assembly_language/01asm/introduction.md)
@@ -349,6 +357,8 @@ Note: Go 1.18 移除用于泛型的constraints包
     - map根据key实现排序
     - sort.Search根据排序切片找索引
 - [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
+  - Symmetric 对称加密->HSA
+  - asymmetric 非对称加密->RSA
 - [6 pem(Privacy Enhanced Mail Certificate保密增强邮件协议](chapter17_dataStructure_n_algorithm/06_pem/pem.md)
   - [6.1 生成.pem文件(RSA密钥对)](chapter17_dataStructure_n_algorithm/06_pem/01_pem_generate/main.go)
   - [6.2 解析.pem文件](chapter17_dataStructure_n_algorithm/06_pem/02_get_pem_info/main.go) 
@@ -423,7 +433,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 go-mock接口测试](chapter28_test/02_mock/gomock.md)
 
 ## 第二十九章 module包管理
-- [1 go-module 实践篇](chapter29_module/01_use/godule_operation.md)
+- [1 go-module 实践篇](chapter29_module/01_use/module_operation.md)
   - 模块缓存
   - GOPROXY
 - [2 go-module原理篇](chapter29_module/02_discipline/module.md)

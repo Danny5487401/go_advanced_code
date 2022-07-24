@@ -87,6 +87,20 @@ func Alignof(x ArbitraryType) uintptr
 规则：
 - 对于任意类型的变量 x ，unsafe.Alignof(x) 至少为 1。
 - 对于 struct 类型的变量 x，计算 x 每一个字段 f 的 unsafe.Alignof(x.f)，unsafe.Alignof(x) 等于其中的最大值。
+```go
+type Bar struct {
+    x int32 // 4
+    y *Foo  // 8
+    z bool  // 1
+}
+// 结构体变量b1的对齐系数
+fmt.Println(unsafe.Alignof(b1))   // 8
+// b1每一个字段的对齐系数
+fmt.Println(unsafe.Alignof(b1.x)) // 4：表示此字段须按4的倍数对齐
+fmt.Println(unsafe.Alignof(b1.y)) // 8：表示此字段须按8的倍数对齐
+fmt.Println(unsafe.Alignof(b1.z)) // 1：表示此字段须按1的倍数对
+```  
+
 - 对于 array 类型的变量 x，unsafe.Alignof(x) 等于构成数组的元素类型的对齐倍数。
 
 
