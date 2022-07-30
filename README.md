@@ -435,6 +435,9 @@ Note: Go 1.18 移除用于泛型的constraints包
 ## [第二十六章 strconv字符串和数值型转换源码分析](chapter26_strconv/strconv.md)
 
 ## [第二十七章 Prometheus](chapter27_prometheus/prometheus.md)
+- 部署方式
+  - [手工部署](chapter27_prometheus/k8s_deploy/manual)
+  - [operator 部署](chapter27_prometheus/k8s_deploy/opeartor)  
 - [1 exporter](chapter27_prometheus/01_exporter/exporter.md)
   - [1.1 内置collector](chapter27_prometheus/01_exporter/01_embeded_collector/main.go)  
   - [1.2 使用自定义collector](chapter27_prometheus/01_exporter/02_customized_collector/main.go)
