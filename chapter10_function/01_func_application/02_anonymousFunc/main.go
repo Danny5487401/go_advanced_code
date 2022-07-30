@@ -61,7 +61,7 @@ func SortByAscending(ele interface{}) {
 	}
 }
 
-func Process(array interface{}, traveser Traveser) error {
+func process(array interface{}, traveser Traveser) error {
 	if array == nil {
 		return errors.New("nil pointer")
 	}
@@ -87,23 +87,20 @@ func Process(array interface{}, traveser Traveser) error {
 //在一些公共的操作中经常会包含一些差异性的特殊操作，而这些差异性的操作可以用函数来进行封装。
 func main() {
 	// 1. int类型切片
-	intSlice := make([]int, 0)
-	intSlice = append(intSlice, 3, 1, 4, 2)
-
-	Process(intSlice, SortByDescending)
+	intSlice := []int{3, 1, 4, 2}
+	process(intSlice, SortByDescending)
 	fmt.Println(intSlice) //[4 3 2 1]
-	Process(intSlice, SortByAscending)
+
+	process(intSlice, SortByAscending)
 	fmt.Println(intSlice) //[1 2 3 4]
 
 	// 2. string类型切片
-	stringSlice := make([]string, 0)
-	stringSlice = append(stringSlice, "hello", "world", "china")
+	stringSlice := []string{"hello", "world", "china"}
 
 	/*
 	   具体操作:使用匿名函数封装输出操作
 	*/
-	Process(stringSlice, func(elem interface{}) {
-
+	process(stringSlice, func(elem interface{}) {
 		if slice, ok := elem.([]string); ok {
 			for index, value := range slice {
 				fmt.Println("index:", index, "  value:", value)
@@ -112,13 +109,11 @@ func main() {
 	})
 
 	// 3. float32类型切片
-	floatSlice := make([]float32, 0)
-	floatSlice = append(floatSlice, 1.2, 3.4, 2.4)
-
+	floatSlice := []float32{1.2, 3.4, 2.4}
 	/*
 	   具体操作:使用匿名函数封装自定义操作
 	*/
-	Process(floatSlice, func(elem interface{}) {
+	process(floatSlice, func(elem interface{}) {
 
 		if slice, ok := elem.([]float32); ok {
 			for index, value := range slice {

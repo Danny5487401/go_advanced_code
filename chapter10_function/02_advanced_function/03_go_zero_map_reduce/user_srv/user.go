@@ -12,7 +12,7 @@ type User struct {
 func GetUser() (*User, error) {
 	time.Sleep(500 * time.Millisecond)
 	var u User
-	u.Name = "wuqinqiang"
+	u.Name = "Danny"
 	u.Age = 18
 	return &u, nil
 }

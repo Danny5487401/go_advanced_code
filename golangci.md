@@ -70,7 +70,7 @@ var index byte = 0
 - auto-fix：true/false，如果为 true 说明该 linter 支持自动修复发现的错误；如果为 false 说明不支持自动修复。
 
 ## 命令介绍
-![](.golangci_images/golangci_command.png)
+![](.assets/img/.golangci_images/golangci_command.png)
 
 ```shell
 golangci-lint run --tests=false --timeout=5m --new-from-rev=master -c .golangci.yml ./... 相对master分支增量扫描
@@ -78,10 +78,10 @@ golangci-lint run --tests=false --timeout=5m --new-from-rev=master -c .golangci.
 ```
 
 全局配置
-![](.golangci_images/golangci_global_config.png)
+![](.assets/img/.golangci_images/golangci_global_config.png)
 
 ### run 命令
-![](.golangci_images/golangci_run.png)
+![](.assets/img/.golangci_images/golangci_run.png)
 
 
 ### cache 命令

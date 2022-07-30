@@ -1,6 +1,7 @@
 package _1_symmetric
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
@@ -32,14 +33,12 @@ func JWTAuth(key []byte) gin.HandlerFunc {
 		// parseToken 解析token包含的信息
 		claims, err := j.ParseToken(token)
 		if err != nil {
-			if err == tokenErr.TokenExpired {
-				if err == tokenErr.TokenExpired {
-					c.JSON(http.StatusUnauthorized, map[string]string{
-						"msg": "授权已过期",
-					})
-					c.Abort()
-					return
-				}
+			if errors.Is(err, jwt.ErrTokenExpired) {
+				c.JSON(http.StatusUnauthorized, map[string]string{
+					"msg": "授权已过期",
+				})
+				c.Abort()
+				return
 			}
 
 			c.JSON(http.StatusUnauthorized, "未登陆")
@@ -85,27 +84,12 @@ func (j *JWT) ParseToken(tokenString string) (*models.CustomClaims, error) {
 		return j.SigningKey, nil
 	})
 	if err != nil {
-		if ve, ok := err.(*jwt.ValidationError); ok {
-			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-				return nil, tokenErr.TokenMalformed
-			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
-				// Token is expired
-				return nil, tokenErr.TokenExpired
-			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
-				return nil, tokenErr.TokenNotValidYet
-			} else {
-				return nil, tokenErr.TokenInvalid
-			}
-		}
+		return nil, err
 	}
-	if token != nil {
-		if claims, ok := token.Claims.(*models.CustomClaims); ok && token.Valid {
-			return claims, nil
-		}
-		return nil, tokenErr.TokenInvalid
-
+	if claims, ok := token.Claims.(*models.CustomClaims); ok && token.Valid {
+		return claims, nil
 	}
-	return nil, tokenErr.TokenInvalid
+	return nil, jwt.ErrTokenMalformed
 
 }
 

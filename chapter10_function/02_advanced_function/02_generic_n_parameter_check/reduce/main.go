@@ -8,10 +8,10 @@ func Reduce(slice, pairFunc, zero interface{}) interface{} {
 		panic("reduce: wrong type, not slice")
 	}
 
-	len := sliceInType.Len()
-	if len == 0 {
+	length := sliceInType.Len()
+	if length == 0 {
 		return zero
-	} else if len == 1 {
+	} else if length == 1 {
 		return sliceInType.Index(0)
 	}
 
@@ -26,7 +26,7 @@ func Reduce(slice, pairFunc, zero interface{}) interface{} {
 	ins[0] = sliceInType.Index(0)
 	ins[1] = sliceInType.Index(1)
 	out := fn.Call(ins[:])[0]
-	for i := 2; i < len; i++ {
+	for i := 2; i < length; i++ {
 		ins[0] = out
 		ins[1] = sliceInType.Index(i)
 		out = fn.Call(ins[:])[0]

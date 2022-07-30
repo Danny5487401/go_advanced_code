@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/Danny5487401/go_advanced_code/chapter17_dataStructure_n_algorithm/05_middleware/models"
-	"github.com/Danny5487401/go_advanced_code/chapter17_dataStructure_n_algorithm/05_middleware/tokenErr"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -56,26 +55,10 @@ func ParseToken(tokenString string) (*models.CustomClaims, error) {
 		return verifyKey, nil
 	})
 	if err != nil {
-		if ve, ok := err.(*jwt.ValidationError); ok {
-			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-				return nil, tokenErr.TokenMalformed
-			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
-				// Token is expired
-				return nil, tokenErr.TokenExpired
-			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
-				return nil, tokenErr.TokenNotValidYet
-			} else {
-				return nil, tokenErr.TokenInvalid
-			}
-		}
 		return nil, err
 	}
-	if token != nil {
-		if claims, ok := token.Claims.(*models.CustomClaims); ok && token.Valid {
-			return claims, nil
-		}
-		return nil, tokenErr.TokenInvalid
-
+	if claims, ok := token.Claims.(*models.CustomClaims); ok && token.Valid {
+		return claims, nil
 	}
-	return nil, tokenErr.TokenInvalid
+	return nil, jwt.ErrTokenMalformed
 }

@@ -90,7 +90,7 @@ func main() {
 	fmt.Printf("原始切片:%+v\n", list)
 	fmt.Printf("%+v\n", result)
 
-	//// 可以用于整形数组
+	// 可以用于整形数组
 	list1 := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
 	TransformInPlace(list1, func(a int) int {
 		return a * 3

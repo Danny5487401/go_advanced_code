@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/Danny5487401/go_advanced_code/chapter10_function/02_advanced_function/04_mapReduce/mapReduce"
-	"github.com/Danny5487401/go_advanced_code/chapter10_function/02_advanced_function/04_mapReduce/product_srv"
-	"github.com/Danny5487401/go_advanced_code/chapter10_function/02_advanced_function/04_mapReduce/user_srv"
+	"github.com/Danny5487401/go_advanced_code/chapter10_function/02_advanced_function/03_go_zero_map_reduce/product_srv"
+	"github.com/Danny5487401/go_advanced_code/chapter10_function/02_advanced_function/03_go_zero_map_reduce/user_srv"
+
+	"github.com/zeromicro/go-zero/core/mr"
 )
 
 func main() {
@@ -20,14 +21,16 @@ func main() {
 func modifyAfter() {
 	var userInfo *user_srv.User
 	var productList []product_srv.Product
-	// 并行执行
-	_ = mapReduce.Finish(func() (err error) {
+	// 并行执行，worker数目为函数数目
+	func1 := func() (err error) {
 		userInfo, err = user_srv.GetUser()
 		return err
-	}, func() (err error) {
+	}
+	func2 := func() (err error) {
 		productList, err = product_srv.GetProductList()
 		return err
-	})
+	}
+	_ = mr.Finish(func1, func2)
 	fmt.Printf("用户信息:%+v\n", userInfo)
 	fmt.Printf("商品信息:%+v\n", productList)
 }

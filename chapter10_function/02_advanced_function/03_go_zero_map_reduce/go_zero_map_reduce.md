@@ -1,26 +1,20 @@
-package mapReduce
+# go-zero map-reduce
 
-import (
-	"context"
-	"errors"
-	"sync"
-	"sync/atomic"
 
-	"github.com/zeromicro/go-zero/core/errorx"
-	"github.com/zeromicro/go-zero/core/lang"
-)
-
-/*
+## 分类
 面向用户的方法比较多，方法主要分为两大类：
 
 1. 无返回
-	执行过程发生错误立即终止
-	执行过程不关注错误
-2. 有返回值
-	手动写入 source，手动读取聚合数据 channel
-	手动写入 source，自动读取聚合数据 channel
+- 执行过程发生错误立即终止
+- 执行过程不关注错误
 
-*/
+2. 有返回值
+- 手动写入 source，手动读取聚合数据 channel
+- 手动写入 source，自动读取聚合数据 channel
+
+## 源码分析
+
+```go
 const (
 	defaultWorkers = 16
 	minWorkers     = 1
@@ -446,3 +440,5 @@ func (oc *onceChan) write(val interface{}) {
 
 	oc.channel <- val
 }
+
+```

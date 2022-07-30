@@ -42,44 +42,44 @@ func NewAlarmClock(name string, hour int, minute int, repeatable bool) *AlarmClo
 	return it
 }
 
-func (me *AlarmClock) NextAlarmTime() *time.Time {
+func (ac *AlarmClock) NextAlarmTime() *time.Time {
 	now := time.Now()
 	today, _ := time.ParseInLocation("2006-01-02 15:04:05",
 		fmt.Sprintf("%s 00:00:00", now.Format("2006-01-02")), time.Local)
-	t := today.Add(me.hour * time.Hour).Add(me.minute * time.Minute)
+	t := today.Add(ac.hour * time.Hour).Add(ac.minute * time.Minute)
 	if t.Unix() < now.Unix() {
 		// 代表过了一天
 		t = t.Add(24 * time.Hour)
 	}
-	fmt.Printf("%s.next = %s\n", me.name, t.Format("2006-01-02 15:04:05"))
+	fmt.Printf("%s.next = %s\n", ac.name, t.Format("2006-01-02 15:04:05"))
 	return &t
 }
-func (me *AlarmClock) ID() string {
-	return me.name
+func (ac *AlarmClock) ID() string {
+	return ac.name
 }
 
-func (me *AlarmClock) TimeElapsed(now *time.Time) {
-	it := me.next
+func (ac *AlarmClock) TimeElapsed(now *time.Time) {
+	it := ac.next
 	if it == nil {
 		return
 	}
 
 	if now.Unix() >= it.Unix() {
 		// 时间过了就发生次数加一
-		me.occurs++
-		fmt.Printf("%s 时间=%s 闹铃 %s\n", time.Now().Format("2006-01-02 15:04:05"), now.Format("2006-01-02 15:04:05"), me.name)
+		ac.occurs++
+		fmt.Printf("%s 时间=%s 闹铃 %s\n", time.Now().Format("2006-01-02 15:04:05"), now.Format("2006-01-02 15:04:05"), ac.name)
 
-		if me.repeatable {
-			t := me.next.Add(24 * time.Hour)
-			me.next = &t
+		if ac.repeatable {
+			t := ac.next.Add(24 * time.Hour)
+			ac.next = &t
 
 		} else {
 			// 不允许多次，开始注销服务
-			GlobalTimeService.Detach(me.ID())
+			GlobalTimeService.Detach(ac.ID())
 		}
 	}
 }
 
-func (me *AlarmClock) Occurs() int {
-	return me.occurs
+func (ac *AlarmClock) Occurs() int {
+	return ac.occurs
 }
