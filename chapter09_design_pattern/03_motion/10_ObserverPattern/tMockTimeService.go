@@ -12,7 +12,7 @@ var GlobalTimeService = NewMockTimeService(1800)
 // 虚拟的时间服务, 自定义时间倍率以方便时钟相关的测试
 type tMockTimeService struct {
 	observers map[string]ITimeObserver //// 订阅者列表，这里是一个map结构，管理观察者
-	rwmutex   *sync.RWMutex
+	rwMutex   *sync.RWMutex
 	speed     int64
 	state     int64 //标记开始
 }
@@ -20,7 +20,7 @@ type tMockTimeService struct {
 func NewMockTimeService(speed int64) ITimeService {
 	it := &tMockTimeService{
 		observers: make(map[string]ITimeObserver, 0),
-		rwmutex:   new(sync.RWMutex),
+		rwMutex:   new(sync.RWMutex),
 		speed:     speed,
 		state:     0,
 	}
@@ -53,8 +53,8 @@ func (me *tMockTimeService) Start() {
 }
 
 func (me *tMockTimeService) NotifyAll(now *time.Time) {
-	me.rwmutex.RLock()
-	defer me.rwmutex.RUnlock()
+	me.rwMutex.RLock()
+	defer me.rwMutex.RUnlock()
 
 	for _, it := range me.observers {
 		go it.TimeElapsed(now)
@@ -63,16 +63,16 @@ func (me *tMockTimeService) NotifyAll(now *time.Time) {
 
 //订阅方法
 func (me *tMockTimeService) Attach(it ITimeObserver) {
-	me.rwmutex.Lock()
-	defer me.rwmutex.Unlock()
+	me.rwMutex.Lock()
+	defer me.rwMutex.Unlock()
 
 	me.observers[it.ID()] = it
 }
 
 // 删除服务
 func (me *tMockTimeService) Detach(id string) {
-	me.rwmutex.Lock()
-	defer me.rwmutex.Unlock()
+	me.rwMutex.Lock()
+	defer me.rwMutex.Unlock()
 
 	delete(me.observers, id) // 将订阅者从列表中删除
 }

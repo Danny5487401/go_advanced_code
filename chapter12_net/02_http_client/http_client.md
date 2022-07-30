@@ -1,5 +1,7 @@
 # Client
 
+http.Client 表示一个http client端，用来处理HTTP相关的工作，例如cookies, redirect, timeout等工作，
+
 ## 源码
 Client 结构体
 ```go

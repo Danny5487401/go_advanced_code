@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"go_advanced_code/chapter02_goroutine/02_runtime/05pprof/01_pprof/data"
 	"log"
 	"net/http"
 	_ "net/http/pprof" //引入init就注册了路由
 	"os"
 	"runtime/pprof"
 	"time"
+
+	"github.com/Danny5487401/go_advanced_code/chapter02_goroutine/02_runtime/05pprof/01_pprof/data"
 )
 
 // 一段有问题的代码

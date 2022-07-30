@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/justinas/alice"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/justinas/alice"
 )
 
 func loggingHandler(next http.Handler) http.Handler {

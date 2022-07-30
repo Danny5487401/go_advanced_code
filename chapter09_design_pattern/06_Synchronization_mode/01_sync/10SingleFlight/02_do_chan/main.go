@@ -2,9 +2,10 @@ package main
 
 import (
 	"errors"
-	"golang.org/x/sync/singleflight"
 	"log"
 	"time"
+
+	"golang.org/x/sync/singleflight"
 )
 
 func main() {

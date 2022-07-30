@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-// 闭包基本使用
+// 闭包函数返回
 func adder() func(int) int {
 	sum := 0
 	innerFunc := func(x int) int {
@@ -33,9 +33,7 @@ func main() {
 36 -72
 45 -90
 
-*/
 
-/*
 解析
 	当用不同的参数调用adder函数得到（pos(i)，neg(i)）函数时，得到的结果是隔离的，
 	也就是说每次调用adder返回的函数都将生成并保存一个新的局部变量sum。其实这里adder函数返回的就是闭包

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-//全局变量
+// 全局变量
 var ticket = 10 // 假设10张票
 
 func main() {
@@ -16,17 +16,14 @@ func main() {
 	*/
 	go saleTickets("售票口1") // g1,10
 	go saleTickets("售票口2") // g2,10
-	go saleTickets("售票口3") //g3,10
-	go saleTickets("售票口4") //g4,10
+	go saleTickets("售票口3") // g3,10
+	go saleTickets("售票口4") // g4,10
 
 	time.Sleep(5 * time.Second)
 }
 
 func saleTickets(name string) {
 	rand.Seed(time.Now().UnixNano())
-	//for i:=1;i<=100;i++{
-	//	fmt.Println(name,"售出：",i)
-	//}
 	for { //ticket=1
 		if ticket > 0 { //g1,g3,g2,g4
 			//睡眠

@@ -6,13 +6,20 @@
 1. 助记符（Mnemonics）代替机器指令的操作码
 2. 用地址符号（Symbol）或标号（Label）代替指令或操作数的地址
 
-## 汇编器和链接器：
+## 汇编器,链接器,调试器,编译器
 
 - 汇编器（assembler）是一种工具程序，用于将汇编语言源程序转换为机器语言
   1. windows: Microsoft 宏汇编器（称为 MASM）,TASM（Turbo 汇编器），NASM（Netwide 汇编器）和 MASM32（MASM 的一种变体）
   2. linux: GAS（GNU 汇编器）和 NASM,NASM 的语法与 MASM 的最相似
 - 链接器（linker）把汇编器生成的单个文件 组合 为一个可执行程序。
 - 调试器（debugger），使程序员可以在程序运行时，单步执行程序并检查寄存器和内存状态。
+
+- 编译器：编译器就是将“一种语言（通常为高级语言）”翻译为“另一种语言（通常为低级语言）”的程序。
+  一个现代编译器的主要工作流程：
+```css
+源代码 (source code) → 预处理器(preprocessor) → 编译器 (compiler) → 目标代码 (object code) → 链接器 (Linker) → 可执行程序(executables)
+
+```  
 
 ## 汇编语言与机器语言有什么关系:
 
@@ -66,6 +73,14 @@ movsw -> move string word(以字单元传送): 将ds:si指向的内存单元中�
 8. 输入输出指令: 这部分指令用于同外围设备交换数据，包括端口输入指令IN/INS、端口输出指令OUT/OUTS
 
 ## cpu可以直接读取数据的地方
+- RAM(Random-Access Memory)即运行内存
+- ROM(Read-Only Memory)即只读内存都是来存储东西
+  
+比如我们熟悉的CPU缓存，电脑手机的内存就属于RAM，而固态硬盘，u盘还有手机时所说的32G.64G的存储空间就属于ROM
+
+我们RAM之所以断电后会数据丢失，是因为RAM是通过电容存储的电荷，来保存数据的。那么RAM又分为动态和静态的。电脑内存就是动态RAM。像CPU的缓存就属于静态RAM，静态RAM的好处是速度块不用像动态RAM一样不用给电容充电来维持数据
+
+
 1. cpu 内部寄存器
 2. 内存单元
 ![](.introduction_images/cpu_read_mem.png)
@@ -351,8 +366,15 @@ mov %rbp,%rsp
 pop %rbp
 ```
 
+<<<<<<< HEAD
+    mov %rbp,%rsp
+    pop %rbp
+
+### loop指令   
+=======
     
 ### loop指令
+>>>>>>> main
 ![](.introduction_images/loop.png)
 cx存储循环的次数,s为标号
 
