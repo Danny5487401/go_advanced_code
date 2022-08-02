@@ -1,5 +1,5 @@
 # socket
-![](.socket_images/socket_buffer.png)
+![](.asset/img/.socket_images/socket_buffer.png)
 
 socket 在操作系统层面，可以理解为一个文件。 我们可以对这个文件进行一些方法操作。
 
@@ -37,22 +37,22 @@ tcp        0     60 172.22.66.69:22         122.14.220.252:59889    ESTABLISHED
 
 ## tcp四次握手
 ## 执行 send 发送的字节，会立马发送吗
-![](.socket_images/socket_send.png)
+![](.asset/img/.socket_images/socket_send.png)
 
 答案是不确定！执行 send 之后，数据只是拷贝到了socket 缓冲区。至 于什么时候会发数据，发多少数据，全听操作系统安排
 
 ## 如果缓冲区满了会怎么办
 首先，socket在创建的时候，是可以设置是阻塞的还是非阻塞的。
-![](.socket_images/send_block.png)
-![](.socket_images/send_nonblock.png)
+![](.asset/img/.socket_images/send_block.png)
+![](.asset/img/.socket_images/send_nonblock.png)
 
 ## 如果接收缓冲区为空，执行 recv 会怎么样？
 如果此时 socket 是阻塞的，那么程序会在那干等，直到接收缓冲区有数据，就会把数据从接收缓冲区拷贝到用户缓冲区，然后返回
-![](.socket_images/recv_block.png)
-![](.socket_images/recv_nonblock.png)
+![](.asset/img/.socket_images/recv_block.png)
+![](.asset/img/.socket_images/recv_nonblock.png)
 
 ## 如果接收缓冲区有数据时，执行close了，会怎么样？
-![](.socket_images/recvbuf_nonEmpty.png)
+![](.asset/img/.socket_images/recvbuf_nonEmpty.png)
 socket close 时，主要的逻辑在 tcp_close() 里实现。
 
 先说结论，关闭过程主要有两种情况：
@@ -84,7 +84,7 @@ void tcp_close(struct sock *sk, long timeout)
 }
 ```
 ## 如果发送缓冲区有数据时，执行close了，会怎么样？
-![](.socket_images/sendbuf_nonEmpty.png)
+![](.asset/img/.socket_images/sendbuf_nonEmpty.png)
 ```c
 void tcp_send_fin(struct sock *sk)
 {

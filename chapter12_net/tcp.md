@@ -2,7 +2,7 @@
 ![](chapter12_net/03_tcp/.tcp_images/http_tcp.png)
 
 ## 协议
-![](.tcp_images/protocol.png)
+![](.asset/img/.tcp_images/protocol.png)
 网络协议：一个协议定义了两个或两个以上通信实体之间交换的的 ***报文格式***和 ***次序***，以及报文发送/接收一条报文及其他事件所采取的动作
 
 ## tcp定义

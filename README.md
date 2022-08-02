@@ -308,7 +308,8 @@ Note: Go 1.18 移除用于泛型的constraints包
   - [6.1 信号监听处理](chapter12_net/06_grateful_stop/signal.go)
 - [7 URL的解析 Parse，query 数据的转义与反转义](chapter12_net/07_url/url.md)
 - [8 使用alice优雅编排中间件](chapter12_net/08_middleware/middlerware.md)
-- [9 https服务](chapter12_net/09_https/main.go)
+- [9 https](chapter12_net/09_https/main.go)
+  - [SAN签发: 一个证书可以支持多个不同域名的解析](chapter12_net/09_https/https.md)
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
 [cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)
