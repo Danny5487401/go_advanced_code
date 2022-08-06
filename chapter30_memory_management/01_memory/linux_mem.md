@@ -5,17 +5,17 @@
 3. 如果虚拟地址对应物理地址不在物理内存中，则产生缺页中断，真正分配物理地址，同时更新进程的页表；如果此时物理内存已耗尽，则根据内存替换算法淘汰部分页面至物理磁盘中。
 
 ## 物理和虚拟内存
-![](.mem_images/.go_mem_images/physical_mem.png)
+![](../.asset/img/.go_mem_images/physical_mem.png)
 
 我们可以将物理内存看作是一个槽/单元的数组，其中槽可以容纳 8 个位信息 1。每个内存槽都有一个地址。
 
-![](.mem_images/.go_mem_images/virtual_mem_to_physical_mem.png)
+![](../.asset/img/.go_mem_images/virtual_mem_to_physical_mem.png)
 
 虚拟内存可以使用基于 CPU 体系结构和操作系统的段或页表来实现。页表更常见。
 
 在分页虚拟内存中，我们将虚拟内存划分为块，称为页。页的大小可以根据硬件的不同而有所不同，但是页的大小通常是 4-64 KB，此外，通常还能够使用从 2MB 到 1GB 的巨大的页。
 分块很有用，因为单独管理每个内存槽需要更多的内存，而且会降低计算机的性能。
-![](.mem_images/.go_mem_images/virtual_mem_transfer_to_physical_mem.png)
+![](../.asset/img/.go_mem_images/virtual_mem_transfer_to_physical_mem.png)
 
 为了实现分页虚拟内存，计算机通常有一个称为内存管理单元(MMU)的芯片，它位于 CPU 和内存之间。
 MMU 在一个名为页表的表(它存储在内存中)中保存了从虚拟地址到物理地址的映射，其中每页包含一个页表项(PTE)。
@@ -30,8 +30,8 @@ MMU 还有一个物理缓存旁路转换缓冲(TLB)，用来存储最近从虚�
 5. 对于一些内存管理单元，还可能出现页表入口不足的情况，在这种情况下，操作系统必须为新的映射释放一个表入口。
 
 ## Linux 虚拟地址空间分布:用户空间与内核空间
-![](.mem_images/.go_mem_images/user_kernel.png)
-![](.mem_images/.go_mem_images/linux_process_memory.png)
+![](../.asset/img/.go_mem_images/user_kernel.png)
+![](../.asset/img/.go_mem_images/linux_process_memory.png)
 
 现在操作系统都是采用虚拟存储器，那么对 32 位操作系统而言，它的寻址空间（虚拟存储空间）为 4G（2 的 32 次方）。
 操作系统的核心是内核，独立于普通的应用程序，可以访问受保护的内存空间，也有访问底层硬件设备的所有权限。
@@ -209,18 +209,18 @@ munmap函数成功返回0.失败返回-1并设置errno
 在标准C库中，提供了malloc/free函数分配释放内存，这两个函数底层是由brk，mmap，munmap这些系统调用实现的。
 
 1. 当开辟的空间小于 128K 时，调用 brk（）函数，malloc 的底层实现是系统调用函数 brk（），将_edata往高地址推(只分配虚拟空间，不对应物理内存(因此没有初始化)，第一次读/写数据时，引起内核缺页中断，内核才分配对应的物理内存，然后虚拟地址空间建立映射关系)
-![](.linux_mem_images/brk_process.png)
+![](../.asset/img/.linux_mem_images/brk_process.png)
   - 进程启动的时候，其（虚拟）内存空间的初始布局如图1所示.
   - 程调用A=malloc(30K)以后，内存空间如图2.malloc函数会调用brk系统调用，将_edata指针往高地址推30K，就完成虚拟内存分配。
   - 进程调用B=malloc(40K)以后，内存空间如图3。
 
 2. 当开辟的空间大于 128K 时，mmap（）系统调用函数来在虚拟地址空间中（堆和栈中间，称为“文件映射区域”的地方）找一块空间来开辟。
-![](.linux_mem_images/mmap_process.png)
+![](../.asset/img/.linux_mem_images/mmap_process.png)
    - 进程调用C=malloc(200K)以后，内存空间如图4: 默认情况下，malloc函数分配内存，如果请求内存大于128K（可由M_MMAP_THRESHOLD选项调节），那就不是去推_edata指针了，
      而是利用mmap系统调用，从堆和栈的中间分配一块虚拟内存.这样子做主要是因为brk分配的内存需要等到高地址内存释放以后才能释放（例如，在B释放之前，A是不可能释放的，这就是内存碎片产生的原因），而mmap分配的内存可以单独释放。
      
 3. free
-![](.linux_mem_images/free_process.png)
+![](../.asset/img/.linux_mem_images/free_process.png)
    - 进程调用free(B)以后，如图7所示:B对应的虚拟内存和物理内存都没有释放，因为只有一个_edata指针，如果往回推，那么D这块内存怎么办呢？
      当然，B这块内存，是可以重用的，如果这个时候再来一个40K的请求，那么malloc很可能就把B这块内存返回回去了。
    - 进程调用free(D)以后，如图8所示:B和D连接起来，变成一块140K的空闲内存。
@@ -235,7 +235,7 @@ munmap函数成功返回0.失败返回-1并设置errno
 4. 建立映射关系（虚拟地址到物理地址
 
 ## 分配算法TCMalloc
-![](.mem_images/.go_mem_images/TCMalloc_strategy.png)
+![](../.asset/img/.go_mem_images/TCMalloc_strategy.png)
 
 由于 Go 语言不使用 malloc 来获取内存，而是直接操作系统申请（通过 mmap），它必须自己实现内存分配和释放（就像 malloc 一样）。
 Go 语言的内存分配器最初基于 TCMalloc：Thread-Caching Malloc, 但是现在已经有了很大的不同。
@@ -261,7 +261,7 @@ func main() {
 }
 ```
 运行后查看
-![](.mem_images/.go_mem_images/ps_memory.png)
+![](../.asset/img/.go_mem_images/ps_memory.png)
 
 - PID :进程Id
 - %CPU:（处理器）使用百分比
