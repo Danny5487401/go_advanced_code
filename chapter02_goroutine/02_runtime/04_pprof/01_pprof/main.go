@@ -9,7 +9,7 @@ import (
 	"runtime/pprof"
 	"time"
 
-	"github.com/Danny5487401/go_advanced_code/chapter02_goroutine/02_runtime/05pprof/01_pprof/data"
+	"github.com/Danny5487401/go_advanced_code/chapter02_goroutine/02_runtime/04_pprof/01_pprof/data"
 )
 
 // 一段有问题的代码

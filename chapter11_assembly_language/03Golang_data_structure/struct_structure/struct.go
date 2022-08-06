@@ -10,10 +10,11 @@ import (
 　   Int16, 等于short, 占2个字节. -32768 32767
 　   Int32, 等于int, 占4个字节. -2147483648 2147483647
 　   Int64, 等于long, 占8个字节. -9223372036854775808 9223372036854775807
+	在 64位机器上，一个 int 占 8 字节
 */
 
 type Args struct {
-	num1 int // 在 64位机器上，一个 int 占 8 字节
+	num1 int
 	num2 int
 }
 
@@ -49,6 +50,18 @@ type Demo2 struct {
 	m struct{} // 0
 }
 
+type T struct {
+	b byte   // 1
+	i int64  // 8
+	u uint16 // 2
+}
+
+type S struct {
+	b byte   // 1
+	u uint16 // 2
+	i int64  // 8
+}
+
 func main() {
 	fmt.Println("Args{}", unsafe.Sizeof(Args{}))
 	fmt.Println("Args64{}", unsafe.Sizeof(Args64{}))
@@ -70,5 +83,11 @@ func main() {
 
 	var d2 Demo2
 	fmt.Println(unsafe.Sizeof(d2)) // 2
+
+	// 相同结构不同的排列
+	var t T
+	println(unsafe.Sizeof(t)) // 24
+	var s S
+	println(unsafe.Sizeof(s)) // 16
 
 }
