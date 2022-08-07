@@ -185,7 +185,7 @@ type bmap struct {
 ```
 
 编译后的bmap:真实描述（伪代码）
-![](chapter11_assembly_language/03Golang_data_structure/map_structure/.map_intro_images/bmap_in_mem.png)
+![](.map_intro_images/bmap_in_mem.png)
 上图就是 bucket 的内存模型， HOBHash 指的就是 top hash。
 ```go
 //	tophash的存在是为了快速试错，毕竟只有8位，比较起来会快一点。
@@ -835,7 +835,7 @@ func mapaccess2(t *maptype, h *hmap, key unsafe.Pointer) (unsafe.Pointer, bool)
 再用哈希值的高 8 位，找到此 key 在 bucket 中的位置，这是在寻找已有的 key。最开始桶内还没有 key，新加入的 key 会找到第一个空位，放入。
 
 buckets 编号就是桶编号，当两个不同的 key 落在同一个桶中，也就是发生了哈希冲突。冲突的解决手段是用链表法：在 bucket 中，从前往后找到第一个空位。这样，在查找某个 key 时，先找到对应的桶，再去遍历 bucket 中的 key。
-![](chapter11_assembly_language/03Golang_data_structure/map_structure/.map_intro_images/search_value.png)
+![](.map_intro_images/search_value.png)
 上图中，假定 B = 5，所以 bucket 总数就是 2^5 = 32。首先计算出待查找 key 的哈希，使用低 5 位 00110，找到对应的 6 号 bucket，
 使用高 8 位 10010111，对应十进制 151， 在 6 号 bucket 中寻找 tophash 值（HOB hash）为 151 的 key， 找到了 2 号槽位，这样整个查找过程就结束了。
 如果在 bucket 中没找到，并且 overflow 不为空，还要继续去 overflow bucket 中寻找，直到找到或是所有的 key 槽位都找遍了，包括所有的 overflow bucket。
