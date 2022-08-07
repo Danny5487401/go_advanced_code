@@ -459,9 +459,9 @@ Note: Go 1.18 移除用于泛型的constraints包
 - 1 Linux内存及Go内存结构管理
   - [1.1 Linux内存管理](chapter30_memory_management/01_memory/linux_mem.md)
   - [1.2 Go内存结构管理](chapter30_memory_management/01_memory/go_mem.md)
-- [2 GC垃圾回收机制(trace查看map垃圾回收)](chapter30_memory_management/02_GC/gc.md)
+- [2 GC垃圾回收机制](chapter30_memory_management/02_GC/gc.md)
   - [2.1 下次GC的时机](chapter30_memory_management/02_GC/01_next_gc_stage/main.go)
-  - [2.2 删除Map元素查看GC回收流程](chapter30_memory_management/02_GC/02_map_GC/main.go)
+  - [2.2 删除Map元素时通过 runtime.MemStats 查看GC回收流程](chapter30_memory_management/02_GC/02_map_GC/main.go)
 - [3 逃逸分析](chapter30_memory_management/03_escape_to_heap/escape_to_heap.md)
     - [3.1 argument content escapes(fmt参数内容逃逸)](chapter30_memory_management/03_escape_to_heap/01_fmt_interface.go)
     - [3.2 局部变量指针返回时被外部引用](chapter30_memory_management/03_escape_to_heap/02_params_ptr_return.go)

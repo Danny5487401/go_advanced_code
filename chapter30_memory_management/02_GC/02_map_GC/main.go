@@ -17,24 +17,24 @@ var intMap map[int]int
 var cnt = 8192
 
 func main() {
+	// 1. 初始化状态
 	printMemStats()
 
-	// 添加数据
+	// 2. 添加数据
 	initMap()
 	runtime.GC()
 	printMemStats()
 
 	log.Println(len(intMap))
-	// 删除数据
+	// 3. 删除数据
 	for i := 0; i < cnt; i++ {
 		delete(intMap, i)
 	}
-	log.Println(len(intMap))
-
+	log.Println("元素数量", len(intMap))
 	runtime.GC()
 	printMemStats()
 
-	// 释放map对象
+	// 4. 释放map对象
 	intMap = nil
 	runtime.GC()
 	printMemStats()
