@@ -19,10 +19,13 @@ interface的定义在1.15.3源码包runtime中,interface的定义分为两种，
 尽管空接口理论上可以重用 iface 数据结构(因为 iface 可以算是 eface 的一个超集)，runtime 还是选择对这两种 interface 进行区分，
 主要有两个理由: 为了节省空间，以及代码清晰
 
-### 1. runtime.eface表示不含方法的interface{}类型
+### 1. runtime.eface 表示不含方法的interface{}类型
 ![](.interface_images/eface.png)
 
-结构体包含可以表示任意数据类型的_type和存储指定的数据data,data用指针来表示
+结构体包含可以表示任意数据类型的_type和存储指定的数据data, data用指针来表示
+
+在runtime中，_type结构是描述最为基础的类型（runtime/type.go）
+
 ```go
 type eface struct {
     _type *_type  // 表示空接口所承载的具体的实体类型
@@ -62,9 +65,9 @@ func resolveTypeOff(ptrInModule unsafe.Pointer, off typeOff) *_type {}
 
 
 
-
-Go 语言各种数据类型都是在 _type 字段的基础上，增加一些额外的字段来进行管理的：
+Go 语言 map, slice, array等内置的复杂类型类型都是在 _type 字段的基础上，增加一些额外的字段来进行管理的：
 ```go
+// /Users/python/go/go1.18/src/runtime/type.go
 type arraytype struct {
     typ   _type
     elem  *_type
@@ -83,16 +86,27 @@ type slicetype struct {
     elem *_type
 }
 
+type functype struct {
+	typ      _type
+	inCount  uint16
+	outCount uint16
+}
+
+type ptrtype struct {
+	typ  _type
+	elem *_type
+}
+
 type structtype struct {
-    typ     _type
-    pkgPath name
-    fields  []structfield
+	typ     _type
+	pkgPath name
+	fields  []structfield
 }
 ```
 这些数据类型的结构体定义，是反射实现的基础。
 
 
-### 2. runtime.iface表示包含方法的接口
+### 2. runtime.iface 表示包含方法的接口
 ![](.interface_images/iface.png)
 ```go
 type iface struct {

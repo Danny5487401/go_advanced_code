@@ -126,10 +126,10 @@ w 也可以表示成 <tty, *os.File>，仅管它和 r 一样，但是 w 可调�
 
 4.赋值
 ```go
- //不带函数的interface
- var empty interface{}
- empty = tty
- fmt.Printf("%T", empty) // *os.File
+//不带函数的interface
+var empty interface{}
+empty = tty
+fmt.Printf("%T", empty) // *os.File
 ```
 ![](.reflect_images/empty_equal_to_tty.png)
 由于 empty 是一个空接口，因此所有的类型都实现了它，w 可以直接赋给它，不需要执行断言操作
@@ -344,8 +344,11 @@ type Type interface {
 	uncommon() *uncommonType
 }
 ```
-具体实现rtype: 所有的类型都会包含 rtype 这个字段,表示各种类型的公共信息；另外，不同类型包含自己的一些独特的部分。
+Go是静态语言，每个变量都有自己的归属的类型，当变量被在堆上分配时，堆上的内存对象也就有了自己归属的类型。Go编译器在编译阶段就为Go应用中的每种类型建立了对应的类型信息，
+这些信息体现在runtime._rtype结构体中，Go reflect包的rtype结构体等价于runtime._rtype：
+
 ```go
+// /Users/python/go/go1.18/src/reflect/type.go
 // rtype is the common implementation of most values.
 // It is embedded in other struct types.
 //
@@ -361,7 +364,7 @@ type rtype struct {
 	// function for comparing objects of this type
 	// (ptr to object A, ptr to object B) -> ==?
 	equal     func(unsafe.Pointer, unsafe.Pointer) bool
-	gcdata    *byte   // garbage collection data
+	gcdata    *byte   // 垃圾回收用
 	str       nameOff // string form
 	ptrToThis typeOff // type for pointer to this type, may be zero
 }

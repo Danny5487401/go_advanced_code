@@ -1,89 +1,113 @@
 package main
 
 import (
+	"log"
 	"math/rand"
 	"strconv"
+	"sync"
 	"time"
 )
 
-// N 个 sender，N个 receiver
-// 如果第 3 种解决方案，由 receiver 直接关闭 stopCh 的话，就会重复关闭一个 channel，导致 panic。
-//	因此需要增加一个中间人，M 个 receiver 都向它发送关闭 dataCh 的“请求”，中间人收到第一个请求后，
-//	就会直接下达关闭 dataCh 的指令（通过关闭 stopCh，这时就不会发生重复关闭的情况，因为 stopCh 的发送方只有中间人一个）。
-//	另外，这里的 N 个 sender 也可以向中间人发送关闭 dataCh 的请求。
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	const Max = 100000
-	const NumSenders = 1000
-	const NumReceivers = 10
+	log.SetFlags(0)
 
+	// ...
+	const MaxRandomNumber = 100000
+	const NumReceivers = 10
+	const NumSenders = 1000
+
+	wgReceivers := sync.WaitGroup{}
+	wgReceivers.Add(NumReceivers)
+
+	// ...
 	dataCh := make(chan int, 100)
 	stopCh := make(chan struct{})
+	// stopCh 是一个信号通道。
+	// 它的发送者是下面的主持人 goroutine。
+	// 它的接收者是 dataCh的所有发送者和接收者。
+	toStop := make(chan string, 1) // 请注意，toStop 通道的缓存大小（容量）是 1。 这是为了避免第一个通知在主持人 goroutine 准备接收从 toStop 来的通知之前发送的情况下丢失
+	// toStop 通道通常用来通知主持人去关闭信号通道( stopCh )。
+	// 它的发送者是 dataCh的任意发送者和接收者。
+	// 它的接收者是下面的主持人 goroutine
 
-	// It must be a buffered channel
-	toStop := make(chan string, 1)
 	var stoppedBy string
-	// moderator中间人
+
+	// 主持人
 	go func() {
-		// 可能没有准备好
 		stoppedBy = <-toStop
-
 		close(stopCh)
-
 	}()
 
-	//n个发送者
+	// 发送者
 	for i := 0; i < NumSenders; i++ {
 		go func(id string) {
-			// 构建数据
-			value := rand.Intn(Max)
-			if value == 0 {
-				//发送结束信号的条件
+			for {
+				value := rand.Intn(MaxRandomNumber)
+				if value == 0 {
+					// 这里，一个用于通知主持人关闭信号通道的技巧。
+					select {
+					case toStop <- "sender#" + id:
+					default:
+					}
+					return
+				}
+
+				// 这里的第一个 select 是为了尽可能早的尝试退出 goroutine。
+				//这个 select 代码块有 1 个接受行为 的 case 和 一个将作为 Go 编译器的 try-receive 操作进行特别优化的默认分支。
 				select {
-				case toStop <- "sender#" + id:
+				case <-stopCh:
+					return
 				default:
 				}
-				//关闭协程返回，下面自己这个协程就不会接收
-				return
-			}
-			select {
-			case <-stopCh:
-				return
-			case dataCh <- value:
 
+				// 即使 stopCh 被关闭， 如果 发送到 dataCh 的操作没有阻塞，那么第二个 select 的第一个分支可能会在一些循环（和在理论上永远） 不会执行。
+				// 这就是为什么上面的第一个 select 代码块是必须的。
+				select {
+				case <-stopCh:
+					return
+				case dataCh <- value:
+				}
 			}
 		}(strconv.Itoa(i))
 	}
 
-	//N个消费者
+	// 接收者
 	for i := 0; i < NumReceivers; i++ {
 		go func(id string) {
+			defer wgReceivers.Done()
+
 			for {
+				// 和发送者 goroutine 一样， 这里的第一个 select 是为了尽可能早的尝试退出 这个 goroutine。
+				// 这个 select 代码块有 1 个发送行为 的 case 和 一个将作为 Go 编译器的 try-send 操作进行特别优化的默认分支。
+				select {
+				case <-stopCh:
+					return
+				default:
+				}
+
+				//  即使 stopCh 被关闭， 如果从 dataCh 接受数据不会阻塞，那么第二个 select 的第一分支可能会在一些循环（和理论上永远）不会被执行到。
+				// 这就是为什么第一个 select 代码块是必要的。
 				select {
 				case <-stopCh:
 					return
 				case value := <-dataCh:
-					if value == Max-1 {
+					if value == MaxRandomNumber-1 {
+						// 同样的技巧用于通知主持人去关闭信号通道。
 						select {
-						//发送结束信号的条件
 						case toStop <- "receiver#" + id:
 						default:
-							//防止阻塞用
 						}
 						return
 					}
-					//fmt.Println("收到的值",value)
+
+					log.Println(value)
 				}
 			}
 		}(strconv.Itoa(i))
 	}
-	select {
-	case <-time.After(time.Hour):
-	}
-}
 
-/*
-这里将 toStop 声明成了一个 缓冲型的 channel。假设 toStop 声明的是一个非缓冲型的 channel，那么第一个发送的关闭 dataCh 请求可能会丢失。
-因为无论是 sender 还是 receiver 都是通过 select 语句来发送请求，如果中间人所在的 goroutine 没有准备好，那 select 语句就不会选中，直接走 default 选项，
-什么也不做。这样，第一个关闭 dataCh 的请求就会丢失。
-*/
+	// ...
+	wgReceivers.Wait()
+	log.Println("stopped by", stoppedBy)
+}

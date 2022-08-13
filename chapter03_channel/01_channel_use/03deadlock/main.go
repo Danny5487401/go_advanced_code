@@ -2,23 +2,31 @@ package main
 
 import "fmt"
 
-var done = make(chan bool)
-var msg string
-
-//func main() {
-//	ch := make(chan int)
-//	ch <- 5
-//}
-
 func main() {
-	go aGoroutine()
-	done <- true
-	fmt.Println(msg)
+	length := 10
+	slice := make([]int, 0, length)
+	for i := 1; i <= length; i++ {
+		// 1. 构建数据
+		slice = append(slice, i)
+	}
 
-}
-func aGoroutine() {
-	msg = "hello world"
-	<-done
+	sChan := make(chan int, 5)
+
+	go func() {
+		for _, v := range slice {
+			// 2. 发送数据
+			sChan <- v
+		}
+		// 演示未关闭导致死锁
+		//close(sChan)
+	}()
+
+	for data := range sChan {
+		// 接受数据
+		go func(data int) {
+			fmt.Println(data)
+		}(data)
+	}
 }
 
 /*

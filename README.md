@@ -64,13 +64,14 @@ Note: Go 1.18 移除用于泛型的constraints包
 
 ## 第三章 通道Channel
 - [1 Channel内部结构及源码分析(含PPT分析)](chapter03_channel/01_channel_use/channel.md)
-    - [1.0 channel初始化](chapter03_channel/01_channel_use/00introdution/main.go)
+    - [1.0 channel 初始化及引用传递](chapter03_channel/01_channel_use/00introdution/main.go)
     - [1.1 无缓存通道](chapter03_channel/01_channel_use/01unbufferd_channel/main.go)
     - [1.2 父子通信](chapter03_channel/01_channel_use/02ParentChildrenCommunication/main.go)
-    - [1.3 死锁](chapter03_channel/01_channel_use/03deadlock/main.go)
-    - [1.4 优雅关闭channel](chapter03_channel/01_channel_use/04channelClose/ChanClose.md)
-      - [1.4.1 N 个 sender，1 个 receiver](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
-      - [1.4.2 N 个 sender， M 个 receiver ](chapter03_channel/01_channel_use/04channelClose/case4_nsender_nreceiver/nsender_nreceiver.go)
+    - [1.3 死锁：range未关闭的channel](chapter03_channel/01_channel_use/03deadlock/main.go)
+    - [1.4 优雅关闭 channel 与粗暴关闭 channel](chapter03_channel/01_channel_use/04channelClose/ChanClose.md)
+      - [1.4.1 1 个 sender，N 个 receiver: 发送者通过关闭数据通道说 「不要再发送了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
+      - [1.4.3 N 个 sender，1 个 receiver: 接收者通过关闭一个信号通道说 「请不要再发送数据了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
+      - [1.4.4 N 个 sender，M 个 receiver: 任意一个通过通知一个主持人去关闭一个信号通道说「让我们结束这场游戏吧」 ](chapter03_channel/01_channel_use/04channelClose/case4_nsender_nreceiver/nsender_nreceiver.go)
     - [1.5 通道遍历range](chapter03_channel/01_channel_use/05ChannelRange/main.go)
     - [1.6 有缓冲channel增强并发](chapter03_channel/01_channel_use/06bufferChan/main.go)
     - [1.7 双向通道](chapter03_channel/01_channel_use/07two-wayChan/main.go)
@@ -89,7 +90,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 ---
 
 ## 第四章 interface和反射 
-- [1 interface源码分析](chapter04_interface_n_reflect/01_interface/interface.md)
+- [1 interface 与 Go 语言各种数据类型关系--> _type 字段的基础上，增加一些额外的字段来进行管理](chapter04_interface_n_reflect/01_interface/interface.md)
     - [1.1 汇编分析不含方法eface和带方法iface](chapter04_interface_n_reflect/01_interface/01_interface_in_asm/main.go)
     - [1.2 接口值的零值是指动态类型和动态值都为 nil](chapter04_interface_n_reflect/01_interface/02_interface_compare_with_nil/main.go)
     - [1.3 打印出接口的动态类型和值](chapter04_interface_n_reflect/01_interface/03_print_dynamic_value_n_type/main.go)
@@ -109,7 +110,6 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05PerformanceInprove/main.go)
     - [2.6 通过反射进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
         - 底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
-        - 一个nil值的map和非nil值但是空的map*是否“深度”相等
         - 一个nil值的map和非nil值但是空的map*是否“深度”相等
         - 带有环的数据对比*是否“深度”相等
     - [2.7 通过reflect.implements判断struct类型是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
@@ -269,12 +269,7 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [2.14 闭包函数](chapter11_assembly_language/02plan9/14_closure/main.go)
     - [2.15 两种方式获取GoroutineId](chapter11_assembly_language/02plan9/15_GoroutineId/main.go)
     - [2.16 汇编调用非汇编Go函数](chapter11_assembly_language/02plan9/16_assembly_call_NonassemblyFunc/main.go)
-- [3 Golang底层数据结构-涉及数值类型占用的bit](chapter11_assembly_language/03Golang_data_structure/data.md)
-    - [3.1 Map底层结构](chapter11_assembly_language/03Golang_data_structure/map_structure/map_intro.md)
-      - [3,1,1 桶负载因子 overLoadFactor](chapter11_assembly_language/03Golang_data_structure/map_structure/02_Improvement/map_test.go)
-      - [3,1,2 map的指针优化场景](chapter11_assembly_language/03Golang_data_structure/map_structure/02_Improvement/map_test.go)
-    - [3.2 String底层结构,字符集和字符编码,性能分析及内存泄漏分析](chapter11_assembly_language/03Golang_data_structure/string_structure/str.md)
-    - [3.3 Struct底层结构,内存布局,空结构体内存对齐](chapter11_assembly_language/03Golang_data_structure/struct_structure/struct.md)
+
 
 ## 第十二章 网络编程net
 - [socket介绍](chapter12_net/socket.md)
@@ -346,7 +341,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 FAN-IN和FAN-OUT模型](chapter16_concurrentProgramming/02_fanin_fanout/fanin_fanout.md)
 
 ## 第十七章 数据结构及算法
-- 1 [queue双端单向队列(泛型)](chapter17_dataStructure_n_algorithm/01_queue/queue_test.go)
+- [1 queue双端单向队列(泛型)](chapter17_dataStructure_n_algorithm/01_queue/queue_test.go)
 - [2 加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/encryption.md)
   - 2.1 对称式加密
     - [2.1.1 AES高级加密标准(Advanced Encryption Standard)](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/aes.md)
@@ -376,7 +371,13 @@ Note: Go 1.18 移除用于泛型的constraints包
   - [6.2 解析.pem文件](chapter17_dataStructure_n_algorithm/06_pem/02_get_pem_info/main.go) 
 - [7 Base64编码解析](chapter17_dataStructure_n_algorithm/07_base64_encoding/base64.md)
 - [8 trie前缀树](chapter17_dataStructure_n_algorithm/08_trie/trie.md)
-
+- [9 Golang底层数据结构-涉及数值类型占用的bit](chapter17_dataStructure_n_algorithm/09_golang_data_structure/data.md)
+    - [9.1 Map底层结构](chapter17_dataStructure_n_algorithm/09_golang_data_structure/map_intro.md)
+        - [9,1,1 桶负载因子 overLoadFactor](chapter17_dataStructure_n_algorithm/09_golang_data_structure/01_map_structure/02_Improvement/map_test.go)
+        - [9,1,2 map的指针优化场景](chapter17_dataStructure_n_algorithm/09_golang_data_structure/01_map_structure/02_Improvement/map_test.go)
+        - [9.1.3 map 的 Key 类型取值](chapter17_dataStructure_n_algorithm/09_golang_data_structure/01_map_structure/03_map_key/key.md)
+    - [9.2 String 底层结构,字符集和字符编码,性能分析及内存泄漏分析](chapter17_dataStructure_n_algorithm/09_golang_data_structure/02_string_structure/str.md)
+    - [9.3 Struct 底层结构,内存布局,空结构体内存对齐](chapter17_dataStructure_n_algorithm/09_golang_data_structure/03_struct_structure/struct.md)
 ## 第十八章 错误跟踪和panic
 - [0 错误(err)和异常（exception）区别及处理方式](chapter18_error_n_panic/00_diff_between_err_n_exception/main.go)
 - 1 自定义错误类型打印错误栈
@@ -407,7 +408,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 
 ## [第二十一章 time标准包源码分析](chapter21_time/time.md)
 - [1 比time.Now()更优雅获取时间戳（go:link技术）](chapter21_time/01_time_sec.go)
-- 2 time.Format()优化写法
+- [2 time.Format()优化写法](chapter21_time/02_append_format.go)
 
 ## [第二十二章 数据驱动模板源码分析-->kratos工具](chapter22_template/template.md)
 - [1 加载多个模版并指定模版](chapter22_template/01_multi_template/main.go)
@@ -423,12 +424,13 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [1 基本使用及自定义帮助信息](chapter24_flag/nginx.go) 
 
 
-
 ## [第二十四章 Flag命令行参数及源码分析](chapter24_flag/flag.md)
 - [1 标准包flag基本使用及自定义帮助信息](chapter24_flag/01_flag/nginx.go)
 - [2 第三方包pflag：兼容标准包flag](chapter24_flag/02_pflag/pflag.md)
 
-## [第二十五章 Makefile](chapter25_makefile/Makefile_info.md)
+## 第二十五章 结构体类型方法
+- [1 方法调用语法糖](chapter25_struct_method/01_struct_method/main.go)
+
 
 ## [第二十六章 strconv字符串和数值型转换源码分析](chapter26_strconv/strconv.md)
 
@@ -453,22 +455,29 @@ Note: Go 1.18 移除用于泛型的constraints包
   - GOPROXY
 - [2 go-module原理篇](chapter29_module/02_discipline/module.md)
   - Minimal Version Selection 最小版本选择算法
+- [3 go1.17 module依赖图修剪及延迟module加载](chapter29_module/03_go1.17_module/module.md)
     
+
 ## 第三十章 内存管理
 - 1 Linux内存及Go内存结构管理
   - [1.1 Linux内存管理](chapter30_memory_management/01_memory/linux_mem.md)
   - [1.2 Go内存结构管理](chapter30_memory_management/01_memory/go_mem.md)
-- [2 GC垃圾回收机制(trace查看map垃圾回收)](chapter30_memory_management/02_GC/gc.md)
+- [2 GC垃圾回收机制](chapter30_memory_management/02_GC/gc.md)
   - [2.1 下次GC的时机](chapter30_memory_management/02_GC/01_next_gc_stage/main.go)
-  - [2.2 删除Map元素查看GC回收流程](chapter30_memory_management/02_GC/02_map_GC/main.go)
+  - [2.2 删除Map元素时通过 runtime.MemStats 查看GC回收流程](chapter30_memory_management/02_GC/02_map_GC/main.go)
+  - 2.3 内存对象中有指针与无指针的GC对比,检测内存对象中的指针
+    - [2.3.1 gc运行时间: 切片中存储10亿个指针](chapter30_memory_management/02_GC/03_gc_between_pointer_and_not/01_with_pointer/pointer.go)
+    - [2.3.2 gc运行时间: 切片中存储10亿个非指针](chapter30_memory_management/02_GC/03_gc_between_pointer_and_not/02_without_pointer/not_pointer.go)
 - [3 逃逸分析](chapter30_memory_management/03_escape_to_heap/escape_to_heap.md)
     - [3.1 argument content escapes(fmt参数内容逃逸)](chapter30_memory_management/03_escape_to_heap/01_fmt_interface.go)
     - [3.2 局部变量指针返回时被外部引用](chapter30_memory_management/03_escape_to_heap/02_params_ptr_return.go)
     - [3.3 接口类型](chapter30_memory_management/03_escape_to_heap/03_interface_method.go)
     
 ## [第三十一章 Go tool 自带工具](chapter31_tool/tool.md)
-- 1 build
-    - [1.1 编译时 -X 传递参数值](chapter31_tool/01_build/build.go)
+- [1 build](chapter31_tool/01_build/build.md)
+  - [1.1 Go build 选项 -tags](chapter31_tool/01_build/01_tags/main.go)
+  - [1.2 Go build 选项 -ldflags](chapter31_tool/01_build/01_tags/main.go)
+- [2 makefile 使用](chapter31_tool/Makefile_info.md)
 
 ## [第三十二章 Generic泛型](chapter32_generic/generic.md)
 - [1 interface新含义使用-->type set(类型集合),specific type(特定类型)和structural type(结构类型)](chapter32_generic/01_typeParam_n_typeArgument/main.go)

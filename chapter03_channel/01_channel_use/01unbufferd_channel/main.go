@@ -1,22 +1,18 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func main() {
-	var ch1 chan bool       //声明，没有创建
-	fmt.Println(ch1)        //<nil>
-	fmt.Printf("%T\n", ch1) //chan bool
-	ch1 = make(chan bool)   //0xc0000a4000,是引用类型的数据
-	fmt.Println(ch1)
+	ch1 := make(chan bool) //0xc0000a4000,是引用类型的数据
 
 	go func() {
-		for i := 0; i < 10; i++ {
-			fmt.Println("子goroutine中，i：", i)
-		}
+		time.Sleep(time.Second * 5)
 		// 循环结束后，向通道中写数据，表示要结束了。。
+		fmt.Println("发送结束信号。。")
 		ch1 <- true
-
-		fmt.Println("结束。。")
 
 	}()
 	// 一个通道发送和接收数据，默认是阻塞的
