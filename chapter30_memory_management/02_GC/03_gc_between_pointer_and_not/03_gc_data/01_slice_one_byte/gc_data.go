@@ -6,6 +6,15 @@ import (
 	"unsafe"
 )
 
+// 前置条件: go.1.18之后 修改源码包
+// /Users/python/go/go1.18/src/reflect/type.go
+/*
+package reflect
+
+// 导出rtype
+type Rtype = rtype
+*/
+
 func bar() []*int {
 	t := make([]*int, 8)
 	return t

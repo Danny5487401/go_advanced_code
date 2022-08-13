@@ -38,7 +38,7 @@ func (p Gopher) debug() {
 
 /*
 汇编：
-	go tool compile -S -N -L main.go > main.s 2>&1
+	go tool compile -S -N -L pointer.go > main.s 2>&1
 可以看到，main 函数里调用了两个函数
 	func convT2E64(t *_type, elem unsafe.Pointer) (e eface)
 	func convT2I(tab *itab, elem unsafe.Pointer) (i iface)

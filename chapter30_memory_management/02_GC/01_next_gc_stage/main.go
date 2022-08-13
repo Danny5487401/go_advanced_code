@@ -20,7 +20,7 @@ func main() {
 	fmt.Println("< loop.")
 }
 
-// ➜  01_next_gc_stage git:(feature/gc) ✗ go build main.go
+// ➜  01_next_gc_stage git:(feature/gc) ✗ go build pointer.go
 // ➜  01_next_gc_stage git:(feature/gc) ✗ GODEBUG=gctrace=1 ./main
 
 /*

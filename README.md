@@ -111,7 +111,6 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [2.6 通过反射进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
         - 底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
         - 一个nil值的map和非nil值但是空的map*是否“深度”相等
-        - 一个nil值的map和非nil值但是空的map*是否“深度”相等
         - 带有环的数据对比*是否“深度”相等
     - [2.7 通过reflect.implements判断struct类型是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
 ---
@@ -342,7 +341,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 FAN-IN和FAN-OUT模型](chapter16_concurrentProgramming/02_fanin_fanout/fanin_fanout.md)
 
 ## 第十七章 数据结构及算法
-- 1 [queue双端单向队列(泛型)](chapter17_dataStructure_n_algorithm/01_queue/queue_test.go)
+- [1 queue双端单向队列(泛型)](chapter17_dataStructure_n_algorithm/01_queue/queue_test.go)
 - [2 加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/encryption.md)
   - 2.1 对称式加密
     - [2.1.1 AES高级加密标准(Advanced Encryption Standard)](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/aes.md)
@@ -425,12 +424,13 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [1 基本使用及自定义帮助信息](chapter24_flag/nginx.go) 
 
 
-
 ## [第二十四章 Flag命令行参数及源码分析](chapter24_flag/flag.md)
 - [1 标准包flag基本使用及自定义帮助信息](chapter24_flag/01_flag/nginx.go)
 - [2 第三方包pflag：兼容标准包flag](chapter24_flag/02_pflag/pflag.md)
 
-## [第二十五章 Makefile](chapter25_makefile/Makefile_info.md)
+## 第二十五章 结构体类型方法
+- [1 方法调用语法糖](chapter25_struct_method/01_struct_method/main.go)
+
 
 ## [第二十六章 strconv字符串和数值型转换源码分析](chapter26_strconv/strconv.md)
 
@@ -455,7 +455,9 @@ Note: Go 1.18 移除用于泛型的constraints包
   - GOPROXY
 - [2 go-module原理篇](chapter29_module/02_discipline/module.md)
   - Minimal Version Selection 最小版本选择算法
+- [3 go1.17 module依赖图修剪及延迟module加载](chapter29_module/03_go1.17_module/module.md)
     
+
 ## 第三十章 内存管理
 - 1 Linux内存及Go内存结构管理
   - [1.1 Linux内存管理](chapter30_memory_management/01_memory/linux_mem.md)
@@ -463,14 +465,19 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 GC垃圾回收机制](chapter30_memory_management/02_GC/gc.md)
   - [2.1 下次GC的时机](chapter30_memory_management/02_GC/01_next_gc_stage/main.go)
   - [2.2 删除Map元素时通过 runtime.MemStats 查看GC回收流程](chapter30_memory_management/02_GC/02_map_GC/main.go)
+  - 2.3 内存对象中有指针与无指针的GC对比,检测内存对象中的指针
+    - [2.3.1 gc运行时间: 切片中存储10亿个指针](chapter30_memory_management/02_GC/03_gc_between_pointer_and_not/01_with_pointer/pointer.go)
+    - [2.3.2 gc运行时间: 切片中存储10亿个非指针](chapter30_memory_management/02_GC/03_gc_between_pointer_and_not/02_without_pointer/not_pointer.go)
 - [3 逃逸分析](chapter30_memory_management/03_escape_to_heap/escape_to_heap.md)
     - [3.1 argument content escapes(fmt参数内容逃逸)](chapter30_memory_management/03_escape_to_heap/01_fmt_interface.go)
     - [3.2 局部变量指针返回时被外部引用](chapter30_memory_management/03_escape_to_heap/02_params_ptr_return.go)
     - [3.3 接口类型](chapter30_memory_management/03_escape_to_heap/03_interface_method.go)
     
 ## [第三十一章 Go tool 自带工具](chapter31_tool/tool.md)
-- 1 build
-    - [1.1 编译时 -X 传递参数值](chapter31_tool/01_build/build.go)
+- [1 build](chapter31_tool/01_build/build.md)
+  - [1.1 Go build 选项 -tags](chapter31_tool/01_build/01_tags/main.go)
+  - [1.2 Go build 选项 -ldflags](chapter31_tool/01_build/01_tags/main.go)
+- [2 makefile 使用](chapter31_tool/Makefile_info.md)
 
 ## [第三十二章 Generic泛型](chapter32_generic/generic.md)
 - [1 interface新含义使用-->type set(类型集合),specific type(特定类型)和structural type(结构类型)](chapter32_generic/01_typeParam_n_typeArgument/main.go)

@@ -38,7 +38,7 @@ The -i flag is deprecated. Compiled packages are cached automatically.
 The build flags are shared by the build, clean, get, install, list, run,
 and test commands:
 ```
-![](.build_images/build_commnd.png)
+![](01_tags/.build_images/build_commnd.png)
 
 
 ## 参考资料

@@ -1,5 +1,11 @@
 package main
 
+import (
+	"fmt"
+	"runtime"
+	"time"
+)
+
 func main() {
 	a := make([]int, 1e9)
 
