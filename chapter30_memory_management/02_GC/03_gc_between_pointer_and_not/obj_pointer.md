@@ -32,8 +32,11 @@ type rtype struct {
 
 在这个结构体类型中的gcdata字段是为GC服务的，我们看看它究竟是什么！怎么看呢？由于reflect.rtype类型是非导出类型，我们需要对本地的Go语言源码做一些hack，我在reflect包的type.go文件中rtype结构体的定义之前添加一行代码：
 
-
+```go
+// /Users/python/go/go1.18/src/reflect/type.go
 type Rtype = rtype
+```
+
 
 
 改了本地Go标准库源码后，Go编译器就会使用最新源码来编译我们的Go示例程序么？Go 1.18之前的版本都不会
@@ -146,4 +149,4 @@ func main() {
 
 ## 参考资料 
 
-1. [Go Gc如何检测内存对象中的指针](1. https://mp.weixin.qq.com/s/uVhRqQh0gwzUeP93UXJ5wA)
+1. [Go Gc如何检测内存对象中的指针](https://mp.weixin.qq.com/s/uVhRqQh0gwzUeP93UXJ5wA)

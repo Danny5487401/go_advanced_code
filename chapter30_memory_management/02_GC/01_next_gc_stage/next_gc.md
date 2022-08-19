@@ -168,4 +168,7 @@ gc 7 @0.140s 1%: 0.031+2.0+0.042 ms clock, 0.12+0.43/1.8/0.049+0.17 ms cpu, 4->4
 
     - wall clock > cpu time: 多核优势不明显
 
-
+![](.next_gc_images/backend_mark.png)
+- DedicatedMode代表处理器专门负责标记对象，不会被调度器抢占；
+- FractionalMode代表协助后台标记，其在整个标记阶段只会花费一定部分时间执行，
+- IdleMode 为当处理器没有查找到可以执行的 协程时，执行垃圾收集的标记任务直到被抢占

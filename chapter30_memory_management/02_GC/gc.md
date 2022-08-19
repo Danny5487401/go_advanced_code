@@ -236,7 +236,7 @@ B.D=null;//B到D的引用被切断A.xx=D;//A到D的引用被建立
 #### 写屏障
 ![](../.asset/img/.gc_images/write_barrier.png)
 
-##### Dijkstra 插入屏障--满足强三色
+##### Dijkstra 插入屏障--满足强三色：指针修改时，指向的新对象要标灰：
 
 Go 1.7 之前使用的是 Dijkstra Write barrier（写屏障），使用的实现类似下面伪代码：
 ```go
@@ -258,7 +258,7 @@ Dijkstra 插入屏障的好处在于可以立刻开始并发标记，但由于�
 
 
 
-##### Yuasa 删除写屏障--满足弱三色
+##### Yuasa 删除写屏障--满足弱三色：指针修改时，修改前指向的对象要标灰
 Yuasa 在 1990 年的论文 Real-time garbage collection on general-purpose machines 中提出了删除写屏障，因为一旦该写屏障开始工作，它会保证开启写屏障时堆上所有对象的可达，所以也被称作快照垃圾收集（Snapshot GC）
 
 其思想是当赋值器从灰色或白色对象中删除白色指针时，通过写屏障将这一行为通知给并发执行的回收器。
