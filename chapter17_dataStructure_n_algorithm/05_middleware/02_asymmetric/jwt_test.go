@@ -12,8 +12,8 @@ import (
 
 func TestName(t *testing.T) {
 	var (
-		privatePath = "chapter17_dataStructure_n_algorithm/06_pem/pem_file/private.pem"
-		pubPath     = "chapter17_dataStructure_n_algorithm/06_pem/pem_file/public.pem"
+		privatePath = "chapter17_dataStructure_n_algorithm/06_certificate/pem_file/private.pem"
+		pubPath     = "chapter17_dataStructure_n_algorithm/06_certificate/pem_file/public.pem"
 		userInfo    = &models.User{
 			UserID:   123,
 			NickName: "danny",

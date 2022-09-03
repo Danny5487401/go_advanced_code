@@ -17,17 +17,17 @@ var privateKey, publicKey []byte
 
 func init() {
 	var err error
-	publicKey, err = ioutil.ReadFile("chapter17_dataStructure_n_algorithm/06_pem/pem_file/public.pem")
+	publicKey, err = ioutil.ReadFile("chapter17_dataStructure_n_algorithm/06_certificate/pem_file/public.pem")
 	if err != nil {
 		log.Fatalln(err)
 	}
-	privateKey, err = ioutil.ReadFile("chapter17_dataStructure_n_algorithm/06_pem/pem_file/private.pem")
+	privateKey, err = ioutil.ReadFile("chapter17_dataStructure_n_algorithm/06_certificate/pem_file/private.pem")
 	if err != nil {
 		log.Fatalln(err)
 	}
 }
 
-/**
+/**GetPubKeyLen
  * 功能：获取RSA公钥长度
  * 参数：public
  * 返回：成功则返回 RSA 公钥长度，失败返回 error 错误信息

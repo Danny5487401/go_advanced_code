@@ -13,7 +13,7 @@
 
 # *目录*
 
-Note:目录同级为 *代码展示*，可在Goland中运行
+Note:目录同级为 *代码展示*，推荐在 Goland 2022.2.1版本以上运行
 ## *推荐 GoVersion: 1.18(涉及泛型)*
 Note: Go 1.18 移除用于泛型的constraints包
 
@@ -116,17 +116,23 @@ Note: Go 1.18 移除用于泛型的constraints包
 ---
 
 ## 第五章 切片和数组
-- [1 值传递-数组](chapter05_slice_n_array/01passByValue_array/main.go)
-- [2 引用传递-指针切片和指针数组](chapter05_slice_n_array/02passByReference/main.go)
-- [3 切片和数组参数传递性能对比](chapter05_slice_n_array/03Array_n_slice_performance/main_test.go)
+- 1 参数传递
+  - [1,1 值传递-->数组拷贝，数组作为函数参数传递](chapter05_slice_n_array/01_pass_as_param/01passByValue_array/main.go)
+  - [1.2 引用传递-->数组指针，切片和指针切片传递](chapter05_slice_n_array/01_pass_as_param/02passByReference/main.go)
+  - [1.3 切片和数组作为参数传递性能对比及注意项](chapter05_slice_n_array/01_pass_as_param/03_Array_n_slice_pass_performance/main_test.go)
+- 2 切片传递的疑惑
+  - [2.1 没有足够容量时函数中切片传递的疑惑1](chapter05_slice_n_array/02_slice_pass/01_slice_pass_confusition_without_enough_cap/main.go)
+  - [2.2 没有足够容量切片传递疑惑揭秘：底层扩容指向的数据变化](chapter05_slice_n_array/02_slice_pass/02_slice_pass_reality_without_enough_cap/main.go)
+  - [2.3 有足够容量时函数中切片传递的疑惑](chapter05_slice_n_array/02_slice_pass/03_slice_pass_confusition_fix_with_enough_cap)
+  - [2.4 有足够容量时函数传递疑惑揭秘: 底层len长度没变](chapter05_slice_n_array/02_slice_pass/04_slice_pass_confusition_with_enough_cap)
+- [3 带索引初始化数组和切片](chapter05_slice_n_array/03_make_slice_with_index/make_slice_with_index.go)
 - 4 底层数据结构
-  - [切片数据结构及拷贝copy源码分析](chapter05_slice_n_array/04structure_of_array_n_slice/slice/sliceStructure.md)
-  - [数组数据结构](chapter05_slice_n_array/04structure_of_array_n_slice/array/arrayStructure.md)
-- [5 nil切片和空切片](chapter05_slice_n_array/05nilSlice_n_NoneSlice/nil_n_empty_slice.md)
+  - [4.1 数组数据结构](chapter05_slice_n_array/04structure_of_array_n_slice/01_array/arrayStructure.md)
+  - [4.2 切片数据结构及拷贝copy源码分析](chapter05_slice_n_array/04structure_of_array_n_slice/02_slice/sliceStructure.md)
+- [5 nil 切片和 empty 切片](chapter05_slice_n_array/05nilSlice_n_NoneSlice/nil_n_empty_slice.md)
 - [6 扩容策略](chapter05_slice_n_array/06GrowSlice/grow_size_policy.md)
 - [7 不同类型的切片间互转](chapter05_slice_n_array/07Transfer_slice_in_different_type/main.go)
-- [8 带索引初始化数组和切片](chapter05_slice_n_array/08_make_slice_with_index/make_slice_with_index.go)
-- [9 切片的复制方式对比: copy和=复制](chapter05_slice_n_array/09_reslice/reslice.go)
+- [8 切片复制方式对比: copy和=复制](chapter05_slice_n_array/08_reslice_n_copy/slice_copy.md)
 ---
 
 ## 第六章 指针
@@ -366,13 +372,16 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
   - Symmetric 对称加密->HSA
   - asymmetric 非对称加密->RSA
-- [6 pem(Privacy Enhanced Mail Certificate保密增强邮件协议](chapter17_dataStructure_n_algorithm/06_pem/pem.md)
-  - [6.1 生成.pem文件(RSA密钥对)](chapter17_dataStructure_n_algorithm/06_pem/01_pem_generate/main.go)
-  - [6.2 解析.pem文件](chapter17_dataStructure_n_algorithm/06_pem/02_get_pem_info/main.go) 
+- [6 certificate 证书-->openssl 使用](chapter17_dataStructure_n_algorithm/06_certificate/certificate.md)
+  - [6.1 pem(Privacy Enhanced Mail Certificate保密增强邮件协议](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/pem.md)
+    - [6.1.1 生成公私钥的.pem文件(公钥使用RSA算法)](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/01_pem_generate/main.go)
+    - [6.1.2 解析.pem文件获取公私钥](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/02_get_pem_info/main.go) 
+  - [6.2 x509证书源码](chapter17_dataStructure_n_algorithm/06_certificate/02_x509/x509.md)
+    - [6.2.1 ca 创建根证书并签署终端证书](chapter17_dataStructure_n_algorithm/06_certificate/02_x509/main.go)
 - [7 Base64编码解析](chapter17_dataStructure_n_algorithm/07_base64_encoding/base64.md)
 - [8 trie前缀树](chapter17_dataStructure_n_algorithm/08_trie/trie.md)
 - [9 Golang底层数据结构-涉及数值类型占用的bit](chapter17_dataStructure_n_algorithm/09_golang_data_structure/data.md)
-    - [9.1 Map底层结构](chapter17_dataStructure_n_algorithm/09_golang_data_structure/map_intro.md)
+    - [9.1 Map底层结构](chapter17_dataStructure_n_algorithm/09_golang_data_structure/01_map_structure/map_intro.md)
         - [9,1,1 桶负载因子 overLoadFactor](chapter17_dataStructure_n_algorithm/09_golang_data_structure/01_map_structure/02_Improvement/map_test.go)
         - [9,1,2 map的指针优化场景](chapter17_dataStructure_n_algorithm/09_golang_data_structure/01_map_structure/02_Improvement/map_test.go)
         - [9.1.3 map 的 Key 类型取值](chapter17_dataStructure_n_algorithm/09_golang_data_structure/01_map_structure/03_map_key/key.md)
@@ -477,10 +486,12 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [1 build](chapter31_tool/01_build/build.md)
   - [1.1 Go build 选项 -tags](chapter31_tool/01_build/01_tags/main.go)
   - [1.2 Go build 选项 -ldflags](chapter31_tool/01_build/01_tags/main.go)
-- [2 makefile 使用](chapter31_tool/Makefile_info.md)
+
 
 ## [第三十二章 Generic泛型](chapter32_generic/generic.md)
 - [1 interface新含义使用-->type set(类型集合),specific type(特定类型)和structural type(结构类型)](chapter32_generic/01_typeParam_n_typeArgument/main.go)
 - [2 泛型性能测试](chapter32_generic/02_performance/generic_test.go)
+
+## [第三十三章 makefile 使用](chapter33_makefile/Makefile_info.md)
 
 

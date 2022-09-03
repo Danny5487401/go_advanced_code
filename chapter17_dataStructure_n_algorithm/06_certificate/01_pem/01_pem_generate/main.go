@@ -37,7 +37,7 @@ func GenRsaKey(bits int) error {
 		Type:  "RSA PRIVATE KEY", // 头部的type，-----BEGIN Type-----
 		Bytes: derStream,         //内容
 	}
-	file, err := os.Create("chapter17_dataStructure_n_algorithm/06_pem/pem_file/private.pem")
+	file, err := os.Create("chapter17_dataStructure_n_algorithm/06_certificate/pem_file/private.pem")
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -62,7 +62,7 @@ func GenRsaKey(bits int) error {
 		Type:  "PUBLIC KEY",
 		Bytes: derPkix,
 	}
-	file, err = os.Create("chapter17_dataStructure_n_algorithm/06_pem/pem_file/public.pem")
+	file, err = os.Create("chapter17_dataStructure_n_algorithm/06_certificate/pem_file/public.pem")
 	if err != nil {
 		fmt.Println(err)
 		return err

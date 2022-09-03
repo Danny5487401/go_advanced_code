@@ -1,4 +1,3 @@
-//性能测试
 package main
 
 import "testing"
