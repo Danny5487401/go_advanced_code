@@ -5,6 +5,229 @@
 - CA(Certificate Authority) 是证书的签发机构，它是公钥基础设施（Public Key Infrastructure，PKI）的核心。
   任何个体/组织都可以扮演 CA 的角色，只不过难以得到客户端的信任，能够受浏览器默认信任的 CA 大厂商有很多，其中 TOP5 是 Symantec、Comodo、Godaddy、GolbalSign 和 Digicert
 
+### PKCS（The Public-Key Cryptography Standards）公钥密码学标准
+第一代PKI标准主要包括美国RSA公司的公钥加密标准（Public Key Cryptography Standards，PKCS）系列、
+国际电信联盟的ITU-T X.509、IETF组织的公钥基础设施X.509（Public Key Infrastructure X.509，PKIX）标准系列、
+无线应用协议（Wireless Application Protocol ,WAP）论坛的无线公钥基础设施（Wireless Public Key Infrastructure，WPKI）标准等。
+
+
+PKCS代表“公钥密码学标准”。这是一组由RSA Security Inc.设计和发布的公钥密码标准，始于20世纪90年代初，该公司发布这些标准是为了推广使用他们拥有专利的密码技术，如RSA算法、Schnorr签名算法和其他一些算法。
+
+尽管不是行业标准（因为该公司保留了对它们的控制权），但近年来某些标准已经开始进入IETF和PKIX工作组等相关标准化组织的“标准跟踪”过程
+
+● PKCS＃1，RSA Cryptography Standard，定义了RSA Public Key和Private Key数学属性和格式，详见RFC8017
+
+● PKCS＃8 1.2私钥信息语法标准，请参见RFC5958。用于携带私钥证书密钥对（加密或未加密）。
+
+● PKCS＃9 2.0选定的属性类型[，请参见RFC2985。定义选定的属性类型，以便在PKCS＃6扩展证书、PKCS＃7数字签名消息、PKCS＃8私钥信息和PKCS＃10证书签名请求中使用。
+
+● PKCS＃10 1.7认证请求标准，请参阅RFC2986。发送给认证机构以请求公钥证书的消息格式，请参阅证书签名请求。
+
+● PKCS＃11 2.40密码令牌接口，也称为“ Cryptoki”。定义密码令牌通用接口的API（另请参阅硬件安全模块）。常用于单点登录，公共密钥加密和磁盘加密[10]系统。 RSA Security已将PKCS＃11标准的进一步开发移交给了OASIS PKCS 11技术委员会。
+
+● PKCS＃12 1.1个人信息交换语法标准，请参阅RFC7292。定义一种文件格式，个人信息交换语法标准[11]见RFC 7292。定义一种文件格式，通常用于存储私钥和附带的公钥证书，并使用基于Password的对称密钥进行保护。PFX是PKCS#12的前身。
+
+第一代PKI标准主要是基于抽象语法符号（Abstract Syntax Notation One，ASN.1）编码的，实现比较困难，这也在一定程度上影响了标准的推广。
+
+
+### ASN.1抽象语法标记（Abstract Syntax Notation One）
+
+ASN.1是一种 ISO/ITU-T 标准，描述了一种对数据进行表示、编码、传输和解码的数据格式。它提供了一整套正规的格式用于描述对象的结构，而不管语言上如何执行及这些数据的具体指代，也不用去管到底是什么样的应用程序。
+
+
+### 证书链和交叉认证
+
+证书链（也就是RFC 5280里的证书路径）指的是以最终实体证书开头，后跟一个或多个CA证书，且通常最后一个是自签名证书，具有如下关系
+
+1.除了链上的最后一个证书外，每个证书的颁发者等于其后一个证书的主题（主题就是使用者）。
+
+2.除了链上的最后一个证书外，每个证书都是由其后的一个证书签名。
+
+3.最后一个证书是信任锚：由于是通过某种可信的过程得到的，所以你可以信任它。
+
+## 密钥
+常见的几种秘钥存储格式有：字符串、证书文件、n/e参数等
+
+### 1. 字符串格式
+这是最常见的一种形式，通常RSA的秘钥都是以hex、base64编码后的字符串提供，如证书内的秘钥格式即是base64编码的字符串，然后添加前后的具体标识实现的。可以通过解码字符串，构建公钥/私钥。
+
+Note:base64存在几种细节不同的编码格式，StdEncoding、URLEncoding、RawStdEncoding、RawURLEncoding，使用时还需要进一步确认秘钥具体编码格式，避免解码出错。
+
+以下未特殊说明的例子中均默认使用StdEncoding。
+
+（1）公钥
+直接hex、base64解码后调用x509.ParsePKIXPublicKey即可
+```go
+key, _ := hex.DecodeString(publicKeyStr)
+publicKey, _ := x509.ParsePKIXPublicKey(key)
+
+```
+
+（2）私钥
+由于RSA私钥存在PKCS1和PKCS8两种格式，因此解码后需要根据格式类型调用对应的方法即可。
+Note: 一般java使用pkcs8格式的私钥，其他语言使用pkcs1格式的私钥。使用时，记得确认下格式。
+```go
+// 1. 解析pkcs1格式私钥
+key, _ := base64.StdEncoding.DecodeString(pkcs1keyStr)
+privateKey, _ := x509.ParsePKCS1PrivateKey(key)
+
+//2. 解析pkcs8格式私钥
+key, _ := hex.DecodeString(pkcs8keyStr)
+privateKey, err := x509.ParsePKCS8PrivateKey(key)
+
+```
+
+### 2. 证书文件扩展名
+
+Note: 其中一些扩展名也有其它用途，就是说具有这个扩展名的文件可能并不是证书，比如说可能只是保存了私钥。
+
+xx.crt：证书文件，可以是二进制格式，可以是文本格式，与 .DER 格式相同，不保存私钥。
+
+xx.key：私钥文件
+
+xx.req：请求文件
+
+
+xx.csr：请求文件(Certificate Signing Request))
+
+xx.pem（隐私增强型电子邮件)：一般是文本格式，可保存证书，可保存私钥。DER编码的证书再进行Base64编码,Privacy Enhanced Mail，以 -----BEGIN-----开头，以 -----END----- 结尾。
+中间的内容是 BASE64 编码。这种格式可以保存证书和私钥，有时我们也把PEM 格式的私钥的后缀改为 .key 以区别证书与私钥.
+
+xx.der：文件是二进制格式，只保存证书，不保存私钥。Java 和 Windows 服务器偏向于使用这种编码格式。
+
+Note: 实际上，上述文件的扩展名可以随意命名。只是为了容易理解文件的功能而选择大家都认识的命名方式。但是，上述文件是有格式的，只能是 pem 格式或者 der 格式。使用什么格式的文件取决于需求。
+
+解析方式：读取文件，调用pem.Decode，然后按照base64解码，再解析成公钥/私钥。
+```go
+key,_ := ioutil.ReadFile("pem_file_path")
+block, _ := pem.Decode(key)
+//解析成pkcs8格式私钥
+privateKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+//解析成pkcs1格式私钥
+privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+//解析成公钥
+publicKey, _ := x509.ParsePKIXPublicKey(key)
+
+
+```
+
+2. .pkcs12、.pfx、.p12
+
+.pkcs12、.pfx、.p12这些文件格式存储的是已加密后的内容，可以通过openssl转换成pem文件后进行处理。
+
+-  .p12-PKCS＃12：可以包含证书（公钥），也可同时包含受密码保护的私钥
+-  .pfx ：PKCS＃12的前身（通常用PKCS＃12格式，例如IIS产生的PFX文件）
+
+
+提取密钥对：
+```shell
+openssl pkcs12 -in in.p12 -out out.pem -nodes
+```
+OpenSSL命令分为以下3个部分:
+![](.image/openssl_info.png)
+```shell
+➜  go_advanced_code git:(feature/certificate) ✗ openssl version -a
+LibreSSL 2.8.3
+built on: date not available
+platform: information not available
+options:  bn(64,64) rc4(ptr,int) des(idx,cisc,16,int) blowfish(idx) 
+compiler: information not available
+OPENSSLDIR: "/private/etc/ssl" # # OpenSSL 默认查找和配置证书目录
+
+# 查看可用命令：openssl help
+(⎈:danny-xia)➜  github.com/Danny5487401/go_advanced_code git:(main) ✗ openssl help                                                         
+openssl:Error: 'help' is an invalid command.
+
+Standard commands
+asn1parse         ca                certhash          ciphers           
+crl               crl2pkcs7         dgst              dh                
+dhparam           dsa               dsaparam          ec                
+ecparam           enc               errstr            gendh             
+gendsa            genpkey           genrsa            nseq              
+ocsp              passwd            pkcs12            pkcs7             
+pkcs8             pkey              pkeyparam         pkeyutl           
+prime             rand              req               rsa               
+rsautl            s_client          s_server          s_time            
+sess_id           smime             speed             spkac             
+ts                verify            version           x509              
+
+Message Digest commands (see the `dgst' command for more details)
+gost-mac          md4               md5               md_gost94         
+ripemd160         sha1              sha224            sha256            
+sha384            sha512            streebog256       streebog512       
+whirlpool         
+
+Cipher commands (see the `enc' command for more details)
+aes-128-cbc       aes-128-ecb       aes-192-cbc       aes-192-ecb       
+aes-256-cbc       aes-256-ecb       base64            bf                
+bf-cbc            bf-cfb            bf-ecb            bf-ofb            
+camellia-128-cbc  camellia-128-ecb  camellia-192-cbc  camellia-192-ecb  
+camellia-256-cbc  camellia-256-ecb  cast              cast-cbc          
+cast5-cbc         cast5-cfb         cast5-ecb         cast5-ofb         
+chacha            des               des-cbc           des-cfb           
+des-ecb           des-ede           des-ede-cbc       des-ede-cfb       
+des-ede-ofb       des-ede3          des-ede3-cbc      des-ede3-cfb      
+des-ede3-ofb      des-ofb           des3              desx              
+rc2               rc2-40-cbc        rc2-64-cbc        rc2-cbc           
+rc2-cfb           rc2-ecb           rc2-ofb           rc4               
+rc4-40            
+
+
+```
+* 标准命令Standard commands
+
+openssl参数解析
+* pkcs12:PKCS#12数据的管理
+* -in file ：需要进行处理的PEM格式的证书
+* -out file ：处理结束后输出的证书文件
+* -nodes  :  不加密私钥
+
+### 3. N,E参数
+
+例如：login with apple keys的公钥就是这种格式的，需要根据n,e构造出公钥。
+```shell
+{
+      "kty": "RSA",
+      "kid": "eXaunmL",
+      "use": "sig",
+      "alg": "RS256",
+      "n": "4dGQ7bQK8LgILOdLsYzfZjkEAoQeVC_aqyc8GC6RX7dq_KvRAQAWPvkam8VQv4GK5T4ogklEKEvj5ISBamdDNq1n52TpxQwI2EqxSk7I9fKPKhRt4F8-2yETlYvye-2s6NeWJim0KBtOVrk0gWvEDgd6WOqJl_yt5WBISvILNyVg1qAAM8JeX6dRPosahRVDjA52G2X-Tip84wqwyRpUlq2ybzcLh3zyhCitBOebiRWDQfG26EH9lTlJhll-p_Dg8vAXxJLIJ4SNLcqgFeZe4OfHLgdzMvxXZJnPp_VgmkcpUdRotazKZumj6dBPcXI_XID4Z4Z3OM1KrZPJNdUhxw",
+      "e": "AQAB"
+    }
+
+```
+
+使用时就需要，将N，E解析成big.Int格式，注意N、E的base64的具体编码格式：
+```go
+// /Users/python/go/go1.16/src/crypto/rsa/rsa.go
+// A PublicKey represents the public part of an RSA key.
+type PublicKey struct {
+	N *big.Int // modulus
+	E int      // public exponent
+}
+```
+
+```go
+pubN, _ := parse2bigInt(n)
+pubE, _ := parse2bigInt(e)
+pub = &rsa.PublicKey{
+    N: pubN,
+    E: int(pubE.Int64()),
+}
+
+// parse string to big.Int
+func parse2bigInt(s string) (bi *big.Int, err error) {
+    bi = &big.Int{}
+    b, err := base64.RawURLEncoding.DecodeString(s)//此处使用的是RawURLEncoding
+    if err != nil {
+        return
+    }
+    bi.SetBytes(b)
+    return
+}
+
+```
+
 
 
 ## 证书种类
@@ -237,6 +460,9 @@ Getting CA Private Key
 Note:在生成server.csr(Certificate Signing Request)时，主机名填写的是test1280（后续客户端访问将用到）
 
 
+3. 创建中间证书密钥对
+中间证书授权（CA）是可以代表根CA签署证书的实体，根CA签署中间证书，这就形成了信任链。
+中间证书的目的主要是：根密钥可以保持脱机状态，并尽可能不频繁地使用。如果中间密钥被泄露，根CA可以撤销中间证书并创建新的中间密钥对。
 
 
 
