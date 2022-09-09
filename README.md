@@ -166,8 +166,10 @@ Note: Go 1.18 移除用于泛型的constraints包
 
 ## [第九章 设计模式-OOP七大准则](chapter09_design_pattern/introduction.md)
 - 1 创建型模式
-    - [1.1 静态工厂模式-->new关键字函数实现简单工厂](chapter09_design_pattern/01_construction/01_StaticFactoryMethod/static_factory.md)
-    - [1.2 工厂方法模式-->k8s中实现](chapter09_design_pattern/01_construction/02_factory_mode/factory.md)
+    - 1.1 工厂模式
+      - [1.1.1 简单工厂模式-->new关键字函数实现简单工厂](chapter09_design_pattern/01_construction/01_factory/01_StaticFactory/static_factory.md)
+      - [1.1.2 工厂方法模式-->k8s中实现](chapter09_design_pattern/01_construction/01_factory/02_factory_mode/factory.md)
+      - [1.1.3 抽象工厂模式](chapter09_design_pattern/01_construction/01_factory/03_abstract_factory/abstract_factory.md)
     - [1.3 单例模式-->标准库strings/replace实现](chapter09_design_pattern/01_construction/03_singleton/singleton.md)
     - [1.4 原型模式-->confluent-kafka中map实现](chapter09_design_pattern/01_construction/04_prototype/prototype.md)
     - [1.5 建造者模式-->xorm,k8s,zap中实现](chapter09_design_pattern/01_construction/05_builder/builder_info.md)

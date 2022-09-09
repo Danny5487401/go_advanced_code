@@ -15,11 +15,13 @@ func TestOperator(t *testing.T) {
 		factory OperatorFactory
 	)
 
+	// 加法
 	factory = PlusOperatorFactory{}
 	if compute(factory, 1, 2) != 3 {
 		t.Fatal("error with factory method pattern")
 	}
 
+	// 减法
 	factory = MinusOperatorFactory{}
 	if compute(factory, 4, 2) != 2 {
 		t.Fatal("error with factory method pattern")
