@@ -284,17 +284,17 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [tcp介绍](chapter12_net/tcp.md)
 - [epoll多路复用底层实现及Golang封装](chapter12_net/io_multiplexing.md)
 
-- 1 http服务端高级封装演变
+- 1 http服务端高级封装演变: ServeHTTP 是 HTTP 服务器响应客户端的请求接口
   - [1.1 高级封装：使用DefaultServeMux](chapter12_net/01_http_server/01_use_DefaultServeMux/main.go)
   - [1.2 中级封装：使用内置serveMux生成函数](chapter12_net/01_http_server/02_use_http_NewServeMux/main.go)
   - [1.3 原始封装：自定义实现serveMux](chapter12_net/01_http_server/03_use_cutomized_mux/main.go)
 - 2 http客户端高级封装演变
-  - [2.1 request 源码](chapter12_net/02_http_client/http_request.md)
-  - [2.2 response 源码](chapter12_net/02_http_client/http_response.md)
-  - [2.3 transport 源码](chapter12_net/02_http_client/http_transport.md)
-  - [2.4 http.Client](chapter12_net/02_http_client/http_client.md) 
-  - [2.5 官方库版(爬虫获取邮箱案例-未封装)](chapter12_net/02_http_client/01_standard_pkg/client.go)
-  - [2.6 go-resty(推荐使用)](chapter12_net/02_http_client/02_go_resty/rest_client.go)
+  - [request 源码](chapter12_net/02_http_client/http_request.md)
+  - [response 源码](chapter12_net/02_http_client/http_response.md)
+  - [http.RoundTripper 接口实现源码: 调用方将请求作为参数获取请求对应的响应,并管理连接](chapter12_net/02_http_client/http_transport.md)
+  - [http.Client 源码](chapter12_net/02_http_client/http_client.md) 
+  - [2.1 官方库版(爬虫获取邮箱案例-未封装)](chapter12_net/02_http_client/01_standard_pkg/client.go)
+  - [2.2 go-resty(推荐使用)](chapter12_net/02_http_client/02_go_resty/rest_client.go)
 - [3 Tcp实现客户端及服务端(服务端netpoll分析)](chapter12_net/03_tcp/tcp_server.md)
   - [客户端](chapter12_net/03_tcp/client/main.go)
   - [服务端](chapter12_net/03_tcp/server/main.go)
