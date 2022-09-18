@@ -498,5 +498,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 泛型性能测试](chapter32_generic/02_performance/generic_test.go)
 
 ## [第三十三章 makefile 使用](chapter33_makefile/Makefile_info.md)
+- [Makefile常用函数列表](chapter33_makefile/makefile_func.md)
+- [golang makefile 最佳实践](chapter33_makefile/iam_makefile_structure.png)
 
 
