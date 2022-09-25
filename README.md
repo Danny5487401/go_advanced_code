@@ -89,12 +89,13 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [4 CSP理论中的Process/Channel](chapter03_channel/04_CSP/CSP.md)
 ---
 
-## 第四章 interface和反射 
-- [1 interface 与 Go 语言各种数据类型关系--> _type 字段的基础上，增加一些额外的字段来进行管理](chapter04_interface_n_reflect/01_interface/interface.md)
+## 第四章 interface 和反射 
+- [1 interface 分类：eface 和 iface, 及两者之间关系转换](chapter04_interface_n_reflect/01_interface/interface.md)
     - [1.1 汇编分析不含方法eface和带方法iface](chapter04_interface_n_reflect/01_interface/01_interface_in_asm/main.go)
     - [1.2 接口值的零值是指动态类型和动态值都为 nil](chapter04_interface_n_reflect/01_interface/02_interface_compare_with_nil/main.go)
     - [1.3 打印出接口的动态类型和值](chapter04_interface_n_reflect/01_interface/03_print_dynamic_value_n_type/main.go)
 - [2 反射](chapter04_interface_n_reflect/02_reflect/reflect.md)
+    - [2.0 常见需求: 不能预先确定参数类型，需要动态的执行不同参数类型行为](chapter04_interface_n_reflect/02_reflect/00_kind_route/kind_route_test.go)
     - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01three_laws/threeLaw.md)
     - [2.2 类型断言](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
         - [2.2.1 断言的类型T是一个**具体类型** 或则 **接口类型**](chapter04_interface_n_reflect/02_reflect/02TypeAssert/01_eface_n_iface_type_assert/main.go)
