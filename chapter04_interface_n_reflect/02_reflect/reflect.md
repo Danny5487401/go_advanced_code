@@ -100,6 +100,8 @@ fmt.Printf("%T", empty) // *os.File
 由于 empty 是一个空接口，因此所有的类型都实现了它，w 可以直接赋给它，不需要执行断言操作
 
 ## 三. 源码分析
+![](chapter04_interface_n_reflect/02_reflect/.reflect_images/reflect_files.png)
+reflect包下内容可以大体分为三部分：测试文件、编译文件、反射核心代码，这里主要围绕核心代码展开。
 
 go 中的 interface 分类两种，eface 和 iface。可具体上一节参看 [interface详解](chapter04_interface_n_reflect/01_interface/interface.md)
 
@@ -109,6 +111,7 @@ go 中的 interface 分类两种，eface 和 iface。可具体上一节参看 [i
 
 
 ### 数据结构介绍
+![](chapter04_interface_n_reflect/02_reflect/.reflect_images/type_n_rtype.png)
 ```go
 type Type interface {
     common() *rtype  // common 返回是rtype
@@ -168,8 +171,10 @@ func (t *rtype) textOff(off textOff) unsafe.Pointer {
 ### 反射的基本函数
 reflect 包里定义了一个接口和一个结构体，即 reflect.Type 和 reflect.Value，它们提供很多函数来获取存储在接口里的类型信息。
 
-reflect.Type 主要提供关于类型相关的信息，所以它和 _type 关联比较紧密； 
-reflect.Value 则结合 _type 和 data 两者，因此程序员可以获取甚至改变类型的值
+![](chapter04_interface_n_reflect/02_reflect/.reflect_images/reflect_all_struct.png) 
+
+- reflect.Type 主要提供关于类型相关的信息，所以它和 _type 关联比较紧密； 
+- reflect.Value 则结合 _type 和 data 两者，因此程序员可以获取甚至改变类型的值
 
 1. reflect.Type 是以一个接口的形式存在的
 
@@ -262,7 +267,8 @@ type Type interface {
 	//	Slice: Elem
 	//	Struct: Field, FieldByIndex, FieldByName, FieldByNameFunc, NumField
 
-	// 类型所占据的位数
+    // Bits返回类型的大小（以位为单位）
+    // 如果类型的种类不是大小为或未大小为Int、Uint、Float或Complex的种类之一，则会导致panic。
 	Bits() int
 
 	
@@ -517,6 +523,23 @@ type Value struct {
 
    // 方法值表示当前的方法调用，就像接收者r调用r.Read方法。typ+val+flag的标志位描述r的话，但flag的Kind标志位表示Func（方法是函数），flag的高位表示r类型的方法列表中的方法编号
 }
+```
+flag的枚举定义以及标志位的二进制占位分布情况
+
+```go
+type flag uintptr
+
+const (
+	flagKindWidth        = 5 //  有27个Kind类型，5位可以容纳2^5可以表示32个类型
+	flagKindMask    flag = 1<<flagKindWidth - 1
+	flagStickyRO    flag = 1 << 5
+	flagEmbedRO     flag = 1 << 6
+	flagIndir       flag = 1 << 7
+	flagAddr        flag = 1 << 8
+	flagMethod      flag = 1 << 9
+	flagMethodShift      = 10
+	flagRO          flag = flagStickyRO | flagEmbedRO
+)
 ```
 
 

@@ -25,7 +25,6 @@ func main() {
 func Law1() {
 	// 1. 内置类型
 	Typeof(123)
-
 	// 2. 自定义类型
 	Typeof(MyInt(456))
 
