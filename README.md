@@ -24,7 +24,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 
 ## [第一章 I/O操作](chapter01_input_output/io.md)
 - 1 os操作系统模块
-    - [1.1 os中FileInfo底层的文件描述符和相关信息](chapter01_input_output/01_OS_module/01FileInfo/main.go)   
+    - [1.1 FileInfo: 返回Stat and Lstat文件描述符和相关信息](chapter01_input_output/01_OS_module/01FileInfo/main.go)   
     - [1.2 os文件操作](chapter01_input_output/01_OS_module/02FileOperation/main.go)   
     - 1.3 io包底层Reader和Writer接口   
         - 1.3.1 os,bytes,strings包   
@@ -34,6 +34,8 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 bufio缓存读写](chapter01_input_output/02_bufio/bufio.md)
   - [2.1 reader](chapter01_input_output/02_bufio/01reader/main.go)
   - [2.2 writer](chapter01_input_output/02_bufio/02writer/main.go)
+- [3 Go 1.16 io.FS: OS 的 FS 解耦](chapter01_input_output/03_io_fs/io_fs.md)
+  - [go 1.16 前后的文件io对比](chapter01_input_output/03_io_fs/embed.go)
 
 ---
 ## 第二章 协程Goroutine
@@ -432,8 +434,9 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 go-spew优化调试](chapter23_debug_program/02_go_spew/main.go)
 
 
-## [第二十四章 Flag命令行参数](chapter24_flag/flag.md)
-- [1 基本使用及自定义帮助信息](chapter24_flag/nginx.go) 
+## [第二十四章 命令行参数解析](chapter24_flag/flag.md)
+- [1 flag 基本使用及自定义帮助信息](chapter24_flag/01_flag/nginx.go) 
+- [2 pflag 完全兼容flag](chapter24_flag/02_pflag/pflag.md) 
 
 
 ## [第二十四章 Flag命令行参数及源码分析](chapter24_flag/flag.md)
