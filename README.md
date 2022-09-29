@@ -13,7 +13,7 @@
 
 # *目录*
 
-Note:目录同级为 *代码展示*，推荐在 Goland 2022.2.1版本以上运行
+Note:目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运行
 ## *推荐 GoVersion: 1.18(涉及泛型)*
 Note: Go 1.18 移除用于泛型的constraints包
 
@@ -24,9 +24,9 @@ Note: Go 1.18 移除用于泛型的constraints包
 
 ## [第一章 I/O操作](chapter01_input_output/io.md)
 - 1 os操作系统模块
-    - [1.1 os中FileInfo底层的文件描述符和相关信息](chapter01_input_output/01_OS_module/01FileInfo/main.go)   
+    - [1.1 os中 FileInfo 文件属性](chapter01_input_output/01_OS_module/01FileInfo/fileinfo.md)   
     - [1.2 os文件操作](chapter01_input_output/01_OS_module/02FileOperation/main.go)   
-    - 1.3 io包底层Reader和Writer接口   
+    - 1.3 io包底层 Reader 和 Writer 接口   
         - 1.3.1 os,bytes,strings包   
     - [1.4 io断点续传 ](chapter01_input_output/01_OS_module/04seeker/02resume_from_break-point/main.go) 
     - [1.5 FilePath包 ](chapter01_input_output/01_OS_module/05filePath/walk.go)    
