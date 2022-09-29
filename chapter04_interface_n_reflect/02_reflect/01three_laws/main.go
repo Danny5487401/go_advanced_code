@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 )
 
 func main() {
@@ -23,38 +24,59 @@ func main() {
 
 func Law1() {
 	// 1. 内置类型
-	var x float64 = 3.4
-
-	fmt.Println("reflect.TypeOf 能获取类型信息:", reflect.TypeOf(x))       //type: float64 获取某个变量的静态类型
-	fmt.Println("reflect.ValueOf 能获取数据的运行时表示:", reflect.ValueOf(x)) //value: 3.4  获取某个变量的值
-
-	//根据反射的值，来获取对应的类型和数值
-	v := reflect.ValueOf(x)
-	// reflect.Value.Kind() Kind获取变量值的底层类型（类别），注意不是类型，是Int、Float，还是Struct，还是Slice
-	fmt.Println("kind is float64: ", v.Kind() == reflect.Float64) // kind is float64:  true
-
-	// 获取变量值的类型，效果等同于reflect.TypeOf
-	fmt.Println("type : ", v.Type())   // type :  float64
-	fmt.Println("value : ", v.Float()) // value :  3.4
-
+	Typeof(123)
 	// 2. 自定义类型
-	type MyInt int
-	var y MyInt = 7
-	v1 := reflect.ValueOf(y)                         // 接口变量存储了实际的值和值的类型
-	fmt.Println("kind 底层类型 is float64: ", v1.Kind()) // kind 底层类型 is float64:  int
-	// 获取变量值的类型，效果等同于reflect.TypeOf
-	fmt.Println("type 定义类型 : ", v1.Type()) // type 定义类型 :  main.MyInt
+	Typeof(MyInt(456))
 
 	// 3. 结构体类型
 	coder := &Coder{Name: "danny"}
 	typ := reflect.TypeOf(coder)
 	val := reflect.ValueOf(coder)
+	fmt.Println("kind of coder : ", typ.Kind()) // kind of coder :  ptr
+	fmt.Println("type of coder : ", typ)        // type of coder :  *main.Coder
+	fmt.Println("value of coder : ", val)       // value of coder :  danny
 
-	typeofStringer := reflect.TypeOf((*fmt.Stringer)(nil)).Elem() // 获得接口类型
-	fmt.Println("kind of coder : ", typ.Kind())                   // kind of coder :  ptr
-	fmt.Println("type of coder : ", typ)                          // type of coder :  *main.Coder
-	fmt.Println("value of coder : ", val)                         // value of coder :  danny
+	typeofStringer := reflect.TypeOf((*fmt.Stringer)(nil)).Elem()       // 获得接口类型
+	fmt.Println("kind of Stringer : ", typeofStringer.Kind())           // kind of Stringer :  interface
+	fmt.Println("type of Stringer : ", typeofStringer)                  // type of Stringer :  fmt.Stringer
+	fmt.Println("PkgPath of Stringer : ", typeofStringer.PkgPath())     // PkgPath of Stringer :  fmt
+	fmt.Printf("Method of Stringer : %#v \n", typeofStringer.Method(0)) // Method of Stringer : reflect.Method{Name:"String", PkgPath:"", Type:(*reflect.rtype)(0x104b7cba0), Func:reflect.Value{typ:(*reflect.rtype)(nil), ptr:(unsafe.Pointer)(nil), flag:0x0}, Index:0}
 
+}
+
+type MyInt int
+
+//go:noinline
+func (f MyInt) Ree() int {
+	return int(f)
+}
+
+//go:noinline
+func (f MyInt) String() string {
+	return strconv.Itoa(f.Ree())
+}
+
+//go:noinline
+func (f MyInt) print() {
+	// 明明在源码中定义了print方法，为什么找不到该方法呢?
+	// print方法是一个私有方法，不会被外部调用，但是main包范围内又没有调用者; Go编译器本着勤俭节约的原则，把print方法优化丢弃掉了
+	fmt.Println("foo is " + f.String())
+}
+
+//go:noinline
+func Typeof(i interface{}) {
+	t := reflect.TypeOf(i)
+	fmt.Println("值  ", i)
+	fmt.Println("名称", t.Name())
+	fmt.Println("类型", t.String())
+	fmt.Println("方法")
+	num := t.NumMethod()
+	if num > 0 {
+		for j := 0; j < num; j++ {
+			fmt.Println("  ", t.Method(j).Name, t.Method(j).Type)
+		}
+	}
+	fmt.Println("-------------------")
 }
 
 func Law2() {
