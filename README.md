@@ -24,7 +24,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 
 ## [第一章 I/O操作](chapter01_input_output/io.md)
 - 1 os操作系统模块
-    - [1.1 os中 FileInfo 文件属性](chapter01_input_output/01_OS_module/01FileInfo/fileinfo.md)   
+    - [1.1 os中 FileInfo 文件属性](chapter01_input_output/01_OS_module/01FileInfo/fileinfo.md)
     - [1.2 os文件操作](chapter01_input_output/01_OS_module/02FileOperation/main.go)   
     - 1.3 io包底层 Reader 和 Writer 接口   
         - 1.3.1 os,bytes,strings包   
@@ -34,6 +34,8 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 bufio缓存读写](chapter01_input_output/02_bufio/bufio.md)
   - [2.1 reader](chapter01_input_output/02_bufio/01reader/main.go)
   - [2.2 writer](chapter01_input_output/02_bufio/02writer/main.go)
+- [3 Go 1.16 io.FS: OS 的 FS 解耦](chapter01_input_output/03_io_fs/io_fs.md)
+  - [go 1.16 前后的文件io对比](chapter01_input_output/03_io_fs/embed.go)
 
 ---
 ## 第二章 协程Goroutine
@@ -89,16 +91,17 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [4 CSP理论中的Process/Channel](chapter03_channel/04_CSP/CSP.md)
 ---
 
-## 第四章 interface和反射 
-- [1 interface 与 Go 语言各种数据类型关系--> _type 字段的基础上，增加一些额外的字段来进行管理](chapter04_interface_n_reflect/01_interface/interface.md)
+## 第四章 interface 和反射 
+- [1 interface 分类：eface 和 iface, 及两者之间关系转换](chapter04_interface_n_reflect/01_interface/interface.md)
     - [1.1 汇编分析不含方法eface和带方法iface](chapter04_interface_n_reflect/01_interface/01_interface_in_asm/main.go)
     - [1.2 接口值的零值是指动态类型和动态值都为 nil](chapter04_interface_n_reflect/01_interface/02_interface_compare_with_nil/main.go)
     - [1.3 打印出接口的动态类型和值](chapter04_interface_n_reflect/01_interface/03_print_dynamic_value_n_type/main.go)
 - [2 反射](chapter04_interface_n_reflect/02_reflect/reflect.md)
+    - [2.0 常见需求: 不能预先确定参数类型，需要动态的执行不同参数类型行为](chapter04_interface_n_reflect/02_reflect/00_kind_route/kind_route_test.go)
     - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01three_laws/threeLaw.md)
-    - [2.2 类型断言](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
+    - [2.2 四种类型转换:断言、强制、显式、隐式](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
         - [2.2.1 断言的类型T是一个**具体类型** 或则 **接口类型**](chapter04_interface_n_reflect/02_reflect/02TypeAssert/01_eface_n_iface_type_assert/main.go)
-        - [类型断言性能分析](chapter04_interface_n_reflect/02_reflect/02TypeAssert/02_type_assert_performance/typeAssert_test.go)
+        - [2.2.2 类型断言性能分析](chapter04_interface_n_reflect/02_reflect/02TypeAssert/02_type_assert_performance/typeAssert_test.go)
             - 空接口类型直接类型断言具体的类型
             - 空接口类型使用TypeSwitch 只有部分类型
             - 空接口类型使用TypeSwitch 所有类型
@@ -112,7 +115,10 @@ Note: Go 1.18 移除用于泛型的constraints包
         - 底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
         - 一个nil值的map和非nil值但是空的map*是否“深度”相等
         - 带有环的数据对比*是否“深度”相等
-    - [2.7 通过reflect.implements判断struct类型是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
+    - [2.7 reflect.implements 判断 struct 是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
+    - [2.8 reflect.MakeFunc 构建函数](chapter04_interface_n_reflect/02_reflect/08_make_func/make_func.md)
+      - [2.8.1 构建逆序打印切片函数](chapter04_interface_n_reflect/02_reflect/08_make_func/01_invertInts/invertslice.go)
+      - [2.8.2 构建求和函数分别用于字符串和数字](chapter04_interface_n_reflect/02_reflect/08_make_func/02_sum/reflect_sum.go)
 ---
 
 ## 第五章 切片和数组

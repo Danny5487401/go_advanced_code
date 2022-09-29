@@ -17,9 +17,10 @@ func main() {
 
 }
 
+type myFloat64 float64
+
 func changeValue() {
-	var num float64 = 1.2345
-	fmt.Println("old value of 03PointerSetPrivateValue:", num) // 1.2345
+	var num myFloat64 = 1.2345
 
 	// 通过reflect.ValueOf获取num中的reflect.Value，注意，参数必须是指针才能修改其值
 	pointer := reflect.ValueOf(&num)
@@ -33,12 +34,12 @@ func changeValue() {
 	}
 	newValue := pointer.Elem()
 
-	fmt.Println("type of 03PointerSetPrivateValue:", newValue.Type())          // float64
-	fmt.Println("settability of 03PointerSetPrivateValue:", newValue.CanSet()) // true
+	fmt.Println("type of num:", newValue.Type())          // float64
+	fmt.Println("settability of num:", newValue.CanSet()) // true
 
 	// 重新赋值
 	newValue.SetFloat(77)
-	fmt.Println("new value of 03PointerSetPrivateValue:", num) // 77
+	fmt.Println("修改后的值", num) // 77
 }
 
 // 如何通过反射来进行方法的调用？
