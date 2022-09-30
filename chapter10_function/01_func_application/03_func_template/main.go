@@ -53,6 +53,7 @@ func OddFilter(ele interface{}) interface{} {
 	if ok {
 		if integer%2 != 1 {
 			integer = integer + 1
+
 		}
 	}
 

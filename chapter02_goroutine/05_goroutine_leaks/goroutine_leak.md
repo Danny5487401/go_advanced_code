@@ -24,3 +24,17 @@ channel 引起的泄露分析:
 
 做法：Go 可以通过 channel 的关闭向所有的接收者发送广播信息。
 
+
+## 检测工具 goleak
+
+goleak主要关注两个方法即可：VerifyNone、VerifyTestMain
+- VerifyNone用于单一测试用例中测试
+- VerifyTestMain可以在TestMain中添加，可以减少对测试代码的入侵
+
+### goleak 的实现原理
+使用runtime.Stack()方法获取当前运行的所有goroutine的栈信息，默认定义不需要检测的过滤项，默认定义检测次数+检测间隔，不断周期进行检测，最终在多次检查后仍没有找到剩下的goroutine则判断没有发生goroutine泄漏
+
+
+## 参考资料
+1. [goleak官网](https://github.com/uber-go/goleak)
+

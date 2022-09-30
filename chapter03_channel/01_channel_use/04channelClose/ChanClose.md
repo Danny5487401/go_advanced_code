@@ -10,66 +10,107 @@
 
 
 
-## 获取关闭的错误代码
-```go
-package main
-
-import "fmt"
-
-func IsClosed(ch <-chan int) bool {
-	select {
-	case <-ch:
-		return true
-	default:
-	}
-
-	return false
-}
-
-func main() {
-	c := make(chan int)
-	fmt.Println(IsClosed(c)) // false
-	close(c)
-	fmt.Println(IsClosed(c)) // true
-}
-
-
-```
-
-### 缺点
-看一下代码，其实存在很多问题。
-1. 首先，IsClosed 函数是一个有副作用的函数。每调用一次，都会读出 channel 里的一个元素，改变了 channel 的状态。这不是一个好的函数，干活就干活，还顺手牵羊！
-2. 其次，IsClosed 函数返回的结果仅代表调用那个瞬间，并不能保证调用之后会不会有其他 goroutine 对它进行了一些操作，改变了它的这种状态.
-
 ## 关闭 channel 的原则
-don't close a channel from the receiver side and don't close a channel if the channel has multiple concurrent senders.
+> don't close a channel from the receiver side and don't close a channel if the channel has multiple concurrent senders.
 
 不要从一个 receiver 侧关闭 channel，也不要在有多个 sender 时，关闭 channel。
 
 
-### 解释
-向 channel 发送元素的就是 sender，因此 sender 可以决定何时不发送数据，并且关闭 channel。但是如果有多个 sender，某个 sender 同样没法确定其他 sender 的情况，
-这时也不能贸然关闭 channel。
+向 channel 发送元素的就是 sender，因此 sender 可以决定何时不发送数据，并且关闭 channel。
+但是如果有多个 sender，某个 sender 同样没法确定其他 sender 的情况，这时也不能贸然关闭 channel。
 
 但是上面所说的并不是最本质的，最本质的原则就只有一条：
 
-don't close (or send values to) closed channels.
+> don't close (or send values to) closed channels.
 
 ## 如何关闭
 有两个不那么优雅地关闭 channel 的方法：
 
 1. 使用 defer-recover 机制，放心大胆地关闭 channel 或者向 channel 发送数据。即使发生了 panic，有 defer-recover 在兜底。
+
+生产者关闭潜在的关闭通道
+```go
+func SafeClose(ch chan T) (justClosed bool) {
+    defer func() {
+        if recover() != nil {
+            // 返回值可以被修改
+            // 在一个延时函数的调用中。
+            justClosed = false
+        }
+    }()
+
+    // 假设这里 ch != nil 。
+    close(ch)   // 如果 ch 已经被关闭将会引发 panic
+    return true // <=> justClosed = true; return
+}
+```
+
+生产者将数据发送到一个潜在的关闭通道
+```go
+func SafeSend(ch chan T, value T) (closed bool) {
+    defer func() {
+        if recover() != nil {
+            closed = true
+        }
+    }()
+
+    ch <- value  // 如果 ch 已经被关闭将会引发 panic
+    return false // <=> closed = false; return
+}
+```
+
 2. 使用 sync.Once 来保证只关闭一次
+```go
+type MyChannel struct {
+    C    chan T
+    once sync.Once
+}
+
+func NewMyChannel() *MyChannel {
+    return &MyChannel{C: make(chan T)}
+}
+
+func (mc *MyChannel) SafeClose() {
+    mc.once.Do(func() {
+        close(mc.C)
+    })
+}
+```
+3. 使用 sync.Mutex 去避免多次关闭一个通道：
+```go
+type MyChannel struct {
+    C      chan T
+    closed bool
+    mutex  sync.Mutex
+}
+
+func NewMyChannel() *MyChannel {
+    return &MyChannel{C: make(chan T)}
+}
+
+func (mc *MyChannel) SafeClose() {
+    mc.mutex.Lock()
+    defer mc.mutex.Unlock()
+    if !mc.closed {
+        close(mc.C)
+        mc.closed = true
+    }
+}
+
+func (mc *MyChannel) IsClosed() bool {
+    mc.mutex.Lock()
+    defer mc.mutex.Unlock()
+    return mc.closed
+}
+```
 
 根据 sender 和 receiver 的个数，分下面几种情况：
 
-1. 一个 sender，一个 receiver
+- 1 一个 sender，一个 receiver
+- 2 一个 sender， M 个 receiver
+- 3 N 个 sender，一个 reciver
+- 4 N 个 sender， M 个 receiver
 
-2. 一个 sender， M 个 receiver
-
-3. N 个 sender，一个 reciver
-
-4. N 个 sender， M 个 receiver
 ### 优雅的关闭
 
 对于 1，2，只有一个 sender 的情况就不用说了，直接从 sender 端关闭就好了，没有问题
@@ -84,6 +125,6 @@ don't close (or send values to) closed channels.
 
 退出时，显示通知所有协程退出
 
-## 原理：
+## 原理
 
 所有读ch的协程都会收到close(ch)的信号

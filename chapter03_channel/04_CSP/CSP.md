@@ -3,7 +3,7 @@
 
 有2个支持高并发的模型：CSP和Actor。鉴于Occam和Erlang都选用了CSP(来自Go FAQ)，并且效果不错，Go也选了CSP，但与前两者不同的是，Go把channel作为头等公民。
 
-CSP 也是一门自定义的编程语言，作者定义了输入输出语句，用于 processes 间的通信（communicatiton）。
+CSP 也是一门自定义的编程语言，作者定义了输入输出语句，用于 processes 间的通信（communication）。
 processes 被认为是需要输入驱动，并且产生输出，供其他 processes 消费，processes 可以是进程、线程、甚至是代码块。
 输入命令是：!，用来向 processes 写入；输出是：?，用来从 processes 读出。
 

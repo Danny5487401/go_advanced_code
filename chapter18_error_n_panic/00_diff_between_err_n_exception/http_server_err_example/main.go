@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func main()  {
+func main() {
 	http.HandleFunc("/hello", func(w http.ResponseWriter, request *http.Request) {
 		// 假设异常
 
@@ -22,21 +22,19 @@ func main()  {
 			// 解决方法：
 			defer func() {
 				err := recover()
-				if err != nil{
-					fmt.Printf("捕获到异常:%v\n",err)
+				if err != nil {
+					fmt.Printf("捕获到异常:%v\n", err)
 				}
 			}()
 
 			// panic 会引起主线程的挂掉，同时导致其他的协程也挂了
-			panic("出现异常")  //页面打印出来，但是程序挂了
+			panic("出现异常") //页面打印出来，但是程序挂了
 
 			// 原因：父协程无法捕获子协程中出现的异常
 
-
 		}()
-
 
 		w.Write([]byte("hello world"))
 	})
-	http.ListenAndServe("127.0.0.1:9090",nil)  // 内部注册了recover
+	http.ListenAndServe("127.0.0.1:9090", nil) // 内部注册了recover
 }

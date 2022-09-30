@@ -1,7 +1,10 @@
 # Client
 
+http.Client 表示一个http client端，用来处理HTTP相关的工作，例如cookies, redirect, timeout等工作，
+
 ## 源码
 Client 结构体
+
 ```go
 type Client struct { 
     Transport RoundTripper  // 表示 HTTP 事务，用于处理客户端的请求连接并等待服务端的响应；
@@ -11,7 +14,13 @@ type Client struct {
 }
 ```
 
-发送请求
+## 发送请求流程
+
+1. 调用 net/http.NewRequest 根据方法名、URL 和请求体构建请求
+2. 调用 net/http.Transport.RoundTrip 开启 HTTP 事务、获取连接并发送请求；
+3. 在 HTTP 持久连接的 net/http.persistConn.readLoop 方法中等待响应；
+
+
 ![](.http_client_images/client_send_process.png)
 ```go
 func (c *Client) Get(url string) (resp *Response, err error) {

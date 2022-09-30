@@ -1,28 +1,27 @@
 # 扩容政策
 
 ## 扩容分析
-![](./GrowSlice.png)
+![](./growSlice.png)
 
 新的切片和之前的切片已经不同了，因为新的切片更改了一个值，并没有影响到原来的数组，新切片指向的数组是一个全新的数组。并且 cap 容量也发生了变化。
 
 
 Go 中切片扩容的策略是这样的：
 
-- 首先判断，如果新申请容量（cap）大于2倍的旧容量（old.cap），最终容量（newcap）就是新申请的容量（cap）
-- 否则判断，如果旧切片的长度小于1024，则最终容量(newcap)就是旧容量(old.cap)的两倍，即（newcap=doublecap）
-- 否则判断，如果旧切片长度大于等于1024，则最终容量（newcap）从旧容量（old.cap）开始循环增加原来的 1/4，即（newcap=old.cap,for {newcap += newcap/4}）直到最终容量（newcap）大于等于新申请的容量(cap)，即（newcap >= cap）
-- 如果最终容量（cap）计算值溢出，则最终容量（cap）就是新申请容量（cap）
-- 如果切片的容量小于 1024 个元素，于是扩容的时候就翻倍增加容量。上面那个例子也验证了这一情况，总容量从原来的4个翻倍到现在的8个。
+- 先计算需要的数组的大小：
+  - 首先判断，如果新申请容量（cap）大于2倍的旧容量（old.cap），最终容量（newcap）就是新申请的容量（cap）
+  - 否则判断，如果旧切片的长度小于1024，则最终容量(newcap)就是旧容量(old.cap)的两倍，即（newcap=doublecap）
+  - 否则判断，如果旧切片长度大于等于1024，则最终容量（newcap）从旧容量（old.cap）开始循环增加原来的 1/4，即（newcap=old.cap,for {newcap += newcap/4}）直到最终容量（newcap）大于等于新申请的容量(cap)，即（newcap >= cap）
+- 计算完需要的数组容量后，再计算需要的内存大小，也就是数组存放的元素的大小乘于容量。
+- 最后申请内容，拷贝旧内存。
 
-一旦元素个数超过 1024 个元素，那么增长因子就变成 1.25 ，即每次增加原来容量的四分之一。
 
 注意：扩容扩大的容量都是针对原来的容量而言的，而不是针对原来数组的长度而言的。
 
 
-
 ## 源码分析
 ```go
-
+// et为切片存放的数据的类型，old为旧的slice，cap为期望的容量大小
 func growslice(et *_type, old slice, cap int) slice {
 	if raceenabled {
 		callerpc := getcallerpc(unsafe.Pointer(&et))
@@ -44,10 +43,14 @@ func growslice(et *_type, old slice, cap int) slice {
 
     // 这里就是扩容的策略
 	newcap := old.cap
+	// doublecap为原切片的容量的两倍
 	doublecap := newcap + newcap
 	if cap > doublecap {
+        // 期望的容量大于两边的就切片的容量，分配期望的容量大小
 		newcap = cap
 	} else {
+        // 如果原切片的容量大小小于1024，直接分配两倍的原切片的cap大小的容量
+        // 否则，则分配 1.25*原切片cap大小的容量
 		if old.len < 1024 {
 			newcap = doublecap
 		} else {

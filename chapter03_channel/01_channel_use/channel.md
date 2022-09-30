@@ -19,7 +19,7 @@ go tool compile -N -l -S chan.go
 #-l禁用内联
 #-S打印结果
 ```
-![](.channel_images/chan_runtime_func.png)
+![](.img/chan_runtime_func.png)
 
 ## 源码分析
 源码分析PPT: https://speakerdeck.com/kavya719/understanding-channels

@@ -1,4 +1,5 @@
 # http.Request源码分析
+
 ## Request
 request 表示由服务器接收或由客户端发送的HTTP请求，例如客户端(client)在发送各种请求时，需要先新建一个请求对象，然后调用一些请求的方法开始自定义一些配置，服务端监听到该请求便会做出相应的应答
 
@@ -179,9 +180,9 @@ func (r *Request) ProtoAtLeast(major, minor int) bool {
 
 ```
 
-    Context()：获取对象内部成员，可以使用一个公开的方法封装实现
-    WithContext()： 更改请求的上下文方法一，传入新的上下文，返回修改后的请求–r的浅层副本，该方法 通过新建一个变量，使变量的指针指向原 请求，然后克隆请求的URL实现。此方法很少用。要使用上下文创建新请求，请使用NewRequestWithContext
-    Clone()： 更改请求的上下文方法二，传入新的上下文，返回修改后的请求–r的深度副本， 通过除了克隆请求的URL，还有对请求结构里的请求头等一一克隆进一个新的请求结构体 实现，一般用此方法
+- Context()：获取对象内部成员，可以使用一个公开的方法封装实现
+- WithContext()： 更改请求的上下文方法一，传入新的上下文，返回修改后的请求–r的浅层副本，该方法 通过新建一个变量，使变量的指针指向原 请求，然后克隆请求的URL实现。此方法很少用。要使用上下文创建新请求，请使用NewRequestWithContext
+- Clone()： 更改请求的上下文方法二，传入新的上下文，返回修改后的请求–r的深度副本， 通过除了克隆请求的URL，还有对请求结构里的请求头等一一克隆进一个新的请求结构体 实现，一般用此方法
 
 ## 3. request请求头的一些字段的修改方法
 ```go
@@ -280,7 +281,7 @@ func (r *Request) multipartReader(allowMixed bool) (*multipart.Reader, error) {
 
 ```
 
-## 5.request 写入方法
+## 5. request 写入方法
 ```go
 // 根据 写入器io.Writer 编写http请求，调用了内部write(),传参：不使用代理、空的附加头、不等待
 // 它是头和正文; 此方法引用请求的字段：Host、URL、Method、Header、ContentLength、TransferEncoding、Body

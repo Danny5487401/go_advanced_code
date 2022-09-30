@@ -27,7 +27,7 @@ const (
 
 func main() {
 
-	file, _ := os.OpenFile("/Users/xiaxin/Desktop/go_advanced_code/chapter01_input_output/files/danny.txt", os.O_RDWR, 0)
+	file, _ := os.OpenFile("/Users/xiaxin/Desktop/github.com/Danny5487401/go_advanced_code/chapter01_input_output/files/danny.txt", os.O_RDWR, 0)
 	defer file.Close()
 	bs := []byte{0}
 

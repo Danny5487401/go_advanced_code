@@ -1,5 +1,8 @@
 # nil 和空切片 的应用
 
+nil slice底层指向数组的指针为nil，而empty slice底层数组指针指向一个长度为0的数组。
+因此在判断一个slice是否有数据时应该使用 len(s) == 0，而不是s == nil .一般的用法是nil slice表示切片不存在，empty slice表示切片中没有元素。
+
 ## nil 切片:
 ![](./nilSlice.png)
 ```go
@@ -22,5 +25,4 @@ slice2 := []int{ }
 ## 空切片和 nil 切片的区别:
 空切片指向的地址不是nil，指向的是一个内存地址，但是它没有分配任何内存空间，即底层元素包含0个元素。
 
-## Note
-不管是使用 nil 切片还是空切片，对其调用内置函数 append，len 和 cap 的效果都是一样的。
+
