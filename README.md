@@ -428,8 +428,8 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 time.Format()优化写法](chapter21_time/02_append_format.go)
 
 ## [第二十二章 数据驱动模板源码分析-->kratos工具](chapter22_template/template.md)
-- [1 加载多个模版并指定模版](chapter22_template/01_multi_template/main.go)
-- [2 自定义模版函数](chapter22_template/02_template_func/main.go)
+- [1 加载多个模版并指定模版生成结构体方法](chapter22_template/01_multi_template/main.go)
+- [2 自定义扩展模版函数 FuncMap ](chapter22_template/02_template_func/main.go)
 - [3 html模版](chapter22_template/03_html_template/main.go)
 - [4 generate 根据模版代码生成](chapter22_template/04_gen_template/gen_main.go)
 
