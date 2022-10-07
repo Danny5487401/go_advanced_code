@@ -285,28 +285,28 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [2.16 汇编调用非汇编Go函数](chapter11_assembly_language/02plan9/16_assembly_call_NonassemblyFunc/main.go)
 
 
-## 第十二章 网络编程net
-- [socket介绍](chapter12_net/socket.md)
-- [tcp介绍](chapter12_net/tcp.md)
-- [epoll多路复用底层实现及Golang封装](chapter12_net/io_multiplexing.md)
+## 第十二章 net 网络编程 
+- [socket 介绍](chapter12_net/socket.md)
+- [tcp 介绍](chapter12_net/tcp.md)
+- [epoll 多路复用底层实现及Golang封装](chapter12_net/io_multiplexing.md)
 
-- 1 http服务端高级封装演变: ServeHTTP 是 HTTP 服务器响应客户端的请求接口
+- 1 http 服务端高级封装演变: ServeHTTP 是 HTTP 服务器响应客户端的请求接口
   - [1.1 高级封装：使用DefaultServeMux](chapter12_net/01_http_server/01_use_DefaultServeMux/main.go)
   - [1.2 中级封装：使用内置serveMux生成函数](chapter12_net/01_http_server/02_use_http_NewServeMux/main.go)
   - [1.3 原始封装：自定义实现serveMux](chapter12_net/01_http_server/03_use_cutomized_mux/main.go)
-- 2 http客户端高级封装演变
+- 2 http 客户端高级封装演变
   - [request 源码](chapter12_net/02_http_client/http_request.md)
   - [response 源码](chapter12_net/02_http_client/http_response.md)
   - [http.RoundTripper 接口实现源码: 调用方将请求作为参数获取请求对应的响应,并管理连接](chapter12_net/02_http_client/http_transport.md)
   - [http.Client 源码](chapter12_net/02_http_client/http_client.md) 
   - [2.1 官方库版(爬虫获取邮箱案例-未封装)](chapter12_net/02_http_client/01_standard_pkg/client.go)
   - [2.2 go-resty(推荐使用)](chapter12_net/02_http_client/02_go_resty/rest_client.go)
-- [3 Tcp实现客户端及服务端(服务端netpoll分析)](chapter12_net/03_tcp/tcp_server.md)
+- [3 Tcp实现客户端及服务端(服务端 netpoll 分析)](chapter12_net/03_tcp/tcp_server.md)
   - [客户端](chapter12_net/03_tcp/client/main.go)
   - [服务端](chapter12_net/03_tcp/server/main.go)
 - [4 Tcp黏包分析及处理(大小端介绍)](chapter12_net/04_tcp_sticky_problem/big_n_small_endian.md)
-  - [4.1 TCP粘包问题](chapter12_net/04_tcp_sticky_problem/01_problem)
-  - [TCP粘包解决方式](chapter12_net/04_tcp_sticky_problem/02_solution)
+  - [4.1 TCP 粘包问题](chapter12_net/04_tcp_sticky_problem/01_problem)
+  - [4.2 TCP 粘包解决方式](chapter12_net/04_tcp_sticky_problem/02_solution)
 - [5 fastHttp(源码分析)](chapter12_net/05_fasthttp/fasthttp.md)
   - [5.1 服务端](chapter12_net/05_fasthttp/server/main.go)
   - [5.2 客户端](chapter12_net/05_fasthttp/client/client.go)
@@ -314,8 +314,11 @@ Note: Go 1.18 移除用于泛型的constraints包
   - [6.1 信号监听处理](chapter12_net/06_grateful_stop/signal.go)
 - [7 URL的解析 Parse，query 数据的转义与反转义](chapter12_net/07_url/url.md)
 - [8 使用alice优雅编排中间件](chapter12_net/08_middleware/middlerware.md)
-- [9 https](chapter12_net/09_https/main.go)
-  - [SAN签发: 一个证书可以支持多个不同域名的解析](chapter12_net/09_https/https.md)
+- [9 HTTPS, SAN, SLS, TLS及源码分析握手过程](chapter12_net/09_https/https.md)
+  - 9.1 https 单向认证
+    - [9.1.1 服务端修改 tls 版本](chapter12_net/09_https/01_sign_one/01_server/server.go)
+    - [9.1.2 客户端不校验证书](chapter12_net/09_https/01_sign_one/02_client/client.go)
+
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
 [cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)

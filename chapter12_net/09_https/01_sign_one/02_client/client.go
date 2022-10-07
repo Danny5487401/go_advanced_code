@@ -20,7 +20,7 @@ func main() {
 	}
 
 	/* 协议：https，非http */
-	resp, err := client.Get("https://127.0.0.1:1280/")
+	resp, err := client.Get("https://127.0.0.1:443/hello")
 	if err != nil {
 		log.Fatalln(err)
 	}
