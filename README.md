@@ -36,6 +36,7 @@ Note: Go 1.18 移除用于泛型的constraints包
   - [2.2 writer](chapter01_input_output/02_bufio/02writer/main.go)
 - [3 Go 1.16 io.FS: OS 的 FS 解耦](chapter01_input_output/03_io_fs/io_fs.md)
   - [go 1.16 前后的文件io对比](chapter01_input_output/03_io_fs/embed.go)
+- [4 go的io.Pipe优雅的优化中间缓存-->在 minio 下载数据实现](chapter01_input_output/04_io_pipe/io_pipe.md)
 
 ---
 ## 第二章 协程Goroutine
