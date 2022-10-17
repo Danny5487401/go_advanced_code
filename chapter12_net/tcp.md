@@ -1,4 +1,4 @@
-# ***TCP传输控制协议transmission control protocol***
+# ***TCP 传输控制协议 transmission control protocol***
 
 ![](.asset/img/.tcp_images/protocol.png)
 
@@ -199,9 +199,18 @@ static inline int before(__u32 seq1, __u32 seq2){
     
     
 ## syn flood攻击
+
 最基本的DoS攻击就是利用合理的服务请求来占用过多的服务资源，从而使合法用户无法得到服务的响应。syn flood属于Dos攻击的一种。
 
     如果恶意的向某个服务器端口发送大量的SYN包，则可以使服务器打开大量的半开连接，分配TCB（Transmission Control Block）,
     从而消耗大量的服务器资源，同时也使得正常的连接请求无法被相应。当开放了一个TCP端口后，该端口就处于Listening状态，不停地监视发到该端口的Syn报文，
     一旦接收到Client发来的Syn报文，就需要为该请求分配一个TCB，通常一个TCB至少需要280个字节，在某些操作系统中TCB甚至需要1300个字节，并返回一个SYN ACK命令，
     立即转为SYN-RECEIVED即半开连接状态。系统会为此耗尽资源。
+
+工具 hping3 : 是一个可以构造 TCP/IP 协议数据包的工具，可以对系统进行安全审计、防火墙测试等。
+```shell
+# -S 参数表示设置 TCP 协议的 SYN（同步序列号），-p 表示目的端口为 80
+# -i u100 表示每隔 100 微秒发送一个网络帧
+# 注：如果你在实践过程中现象不明显，可以尝试把 100 调小，比如调成 10 甚至 1
+$ hping3 -S -p 80 -i u100 192.168.0.30
+```

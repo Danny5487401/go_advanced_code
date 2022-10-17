@@ -1,13 +1,21 @@
 # socket
-![](.asset/img/.socket_images/socket_buffer.png)
+
+![](.asset/img/.socket_images/ip_internet.png)
+- 最上层的应用程序，需要通过系统调用，来跟套接字接口进行交互；
+
+- 套接字的下面，就是我们前面提到的传输层、网络层和网络接口层；
+
+- 最底层，则是网卡驱动程序以及物理网卡设备。
+
+![](.asset/img/.socket_images/ip_socket_process.png)
 
 socket 在操作系统层面，可以理解为一个文件。 我们可以对这个文件进行一些方法操作。
 
-用listen方法，可以让程序作为服务器监听其他客户端的连接。
+- 用listen方法，可以让程序作为服务器监听其他客户端的连接。
 
-用connect，可以作为客户端连接服务器。
+- 用connect，可以作为客户端连接服务器。
 
-用 send 或write 可以发送数据，recv 或 read 可以接收数据
+- 用 send 或write 可以发送数据，recv 或 read 可以接收数据
 
 ## socket缓冲区
 
@@ -37,9 +45,9 @@ tcp        0     60 172.22.66.69:22         122.14.220.252:59889    ESTABLISHED
 还有Send-Q 是发送缓冲区，下面的数字60是指，当前还有60 Byte在发送缓冲区中未发送。
 而 Recv-Q 代表接收缓冲区，此时是空的，数据都被应用进程接收干净了
 
-## tcp四次握手
+
 ## 执行 send 发送的字节，会立马发送吗
-![](.asset/img/.socket_images/socket_send.png)
+
 
 答案是不确定！执行 send 之后，数据只是拷贝到了socket 缓冲区。至 于什么时候会发数据，发多少数据，全听操作系统安排
 

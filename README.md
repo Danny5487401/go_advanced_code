@@ -22,7 +22,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [golangci 规范并优化代码 + pre-commit工具](golangci.md)
 
 
-## [第一章 I/O操作](chapter01_input_output/io.md)
+## [第一章 I/O](chapter01_input_output/io.md)
 - 1 os操作系统模块
     - [1.1 os中 FileInfo 文件属性](chapter01_input_output/01_OS_module/01FileInfo/fileinfo.md)
     - [1.2 os文件操作](chapter01_input_output/01_OS_module/02FileOperation/main.go)   
@@ -286,10 +286,10 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [2.16 汇编调用非汇编Go函数](chapter11_assembly_language/02plan9/16_assembly_call_NonassemblyFunc/main.go)
 
 
-## 第十二章 net 网络编程 
-- [socket 介绍](chapter12_net/socket.md)
-- [tcp 介绍](chapter12_net/tcp.md)
-- [epoll 多路复用底层实现及Golang封装](chapter12_net/io_multiplexing.md)
+## 第十二章 net 网络--涉及性能指标,协议栈统计,套接字信息
+- [socket 套接字缓冲区](chapter12_net/socket.md)
+- [tcp 传输控制协议](chapter12_net/tcp.md)
+- [I/O 多路复用及 epoll 在 Golang 工作模型体现](chapter12_net/io_multiplexing.md)
 
 - 1 http 服务端高级封装演变: ServeHTTP 是 HTTP 服务器响应客户端的请求接口
   - [1.1 高级封装：使用DefaultServeMux](chapter12_net/01_http_server/01_use_DefaultServeMux/main.go)
