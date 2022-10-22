@@ -52,6 +52,9 @@ Note: Go 1.18 移除用于泛型的constraints包
         - [2.4.1 标准包runtime/pprof及net/http/pprof使用](chapter02_goroutine/02_runtime/04_pprof/01_pprof/main.go)
         - [2.4.2 第三方包pkg/profile](chapter02_goroutine/02_runtime/04_pprof/02_pkg_profile/cpu.go)
         - [2.4.3 debug 定位goroutine：添加pprof标签](chapter02_goroutine/02_runtime/04_pprof/03_pprof_label/client/main.go)
+    - [2.5 LockOSThread函数让当前协程绑定并独立一个线程 M-->在flannel中应用](chapter02_goroutine/02_runtime/05_LockOSThread/lockOsThread.md)
+      - [2.5.1 runtime.LockOSThread() 开启前后运行效果对比](chapter02_goroutine/02_runtime/05_LockOSThread/01_osThreadLock/main.go)
+      - [2.5.2 runtime.LockOSThread线程的子协程继承分析](chapter02_goroutine/02_runtime/05_LockOSThread/02_child_thread_lock/child_os_thread_lock.go)
 
 - [3 多goroutine的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
 - [4 线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
