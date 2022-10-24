@@ -286,7 +286,7 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [2.16 汇编调用非汇编Go函数](chapter11_assembly_language/02plan9/16_assembly_call_NonassemblyFunc/main.go)
 
 
-## 第十二章 net 网络--涉及性能指标,协议栈统计,套接字信息
+## [第十二章 net 网络--涉及性能指标,协议栈统计,套接字信息](chapter12_net/net.md)
 - [socket 套接字缓冲区](chapter12_net/socket.md)
 - [tcp 传输控制协议](chapter12_net/tcp.md)
 - [I/O 多路复用及 epoll 在 Golang 工作模型体现](chapter12_net/io_multiplexing.md)
@@ -302,7 +302,7 @@ Note: Go 1.18 移除用于泛型的constraints包
   - [http.Client 源码](chapter12_net/02_http_client/http_client.md) 
   - [2.1 官方库版(爬虫获取邮箱案例-未封装)](chapter12_net/02_http_client/01_standard_pkg/client.go)
   - [2.2 go-resty(推荐使用)](chapter12_net/02_http_client/02_go_resty/rest_client.go)
-- [3 Tcp实现客户端及服务端(服务端 netpoll 分析)](chapter12_net/03_tcp/tcp_server.md)
+- [3 Tcp 实现 Socket 编程 (服务端 netpoll 分析)](chapter12_net/03_tcp/tcp_server.md)
   - [客户端](chapter12_net/03_tcp/client/main.go)
   - [服务端](chapter12_net/03_tcp/server/main.go)
 - [4 Tcp黏包分析及处理(大小端介绍)](chapter12_net/04_tcp_sticky_problem/big_n_small_endian.md)
@@ -319,6 +319,8 @@ Note: Go 1.18 移除用于泛型的constraints包
   - 9.1 https 单向认证
     - [9.1.1 服务端修改 tls 版本](chapter12_net/09_https/01_sign_one/01_server/server.go)
     - [9.1.2 客户端不校验证书](chapter12_net/09_https/01_sign_one/02_client/client.go)
+- [10 unix domain socket 本地 IPC 进程间通信](chapter12_net/10_unix_domain_socket/uds.md)
+- [11 检查ip地址判断是否回环地址](chapter12_net/11_isLoopBack_ip/main.go)
 
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)

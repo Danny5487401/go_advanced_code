@@ -19,6 +19,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/pkg/profile v1.6.0
 	github.com/prometheus/client_golang v1.12.2
+	github.com/reactivex/rxgo/v2 v2.5.0
 	github.com/smallnest/chanx v1.0.0
 	github.com/smartystreets/goconvey v1.7.2
 	github.com/spf13/pflag v1.0.5
@@ -28,6 +29,8 @@ require (
 	github.com/zeromicro/go-zero v1.3.5
 	go.uber.org/goleak v1.1.12
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
+	google.golang.org/grpc v1.47.0
+	google.golang.org/grpc/examples v0.0.0-20221020162917-9127159caf5a
 )
 
 require (
@@ -57,7 +60,6 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
-	github.com/reactivex/rxgo/v2 v2.5.0 // indirect
 	github.com/smartystreets/assertions v1.2.0 // indirect
 	github.com/stretchr/objx v0.4.0 // indirect
 	github.com/teivah/onecontext v0.0.0-20200513185103-40f981bfd775 // indirect
@@ -66,6 +68,7 @@ require (
 	golang.org/x/net v0.0.0-20220531201128-c960675eff93 // indirect
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/text v0.3.7 // indirect
+	google.golang.org/genproto v0.0.0-20220602131408-e326c6e8e9c8 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
