@@ -1,0 +1,5 @@
+// 模版一：简单模版
+`func (m *{{.ModelName}}) HMapKey() string {
+	return fmt.Sprintf("{{.TableName}}:{{.EntityDBID}}:%v", m.{{.EntityID}})
+}`
+

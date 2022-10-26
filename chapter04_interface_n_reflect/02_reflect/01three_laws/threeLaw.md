@@ -11,7 +11,7 @@
 3. 也就是说明反射可以将“接口类型变量”转换为“反射类型对象”，反射类型指的是reflect.Type和reflect.Value这两种
 
 
-## 反射三大定律
+## [反射三大定律代码](chapter04_interface_n_reflect/02_reflect/01three_laws/main.go)
 
 1. 第一条是最基本的：反射可以从接口值得到反射对象。
 

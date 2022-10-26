@@ -19,7 +19,20 @@
 所谓 I/O 多路复用指的就是 select/poll/epoll 这一系列的多路选择器：支持单一线程同时监听多个文件描述符（I/O 事件），阻塞等待，并在其中某个文件描述符可读写时收到通知。
 I/O 复用其实复用的不是 I/O 连接，而是复用线程，让一个 thread of control 能够处理多个连接（I/O 事件）。
 
-## select & poll
+## 两种 I/O 事件通知的方式：水平触发和边缘触发
+
+- 水平触发：只要文件描述符可以非阻塞地执行 I/O ，就会触发通知。也就是说，应用程序可以随时检查文件描述符的状态，然后再根据状态，进行 I/O 操作。
+- 边缘触发：只有在文件描述符的状态发生改变（也就是 I/O 请求达到）时，才发送一次通知。这时候，应用程序需要尽可能多地执行 I/O，直到无法继续读写，才可以停止。如果 I/O 没执行完，或者因为某种原因没来得及处理，那么这次通知也就丢失了。
+
+
+## 1. 使用非阻塞 I/O 和水平触发通知，比如使用 select 或者 poll
+
+根据刚才水平触发的原理，select 和 poll 需要从文件描述符列表中，找出哪些可以执行 I/O ，然后进行真正的网络 I/O 读写。由于 I/O 是非阻塞的，一个线程中就可以同时监控一批套接字的文件描述符，这样就达到了单线程处理多请求的目的。
+
+所以，这种方式的最大优点，是对应用程序比较友好，它的 API 非常简单。
+
+应用软件使用 select 和 poll 时，需要对这些文件描述符列表进行轮询，这样，请求数多的时候就会比较耗时。
+
 ### select
 ```cgo
 #include <sys/select.h>
@@ -51,11 +64,12 @@ select的执行流程：
 
 select 的特点
 * 可监控的文件描述符个数取决于 sizeof(fd_set) 的值。假设服务器上 sizeof(fd_set)＝ 512，每 bit 表示一个文件描述符，则服务器上支持的最大文件描述符是 512*8=4096。
+
 fd_set 的大小调整可参考【原创】技术系列之 网络模型（二）中的模型 2，可以有效突破 select 可监控的文件描述符上限
 
 * 将 fd 加入 select 监控集的同时，还要再使用一个数据结构 array 保存放到 select 监控集中的 fd，
-一是用于在 select 返回后，array 作为源数据和 fd_set 进行 FD_ISSET 判断。
-二是 select 返回后会把以前加入的但并无事件发生的 fd 清空，则每次开始 select 前都要重新从 array 取得 fd 逐一加入（FD_ZERO 最先），扫描 array 的同时取得 fd 最大值 maxfd，用于 select 的第一个参数
+  - 一是用于在 select 返回后，array 作为源数据和 fd_set 进行 FD_ISSET 判断。
+  - 二是 select 返回后会把以前加入的但并无事件发生的 fd 清空，则每次开始 select 前都要重新从 array 取得 fd 逐一加入（FD_ZERO 最先），扫描 array 的同时取得 fd 最大值 maxfd，用于 select 的第一个参数
 
 * 可见 select 模型必须在 select 前循环 array（加 fd，取 maxfd），select 返回后循环 array（FD_ISSET 判断是否有事件发生）
 
@@ -66,10 +80,10 @@ select缺点
 * 性能衰减严重：每次 kernel 都需要线性扫描整个 fd_set，所以随着监控的描述符 fd 数量增长，其 I/O 性能会线性下降
 
 ### poll
-poll 的实现和 select 非常相似，只是描述 fd 集合的方式不同，poll 使用 pollfd 结构而不是 select 的 fd_set 结构，poll 解决了最大文件描述符数量限制的问题，
+poll 的实现和 select 非常相似，只是描述 fd 集合的方式不同，poll 使用 pollfd 结构而不是 select 的 fd_set 结构，换成了一个没有固定长度的数组，poll 解决了最大文件描述符数量限制的问题，
 但是同样需要从用户态拷贝所有的 fd 到内核态，也需要线性遍历所有的 fd 集合，
 
-### epoll
+## 2. 使用非阻塞 I/O 和边缘触发通知，比如 epoll
 ![](.asset/img/.net_images/epoll.png)
 
 epoll 是 linux kernel 2.6 之后引入的新 I/O 事件驱动技术，I/O 多路复用的核心设计是 1 个线程处理所有连接的等待消息准备好I/O 事件，
@@ -227,11 +241,34 @@ static__poll_t ep_send_events_proc(struct eventpoll *ep, struct list_head *head,
 
 ### Non-block io
 ![](.asset/img/.net_images/non-block.png)
+
 当用户进程发出 read 操作时，如果 kernel 中的数据还没有准备好，那么它并不会 block 用户进程，而是立刻返回一个 EAGAIN error。
 从用户进程角度讲 ，它发起一个 read 操作后，并不需要等待，而是马上就得到了一个结果。用户进程判断结果是一个 error 时，它就知道数据还没有准备好，于是它可以再次发送 read 操作。
 一旦 kernel 中的数据准备好了，并且又再次收到了用户进程的 system call，那么它马上就将数据拷贝到了用户内存，然后返回。
 
 所以，non-blocking I/O 的特点是用户进程需要不断的主动询问 kernel 数据好了没有。
+
+## 工作模型
+
+### 1 主进程 + 多个 worker 子进程，这也是最常用的一种模型。
+![](.asset/img/.net_images/io_nginx_model.png)
+
+方式
+- 主进程执行 bind() + listen() 后，创建多个子进程；
+
+- 然后，在每个子进程中，都通过 accept() 或 epoll_wait() ，来处理相同的套接字。
+
+最常用的反向代理服务器 Nginx 就是这么工作的。它也是由主进程和多个 worker 进程组成。主进程主要用来初始化套接字，并管理子进程的生命周期；而 worker 进程，则负责实际的请求处理
+
+accept() 和 epoll_wait() 调用，还存在一个惊群的问题。换句话说，当网络 I/O 事件发生时，多个进程被同时唤醒，但实际上只有一个进程来响应这个事件，其他被唤醒的进程都会重新休眠。
+
+为了避免惊群问题， Nginx 在每个 worker 进程中，都增加一个了全局锁（accept_mutex）。这些 worker 进程需要首先竞争到锁，只有竞争到锁的进程，才会加入到 epoll 中，这样就确保只有一个 worker 子进程被唤醒。
+
+
+### 2 监听到相同端口的多进程模型
+![](.asset/img/.net_images/io_nginx_model2.png)
+
+
 
 ## Go源码分析
 
