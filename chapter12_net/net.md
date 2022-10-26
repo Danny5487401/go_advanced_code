@@ -1,4 +1,5 @@
 # net 网络
+![](.net_images/net_protocol.png)
 
 ## 性能指标
 通常用带宽、吞吐量、延时、PPS（Packet Per Second）等指标衡量网络的性能。
@@ -132,4 +133,66 @@ TCP	  4         3         1
 ss 只显示已经连接、关闭、孤儿套接字等简要统计，而 netstat 则提供的是更详细的网络协议栈信息
 
 
-## 网络吞吐和 PPS
+## golang net包
+
+net包提供了可移植的网络I/O接口，包括TCP/IP、UDP、域名解析和Unix域socket等方式的通信。其中每一种通信方式都使用 xxConn 结构体来表示，诸如IPConn、TCPConn等，这些结构体都实现了Conn接口，Conn接口实现了基本的读、写、关闭、获取远程和本地地址、设置timeout等功能。
+
+
+### Conn 接口
+```go
+type Conn interface {
+    // Read从连接中读取数据
+    // Read方法可能会在超过某个固定时间限制后超时返回错误，该错误的Timeout()方法返回真
+    Read(b []byte) (n int, err error)
+    // Write从连接中写入数据
+    // Write方法可能会在超过某个固定时间限制后超时返回错误，该错误的Timeout()方法返回真
+    Write(b []byte) (n int, err error)
+    // Close方法关闭该连接
+    // 并会导致任何阻塞中的Read或Write方法不再阻塞并返回错误
+    Close() error
+    // 返回本地网络地址
+    LocalAddr() Addr
+    // 返回远端网络地址
+    RemoteAddr() Addr
+    // 设定该连接的读写deadline，等价于同时调用SetReadDeadline和SetWriteDeadline
+    // deadline是一个绝对时间，超过该时间后I/O操作就会直接因超时失败返回而不会阻塞
+    // deadline对之后的所有I/O操作都起效，而不仅仅是下一次的读或写操作
+    // 参数t为零值表示不设置期限
+    SetDeadline(t time.Time) error
+    // 设定该连接的读操作deadline，参数t为零值表示不设置期限
+    SetReadDeadline(t time.Time) error
+    // 设定该连接的写操作deadline，参数t为零值表示不设置期限
+    // 即使写入超时，返回值n也可能>0，说明成功写入了部分数据
+    SetWriteDeadline(t time.Time) error
+}
+```
+每种类型都是对应的结构体实现这些接口。
+
+### PacketConn 接口
+```go
+type PacketConn interface {
+    // ReadFrom方法从连接读取一个数据包，并将有效信息写入b
+    // ReadFrom方法可能会在超过某个固定时间限制后超时返回错误，该错误的Timeout()方法返回真
+    // 返回写入的字节数和该数据包的来源地址
+    ReadFrom(b []byte) (n int, addr Addr, err error)
+    // WriteTo方法将有效数据b写入一个数据包发送给addr
+    // WriteTo方法可能会在超过某个固定时间限制后超时返回错误，该错误的Timeout()方法返回真
+    // 在面向数据包的连接中，写入超时非常罕见
+    WriteTo(b []byte, addr Addr) (n int, err error)
+    // Close方法关闭该连接
+    // 会导致任何阻塞中的ReadFrom或WriteTo方法不再阻塞并返回错误
+    Close() error
+    // 返回本地网络地址
+    LocalAddr() Addr
+    // 设定该连接的读写deadline
+    SetDeadline(t time.Time) error
+    // 设定该连接的读操作deadline，参数t为零值表示不设置期限
+    // 如果时间到达deadline，读操作就会直接因超时失败返回而不会阻塞
+    SetReadDeadline(t time.Time) error
+    // 设定该连接的写操作deadline，参数t为零值表示不设置期限
+    // 如果时间到达deadline，写操作就会直接因超时失败返回而不会阻塞
+    // 即使写入超时，返回值n也可能>0，说明成功写入了部分数据
+    SetWriteDeadline(t time.Time) error
+}
+```
+

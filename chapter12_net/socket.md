@@ -17,6 +17,20 @@ socket 在操作系统层面，可以理解为一个文件。 我们可以对这
 
 - 用 send 或write 可以发送数据，recv 或 read 可以接收数据
 
+
+socket 监听的地址(socket_service_address): 必填项，监听的 url 地址。协议和形式也可以多样化，包括：
+- tcp 监听所有 tcp 协议的数据，如 tcp://127.0.0.1:http
+- tcp4 仅监听 ipv4 地址传输的 tcp 协议数据，如tcp4://:3110
+- tcp6 仅监听 ipv6 地址传输的 tcp 协议数据，如tcp6://:3110 或者 tcp6://[2001:db8::1]:3110
+- udp 监听所有 udp 协议传输的数据，如udp://:3110
+- udp4 仅监听 ipv4 地址传输的 udp 协议数据，如udp4://:3110
+- udp6 仅监听 ipv6 地址传输的 udp 协议数据，如udp6://:3110
+- unix 监听面向字节流的unix套接字的数据传输协议，如unix:///tmp/sys.sock
+- unixgram 监听面向报文的unix套接字的数据传输协议，如unixgram:///tmp/sys.sock
+- unixpacket 监听面向数据包的unix套接字的数据传输协议，如unixpacket:///tmp/sys.sock
+
+
+
 ## socket缓冲区
 
 在建立好连接之后，这个 socket 文件就像是远端机器的 "代理人" 一样。比如，如果我们想给远端服务发点什么东西，那就只需要对这个文件执行写操作就行了。

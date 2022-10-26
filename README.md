@@ -286,7 +286,7 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [2.16 汇编调用非汇编Go函数](chapter11_assembly_language/02plan9/16_assembly_call_NonassemblyFunc/main.go)
 
 
-## 第十二章 net 网络--涉及性能指标,协议栈统计,套接字信息
+## [第十二章 net 网络--涉及性能指标,协议栈统计,套接字信息](chapter12_net/net.md)
 - [socket 套接字缓冲区](chapter12_net/socket.md)
 - [tcp 传输控制协议](chapter12_net/tcp.md)
 - [I/O 多路复用及 epoll 在 Golang 工作模型体现](chapter12_net/io_multiplexing.md)
@@ -302,7 +302,7 @@ Note: Go 1.18 移除用于泛型的constraints包
   - [http.Client 源码](chapter12_net/02_http_client/http_client.md) 
   - [2.1 官方库版(爬虫获取邮箱案例-未封装)](chapter12_net/02_http_client/01_standard_pkg/client.go)
   - [2.2 go-resty(推荐使用)](chapter12_net/02_http_client/02_go_resty/rest_client.go)
-- [3 Tcp实现客户端及服务端(服务端 netpoll 分析)](chapter12_net/03_tcp/tcp_server.md)
+- [3 Tcp 实现 Socket 编程 (服务端 netpoll 分析)](chapter12_net/03_tcp/tcp_server.md)
   - [客户端](chapter12_net/03_tcp/client/main.go)
   - [服务端](chapter12_net/03_tcp/server/main.go)
 - [4 Tcp黏包分析及处理(大小端介绍)](chapter12_net/04_tcp_sticky_problem/big_n_small_endian.md)
@@ -319,6 +319,8 @@ Note: Go 1.18 移除用于泛型的constraints包
   - 9.1 https 单向认证
     - [9.1.1 服务端修改 tls 版本](chapter12_net/09_https/01_sign_one/01_server/server.go)
     - [9.1.2 客户端不校验证书](chapter12_net/09_https/01_sign_one/02_client/client.go)
+- [10 unix domain socket 本地 IPC 进程间通信](chapter12_net/10_unix_domain_socket/uds.md)
+- [11 检查ip地址判断是否回环地址](chapter12_net/11_isLoopBack_ip/main.go)
 
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
@@ -382,8 +384,8 @@ Note: Go 1.18 移除用于泛型的constraints包
     - map根据key实现排序
     - sort.Search 根据排序切片找索引
 - [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
-  - Symmetric 对称加密->HSA
-  - asymmetric 非对称加密->RSA
+  - [5.1 Symmetric 对称加密->HSA](chapter17_dataStructure_n_algorithm/05_middleware/01_symmetric/jwt_test.go)
+  - [5.2 asymmetric 非对称加密(更安全)->RSA](chapter17_dataStructure_n_algorithm/05_middleware/02_asymmetric/jwt_test.go)
 - [6 certificate 证书-->openssl 使用](chapter17_dataStructure_n_algorithm/06_certificate/certificate.md)
   - [6.1 pem(Privacy Enhanced Mail Certificate保密增强邮件协议](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/pem.md)
     - [6.1.1 生成公私钥的 .pem 文件(公钥使用RSA算法)](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/01_pem_generate/main.go)
@@ -507,5 +509,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 泛型性能测试](chapter32_generic/02_performance/generic_test.go)
 
 ## [第三十三章 makefile 使用](chapter33_makefile/Makefile_info.md)
+- [Makefile常用函数列表](chapter33_makefile/makefile_func.md)
+- [golang makefile 最佳实践](chapter33_makefile/iam_makefile_structure.png)
 
 
