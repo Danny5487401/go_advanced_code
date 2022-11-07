@@ -318,7 +318,8 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [9 HTTPS, SAN, SLS, TLS及源码分析握手过程](chapter12_net/09_https/https.md)
   - 9.1 https 单向认证
     - [9.1.1 服务端修改 tls 版本](chapter12_net/09_https/01_sign_one/01_server/server.go)
-    - [9.1.2 客户端不校验证书](chapter12_net/09_https/01_sign_one/02_client/client.go)
+    - [9.1.2 客户端不校验证书 或则 添加到证书池](chapter12_net/09_https/01_sign_one/02_client/client.go)
+  - 9.2 https 双向认证
 - [10 unix domain socket 本地 IPC 进程间通信](chapter12_net/10_unix_domain_socket/uds.md)
 - [11 检查ip地址判断是否回环地址](chapter12_net/11_isLoopBack_ip/main.go)
 
