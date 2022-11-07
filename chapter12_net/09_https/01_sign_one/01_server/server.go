@@ -35,7 +35,7 @@ func main() { /*修改TLS版本*/
 
 	err := server.ListenAndServeTLS("chapter17_dataStructure_n_algorithm/06_certificate/02_x509/cert.pem", "chapter17_dataStructure_n_algorithm/06_certificate/02_x509/key.pem")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("error:", err)
 	}
 
 }
