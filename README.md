@@ -513,4 +513,11 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [Makefile常用函数列表](chapter33_makefile/makefile_func.md)
 - [golang makefile 最佳实践](chapter33_makefile/iam_makefile_structure.png)
 
+## [第三十四章 抽象语法树 AST](chapter34_ast/ast.md)
+- [1 业务场景理解 ast 其中的二元表达式使用](chapter34_ast/01_easy_use/ast_demand.md)
+  - [不使用 ast](chapter34_ast/01_easy_use/01_normal/driver_test.go)
+  - 使用 ast
+- [2 查看 ast 结构](chapter34_ast/02_ast_struct/main.go)
+- [3 参数的绑定和 validation](chapter34_ast/03_ast_binding_n_validate/validate.md)
+
 
