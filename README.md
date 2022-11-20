@@ -502,7 +502,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 ## [第三十一章 Go tool 自带工具](chapter31_tool/tool.md)
 - [1 build](chapter31_tool/01_build/build.md)
   - [1.1 Go build 选项 -tags](chapter31_tool/01_build/01_tags/main.go)
-  - [1.2 Go build 选项 -ldflags](chapter31_tool/01_build/01_tags/main.go)
+  - [1.2 Go build 选项 -ldflags="-X key=value来重写一个符号定义"-->符号表应用](chapter31_tool/01_build/02_ldflags/build.go)
 
 
 ## [第三十二章 Generic泛型](chapter32_generic/generic.md)
