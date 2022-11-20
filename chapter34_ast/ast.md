@@ -74,70 +74,19 @@ type Decl interface {
 }
 ```
 
-具体实现
 
-```css
-Node
-  Decl
-    *BadDecl
-    *FuncDecl
-    *GenDecl
-  Expr
-    *ArrayType
-    *BadExpr
-    *BasicLit
-    *BinaryExpr
-    *CallExpr
-    *ChanType
-    *CompositeLit
-    *Ellipsis
-    *FuncLit
-    *FuncType
-    *Ident
-    *IndexExpr
-    *InterfaceType
-    *KeyValueExpr
-    *MapType
-    *ParenExpr
-    *SelectorExpr
-    *SliceExpr
-    *StarExpr
-    *StructType
-    *TypeAssertExpr
-    *UnaryExpr
-  Spec
-    *ImportSpec
-    *TypeSpec
-    *ValueSpec
-  Stmt
-    *AssignStmt
-    *BadStmt
-    *BlockStmt
-    *BranchStmt
-    *CaseClause
-    *CommClause
-    *DeclStmt
-    *DeferStmt
-    *EmptyStmt
-    *ExprStmt
-    *ForStmt
-    *GoStmt
-    *IfStmt
-    *IncDecStmt
-    *LabeledStmt
-    *RangeStmt
-    *ReturnStmt
-    *SelectStmt
-    *SendStmt
-    *SwitchStmt
-    *TypeSwitchStmt
-  *Comment
-  *CommentGroup
-  *Field
-  *FieldList
-  *File
-  *Package
-```
+
+
+具体实现
+![](ast_struct.png) 
+
+Node有如下几种类型:
+- Comments 注释， //-style 或是 /*-style
+- Declarations 声明，GenDecl (generic declaration node) 代表 import, constant, type 或 variable declaration. BadDecl 代表有语法错误的 node
+- Statements 常见的语句表达式，return, case, if 等等
+- File 代表一个 go 源码文件
+- Package 代表一组源代码文件
+- Expr 表达式 ArrayExpr, StructExpr, SliceExpr 等等
 
 
 
