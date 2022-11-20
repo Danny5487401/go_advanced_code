@@ -6,42 +6,69 @@ JSON Web Token（JWT）是一个开放标准（RFC 7519），它定义了一种�
 
 ## jwt构成
 
-- Header：TOKEN 的类型，就是JWT; 签名的算法，如 HMAC SHA256、HS384
-```shell
-# JWT头部分是一个描述JWT元数据的JSON对象，通常如下所示。
-{
-"alg": "HS256",
-"type": "JWT"
-}
-# 1）alg属性表示签名使用的算法，默认为HMAC SHA256（写为HS256）；
-# 2）type属性表示令牌的类型，JWT令牌统一写为JWT。
-# 3）最后，使用Base64 URL算法将上述JSON对象转换为字符串保存。
-```
-- Payload：载荷又称为Claim，携带的信息，比如用户名、过期时间等，一般叫做 Claim
-```shell
-'''
-iss：发行人
-exp：到期时间
-sub：主题
-aud：用户
-nbf：在此之前不可用
-iat：发布时间
-jti：JWT ID用于标识该JWT
-'''
+JWT 由三部分组成：头部、数据体、签名 / 加密。这三部分以 . (英文句号) 连接，注意这三部分顺序是固定的，即 header.payload.signature 如下示例：
 
-#2、除以上默认字段外，我们还可以自定义私有字段，如下例：
+```shell
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+```
+
+###  头部 Header
+
+这部分用来描述 JWT 的元数据，比如该 JWT 所使用的签名 / 加密算法、媒体类型等。
+
+这部分原始数据是一个 JSON 对象，经过 Base64Url 编码方式进行编码后得到最终的字符串。其中只有一个属性是必要的：alg—— 加密 / 签名算法，默认值为 HS256。
+
+最简单的头部可以表示成这样
+```json
+{
+    "alg": "none"
+}
+```
+其他可选属性：
+- typ，描述 JWT 的媒体类型，该属性的值只能是 JWT，它的作用是与其他 JOSE Header 混合时表明自己身份的一个参数（很少用到）。
+- cty，描述 JWT 的内容类型。只有当需要一个 Nested JWT 时，才需要该属性，且值必须是 JWT。
+- kid，KeyID，用于提示是哪个密钥参与加密。
+
+
+
+
+### Payload：载荷
+又称为Claim，携带的信息，比如用户名、过期时间等，一般叫做 Claim.
+原始数据仍是一个 JSON 对象，经过 Base64url 编码方式进行编码后得到最终的 Payload。这里的数据默认是不加密的，所以不应存放重要数据（当然你可以考虑使用嵌套型 JWT）。官方内置了七个属性，大小写敏感，且都是可选属性，如下：
+
+
+- iss (Issuer) 签发人，即签发该 Token 的主体
+- sub (Subject) 主题，即描述该 Token 的用途，一般就最为用户的唯一标识
+- aud (Audience) 作用域，即描述这个 Token 是给谁用的，多个的情况下该属性值为一个字符串数组，单个则为一个字符串
+- exp (Expiration Time) 过期时间，即描述该 Token 在何时失效
+- nbf (Not Before) 生效时间，即描述该 Token 在何时生效
+- iat (Issued At) 签发时间，即描述该 Token 在何时被签发的
+- jti (JWT ID) 唯一标识
+
+
+除以上默认字段外，我们还可以自定义私有字段，如下例：
+```json
 {
 "sub": "1234567890",
 "name": "chongchong",
 "admin": true
 }
 
-#3、注意
-默认情况下JWT是未加密的，任何人都可以解读其内容，因此不要构建隐私信息字段，存放保密信息，以防止信息泄露。
-JSON对象也使用Base64 URL算法转换为字符串保存。
 ```
 
-- Signature：签名，是由header、payload 和你自己维护的一个 secret 经过加密得来的
+这里对 aud 做一个说明，有如下 Payload：
+```json
+{
+    "iss": "server1",
+    "aud": ["http://www.a.com","http://www.b.com"]
+}
+```
+那么如果我拿这个 JWT 去 http://www.c.com 获取有访问权限的资源，就会被拒绝掉，因为 aud 属性明确了这个 Token 是无权访问 www.c.com 的，
+
+
+
+### Signature：签名
+由header、payload 和你自己维护的一个 secret 经过加密得来的
 ```shell
 # 1.签名哈希部分是对上面两部分数据签名，通过指定的算法生成哈希，以确保数据不会被篡改。
 # 2.首先，需要指定一个密码（secret），该密码仅仅为保存在服务器中，并且不能向用户公开。
@@ -50,6 +77,22 @@ JSON对象也使用Base64 URL算法转换为字符串保存。
 # 5.在计算出签名哈希后，JWT头，有效载荷和签名哈希的三个部分组合成一个字符串，每个部分用"."分隔，就构成整个JWT对象。
 ```
 
+## 安全
+
+- 因为 JWT 的前两个部分仅是做了 Base64 编码处理并非加密，所以在存放数据上不能存放敏感数据。
+- 用来签名 / 加密的密钥需要妥善保存。
+- 尽可能采用 HTTPS，确保不被窃听。
+- 如果存放在 Cookie 中则强烈建议开启 Http Only，其实官方推荐是放在 LocalStorage 里，然后通过 Header 头进行传递。
+
+> Cookie 的 HTTP Only 这个 Flag 和 HTTPS 并不冲突，你会发现其实还有一个 Secure 的 Flag，这个就是指 HTTPS 了，这两个 Flag 互不影响的，开启 HTTP Only 会导致前端 JavaScript 无法读取该 Cookie，更多的是为了防止 类 XSS 攻击。
+
+
+## 缺点
+1. 数据臃肿
+
+2. 无法废弃和续签#
+
+3. Token 丢失#
 
 ## go-jwt源码分析
 标准载荷

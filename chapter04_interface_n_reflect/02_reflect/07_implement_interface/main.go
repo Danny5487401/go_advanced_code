@@ -18,16 +18,27 @@ func (u User) Do() string {
 	return "do it"
 }
 
-func main() {
-	var u User
+type Robot struct {
+}
 
+func main() {
+	// 1. 实现接口
+	var u User
 	t := reflect.TypeOf(u)
 
 	//将nil转成Tester接口指针，然后再通过反射,Elem()方法获取指针对应的接口类型
 	ele := reflect.TypeOf((*Tester)(nil)).Elem()
-	fmt.Println("打印接口名称", ele.String()) // 获得接口类型
+	fmt.Println("打印包含路径的接口名称", ele.String()) // 获得接口类型
 
 	if t.Implements(ele) {
-		fmt.Println("实现了Tester接口 !!!")
+		fmt.Printf("%v 实现了 %v 接口 !!!\n", t.Name(), ele.Name())
 	}
+
+	// 2. 未实现接口
+	var r Robot
+	t2 := reflect.TypeOf(r)
+	if !t2.Implements(ele) {
+		fmt.Printf("%v 没有实现 %v 接口 !!!\n", t2.Name(), ele.Name())
+	}
+
 }

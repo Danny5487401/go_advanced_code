@@ -13,7 +13,7 @@
 
 # *目录*
 
-Note:目录同级为 *代码展示*，推荐在 Goland 2022.2.1版本以上运行
+Note:目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运行
 ## *推荐 GoVersion: 1.18(涉及泛型)*
 Note: Go 1.18 移除用于泛型的constraints包
 
@@ -22,11 +22,11 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [golangci 规范并优化代码 + pre-commit工具](golangci.md)
 
 
-## [第一章 I/O操作](chapter01_input_output/io.md)
+## [第一章 I/O](chapter01_input_output/io.md)
 - 1 os操作系统模块
-    - [1.1 os中FileInfo底层的文件描述符和相关信息](chapter01_input_output/01_OS_module/01FileInfo/main.go)   
+    - [1.1 os中 FileInfo 文件属性](chapter01_input_output/01_OS_module/01FileInfo/fileinfo.md)
     - [1.2 os文件操作](chapter01_input_output/01_OS_module/02FileOperation/main.go)   
-    - 1.3 io包底层Reader和Writer接口   
+    - 1.3 io包底层 Reader 和 Writer 接口   
         - 1.3.1 os,bytes,strings包   
     - [1.4 io断点续传 ](chapter01_input_output/01_OS_module/04seeker/02resume_from_break-point/main.go) 
     - [1.5 FilePath包 ](chapter01_input_output/01_OS_module/05filePath/walk.go)    
@@ -34,6 +34,9 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 bufio缓存读写](chapter01_input_output/02_bufio/bufio.md)
   - [2.1 reader](chapter01_input_output/02_bufio/01reader/main.go)
   - [2.2 writer](chapter01_input_output/02_bufio/02writer/main.go)
+- [3 Go 1.16 io.FS: OS 的 FS 解耦](chapter01_input_output/03_io_fs/io_fs.md)
+  - [go 1.16 前后的文件io对比](chapter01_input_output/03_io_fs/embed.go)
+- [4 go的io.Pipe优雅的优化中间缓存-->在 minio 下载数据实现](chapter01_input_output/04_io_pipe/io_pipe.md)
 
 ---
 ## 第二章 协程Goroutine
@@ -89,16 +92,17 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [4 CSP理论中的Process/Channel](chapter03_channel/04_CSP/CSP.md)
 ---
 
-## 第四章 interface和反射 
-- [1 interface 与 Go 语言各种数据类型关系--> _type 字段的基础上，增加一些额外的字段来进行管理](chapter04_interface_n_reflect/01_interface/interface.md)
+## 第四章 interface 和反射 
+- [1 interface 分类：eface 和 iface, 及两者之间关系转换](chapter04_interface_n_reflect/01_interface/interface.md)
     - [1.1 汇编分析不含方法eface和带方法iface](chapter04_interface_n_reflect/01_interface/01_interface_in_asm/main.go)
     - [1.2 接口值的零值是指动态类型和动态值都为 nil](chapter04_interface_n_reflect/01_interface/02_interface_compare_with_nil/main.go)
     - [1.3 打印出接口的动态类型和值](chapter04_interface_n_reflect/01_interface/03_print_dynamic_value_n_type/main.go)
 - [2 反射](chapter04_interface_n_reflect/02_reflect/reflect.md)
+    - [2.0 常见需求: 不能预先确定参数类型，需要动态的执行不同参数类型行为](chapter04_interface_n_reflect/02_reflect/00_kind_route/kind_route_test.go)
     - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01three_laws/threeLaw.md)
-    - [2.2 类型断言](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
+    - [2.2 四种类型转换:断言、强制、显式、隐式](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
         - [2.2.1 断言的类型T是一个**具体类型** 或则 **接口类型**](chapter04_interface_n_reflect/02_reflect/02TypeAssert/01_eface_n_iface_type_assert/main.go)
-        - [类型断言性能分析](chapter04_interface_n_reflect/02_reflect/02TypeAssert/02_type_assert_performance/typeAssert_test.go)
+        - [2.2.2 类型断言性能分析](chapter04_interface_n_reflect/02_reflect/02TypeAssert/02_type_assert_performance/typeAssert_test.go)
             - 空接口类型直接类型断言具体的类型
             - 空接口类型使用TypeSwitch 只有部分类型
             - 空接口类型使用TypeSwitch 所有类型
@@ -112,7 +116,10 @@ Note: Go 1.18 移除用于泛型的constraints包
         - 底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
         - 一个nil值的map和非nil值但是空的map*是否“深度”相等
         - 带有环的数据对比*是否“深度”相等
-    - [2.7 通过reflect.implements判断struct类型是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
+    - [2.7 reflect.implements 判断 struct 是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
+    - [2.8 reflect.MakeFunc 构建函数](chapter04_interface_n_reflect/02_reflect/08_make_func/make_func.md)
+      - [2.8.1 构建逆序打印切片函数](chapter04_interface_n_reflect/02_reflect/08_make_func/01_invertInts/invertslice.go)
+      - [2.8.2 构建求和函数分别用于字符串和数字](chapter04_interface_n_reflect/02_reflect/08_make_func/02_sum/reflect_sum.go)
 ---
 
 ## 第五章 切片和数组
@@ -166,8 +173,10 @@ Note: Go 1.18 移除用于泛型的constraints包
 
 ## [第九章 设计模式-OOP七大准则](chapter09_design_pattern/introduction.md)
 - 1 创建型模式
-    - [1.1 静态工厂模式-->new关键字函数实现简单工厂](chapter09_design_pattern/01_construction/01_StaticFactoryMethod/static_factory.md)
-    - [1.2 工厂方法模式-->k8s中实现](chapter09_design_pattern/01_construction/02_factory_mode/factory.md)
+    - 1.1 工厂模式
+      - [1.1.1 简单工厂模式-->new关键字函数实现简单工厂](chapter09_design_pattern/01_construction/01_factory/01_StaticFactory/static_factory.md)
+      - [1.1.2 工厂方法模式-->k8s中实现](chapter09_design_pattern/01_construction/01_factory/02_factory_mode/factory.md)
+      - [1.1.3 抽象工厂模式](chapter09_design_pattern/01_construction/01_factory/03_abstract_factory/abstract_factory.md)
     - [1.3 单例模式-->标准库strings/replace实现](chapter09_design_pattern/01_construction/03_singleton/singleton.md)
     - [1.4 原型模式-->confluent-kafka中map实现](chapter09_design_pattern/01_construction/04_prototype/prototype.md)
     - [1.5 建造者模式-->xorm,k8s,zap中实现](chapter09_design_pattern/01_construction/05_builder/builder_info.md)
@@ -277,28 +286,28 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [2.16 汇编调用非汇编Go函数](chapter11_assembly_language/02plan9/16_assembly_call_NonassemblyFunc/main.go)
 
 
-## 第十二章 网络编程net
-- [socket介绍](chapter12_net/socket.md)
-- [tcp介绍](chapter12_net/tcp.md)
-- [epoll多路复用底层实现及Golang封装](chapter12_net/io_multiplexing.md)
+## [第十二章 net 网络--涉及性能指标,协议栈统计,套接字信息](chapter12_net/net.md)
+- [socket 套接字缓冲区](chapter12_net/socket.md)
+- [tcp 传输控制协议](chapter12_net/tcp.md)
+- [I/O 多路复用及 epoll 在 Golang 工作模型体现](chapter12_net/io_multiplexing.md)
 
-- 1 http服务端高级封装演变
+- 1 http 服务端高级封装演变: ServeHTTP 是 HTTP 服务器响应客户端的请求接口
   - [1.1 高级封装：使用DefaultServeMux](chapter12_net/01_http_server/01_use_DefaultServeMux/main.go)
   - [1.2 中级封装：使用内置serveMux生成函数](chapter12_net/01_http_server/02_use_http_NewServeMux/main.go)
   - [1.3 原始封装：自定义实现serveMux](chapter12_net/01_http_server/03_use_cutomized_mux/main.go)
-- 2 http客户端高级封装演变
-  - [2.1 request 源码](chapter12_net/02_http_client/http_request.md)
-  - [2.2 response 源码](chapter12_net/02_http_client/http_response.md)
-  - [2.3 transport 源码](chapter12_net/02_http_client/http_transport.md)
-  - [2.4 http.Client](chapter12_net/02_http_client/http_client.md) 
-  - [2.5 官方库版(爬虫获取邮箱案例-未封装)](chapter12_net/02_http_client/01_standard_pkg/client.go)
-  - [2.6 go-resty(推荐使用)](chapter12_net/02_http_client/02_go_resty/rest_client.go)
-- [3 Tcp实现客户端及服务端(服务端netpoll分析)](chapter12_net/03_tcp/tcp_server.md)
+- 2 http 客户端高级封装演变
+  - [request 源码](chapter12_net/02_http_client/http_request.md)
+  - [response 源码](chapter12_net/02_http_client/http_response.md)
+  - [http.RoundTripper 接口实现源码: 调用方将请求作为参数获取请求对应的响应,并管理连接](chapter12_net/02_http_client/http_transport.md)
+  - [http.Client 源码](chapter12_net/02_http_client/http_client.md) 
+  - [2.1 官方库版(爬虫获取邮箱案例-未封装)](chapter12_net/02_http_client/01_standard_pkg/client.go)
+  - [2.2 go-resty(推荐使用)](chapter12_net/02_http_client/02_go_resty/rest_client.go)
+- [3 Tcp 实现 Socket 编程 (服务端 netpoll 分析)](chapter12_net/03_tcp/tcp_server.md)
   - [客户端](chapter12_net/03_tcp/client/main.go)
   - [服务端](chapter12_net/03_tcp/server/main.go)
 - [4 Tcp黏包分析及处理(大小端介绍)](chapter12_net/04_tcp_sticky_problem/big_n_small_endian.md)
-  - [4.1 TCP粘包问题](chapter12_net/04_tcp_sticky_problem/01_problem)
-  - [TCP粘包解决方式](chapter12_net/04_tcp_sticky_problem/02_solution)
+  - [4.1 TCP 粘包问题](chapter12_net/04_tcp_sticky_problem/01_problem)
+  - [4.2 TCP 粘包解决方式](chapter12_net/04_tcp_sticky_problem/02_solution)
 - [5 fastHttp(源码分析)](chapter12_net/05_fasthttp/fasthttp.md)
   - [5.1 服务端](chapter12_net/05_fasthttp/server/main.go)
   - [5.2 客户端](chapter12_net/05_fasthttp/client/client.go)
@@ -306,8 +315,14 @@ Note: Go 1.18 移除用于泛型的constraints包
   - [6.1 信号监听处理](chapter12_net/06_grateful_stop/signal.go)
 - [7 URL的解析 Parse，query 数据的转义与反转义](chapter12_net/07_url/url.md)
 - [8 使用alice优雅编排中间件](chapter12_net/08_middleware/middlerware.md)
-- [9 https](chapter12_net/09_https/main.go)
-  - [SAN签发: 一个证书可以支持多个不同域名的解析](chapter12_net/09_https/https.md)
+- [9 HTTPS, SAN, SLS, TLS及源码分析握手过程](chapter12_net/09_https/https.md)
+  - 9.1 https 单向认证
+    - [9.1.1 服务端修改 tls 版本](chapter12_net/09_https/01_sign_one/01_server/server.go)
+    - [9.1.2 客户端不校验证书 或则 添加到证书池](chapter12_net/09_https/01_sign_one/02_client/client.go)
+  - 9.2 https 双向认证
+- [10 unix domain socket 本地 IPC 进程间通信](chapter12_net/10_unix_domain_socket/uds.md)
+- [11 检查ip地址判断是否回环地址](chapter12_net/11_isLoopBack_ip/main.go)
+
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
 [cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)
@@ -370,13 +385,13 @@ Note: Go 1.18 移除用于泛型的constraints包
     - map根据key实现排序
     - sort.Search 根据排序切片找索引
 - [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
-  - Symmetric 对称加密->HSA
-  - asymmetric 非对称加密->RSA
+  - [5.1 Symmetric 对称加密->HSA](chapter17_dataStructure_n_algorithm/05_middleware/01_symmetric/jwt_test.go)
+  - [5.2 asymmetric 非对称加密(更安全)->RSA](chapter17_dataStructure_n_algorithm/05_middleware/02_asymmetric/jwt_test.go)
 - [6 certificate 证书-->openssl 使用](chapter17_dataStructure_n_algorithm/06_certificate/certificate.md)
   - [6.1 pem(Privacy Enhanced Mail Certificate保密增强邮件协议](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/pem.md)
-    - [6.1.1 生成公私钥的.pem文件(公钥使用RSA算法)](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/01_pem_generate/main.go)
+    - [6.1.1 生成公私钥的 .pem 文件(公钥使用RSA算法)](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/01_pem_generate/main.go)
     - [6.1.2 解析.pem文件获取公私钥](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/02_get_pem_info/main.go) 
-  - [6.2 x509证书源码](chapter17_dataStructure_n_algorithm/06_certificate/02_x509/x509.md)
+  - [6.2 x509 库源码](chapter17_dataStructure_n_algorithm/06_certificate/02_x509/x509.md)
     - [6.2.1 ca 创建根证书并签署终端证书](chapter17_dataStructure_n_algorithm/06_certificate/02_x509/main.go)
 - [7 Base64编码解析](chapter17_dataStructure_n_algorithm/07_base64_encoding/base64.md)
 - [8 trie前缀树](chapter17_dataStructure_n_algorithm/08_trie/trie.md)
@@ -420,17 +435,19 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 time.Format()优化写法](chapter21_time/02_append_format.go)
 
 ## [第二十二章 数据驱动模板源码分析-->kratos工具](chapter22_template/template.md)
-- [1 加载多个模版并指定模版](chapter22_template/01_multi_template/main.go)
-- [2 自定义模版函数](chapter22_template/02_template_func/main.go)
+- [1 加载多个模版并指定模版生成结构体方法](chapter22_template/01_multi_template/main.go)
+- [2 自定义扩展模版函数 FuncMap ](chapter22_template/02_template_func/main.go)
 - [3 html模版](chapter22_template/03_html_template/main.go)
+- [4 generate 根据模版代码生成](chapter22_template/04_gen_template/gen_main.go)
 
 ## 第二十三章 调试内部对象
 - [1 fmt打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)
 - [2 go-spew优化调试](chapter23_debug_program/02_go_spew/main.go)
 
 
-## [第二十四章 Flag命令行参数](chapter24_flag/flag.md)
-- [1 基本使用及自定义帮助信息](chapter24_flag/nginx.go) 
+## [第二十四章 命令行参数解析](chapter24_flag/flag.md)
+- [1 flag 基本使用及自定义帮助信息](chapter24_flag/01_flag/nginx.go) 
+- [2 pflag 完全兼容flag](chapter24_flag/02_pflag/pflag.md) 
 
 
 ## [第二十四章 Flag命令行参数及源码分析](chapter24_flag/flag.md)
@@ -493,5 +510,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 泛型性能测试](chapter32_generic/02_performance/generic_test.go)
 
 ## [第三十三章 makefile 使用](chapter33_makefile/Makefile_info.md)
+- [Makefile常用函数列表](chapter33_makefile/makefile_func.md)
+- [golang makefile 最佳实践](chapter33_makefile/iam_makefile_structure.png)
 
 

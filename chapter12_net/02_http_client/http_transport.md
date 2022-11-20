@@ -1,4 +1,4 @@
-# http之transport源码详解
+# http 之 transport 源码详解
 使用golang net/http 库发送http请求，最后都是调用 transport的 RoundTrip方法中
 
 
@@ -19,10 +19,16 @@ func send(ireq *Request, rt RoundTripper, deadline time.Time) (resp *Response, d
 ```
 ![](.http_images/roundTrip.png)
 
-RoundTrip代表一个http事务，给一个请求返回一个响应。RoundTripper必须是并发安全的。
+RoundTrip 代表一个http事务，给一个请求返回一个响应。RoundTripper必须是并发安全的。
+
+
+## 实现
+HTTP 请求和响应在标准库中不止有一种实现，它们都包含了层级结构，标准库中的 net/http.RoundTripper 包含如下所示的层级结构
+![](chapter12_net/02_http_client/.http_images/roundTrip_achieve.png)
 
 ## 重要的结构体
 1. Transport
+> net/http.Transport 会处理 HTTP/HTTPS 协议的底层实现细节，其中会包含连接重用、构建请求以及发送请求等功能。
 ```go
 // RoundTripper接口的实现Transport结构体在源码包 net/http/transport.go 中
 type Transport struct {
@@ -212,8 +218,29 @@ type persistConn struct {
 
 ### transport 实现interface中的RoundTrip方法
 RoundTrip方法会做两件事情：
+- 根据 URL 的协议查找并执行自定义的 net/http.RoundTripper 实现；
 - 调用 Transport 的 getConn 方法获取连接；
 - 在获取到连接后，调用 persistConn 的 roundTrip 方法等待请求响应结果；
+
+#### 注册协议对应的transport
+```go
+func (t *Transport) RegisterProtocol(scheme string, rt RoundTripper) {
+	t.altMu.Lock()
+	defer t.altMu.Unlock()
+	oldMap, _ := t.altProto.Load().(map[string]RoundTripper)
+	if _, exists := oldMap[scheme]; exists {
+		panic("protocol " + scheme + " already registered")
+	}
+	newMap := make(map[string]RoundTripper)
+	for k, v := range oldMap {
+		newMap[k] = v
+	}
+	newMap[scheme] = rt
+	t.altProto.Store(newMap)
+}
+```
+
+#### 执行过程
 ```go
 // /Users/python/go/go1.18.1/src/net/http/roundtrip.go
 func (t *Transport) RoundTrip(req *Request) (*Response, error) {
@@ -231,7 +258,7 @@ func (t *Transport) roundTrip(req *Request) (*Response, error) {
 	trace := httptrace.ContextClientTrace(ctx)
     // ...
  
-	//如果该scheme有自定义的RoundTrip，则使用自定义的RoundTrip处理request，并返回response
+	// 如果该scheme有自定义注册的RoundTrip，则使用自定义的RoundTrip处理request，并返回response
 	altProto, _ := t.altProto.Load().(map[string]RoundTripper)
 	if altRT := altProto[scheme]; altRT != nil {
 		if resp, err := altRT.RoundTrip(req); err != ErrSkipAltProtocol {
@@ -250,7 +277,7 @@ func (t *Transport) roundTrip(req *Request) (*Response, error) {
 		// treq gets modified by roundTrip, so we need to recreate for each retry.
 		//  封装请求:初始化transportRequest,transportRequest是request的包装器
 		treq := &transportRequest{Request: req, trace: trace}
-		//根据用户的请求信息获取connectMethod  cm
+		//根据用户的请求信息获取connectMethod  ,简称cm
 		cm, err := t.connectMethodForRequest(treq)
 		if err != nil {
 			req.closeBody()
@@ -283,10 +310,14 @@ func (t *Transport) roundTrip(req *Request) (*Response, error) {
 ```
 
 
-## 获取或则新建连接
+## 连接管理：获取或则新建连接
+连接是一种相对比较昂贵的资源，如果在每次发出 HTTP 请求之前都建立新的连接，可能会消耗比较多的时间，带来较大的额外开销，通过连接池对资源进行分配和复用可以有效地提高 HTTP 请求的整体性能，多数的网络库客户端都会采取类似的策略来复用资源。
+
 - 1. 调用 queueForIdleConn 获取空闲 connection；
 - 2. 调用 queueForDial 等待创建新的 connection；
+
 ![](.http_transport_images/get_conn.png)
+
 ```go
 func (t *Transport) getConn(treq *transportRequest, cm connectMethod) (pc *persistConn, err error) {
     req := treq.Request

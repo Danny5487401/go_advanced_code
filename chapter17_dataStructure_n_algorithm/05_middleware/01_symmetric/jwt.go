@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Danny5487401/go_advanced_code/chapter17_dataStructure_n_algorithm/05_middleware/tokenErr"
-
 	"github.com/golang-jwt/jwt/v4"
 
 	"github.com/gin-gonic/gin"
@@ -63,7 +61,7 @@ func NewJWT(secret []byte) *JWT {
 	}
 }
 
-// 创建一个token
+// CreateToken 创建一个token
 func (j *JWT) CreateToken(user *models.User) (string, error) {
 	claims := models.CustomClaims{
 		User: user,
@@ -77,7 +75,7 @@ func (j *JWT) CreateToken(user *models.User) (string, error) {
 	return token.SignedString(j.SigningKey)
 }
 
-// 解析 token
+// ParseToken 解析 token
 func (j *JWT) ParseToken(tokenString string) (*models.CustomClaims, error) {
 	// 带callback函数keyFunc:解析方法的回调函数 方法返回秘钥 可以根据不同的判断返回不同的秘钥
 	token, err := jwt.ParseWithClaims(tokenString, &models.CustomClaims{}, func(token *jwt.Token) (i interface{}, e error) {
@@ -107,5 +105,5 @@ func (j *JWT) RefreshToken(tokenString string) (string, error) {
 	if claims, ok := token.Claims.(*models.CustomClaims); ok && token.Valid {
 		return j.CreateToken(claims.User)
 	}
-	return "", tokenErr.TokenInvalid
+	return "", jwt.ErrTokenInvalidId
 }
