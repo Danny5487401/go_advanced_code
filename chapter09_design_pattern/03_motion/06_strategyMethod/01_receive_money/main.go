@@ -9,21 +9,19 @@
 
 package main
 
-import "fmt"
-
-// 收银员
+// 收银员定义收钱策略
 type CashSuper interface {
 	AcceptCash(money float64) float64
 }
 
-// 正常收费
+// 策略一：正常收费
 type Normal struct{}
 
 func (n *Normal) AcceptCash(money float64) float64 {
 	return money
 }
 
-// 打折
+// 策略二：打折
 type CashRebate struct {
 	Rebate float64
 }
@@ -36,7 +34,7 @@ func (c *CashRebate) AcceptCash(money float64) float64 {
 	return c.Rebate * money
 }
 
-// 满 x 返 y
+// 策略三：满 x 返 y
 type CashReturn struct {
 	MoneyCondition float64
 	MoneyReturn    float64
@@ -77,16 +75,4 @@ func (c *CashContext) SetCashContext(t string) {
 // 收钱
 func (c *CashContext) GetMoney(money float64) float64 {
 	return c.Strategy.AcceptCash(money)
-}
-
-func main() {
-	cs := new(CashContext)
-
-	cs.SetCashContext("打八折")
-	result := cs.GetMoney(100)
-	fmt.Println("100元打八折结果:", result)
-
-	cs.SetCashContext("满300返100")
-	result = cs.GetMoney(400)
-	fmt.Println("400元满200返100结果:", result)
 }
