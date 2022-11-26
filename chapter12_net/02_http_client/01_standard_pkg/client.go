@@ -18,7 +18,9 @@ var (
 func GetEmail() {
 	// 1.去网站拿数据
 	c := &http.Client{
-		Timeout: 5 * time.Second, // 设置超时，此超时包括任何HTTP 3xx重定向持续时间，响应正文的读取以及连接和握手时间（除非重新使用了连接）
+		// 设置超时，此超时包括任何HTTP 3xx重定向持续时间，响应正文的读取以及连接和握手时间（除非重新使用了连接）
+		// 默认客户端发出的请求没有超时时间
+		Timeout: 5 * time.Second,
 		Transport: &http.Transport{
 			MaxIdleConns:        100,              //保留大小为100的连接池
 			IdleConnTimeout:     90 * time.Second, //如果90秒钟内未使用任何连接，它将被删除并关闭。
@@ -33,7 +35,7 @@ func GetEmail() {
 		},
 	}
 	resp, err := c.Get("https://tieba.baidu.com/p/6051076813?red_tag=1573533731")
-	HandleError(err, "http.Get url")
+	handleError(err, "http.Get url")
 	if resp != nil {
 		defer resp.Body.Close()
 	}
@@ -43,11 +45,11 @@ func GetEmail() {
 		上面的代码保证了无论如何 Body 都会被关闭，如果你没有打算使用其中的数据，那么你还需要丢弃已经接收的数据
 	*/
 	// 2.读取页面内容
-	pageBytes, err := ioutil.ReadAll(resp.Body)
+	pageBytes, err := ioutil.ReadAll(resp.Body) // 不建议的方式,未做长度限制,这里 cap达到了 22w
 
 	// 字节转字符串
 	var pageStr string
-	HandleError(err, "NewDecoder")
+	handleError(err, "NewDecoder")
 	pageStr = string(pageBytes)
 
 	// 3.过滤数据，过滤qq邮箱
@@ -68,7 +70,7 @@ func main() {
 }
 
 // 处理异常
-func HandleError(err error, why string) {
+func handleError(err error, why string) {
 	if err != nil {
 		log.Fatalf(why, err)
 	}

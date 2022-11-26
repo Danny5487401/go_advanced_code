@@ -1,5 +1,19 @@
 # Linux的文件系统
+
 ![](.io_images/linux_file_system.png)
+
+文件系统，本身是对存储设备上的文件，进行组织管理的机制。组织方式不同，就会形成不同的文件系统
+
+Linux 文件系统为每个文件都分配两个数据结构，索引节点（index node）和目录项（directory entry）。它们主要用来记录文件的元信息和目录结构
+
+- 索引节点，简称为 inode，用来记录文件的元数据，比如 inode 编号、文件大小、访问权限、修改日期、数据的位置等。索引节点和文件一一对应，它跟文件内容一样，都会被持久化存储到磁盘中。所以记住，索引节点同样占用磁盘空间
+- 目录项，简称为 dentry，用来记录文件的名字、索引节点指针以及与其他目录项的关联关系。多个关联的目录项，就构成了文件系统的目录结构。不过，不同于索引节点，目录项是由内核维护的一个内存数据结构，所以通常也被叫做目录项缓存。
+
+索引节点是每个文件的唯一标志，而目录项维护的正是文件系统的树状结构。目录项和索引节点的关系是多对一，你可以简单理解为，一个文件可以有多个别名。
+
+举个例子，通过硬链接为文件创建的别名，就会对应不同的目录项，不过这些目录项本质上还是链接同一个文件，所以，它们的索引节点相同
+
+![](inode_n_dentry.png)
 
 ## 文件系统的特点
 1. 文件系统要有严格的组织形式，使得文件能够以块为单位进行存储。
@@ -187,6 +201,59 @@ type ReadWriter interface {
    - MultiReader:则是把多个数据流合成一股
    - SectionReader、MultiWriter、PipeReader、PipeWriter 等
    
+## 磁盘性能指标
+- 使用率，是指磁盘处理 I/O 的时间百分比。过高的使用率（比如超过 80%），通常意味着磁盘 I/O 存在性能瓶颈。
+- 饱和度，是指磁盘处理 I/O 的繁忙程度。过高的饱和度，意味着磁盘存在严重的性能瓶颈。当饱和度为 100% 时，磁盘无法接受新的 I/O 请求。
+- IOPS（Input/Output Per Second），是指每秒的 I/O 请求数。
+- 吞吐量，是指每秒的 I/O 请求大小。
+- 响应时间，是指 I/O 请求从发出到收到响应的间隔时间
+
+举个例子，在数据库、大量小文件等这类随机读写比较多的场景中，IOPS 更能反映系统的整体性能；而在多媒体等顺序读写较多的场景中，吞吐量才更能反映系统的整体性能
+
+### 磁盘 I/O 观测
+
+iostat 是最常用的磁盘 I/O 性能观测工具，它提供了每个磁盘的使用率、IOPS、吞吐量等各种常见的性能指标，当然，这些指标实际上来自 /proc/diskstats。
+
+```shell
+root@VM-16-12-ubuntu:~# iostat -d -x 1 
+Linux 5.4.0-121-generic (VM-16-12-ubuntu)       10/12/2022      _x86_64_        (2 CPU)
+
+Device            r/s     rkB/s   rrqm/s  %rrqm r_await rareq-sz     w/s     wkB/s   wrqm/s  %wrqm w_await wareq-sz     d/s     dkB/s   drqm/s  %drqm d_await dareq-sz  aqu-sz  %util
+scd0             0.00      0.00     0.00   0.00    0.30    35.09    0.00      0.00     0.00   0.00    0.00     0.00    0.00      0.00     0.00   0.00    0.00     0.00    0.00   0.00
+vda             98.34   6907.69    16.96  14.71    7.94    70.24    5.29     67.09     5.29  49.99    3.55    12.68    0.00      0.00     0.00   0.00    0.00     0.00    0.60   6.71
+
+
+Device            r/s     rkB/s   rrqm/s  %rrqm r_await rareq-sz     w/s     wkB/s   wrqm/s  %wrqm w_await wareq-sz     d/s     dkB/s   drqm/s  %drqm d_await dareq-sz  aqu-sz  %util
+scd0             0.00      0.00     0.00   0.00    0.00     0.00    0.00      0.00     0.00   0.00    0.00     0.00    0.00      0.00     0.00   0.00    0.00     0.00    0.00   0.00
+vda              0.00      0.00     0.00   0.00    0.00     0.00    2.00     60.00    13.00  86.67    1.50    30.00    0.00      0.00     0.00   0.00    0.00     0.00    0.00   0.80
+```
+![](iostat_info.png)
+
+- %util ，就是我们前面提到的磁盘 I/O 使用率；
+- r/s+ w/s ，就是 IOPS；
+- rkB/s+wkB/s ，就是吞吐量；
+- r_await+w_await ，就是响应时间。
+
+
+### 进程 I/O 观测
+
+iostat 只提供磁盘整体的 I/O 性能数据，缺点在于，并不能知道具体是哪些进程在进行磁盘读写。要观察进程的 I/O 情况，你还可以使用 pidstat 和 iotop 这两个工具
+
+
+```shell
+root@VM-16-12-ubuntu:~# iotop
+Total DISK READ:         0.00 B/s | Total DISK WRITE:        79.93 K/s
+Current DISK READ:       0.00 B/s | Current DISK WRITE:      61.76 K/s
+    TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO>    COMMAND                                                                                                                                                        
+    288 be/3 root        0.00 B/s   50.86 K/s  0.00 %  0.35 % [jbd2/vda2-8]
+ 300605 be/4 root        0.00 B/s    0.00 B/s  0.00 %  0.02 % [kworker/u4:0-events_power_efficient]
+ 137648 be/4 root        0.00 B/s   10.90 K/s  0.00 %  0.00 % dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+ 137937 be/4 root        0.00 B/s    7.27 K/s  0.00 %  0.00 % dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+```
+
+
+
+
 
 ## 源码分析
 

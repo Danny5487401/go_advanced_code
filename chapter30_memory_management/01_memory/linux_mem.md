@@ -5,21 +5,28 @@
 3. 如果虚拟地址对应物理地址不在物理内存中，则产生缺页中断，真正分配物理地址，同时更新进程的页表；如果此时物理内存已耗尽，则根据内存替换算法淘汰部分页面至物理磁盘中。
 
 ## 物理和虚拟内存
-![](.mem_images/.go_mem_images/physical_mem.png)
+![](../.asset/img/.go_mem_images/physical_mem.png)
 
-我们可以将物理内存看作是一个槽/单元的数组，其中槽可以容纳 8 个位信息 1。每个内存槽都有一个地址。
+笔记本电脑内存就是 8GB,其实指的是物理内存. 物理内存也称为主存，大多数计算机用的主存都是动态随机访问内存（DRAM）。只有内核才可以直接访问物理内存。
 
-![](.mem_images/.go_mem_images/virtual_mem_to_physical_mem.png)
+物理内存看作是一个槽/单元的数组，其中槽可以容纳 8 个位信息 1。每个内存槽都有一个地址。
+
+![](../.asset/img/.go_mem_images/virtual_mem_to_physical_mem.png)
 
 虚拟内存可以使用基于 CPU 体系结构和操作系统的段或页表来实现。页表更常见。
 
+Linux 内核给每个进程都提供了一个独立的虚拟地址空间，并且这个地址空间是连续的。这样，进程就可以很方便地访问内存，更确切地说是访问虚拟内存.
+
 在分页虚拟内存中，我们将虚拟内存划分为块，称为页。页的大小可以根据硬件的不同而有所不同，但是页的大小通常是 4-64 KB，此外，通常还能够使用从 2MB 到 1GB 的巨大的页。
 分块很有用，因为单独管理每个内存槽需要更多的内存，而且会降低计算机的性能。
-![](.mem_images/.go_mem_images/virtual_mem_transfer_to_physical_mem.png)
+![](../.asset/img/.go_mem_images/virtual_mem_transfer_to_physical_mem.png)
 
 为了实现分页虚拟内存，计算机通常有一个称为内存管理单元(MMU)的芯片，它位于 CPU 和内存之间。
 MMU 在一个名为页表的表(它存储在内存中)中保存了从虚拟地址到物理地址的映射，其中每页包含一个页表项(PTE)。
-MMU 还有一个物理缓存旁路转换缓冲(TLB)，用来存储最近从虚拟内存到物理内存的转换。
+MMU 还有一个物理缓存旁路转换缓冲(TLB Translation Lookaside Buffer)，用来存储最近从虚拟内存到物理内存的转换。
+
+TLB 其实就是 MMU 中页表的高速缓存。由于进程的虚拟地址空间是独立的，而 TLB 的访问速度又比 MMU 快得多，
+所以，通过减少进程的上下文切换，减少 TLB 的刷新次数，就可以提高 TLB 缓存的使用率，进而提高 CPU 的内存访问性能。
 
 因此，假设操作系统决定将一些虚拟内存页放入磁盘，程序会尝试访问它。此过程如下所示：
 
@@ -30,8 +37,8 @@ MMU 还有一个物理缓存旁路转换缓冲(TLB)，用来存储最近从虚�
 5. 对于一些内存管理单元，还可能出现页表入口不足的情况，在这种情况下，操作系统必须为新的映射释放一个表入口。
 
 ## Linux 虚拟地址空间分布:用户空间与内核空间
-![](.mem_images/.go_mem_images/user_kernel.png)
-![](.mem_images/.go_mem_images/linux_process_memory.png)
+![](../.asset/img/.go_mem_images/user_kernel.png)
+![](../.asset/img/.go_mem_images/linux_process_memory.png)
 
 现在操作系统都是采用虚拟存储器，那么对 32 位操作系统而言，它的寻址空间（虚拟存储空间）为 4G（2 的 32 次方）。
 操作系统的核心是内核，独立于普通的应用程序，可以访问受保护的内存空间，也有访问底层硬件设备的所有权限。
@@ -199,28 +206,35 @@ munmap函数成功返回0.失败返回-1并设置errno
 在第一次访问已分配的虚拟地址空间的时候，发生缺页中断，操作系统负责分配物理内存，然后建立虚拟内存和物理内存之间的映射关系（一般是硬件单元MMU管理）。
 
 
+对比：
+- brk() 方式的缓存，可以减少缺页异常的发生，提高内存访问效率。不过，由于这些内存没有归还系统，在内存工作繁忙时，频繁的内存分配和释放会造成内存碎片
+- mmap() 方式分配的内存，会在释放时直接归还系统，所以每次 mmap 都会发生缺页异常。在内存工作繁忙时，频繁的内存分配会导致大量的缺页异常，使内核的管理负担增大。这也是 malloc 只对大块内存使用 mmap 的原因。
+
 我认为 Go 语言的运行时只使用 mmap、 madvise、 munmap 与 sbrk，并且它们都是在操作系统下通过汇编或者 cgo 直接调用的，也就是说它不会调用 libc。
 这些内存分配是低级别的，通常程序员不使用它们。
 
 更常见的是使用 libc 的 malloc 系列函数，当你向系统申请 n 个字节的内存时，libc 将为你分配内存。 同时，你不需要这些内存的时候，要调用 free 来释放这些内存。
 
 
-## 库函数malloc/free
+## 库函数 malloc/free
+
+malloc() 是 C 标准库提供的内存分配函数，对应到系统调用上，有两种实现方式，即 brk() 和 mmap()。
+
 在标准C库中，提供了malloc/free函数分配释放内存，这两个函数底层是由brk，mmap，munmap这些系统调用实现的。
 
-1. 当开辟的空间小于 128K 时，调用 brk（）函数，malloc 的底层实现是系统调用函数 brk（），将_edata往高地址推(只分配虚拟空间，不对应物理内存(因此没有初始化)，第一次读/写数据时，引起内核缺页中断，内核才分配对应的物理内存，然后虚拟地址空间建立映射关系)
-![](.linux_mem_images/brk_process.png)
+1. 当开辟的空间小于 128K 时，调用 brk()函数，malloc 的底层实现是系统调用函数 brk()，将_edata往高地址推(只分配虚拟空间，不对应物理内存(因此没有初始化)，第一次读/写数据时，引起内核缺页中断，内核才分配对应的物理内存，然后虚拟地址空间建立映射关系)
+![](../.asset/img/.linux_mem_images/brk_process.png)
   - 进程启动的时候，其（虚拟）内存空间的初始布局如图1所示.
   - 程调用A=malloc(30K)以后，内存空间如图2.malloc函数会调用brk系统调用，将_edata指针往高地址推30K，就完成虚拟内存分配。
   - 进程调用B=malloc(40K)以后，内存空间如图3。
 
 2. 当开辟的空间大于 128K 时，mmap（）系统调用函数来在虚拟地址空间中（堆和栈中间，称为“文件映射区域”的地方）找一块空间来开辟。
-![](.linux_mem_images/mmap_process.png)
+![](../.asset/img/.linux_mem_images/mmap_process.png)
    - 进程调用C=malloc(200K)以后，内存空间如图4: 默认情况下，malloc函数分配内存，如果请求内存大于128K（可由M_MMAP_THRESHOLD选项调节），那就不是去推_edata指针了，
      而是利用mmap系统调用，从堆和栈的中间分配一块虚拟内存.这样子做主要是因为brk分配的内存需要等到高地址内存释放以后才能释放（例如，在B释放之前，A是不可能释放的，这就是内存碎片产生的原因），而mmap分配的内存可以单独释放。
      
 3. free
-![](.linux_mem_images/free_process.png)
+![](../.asset/img/.linux_mem_images/free_process.png)
    - 进程调用free(B)以后，如图7所示:B对应的虚拟内存和物理内存都没有释放，因为只有一个_edata指针，如果往回推，那么D这块内存怎么办呢？
      当然，B这块内存，是可以重用的，如果这个时候再来一个40K的请求，那么malloc很可能就把B这块内存返回回去了。
    - 进程调用free(D)以后，如图8所示:B和D连接起来，变成一块140K的空闲内存。
@@ -235,7 +249,7 @@ munmap函数成功返回0.失败返回-1并设置errno
 4. 建立映射关系（虚拟地址到物理地址
 
 ## 分配算法TCMalloc
-![](.mem_images/.go_mem_images/TCMalloc_strategy.png)
+![](../.asset/img/.go_mem_images/TCMalloc_strategy.png)
 
 由于 Go 语言不使用 malloc 来获取内存，而是直接操作系统申请（通过 mmap），它必须自己实现内存分配和释放（就像 malloc 一样）。
 Go 语言的内存分配器最初基于 TCMalloc：Thread-Caching Malloc, 但是现在已经有了很大的不同。
@@ -261,7 +275,7 @@ func main() {
 }
 ```
 运行后查看
-![](.mem_images/.go_mem_images/ps_memory.png)
+![](../.asset/img/.go_mem_images/ps_memory.png)
 
 - PID :进程Id
 - %CPU:（处理器）使用百分比
@@ -275,8 +289,29 @@ func main() {
 
 
 
+## 查看进程
+
+free 显示的是整个系统的内存使用情况。如果你想查看进程的内存使用情况，可以用 top 或者 ps 等工具
+```shell
+top - 13:19:29 up 21 days, 14:17,  1 user,  load average: 0.16, 0.11, 0.13
+Tasks: 129 total,   1 running, 128 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 11.1 us,  1.8 sy,  0.0 ni, 86.6 id,  0.0 wa,  0.0 hi,  0.5 si,  0.0 st
+MiB Mem :   3419.2 total,    120.1 free,   2113.2 used,   1185.8 buff/cache
+MiB Swap:      0.0 total,      0.0 free,      0.0 used.    887.4 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                                                                                                                                                  
+2391077 ubuntu    20   0 3852540   1.0g 167528 S   0.3  30.6  91:13.29 java                                                                                                                                                     
+ 226817 systemd+  20   0 1778212 418412      0 S   0.3  12.0 171:41.33 mysqld                                                                                                                                                   
+2391434 ubuntu    20   0 1765264 400600   9072 S  20.3  11.4 208:13.26 node                                                                                                                                                     
+ 805185 root      20   0 1060468 107336  18412 S   1.3   3.1 356:16.53 YDService 
+```
+
+- VIRT 是进程虚拟内存的大小，只要是进程申请过的内存，即便还没有真正分配物理内存，也会计算在内
+- RES 是常驻内存的大小，也就是进程实际使用的物理内存大小，但不包括 Swap 和共享内存
+- SHR 是共享内存的大小，比如与其他进程共同使用的共享内存、加载的动态链接库以及程序的代码段等
+
 
 ## 参考链接
-1. https://blog.csdn.net/gfgdsg/article/details/42709943?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3.pc_relevant_default&utm_relevant_index=6
-2. TCMalloc 相关的信息可以看这里：http://goog-perftools.sourceforge.net/doc/tcmalloc.html
+1. [Linux内存分配小结--malloc、brk、mmap](https://blog.csdn.net/gfgdsg/article/details/42709943?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3.pc_relevant_default&utm_relevant_index=6)
+2. [TCMalloc 相关的信息可以看这里](http://goog-perftools.sourceforge.net/doc/tcmalloc.html)
 

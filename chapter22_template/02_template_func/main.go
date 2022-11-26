@@ -7,29 +7,37 @@ import (
 
 // 模版函数
 
+// 需求：给仓库不同材质物品数量加10个打印
+
 func CheckErr(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
+
+type Inventory struct {
+	Material string // 材质
+	Count    uint   // 数量
+}
+type Store struct {
+	Fields []Inventory
+}
+
+func NewInventory(Fields []Inventory) Store {
+	return Store{Fields: Fields}
+}
+
 func main() {
-	type Inventory struct {
-		Material string
-		Count    uint
-	}
-	type NewInventory struct {
-		Fields []Inventory
-	}
-	sweaters := NewInventory{
-		Fields: []Inventory{
-			Inventory{Material: "wool", Count: 19},
-			Inventory{Material: "wooltwo", Count: 20},
-		}}
+
+	sweaters := NewInventory([]Inventory{
+		Inventory{Material: "wool", Count: 19},
+		Inventory{Material: "wooltwo", Count: 20},
+	})
 
 	var Text = `
-{{range .Fields }}
+{{- range .Fields }}
    Material: {{.Material | handleString}} - Count:{{.Count | handleInt }}
-{{ end }}
+{{- end }}
 `
 	tmpl, err := template.New("test").Funcs(template.FuncMap{"handleString": handleString, "handleInt": handleInt}).Parse(Text)
 	CheckErr(err)
@@ -41,5 +49,5 @@ func handleInt(number uint) uint {
 	return number + 10
 }
 func handleString(field string) string {
-	return " string is: " + field
+	return "材质是: " + field
 }

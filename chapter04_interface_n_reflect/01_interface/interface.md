@@ -10,23 +10,27 @@
 - 横向
     再或者数据库的连接可以抽象为接口，可以支持mysql、oracle等
 
-## 源码分类
+## 源码分析
 
-interface的定义在1.15.3源码包runtime中,interface的定义分为两种，
+interface的定义在 1.15.3 源码包runtime中,interface的定义分为两种，
 - 不带方法的runtime.eface
 - 带方法的runtime.iface
 
 尽管空接口理论上可以重用 iface 数据结构(因为 iface 可以算是 eface 的一个超集)，runtime 还是选择对这两种 interface 进行区分，
 主要有两个理由: 为了节省空间，以及代码清晰
 
-### 1. runtime.eface表示不含方法的interface{}类型
+### 1. runtime.eface 表示不含方法的interface{}类型
 ![](.interface_images/eface.png)
 
-结构体包含可以表示任意数据类型的_type和存储指定的数据data,data用指针来表示
+![](.interface_images/eface2.png)
+
+eface 主要包括类型信息和值的指针，非常好理解。其中 data 指针指向的内存包含了类型和值的信息，也就是说 data 指针指向了 eface 本身
+
 ```go
+// /Users/python/go/go1.18/src/runtime/runtime2.go
 type eface struct {
     _type *_type  // 表示空接口所承载的具体的实体类型
-    data  unsafe.Pointer
+    data  unsafe.Pointer  // 指向的值
 }
 
 //_type 结构对 Go 的类型给出了完成的描述。 其定义在 (src/runtime/type.go)
@@ -35,36 +39,34 @@ type _type struct {
     size       uintptr //类型大小,占用的字节大小
     ptrdata uintptr //指针数据 size of memory prefix holding all pointers
     
-    hash       uint32 //计算的hash
-    tflag      tflag //额外的标记信息,和反射相关
+    hash       uint32 // 类型 hash
+	tflag      tflag // 额外的标记信息,和反射相关
     
     // 内存对齐相关
-    align      uint8 //内存对齐系数
-    fieldAlign uint8 //字段内存对齐系数
+    align      uint8 // 内存对齐系数
+    fieldAlign uint8 // 字段内存对齐系数
     
-    // 类型的编号，有bool, slice, struct 等等等等
+    // 类型的编号，有bool, slice, struct 等等
     kind uint8 //用于标记数据类型
     // function for comparing objects of this type
     // (ptr to object A, ptr to object B) -> ==?
     equal func(unsafe.Pointer, unsafe.Pointer) bool//用于判断当前类型多个对象是否相等
-    str       nameOff //名字偏移量
-    ptrToThis typeOff //指针的偏移量
+    str       nameOff //类型名称字符串在二进制文件段中的偏移量
+    ptrToThis typeOff // 类型元信息指针在二进制文件段中的偏移量
 }
 ```
+解释
 - nameOff 和 typeOff 类型是 int32 ，这两个值是链接器负责嵌入的，相对于可执行文件的元信息的偏移量。
 元信息会在运行期，加载到 runtime.moduledata 结构体中 (src/runtime/symtab.go), 如果你曾经研究过 ELF 文件的内容的话，看起来会显得很熟悉。
 runtime 提供了一些 helper 函数，这些函数能够帮你找到相对于 moduledata 的偏移量，比如 resolveNameOff (src/runtime/type.go) and resolveTypeOff (src/runtime/type.go):
+
+
+
+
+
+Go 语言 map, slice, array等内置的复杂类型类型都是在 _type 字段的基础上，增加一些额外的字段来进行管理的：
 ```go
-func resolveNameOff(ptrInModule unsafe.Pointer, off nameOff) name {}
-func resolveTypeOff(ptrInModule unsafe.Pointer, off typeOff) *_type {}
-```
-也就是说，假设 t 是 _type 的话，只要调用 resolveTypeOff(t, t.ptrToThis) 就可以返回 t 的一份拷贝了
-
-
-
-
-Go 语言各种数据类型都是在 _type 字段的基础上，增加一些额外的字段来进行管理的：
-```go
+// /Users/python/go/go1.18/src/runtime/type.go
 type arraytype struct {
     typ   _type
     elem  *_type
@@ -83,16 +85,27 @@ type slicetype struct {
     elem *_type
 }
 
+type functype struct {
+	typ      _type
+	inCount  uint16
+	outCount uint16
+}
+
+type ptrtype struct {
+	typ  _type
+	elem *_type
+}
+
 type structtype struct {
-    typ     _type
-    pkgPath name
-    fields  []structfield
+	typ     _type
+	pkgPath name
+	fields  []structfield
 }
 ```
 这些数据类型的结构体定义，是反射实现的基础。
 
 
-### 2. runtime.iface表示包含方法的接口
+### 2. runtime.iface 表示包含方法的接口
 ![](.interface_images/iface.png)
 ```go
 type iface struct {
@@ -109,18 +122,14 @@ type iface struct {
 
 itab 是这样定义的 (src/runtime/runtime2.go),itab 是 interface 的核心:
 ```go
+// /Users/python/go/go1.18/src/runtime/runtime2.go
 type itab struct {
-    inter  *interfacetype // inter 字段则描述了接口的类型
-    _type  *_type  // 描述了实体的类型，包括内存对齐方式，大小等
-    link   *itab
-    hash   uint32 // copy of _type.hash. Used for type switches.
-    bad    bool   // type does not implement interface
-    inhash bool   // has this itab been added to hash?
-    unused [2]byte
-
-    // fun 字段放置和接口方法对应的具体数据类型的方法地址，实现接口调用方法的动态分派，一般在每次给接口赋值发生转换时会更新此表，或者直接拿缓存的 itab。
-    fun    [1]uintptr // variable sized,即“变长”，这表示这里数组所声明的长度是 非精确的.
-   
+    inter *interfacetype // 接口静态类型, 接口的抽象表示，也就是静态的接口，不是实际的 struct
+    _type *_type // 实际类型
+    hash  uint32 // copy of _type.hash. Used for type switches. 和 _type 中的 hash 一样，用来类型断言
+    _     [4]byte
+    fun   [1]uintptr // variable sized. fun[0]==0 means _type does not implement inter. 接口实现的函数，跟接口类型保持一致
+       
 }
 ```
 itab包含的是  
@@ -137,26 +146,34 @@ Note：这里只会列出实体类型和接口相关的方法，实体类型的�
 type interfacetype struct {
     typ     _type
     pkgpath name  // 定义了接口的包名
-    mhdr    []imethod // 表示接口所定义的函数列表
+    mhdr    []imethod // 表示接口所定义的函数列表，不是实际的被实现的 method
 }
+
+type nameOff int32
+type typeOff int32
 
 type imethod struct {
     name nameOff
     ityp typeOff
 }
 ```
-interfacetype 只是对于 _type 的一种包装，在其顶部空间还包装了额外的 interface 相关的元信息。 在最近的实现中，这部分元信息一般是由一些指向相应名字的 offset 的列表和 interface 所暴露的方法的类型所组成([]imethod)。
+interfacetype 只是对于 _type 的一种包装，在其顶部空间还包装了额外的 interface 相关的元信息。 
+在最近的实现中，这部分元信息一般是由一些指向相应名字的 offset 的列表和 interface 所暴露的方法的类型所组成([]imethod)。
 
-### 接口类型和 nil 作比较
+
+
+
+### eface 和 iface 的转换
+
+我们知道 任何指针都可以转换成 unsafe.Pointer, unsafe.Pointer 也可以转换成任意的指针
+
+在使用 unsafe.Pointer 进行转换时，不会进行类型检查，只是粗暴的把类型替换，指针的地址和实际的值都不会变化。
+
+假如使用 unsafe.Pointer 进行转换的两种数据类型差异很大，转换之后使用的时候也会出错。这也是叫 unsafe 的原因。
+
+对于 eface 和 iface：假如 eface的类型是 Interface，那么 eface 中的 _type 字段和 iface 中的 inter 是可以通过 unsafe.Pointer 进行转换的。
+
+
+## 接口类型和 nil 作比较
 
 接口值的零值是指动态类型和动态值都为 nil。当仅且当这两部分的值都为 nil 的情况下，这个接口值就才会被认为 接口值 == nil
-```go
-type itab struct {
-    inter *interfacetype //接口类型的表示
-    _type *_type
-    hash  uint32 // copy of _type.hash. Used for type switches.
-    _     [4]byte
-    fun   [1]uintptr // variable sized. fun[0]==0 means _type does not implement inter.
-}
-```
-

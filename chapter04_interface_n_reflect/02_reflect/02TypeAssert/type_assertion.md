@@ -1,9 +1,86 @@
-# 类型断言
-## 一. 断言类型的语法
-x.(T)，这里x表示一个接口的类型，T表示一个类型（也可为接口类型）。
-一个类型断言检查一个接口对象x的动态类型是否和断言的类型T匹配。
+# go 类型转换
 
-## 二. 分类
+go 存在 4 种类型转换分别为：断言、强制、显式、隐式。
+
+通常说的类型转换是指断言，强制在日常不会使用到、显示是基本的类型转换、隐式使用到但是不会注意到。断言、强制、显式三类在 go 语法描述中均有说明，隐式是在日常使用过程中总结出来。
+
+1. 强制类型转换
+```go
+var f float64
+bits = *(*uint64)(unsafe.Pointer(&f))
+
+type ptr unsafe.Pointer
+bits = *(*uint64)(ptr(&f))
+
+var p ptr = nil
+```
+unsafe 强制转换是指针的底层操作了，用 c 的朋友就很熟悉这样的指针类型转换，利用内存对齐才能保证转换可靠，例如 int 和 uint 存在符号位差别，利用 unsafe 转换后值可能不同，但是在内存存储二进制一模一样。
+
+应用：接口类型检测
+```go
+var _ Context = (*ContextBase)(nil)
+```
+nil 的类型是 nil 地址值为 0，利用强制类型转换成了 * ContextBase，返回的变量就是类型为 * ContextBase 地址值为 0，然后 Context=xx 赋值如果 xx 实现了 Context 接口就没事，如果没有实现在编译时期就会报错，实现编译期间检测接口是否实现
+
+2. 显式转换
+一个显式转换的表达式 T (x) ，其中 T 是一种类型并且 x 是可转换为类型的表达式 T，例如：uint(666)。
+```go
+int64(222)
+[]byte("ssss")
+
+type A int
+A(2)
+```
+在以下任何一种情况下，变量 x 都可以转换成 T 类型：
+- x 可以分配成 T 类型。
+- 忽略 struct 标签 x 的类型和 T 具有相同的基础类型。
+- 忽略 struct 标记 x 的类型和 T 是未定义类型的指针类型，并且它们的指针基类型具有相同的基础类型。
+- x 的类型和 T 都是整数或浮点类型。
+- x 的类型和 T 都是复数类型。
+- x 的类型是整数或 [] byte 或 [] rune，并且 T 是字符串类型。
+- x 的类型是字符串，T 类型是 [] byte 或 [] rune。
+
+3. 隐式类型转换
+
+隐式类型转换日常使用并不会感觉到，但是运行中确实出现了类型转换
+
+- 组合间的重新断言类型
+```go
+type Reader interface {
+    Read(p []byte) (n int, err error)
+}
+type ReaderClose interface {
+    Reader
+    Close() error
+}
+var rc ReaderClose
+r := rc
+```
+ReaderClose 接口组合了 Reader 接口，但是 r=rc 的赋值时还是类型转换了，go 使用系统内置的函数执行了类型转换。
+
+- 相同类型间赋值
+```go
+type Handler func()
+
+func NewHandler() Handler {
+    return func() {}
+}
+```
+
+4. 这里主要介绍类型断言
+
+## 一. 断言类型的语法
+断言通过判断变量是否可以转换成某一个类型
+```go
+var s = x.(T)
+```
+x.(T)，这里x表示一个接口的类型，T表示一个类型（也可为接口类型）。
+
+- 如果 x 不是 nil，且 x 可以转换成 T 类型，就会断言成功，返回 T 类型的变量 s。
+- 如果 T 不是接口类型，则要求 x 的类型就是 T
+- 如果 T 是一个接口，要求 x 实现了 T 接口
+
+
 类型断言分两种情况：
 
 - 第一种，如果断言的类型T是一个具体类型，类型断言x.(T)就检查x的动态类型是否和T的类型相同。
@@ -23,6 +100,26 @@ x.(T)，这里x表示一个接口的类型，T表示一个类型（也可为接�
 
 表达式是t,ok:=i.(T)，这个表达式也是可以断言一个接口对象（i）里不是nil，并且接口对象（i）存储的值的类型是 T，如果断言成功，就会返回其类型给t，并且此时 ok 的值 为true，表示断言成功。
 如果接口值的类型，并不是我们所断言的 T，就会断言失败，但和第一种表达式不同的是这个不会触发 panic，而是将 ok 的值设为false，表示断言失败，此时t为T的零值。所以推荐使用这种方式，可以保证代码的健壮性
+
+
+### 另外一种方式：switch 断言方式
+```go
+switch i := x.(type) {
+case nil:
+    printString("x is nil")                // type of i is type of x (interface{})
+case int:
+    printInt(i)                            // type of i is int
+case float64:
+    printFloat64(i)                        // type of i is float64
+case func(int) float64:
+    printFunction(i)                       // type of i is func(int) float64
+case bool, string:
+    printString("type is bool or string")  // type of i is type of x (interface{})
+default:
+    printString("don't know the type")     // type of i is type of x (interface{})
+}
+```
+
 
 ## 三. 反射reflect类型断言
 
@@ -171,3 +268,4 @@ PASS
 
 ## 参考资料
 1. [asong关于interface的类型断言是如何实现](https://segmentfault.com/a/1190000039894161)
+2. [go 四种类型转换](https://learnku.com/articles/42797)

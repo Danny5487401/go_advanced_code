@@ -14,6 +14,7 @@ func main() {
 	// Before newSlice = [10 20 30 40 50], Pointer = 0xc000098440, len = 5, cap = 8
 	fmt.Printf("Before newSlice = %v, Pointer = %p, len = %d, cap = %d\n", newSlice, &newSlice, len(newSlice), cap(newSlice))
 
+	// 对原有元素修改
 	newSlice[1] += 10
 
 	// After slice = [10 20 30 40], Pointer = 0xc000098420, len = 4, cap = 4
