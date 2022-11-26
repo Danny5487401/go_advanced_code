@@ -505,9 +505,10 @@ Note: Go 1.18 移除用于泛型的constraints包
   - [1.2 Go build 选项 -ldflags="-X key=value来重写一个符号定义"-->符号表应用](chapter31_tool/01_build/02_ldflags/build.go)
 
 
-## [第三十二章 Generic泛型](chapter32_generic/generic.md)
-- [1 interface新含义使用-->type set(类型集合),specific type(特定类型)和structural type(结构类型)](chapter32_generic/01_typeParam_n_typeArgument/main.go)
-- [2 泛型性能测试](chapter32_generic/02_performance/generic_test.go)
+## [第三十二章 Generic 泛型](chapter32_generic/generic.md)
+- [1 泛型在算法上的基本使用](chapter32_generic/01_basic_algorithm_application/main.go)
+- [2 interface新含义: 类型约束（constraint）](chapter32_generic/02_typeParam_n_typeArgument/main.go)
+- [3 泛型性能测试](chapter32_generic/03_performance/generic_test.go)
 
 ## [第三十三章 makefile 使用](chapter33_makefile/Makefile_info.md)
 - [Makefile常用函数列表](chapter33_makefile/makefile_func.md)

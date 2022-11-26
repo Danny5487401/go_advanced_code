@@ -1,8 +1,24 @@
 # Generic泛型
-Go 1.18版本增加了对泛型的支持,
-除了语法，外加两个预定义类型：comparable和any， 
-增加了两个操作符: ~和| 。
+Go的泛型指的是在Go的类型声明和函数声明中增加可选的类型形参(type parameters)。
+类型形参(type parameters)要受到类型约束（constraint），Go使用嵌入额外元素的接口类型来定义类型约束，类型约束定义了一组满足约束的类型集(Type Set)
 
+Go 1.18版本增加了对泛型的支持,
+除了语法，外加两个预定义类型：
+- comparable: 是Go语言内置的类型约束，它表示类型的值可以使用==和!=比较大小，这也是map类型的key要求的
+- any 任意类型， 
+增加了两个操作符: 
+- ~
+- | : 表示允许两者中的任何一个
+
+```go
+func SumIntsOrFloats[K comparable, V int64 | float64](m map[K]V) V {
+	var s V
+	for _, v := range m {
+		s += v
+	}
+	return s
+}
+```
 泛型在Go语言中增加了三个新的重要内容
 
 - 函数和类型新增对 *类型形参(type parameters)* 的支持。 
@@ -19,7 +35,7 @@ Go 1.18版本增加了对泛型的支持,
 ## Go泛型方案
 
 ### 1. 字典(dictionaries)：单份代码实例，以字典传递类型参数信息。
-在编译时生成一组实例化的字典，在实例化一个泛型函数的时候会使用字典进行蜡印(stencile)
+在编译时生成一组实例化的字典，在实例化一个泛型函数的时候会使用字典进行蜡印(stencile).
 
 当为泛型函数生成代码的时候，会生成唯一的一块代码，并且会在参数列表中增加一个字典做参数，就像方法会把receiver当成一个参数传入。字典包含为类型参数实例化的类型信息。
 
@@ -32,7 +48,7 @@ Go 1.18版本增加了对泛型的支持,
 ### 2. 模版(stenciling)：为每次调用生成代码实例，即便类型参数相同。
 同一个泛型函数，为每一个实例化的类型参数生成一套独立的代码，感觉和rust的泛型特化一样。
 
-![](/.generic_images/stencile.gif)
+![](.generic_images/stencile.gif)
 
 
 比如下面一个泛型方法:
@@ -79,27 +95,32 @@ type c = int
 任何指针类型，或具有相同底层类型(underlying type)的类型，属于同一GCShape组。
 
 
-
 对于实例类型的shape相同的情况，只生成一份代码，对于shape类型相同的类型，使用字典区分类型的不同行为。
 
 
 ## 类型形参(Type Parameters)
 
 类型形参是在函数声明、方法声明的receiver部分或类型定义的类型参数列表中，声明的（非限定）类型名称。
-类型参数在声明中充当了一个未知类型的占位符（placeholder），在泛型函数或泛型类型实例化时，类型形参会被一个类型实参（type argument）替换 
-
+类型形参在声明中充当了一个未知类型的占位符（placeholder），在泛型函数或泛型类型实例化(instantiation)时，类型形参(Type Parameters)会被一个类型实参（type argument）替换
 
 函数和类型被允许拥有类型形参(Type Parameters)。一个类型形参列表看起来和普通的函数形参列表一样，只是它使用的是中括号[方括号]而不是小括号()。
 
 ```go
 func GenericFoo[P aConstraint, Q anotherConstraint](x,y P, z Q "P aConstraint, Q anotherConstraint")
+
 ```
 
 P，Q是类型形参的名字，也就是类型，aConstraint，anotherConstraint代表类型参数的约束（constraint），我们可以理解为对类型参数可选值的一种限定 
 
-### 约束（constraint）
+```go
+ func F[T any](p T) { ... }。
+```
+声明的类型参数可以在函数的参数和函数体中使用。 在这个例子中，T是类型参数的名字，也就是类型，any是类型参数的约束，是对类型参数可选类型的约束。但是T的类型要等到泛型函数具化时才能确定
 
-约束（constraint）规定了一个类型实参（type argument）必须满足的条件要求。如果某个类型满足了某个约束规定的所有条件要求，那么它就是这个约束修饰的类型形参的一个合法的类型实参。 作者：清澄秋爽 https://www.bilibili.com/read/cv16502311 出处：bilibili
+### 类型约束(Type Constraint)
+
+约束（constraint）规定了一个类型实参（type argument）必须满足的条件要求。
+如果某个类型满足了某个约束规定的所有条件要求，那么它就是这个约束修饰的类型形参的一个合法的类型实参。 
 
 在Go泛型中，我们使用interface类型来定义约束。为此，Go接口类型的定义也进行了扩展，我们既可以声明接口的方法集合，也可以声明可用作类型实参的类型列表。
 ```go
@@ -110,43 +131,12 @@ P，Q是类型形参的名字，也就是类型，aConstraint，anotherConstrain
 [T io.Reader]       // 任何实现io.Reader 接口的类型
 ```
 
+- [参考代码](chapter32_generic/02_typeParam_n_typeArgument/main.go)
 
 
-```go
-package main
-
-import "fmt"
-
-type C1 interface{
-	~int|~int32
-	M1()
-}
-
-type T struct{}
-func (t T) M1()  {
-}
-
-type T1 int
-func (t T1) M1()  {
-}
-
-func foo[P C1](t P)  {
-	fmt.Println("泛型初步测试",t)
-}
-
-func main(){
-	var t1 T1
-	foo(t1)
-
-	//var t2 T
-	//foo(t2)  // ./main.go:27:5: T does not implement C1
-}
-```
-在这段代码中，C1是我们定义的约束，它声明了一个方法M1，以及两个可用作类型实参的类型（~int | ~int32）。我们看到，类型列表中的多个类型实参类型用“|”分隔。
+为了支持使用接口类型来定义Go泛型类型参数的类型约束，Go 1.18对接口定义语法进行了扩展。 在接口定义中既可以定义接口的方法集(Method Set)，也可以声明可以被用作泛型类型参数的类型实参的类型集(Type Set)
 
 
-
-在这段代码中，我们还定义了两个自定义类型T和T1，两个类型都实现了M1方法，但T类型的底层类型为struct{}，而T1类型的底层类型为int，这样就导致了虽然T类型满足了约束C1的方法集合，但类型T因为底层类型并不是int或int32而不满足约束C1，这也就会导致foo(t)调用在编译阶段报错。
 
 
 ### 类型具化（instantiation）与类型推导（type inference）
