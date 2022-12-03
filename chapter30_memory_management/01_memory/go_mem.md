@@ -1,10 +1,10 @@
-# golang内存管理
+# Golang 内存管理
 
-## 概述
 在现代 CPU 上，除了内存分配的正确性以外，我们还要考虑分配过程的效率问题，应用执行期间小对象会不断地生成与销毁，如果每一次对象的分配与释放都需要与操作系统交互，那么成本是很高的。
 这就需要我们在应用层设计好内存分配的多级缓存，尽量减少小对象高频创建与销毁时的锁竞争，这个问题在传统的 C/C++ 语言中已经有了解法，那就是 tcmalloc：
 
 golang的内存分配机制源自Google的tcmalloc算法，英文全称thread caching malloc，从名字可以看出，是在原有基础上，针对多核多线程的内存管理进行优化而提出来的。
+
 ![](../.asset/img/tcmalloc.png)
 
 该算法的核心思想是内存的多级管理，进而降低锁的粒度；将内存按需划成大小不一的块，减少内存的碎片化。
@@ -21,15 +21,7 @@ golang的内存分配机制源自Google的tcmalloc算法，英文全称thread ca
 大体上的分配流程：
 
 1. large: >32KB 的对象，直接从mheap上分配
-```go
 
-package main
-
-func main() {
-    var m = make([]int, 10240)
-    println(m[0])
-}
-```
 
 2. tiny: < 16B && has no pointer(noscan),使用 mcache 的tiny分配器分配；
 

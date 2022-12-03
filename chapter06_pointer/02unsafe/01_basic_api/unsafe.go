@@ -12,9 +12,9 @@ func main() {
 }
 
 func basicOperation() {
-	// sizeof
-	fmt.Println(unsafe.Sizeof(true))       //1
-	fmt.Println(unsafe.Sizeof(int8(0)))    //1
+	// sizeof 占用的字节数 Byte
+	fmt.Println(unsafe.Sizeof(true))       // 1
+	fmt.Println(unsafe.Sizeof(int8(0)))    // 1
 	fmt.Println(unsafe.Sizeof(int16(10)))  // 2
 	fmt.Println(unsafe.Sizeof(int(10)))    // 8,cpu是64位的
 	fmt.Println(unsafe.Sizeof(int32(190))) //4

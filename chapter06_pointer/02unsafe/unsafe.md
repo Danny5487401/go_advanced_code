@@ -40,7 +40,6 @@ Note:uintptr 并没有指针的语义，意思就是 uintptr 所指向的对象�
 
 ## 源码分析
 
-
 unsafe包 两个类型，三个函数
 ```go
 type ArbitraryType int
@@ -52,11 +51,18 @@ Pointer是int指针类型的一个别名，在Go中可以把Pointer类型，理�
 
 ### 1. func Sizeof(x ArbitraryType) uintptr
 ```go
+// Sizeof takes an expression x of any type and returns the size in bytes
+// of a hypothetical variable v as if v was declared via var v = x.
+// The size does not include any memory possibly referenced by x.
+// For instance, if x is a slice, Sizeof returns the size of the slice
+// descriptor, not the size of the memory referenced by the slice.
+// The return value of Sizeof is a Go constant.
 func Sizeof(x ArbitraryType) uintptr
-// unsafe.Sizeof接受任意类型的值(表达式)，返回其占用的字节数,这和c语言里面不同，
-```
 
-Note: 如果是slice，则不会返回这个slice在内存中的实际占用长度，一个 slice 的大小则为 slice header 的大小 .
+```
+unsafe.Sizeof接受任意类型的值(表达式)，返回其占用的字节数,这和c语言里面不同，
+
+如果是slice，则不会返回这个slice在内存中的实际占用长度，一个 slice 的大小则为 slice header 的大小.
 c语言里面sizeof函数的参数是类型，而这里是一个表达式，比如一个变量。
 ```C
 int a=10;

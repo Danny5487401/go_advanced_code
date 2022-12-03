@@ -499,10 +499,14 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [3.2 局部变量指针返回时被外部引用](chapter30_memory_management/03_escape_to_heap/02_params_ptr_return.go)
     - [3.3 接口类型](chapter30_memory_management/03_escape_to_heap/03_interface_method.go)
     
-## [第三十一章 Go tool 自带工具](chapter31_tool/tool.md)
-- [1 build](chapter31_tool/01_build/build.md)
+## [第三十一章 go开发套件](chapter31_tool/go_toolsets.md)
+- [1 build == compile编译 + link链接，附Go包导入路径讲解](chapter31_tool/01_build/build.md)
   - [1.1 Go build 选项 -tags](chapter31_tool/01_build/01_tags/main.go)
-  - [1.2 Go build 选项 -ldflags="-X key=value来重写一个符号定义"-->符号表应用](chapter31_tool/01_build/02_ldflags/build.go)
+  - [1.2 Go build 选项给go链接器传入参数 -ldflags="-X key=value来重写一个符号定义"-->符号表应用](chapter31_tool/01_build/02_ldflags/build.go)
+  - [1.3 Go build 选项 -n 查看构建过程用到的命令](chapter31_tool/01_build/03_n/hello.go)
+- [2 Go tool 自带工具](chapter31_tool/02_tool/tool.md)
+  - [2.1 tool compile编译](chapter31_tool/02_tool/01_compile/compile.md)
+  - [2.2 tool link链接](chapter31_tool/02_tool/02_link/link.md)
 
 
 ## [第三十二章 Generic 泛型](chapter32_generic/generic.md)
