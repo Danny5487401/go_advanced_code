@@ -1,9 +1,9 @@
-# CGO站在前人(C语言库)的肩膀
-## 背景
+# CGO 
+## 背景:站在前人(C语言库)的肩膀
 
-    部门产品业务功能采用Golang开发，但是有些功能是用c写的，比如说net-snmp，bfd协议等等，
-	像这些如果使用GO语言重编的话，既有实现的复杂度也需要相当长的时间，好在GO语言提供了CGO机制，使得能够在go代码中直接调用C的库函数，
-	大大提高了效率，减少了重复开发工作,此外还支持在C语言中调用GO函数，这一点还是蛮强大的
+部门产品业务功能采用Golang开发，但是有些功能是用c写的，比如说net-snmp，bfd协议等等，
+像这些如果使用GO语言重编的话，既有实现的复杂度也需要相当长的时间，好在GO语言提供了CGO机制，使得能够在go代码中直接调用C的库函数，
+大大提高了效率，减少了重复开发工作
 
 ## go 命令使用 cgo  
 为了使用 cgo，你需要在普通的 Go 代码中导入一个伪包 "C"。这样 Go 代码就可以引用一些 C 的类型 (如 C.size_t)、变量 (如 C.stdout)、或函数 (如 C.putchar)
@@ -15,6 +15,9 @@ import "C"
 ```
 前言中可以包含任意 C 代码，包括函数和变量的声明和定义。虽然他们是在 "C" 包里定义的，但是在 Go 代码里面依然可以访问它们。
 所有在前言中声明的名字都可以被 Go 代码使用，即使名字的首字母是小写的。static 变量是个例外：它不能在 Go 代码中被访问。但是 static 函数可以在 Go 代码中访问
+```shell
+go tool cgo [cgo options] [-- compiler options] gofiles...
+```
 
 ## 标准库案例
 $GOROOT/misc/cgo/stdio 和 $GOROOT/misc/cgo/gmp
@@ -233,3 +236,6 @@ func main(){
 
 ![](.introduction_images/c_call_go_in_memory.png)
 ![](.introduction_images/c_call_go_process.png)
+
+## 参考资料
+1. [cgo command](https://pkg.go.dev/cmd/cgo@go1.19.3)

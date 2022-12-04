@@ -4,29 +4,88 @@ Go汇编语言其实是一种高级的汇编语言。在这里高级一词并没
 Go汇编语言中一个指令在最终的目标代码中可能会被编译为其它等价的机器指令。Go汇编实现的函数或调用函数的指令在最终代码中也会被插入额外的指令。
 要彻底理解Go汇编语言就需要彻底了解汇编器到底插入了哪些指令。
 
+##  函数声明
+
+![](.func_images/function_in_plan9.png)
+```css
+pkgname 包名可以不写，一般都是不写的，可以参考 go 的源码， 另外 add 前的 · 不是 .
+
+代码存储在TEXT段中
+                           argsize参数及返回值大小,例如入参是 3 个 int64 类型，返回值是 1 个 int64 类型，那么返回值就是 sizeof(int64) * 4,不过真实世界永远没有我们假设的这么美好，函数参数往往混合了多种类型，还需要考虑内存对齐问题。
+                                 |
+ TEXT pkgname·add(SB),NOSPLIT,$0-16    -->$framesize-argsize   
+         |     |               |
+        包名  函数名    framesize栈帧大小(局部变量+如果有对其它函数调用时的话，调用时需要将 callee 的参数、返回值考虑在内。虽然 return address(rip)的值也是存储在 caller 的 stack frame 上的，但是这个过程是由 CALL 指令和 RET 指令完成 PC 寄存器的保存和恢复的，在手写汇编时，同样也是不需要考虑这个 PC 寄存器在栈上所需占用的 8 个字节的)
+```
+- 为什么要叫 TEXT ？如果对程序数据在文件中和内存中的分段稍有了解的同学应该知道，我们的代码在二进制文件中，是存储在 .text 段中的，这里也就是一种约定俗成的起名方式。实际上在 plan9 中 TEXT 是一个指令，用来定义一个函数。除了 TEXT 之外还有前面变量声明说到的 DATA/GLOBL
+
+- 定义中的 pkgname 部分是可以省略的，非想写也可以写上。不过写上 pkgname 的话，在重命名 package 之后还需要改代码，所以推荐最好还是不要写
+
+- 中点 · 比较特殊，是一个 unicode 的中点，该点在 mac 下的输入方法是 option+shift+9。在程序被链接之后，所有的中点 · 都会被替换为句号 . ，比如你的方法是 runtime·main，在编译之后的程序里的符号则是 runtime.main。
+- framesize:
+    - 原则上来说，调用函数时只要不把局部变量覆盖掉就可以了。稍微多分配几个字节的 framesize 也不会死。
+    - 在确保逻辑没有问题的前提下，你愿意覆盖局部变量也没有问题。只要保证进入和退出汇编函数时的 caller 和 callee 能正确拿到返回值就可以
+
+以上使用的 RODATA，NOSPLIT flag，还有其他的值，可以参考：https://golang.org/doc/asm#directives
+```shell
+#include textflag.h
+
+NOPROF = 1
+#(For TEXT items.) Don’t profile the marked function. This flag is deprecated.
+
+DUPOK = 2 
+# DUPOK表示该变量对应的标识符可能有多个，在链接时只选择其中一个即可（一般用于合并相同的常量字符串，减少重复数据占用的空间）。
+
+NOSPLIT = 4
+# 不会生成或包含栈分裂代码，这一般用于没有任何其它函数调用的叶子函数，这样可以适当提高性能。
+#(代码段.) Don’t insert the preamble to check if the stack must be split. 
+# The frame for the routine, plus anything it calls, must fit in the spare space at the top of the stack segment. 
+# Used to protect routines such as the stack splitting code itself.
+
+RODATA = 8
+#RODATA标志表示将变量定义在只读内存段，因此后续任何对此变量的修改操作将导致异常（recover也无法捕获）。
+
+NOPTR = 16
+#NOPTR则表示此变量的内部不含指针数据，让垃圾回收器忽略对该变量的扫描。如果变量已经在Go代码中声明过的话，Go编译器会自动分析出该变量是否包含指针，这种时候可以不用手写NOPTR标志
+
+WRAPPER = 32
+#(代码段.) WRAPPER标志则表示这个是一个包装函数，在panic或runtime.caller等某些处理函数帧的地方不会增加函数帧计数。
+
+NEEDCTXT = 64
+#(代码段.) 表示需要一个上下文参数，一般用于闭包函数.
+```
+
+
+
+
+
+## GO版本变化： 函数调用时，传递参数做了修改
+- go1.17之前，函数参数是通过栈空间来传递的
+- go1.17时做出了改变，在一些平台上（AMD64）可以像C,C++那样使用寄存器传递参数和函数返回值
+
+栈空间：
+- 优点：实现简单，不用区分不同的平台，通用性强
+- 缺点：效率低
+寄存器：
+- 优点：速度快
+- 缺点：通用性差，不同的平台需要单独处理 当然，这里说的通用性差是对于编译器来说的
+
 
 ## 栈
-![](.func_images/stack_memery_info.png)
+![](../.introduction_images/caller_n_callee.png)
+
+
 调用栈call stack，简称栈，是一种栈数据结构，用于存储有关计算机程序的活动 subroutines 信息。在计算机编程中，subroutines 是执行特定任务的一系列程序指令，打包为一个单元。
 
-栈帧stack frame又常被称为帧frame是在调用栈中储存的函数之间的调用关系，每一帧对应了函数调用以及它的参数数据。
 
-有了函数调用自然就要有调用者 caller 和被调用者 callee ，如在 函数 A 里 调用 函数 B，A 是 caller，B 是 callee。
-
-
-## 栈分裂stack-split
-由于 Go 程序中的 goroutine 数目是不可确定的，并且实际场景可能会有百万级别的 goroutine，runtime 必须使用保守的思路来给 goroutine 分配空间以避免吃掉所有的可用内存。
-也由于此，每个新的 goroutine 会被 runtime 分配初始为 2KB 大小的栈空间(Go 的栈在底层实际上是分配在堆空间上的)。
-随着一个 goroutine 进行自己的工作，可能会超出最初分配的栈空间限制(就是栈溢出的意思)。 
-
-为了防止这种情况发生，runtime 确保 goroutine 在超出栈范围时，会创建一个相当于原来两倍大小的新栈，并将原来栈的上下文拷贝到新栈上。
-这个过程被称为 栈分裂(stack-split)，这样使得 goroutine 栈能够动态调整大小.
-
-为了使栈分裂正常工作，编译器会在每一个函数的开头和结束位置插入指令来防止 goroutine 爆栈。
-像我们本章早些看到的一样，为了避免不必要的开销，一定不会爆栈的函数会被标记上 NOSPLIT 来提示编译器不要在这些函数的开头和结束部分插入这些检查指令
 
 ## 栈结构
 典型的函数的栈结构图
+
+![](.func_images/func_call_frame.png)
+![](.func_images/layout_of_function_args_n_return_value.png)
+![](.func_images/swap.png)
+
 ```css
 低地址
                        -----------------                                           
@@ -104,10 +163,6 @@ argN, ... arg3, arg2, arg1, arg0
 
 图的最上部的 caller return address 和 current func arg0 都是由 caller 来分配空间的。不算在当前的栈帧内。
 
-## 参考图
-![](func_package/func_call_frame.png)
-![](func_package/layout_of_function_args_n_return_value.png)
-![](func_package/swap.png)
 
 
 ## Goroutine 栈操作
@@ -249,111 +304,7 @@ func stackinit() {
 在执行栈初始化的时候会初始化两个全局变量 stackpool 和 stackLarge。stackpool 可以分配小于 32KB 的内存，stackLarge 用来分配大于 32KB 的栈空间。
 
 
-## 栈的分配
-源码路径：src/runtime/stack.go
 
-### 小栈内存分配
-```go
-func stackalloc(n uint32) stack { 
-    // 这里的 G 是 G0
-    thisg := getg()
-    ...
-    var v unsafe.Pointer
-    // 在 Linux 上，_FixedStack = 2048、_NumStackOrders = 4、_StackCacheSize = 32768
-    // 如果申请的栈空间小于 32KB
-    if n < _FixedStack<<_NumStackOrders && n < _StackCacheSize {
-        order := uint8(0)
-        n2 := n
-        // 大于 2048 ,那么 for 循环 将 n2 除 2,直到 n 小于等于 2048
-        for n2 > _FixedStack {
-            // order 表示除了多少次
-            order++
-            n2 >>= 1
-        }
-        var x gclinkptr
-        //preemptoff != "", 在 GC 的时候会进行设置,表示如果在 GC 那么从 stackpool 分配
-        // thisg.m.p = 0 会在系统调用和 改变 P 的个数的时候调用,如果发生,那么也从 stackpool 分配
-        if stackNoCache != 0 || thisg.m.p == 0 || thisg.m.preemptoff != "" { 
-            lock(&stackpool[order].item.mu)
-            // 从 stackpool 分配
-            x = stackpoolalloc(order)
-            unlock(&stackpool[order].item.mu)
-        } else {
-            // 从 P 的 mcache 分配内存
-            c := thisg.m.p.ptr().mcache
-            x = c.stackcache[order].list
-            if x.ptr() == nil {
-                // 从堆上申请一片内存空间填充到stackcache中
-                stackcacherefill(c, order)
-                x = c.stackcache[order].list
-            }
-            // 移除链表的头节点
-            c.stackcache[order].list = x.ptr().next
-            c.stackcache[order].size -= uintptr(n)
-        }
-        // 获取到分配的span内存块
-        v = unsafe.Pointer(x)
-    } else {
-        ...
-    }
-    ...
-    return stack{uintptr(v), uintptr(v) + uintptr(n)}
-}
-```
-
-stackalloc 会根据传入的参数 n 的大小进行分配，在 Linux 上如果 n 小于 32768 bytes，也就是 32KB ，那么会进入到小栈的分配逻辑中。
-
-小栈指大小为 2K/4K/8K/16K 的栈，在分配的时候，会根据大小计算不同的 order 值，如果栈大小是 2K，那么 order 就是 0，4K 对应 order 就是 1，以此类推。这样一方面可以减少不同 Goroutine 获取不同栈大小的锁冲突，另一方面可以预先缓存对应大小的 span ，以便快速获取。
-
-thisg.m.p == 0可能发生在系统调用 exitsyscall 或改变 P 的个数 procresize 时，thisg.m.preemptoff != ""会发生在 GC 的时候。也就是说在发生在系统调用 exitsyscall 或改变 P 的个数在变动，亦或是在 GC 的时候，会从 stackpool 分配栈空间，否则从 mcache 中获取。
-
-如果 mcache 对应的 stackcache 获取不到，那么调用 stackcacherefill 从堆上申请一片内存空间填充到stackcache中。
-
-
-### 大栈内存分配
-
-```go
-func stackalloc(n uint32) stack { 
-    thisg := getg() 
-    var v unsafe.Pointer
-
-    if n < _FixedStack<<_NumStackOrders && n < _StackCacheSize {
-        // 32k...
-    } else {
-        // 申请的内存空间过大，从 runtime.stackLarge 中检查是否有剩余的空间
-        var s *mspan
-        // 计算需要分配多少个 span 页， 8KB 为一页
-        npage := uintptr(n) >> _PageShift
-        // 计算 npage 能够被2整除几次，用来作为不同大小内存的块的索引
-        log2npage := stacklog2(npage)
-
-        lock(&stackLarge.lock)
-        // 如果 stackLarge 对应的链表不为空
-        if !stackLarge.free[log2npage].isEmpty() {
-            //获取链表的头节点，并将其从链表中移除
-            s = stackLarge.free[log2npage].first
-            stackLarge.free[log2npage].remove(s)
-        }
-        unlock(&stackLarge.lock)
-
-        lockWithRankMayAcquire(&mheap_.lock, lockRankMheap)
-        //这里是stackLarge为空的情况
-        if s == nil {
-            // 从堆上申请新的内存 span
-            s = mheap_.allocManual(npage, &memstats.stacks_inuse)
-            if s == nil {
-                throw("out of memory")
-            }
-            // OpenBSD 6.4+ 系统需要做额外处理
-            osStackAlloc(s)
-            s.elemsize = uintptr(n)
-        }
-        v = unsafe.Pointer(s.base())
-    }
-    ...
-    return stack{uintptr(v), uintptr(v) + uintptr(n)}
-}
-```
 
 ## 案例
 为了便于分析，我们先构造一个禁止栈分裂的printnl函数。printnl函数内部都通过调用runtime.printnl函数输出换行：

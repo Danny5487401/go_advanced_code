@@ -266,7 +266,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 
 ## 第十一章 汇编理解go语言底层源码(AMD芯片运行代码)
 - [1 汇编基本指令](chapter11_assembly_language/01asm/introduction.md)
-- [2 plan9汇编](chapter11_assembly_language/02plan9/introduction.md)
+- [2 plan9 手写汇编](chapter11_assembly_language/02plan9/introduction.md)
     - [2.1  变量var，常量constant](chapter11_assembly_language/02plan9/01_pkg_constant_string/main.go)
     - [2.2  array数组](chapter11_assembly_language/02plan9/02_pkg_array/main.go)
     - [2.3  bool类型](chapter11_assembly_language/02plan9/03_pkg_bool/main.go)
@@ -274,7 +274,7 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [2.5  float32，float64类型](chapter11_assembly_language/02plan9/05_pkg_float/main.go)
     - [2.6  slice切片([]byte)](chapter11_assembly_language/02plan9/06_pkg_slice/main.go)
     - [2.7  引用类型map和channel](chapter11_assembly_language/02plan9/07_pkg_channel_n_map/main.go)
-    - [2.8  函数申明及实现](chapter11_assembly_language/02plan9/08_pkg_func/main.go)
+    - [2.8  asm 实现 Go 函数申明](chapter11_assembly_language/02plan9/08_pkg_func/main.go)
       - [Go源码中stack操作](chapter11_assembly_language/02plan9/08_pkg_func/func.md)
     - [2.9  局部变量](chapter11_assembly_language/02plan9/09_local_param/local_params.md)
     - [2.10 流程控制](chapter11_assembly_language/02plan9/10_control_process/main.go)
@@ -499,10 +499,14 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [3.2 局部变量指针返回时被外部引用](chapter30_memory_management/03_escape_to_heap/02_params_ptr_return.go)
     - [3.3 接口类型](chapter30_memory_management/03_escape_to_heap/03_interface_method.go)
     
-## [第三十一章 Go tool 自带工具](chapter31_tool/tool.md)
-- [1 build](chapter31_tool/01_build/build.md)
+## [第三十一章 go开发套件](chapter31_tool/go_toolsets.md)
+- [1 build == compile编译 + link链接，附Go包导入路径讲解](chapter31_tool/01_build/build.md)
   - [1.1 Go build 选项 -tags](chapter31_tool/01_build/01_tags/main.go)
-  - [1.2 Go build 选项 -ldflags="-X key=value来重写一个符号定义"-->符号表应用](chapter31_tool/01_build/02_ldflags/build.go)
+  - [1.2 Go build 选项给go链接器传入参数 -ldflags="-X key=value来重写一个符号定义"-->符号表应用](chapter31_tool/01_build/02_ldflags/build.go)
+  - [1.3 Go build 选项 -n 查看构建过程用到的命令](chapter31_tool/01_build/03_n/hello.go)
+- [2 Go tool 自带工具](chapter31_tool/02_tool/tool.md)
+  - [2.1 tool compile编译](chapter31_tool/02_tool/01_compile/compile.md)
+  - [2.2 tool link链接](chapter31_tool/02_tool/02_link/link.md)
 
 
 ## [第三十二章 Generic 泛型](chapter32_generic/generic.md)
