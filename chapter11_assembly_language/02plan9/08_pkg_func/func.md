@@ -4,9 +4,81 @@ Go汇编语言其实是一种高级的汇编语言。在这里高级一词并没
 Go汇编语言中一个指令在最终的目标代码中可能会被编译为其它等价的机器指令。Go汇编实现的函数或调用函数的指令在最终代码中也会被插入额外的指令。
 要彻底理解Go汇编语言就需要彻底了解汇编器到底插入了哪些指令。
 
+##  函数声明
+
+![](.func_images/function_in_plan9.png)
+```css
+pkgname 包名可以不写，一般都是不写的，可以参考 go 的源码， 另外 add 前的 · 不是 .
+
+代码存储在TEXT段中
+                           argsize参数及返回值大小,例如入参是 3 个 int64 类型，返回值是 1 个 int64 类型，那么返回值就是 sizeof(int64) * 4,不过真实世界永远没有我们假设的这么美好，函数参数往往混合了多种类型，还需要考虑内存对齐问题。
+                                 |
+ TEXT pkgname·add(SB),NOSPLIT,$0-16    -->$framesize-argsize   
+         |     |               |
+        包名  函数名    framesize栈帧大小(局部变量+如果有对其它函数调用时的话，调用时需要将 callee 的参数、返回值考虑在内。虽然 return address(rip)的值也是存储在 caller 的 stack frame 上的，但是这个过程是由 CALL 指令和 RET 指令完成 PC 寄存器的保存和恢复的，在手写汇编时，同样也是不需要考虑这个 PC 寄存器在栈上所需占用的 8 个字节的)
+```
+- 为什么要叫 TEXT ？如果对程序数据在文件中和内存中的分段稍有了解的同学应该知道，我们的代码在二进制文件中，是存储在 .text 段中的，这里也就是一种约定俗成的起名方式。实际上在 plan9 中 TEXT 是一个指令，用来定义一个函数。除了 TEXT 之外还有前面变量声明说到的 DATA/GLOBL
+
+- 定义中的 pkgname 部分是可以省略的，非想写也可以写上。不过写上 pkgname 的话，在重命名 package 之后还需要改代码，所以推荐最好还是不要写
+
+- 中点 · 比较特殊，是一个 unicode 的中点，该点在 mac 下的输入方法是 option+shift+9。在程序被链接之后，所有的中点 · 都会被替换为句号 . ，比如你的方法是 runtime·main，在编译之后的程序里的符号则是 runtime.main。
+
+- 以上使用的 RODATA，NOSPLIT flag，还有其他的值，可以参考：https://golang.org/doc/asm#directives
+
+```shell
+#include textflag.h
+
+NOPROF = 1
+#(For TEXT items.) Don’t profile the marked function. This flag is deprecated.
+
+DUPOK = 2 
+# DUPOK表示该变量对应的标识符可能有多个，在链接时只选择其中一个即可（一般用于合并相同的常量字符串，减少重复数据占用的空间）。
+
+NOSPLIT = 4
+# 不会生成或包含栈分裂代码，这一般用于没有任何其它函数调用的叶子函数，这样可以适当提高性能。
+#(代码段.) Don’t insert the preamble to check if the stack must be split. 
+# The frame for the routine, plus anything it calls, must fit in the spare space at the top of the stack segment. 
+# Used to protect routines such as the stack splitting code itself.
+
+RODATA = 8
+#RODATA标志表示将变量定义在只读内存段，因此后续任何对此变量的修改操作将导致异常（recover也无法捕获）。
+
+NOPTR = 16
+#NOPTR则表示此变量的内部不含指针数据，让垃圾回收器忽略对该变量的扫描。如果变量已经在Go代码中声明过的话，Go编译器会自动分析出该变量是否包含指针，这种时候可以不用手写NOPTR标志
+
+WRAPPER = 32
+#(代码段.) WRAPPER标志则表示这个是一个包装函数，在panic或runtime.caller等某些处理函数帧的地方不会增加函数帧计数。
+
+NEEDCTXT = 64
+#(代码段.) 表示需要一个上下文参数，一般用于闭包函数.
+```
+当使用这些 flag 的字面量时，需要在汇编文件中 #include "textflag.h"
+
+- framesize:
+   - 原则上来说，调用函数时只要不把局部变量覆盖掉就可以了。稍微多分配几个字节的 framesize 也不会死。
+   - 在确保逻辑没有问题的前提下，你愿意覆盖局部变量也没有问题。只要保证进入和退出汇编函数时的 caller 和 callee 能正确拿到返回值就可以
+
+
+
+
+
+
+## GO版本变化： 函数调用时，传递参数做了修改
+- go1.17之前，函数参数是通过栈空间来传递的
+- go1.17时做出了改变，在一些平台上（AMD64）可以像C,C++那样使用寄存器传递参数和函数返回值
+
+栈空间：
+- 优点：实现简单，不用区分不同的平台，通用性强
+- 缺点：效率低
+寄存器：
+- 优点：速度快
+- 缺点：通用性差，不同的平台需要单独处理 当然，这里说的通用性差是对于编译器来说的
+
 
 ## 栈
 ![](.func_images/stack_memery_info.png)
+
+
 调用栈call stack，简称栈，是一种栈数据结构，用于存储有关计算机程序的活动 subroutines 信息。在计算机编程中，subroutines 是执行特定任务的一系列程序指令，打包为一个单元。
 
 栈帧stack frame又常被称为帧frame是在调用栈中储存的函数之间的调用关系，每一帧对应了函数调用以及它的参数数据。
@@ -27,6 +99,11 @@ Go汇编语言中一个指令在最终的目标代码中可能会被编译为其
 
 ## 栈结构
 典型的函数的栈结构图
+
+![](.func_images/func_call_frame.png)
+![](.func_images/layout_of_function_args_n_return_value.png)
+![](.func_images/swap.png)
+
 ```css
 低地址
                        -----------------                                           
@@ -104,10 +181,6 @@ argN, ... arg3, arg2, arg1, arg0
 
 图的最上部的 caller return address 和 current func arg0 都是由 caller 来分配空间的。不算在当前的栈帧内。
 
-## 参考图
-![](func_package/func_call_frame.png)
-![](func_package/layout_of_function_args_n_return_value.png)
-![](func_package/swap.png)
 
 
 ## Goroutine 栈操作

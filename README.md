@@ -266,7 +266,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 
 ## 第十一章 汇编理解go语言底层源码(AMD芯片运行代码)
 - [1 汇编基本指令](chapter11_assembly_language/01asm/introduction.md)
-- [2 plan9汇编](chapter11_assembly_language/02plan9/introduction.md)
+- [2 plan9 手写汇编](chapter11_assembly_language/02plan9/introduction.md)
     - [2.1  变量var，常量constant](chapter11_assembly_language/02plan9/01_pkg_constant_string/main.go)
     - [2.2  array数组](chapter11_assembly_language/02plan9/02_pkg_array/main.go)
     - [2.3  bool类型](chapter11_assembly_language/02plan9/03_pkg_bool/main.go)
@@ -274,7 +274,7 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [2.5  float32，float64类型](chapter11_assembly_language/02plan9/05_pkg_float/main.go)
     - [2.6  slice切片([]byte)](chapter11_assembly_language/02plan9/06_pkg_slice/main.go)
     - [2.7  引用类型map和channel](chapter11_assembly_language/02plan9/07_pkg_channel_n_map/main.go)
-    - [2.8  函数申明及实现](chapter11_assembly_language/02plan9/08_pkg_func/main.go)
+    - [2.8  asm 实现 Go 函数申明](chapter11_assembly_language/02plan9/08_pkg_func/main.go)
       - [Go源码中stack操作](chapter11_assembly_language/02plan9/08_pkg_func/func.md)
     - [2.9  局部变量](chapter11_assembly_language/02plan9/09_local_param/local_params.md)
     - [2.10 流程控制](chapter11_assembly_language/02plan9/10_control_process/main.go)
