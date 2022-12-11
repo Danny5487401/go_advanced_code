@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	// 系统单播地址
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		fmt.Println(err)
