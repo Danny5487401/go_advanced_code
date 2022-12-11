@@ -154,6 +154,38 @@ rax : 0x0000000000000000
 
 
 1. 通用寄存器：rax, rbx, rcx, rdx, rsi, rdi, rbp, rsp, r8, r9, r10, r11, r12, r13, r14, r15寄存器。
+```go
+// /Users/python/go/go1.18/src/syscall/ztypes_linux_amd64.go
+type PtraceRegs struct {
+	R15      uint64
+	R14      uint64
+	R13      uint64
+	R12      uint64
+	Rbp      uint64
+	Rbx      uint64
+	R11      uint64
+	R10      uint64
+	R9       uint64
+	R8       uint64
+	Rax      uint64
+	Rcx      uint64
+	Rdx      uint64
+	Rsi      uint64
+	Rdi      uint64
+	Orig_rax uint64
+	Rip      uint64
+	Cs       uint64
+	Eflags   uint64
+	Rsp      uint64
+	Ss       uint64
+	Fs_base  uint64
+	Gs_base  uint64
+	Ds       uint64
+	Es       uint64
+	Fs       uint64
+	Gs       uint64
+}
+```
 
 通用目的寄存器一般用于存放程序运行过程中产生的临时数据，这些寄存器在大多数情况下都可以被当作普通寄存器使用。
 而在某些特殊情况下，它们可能会被用于存放指令计算结果、系统调用号，以及与栈帧相关的内存地址等信息

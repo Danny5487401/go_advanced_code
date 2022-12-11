@@ -20,6 +20,7 @@ require (
 	github.com/pkg/profile v1.6.0
 	github.com/prometheus/client_golang v1.12.2
 	github.com/reactivex/rxgo/v2 v2.5.0
+	github.com/seccomp/libseccomp-golang v0.10.0
 	github.com/smallnest/chanx v1.0.0
 	github.com/smartystreets/goconvey v1.7.2
 	github.com/spf13/pflag v1.0.5
