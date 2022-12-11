@@ -322,6 +322,9 @@ Note: Go 1.18 移除用于泛型的constraints包
   - 9.2 https 双向认证
 - [10 unix domain socket 本地 IPC 进程间通信](chapter12_net/10_unix_domain_socket/uds.md)
 - [11 检查ip地址判断是否回环地址](chapter12_net/11_isLoopBack_ip/main.go)
+- 12 代理-->mac clashx 配置
+  - [12.1 配置 transport 中的proxy](chapter12_net/12_socks5/https_proxy/main.go)
+  - [12.2 使用 socks5 配置 transport 中Dial](chapter12_net/12_socks5/socks5_proxy/main.go)
 
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
