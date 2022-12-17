@@ -6,8 +6,8 @@
 2. uint/uint8/uint16/uint32/uint64
 3. float32/float64
 4. byte/rune
-   1. byte 是 uint8的别名,一个byte长度为8，即八位一个字节,一个byte等于八个bit,一个bit表示一位,8bit == byte
-   2. alias for int32
+   - byte 是 uint8的别名,一个byte长度为8，即八位一个字节,一个byte等于八个bit,一个bit表示一位,8bit == byte
+   - alias for int32
 5. uintptr
 这些类型在汇编中就是一段存储着数据的连续内存，只是内存长度不一样，操作的时候看好数据长度就行。
 

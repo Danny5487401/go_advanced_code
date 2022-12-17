@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/NebulousLabs/fastrand v0.0.0-20181203155948-6fb6489aac4e
+	github.com/OneOfOne/xxhash v1.2.8
 	github.com/agiledragon/gomonkey/v2 v2.8.0
 	github.com/cheekybits/genny v1.0.0
 	github.com/davecgh/go-spew v1.1.1
