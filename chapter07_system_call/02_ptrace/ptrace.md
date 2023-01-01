@@ -66,3 +66,14 @@ ptrace在需要传入四个参数：
     - PTRACE_GETREGS和PTRACE_SETREGS用来设置和读取CPU寄存器，在x86_64的Linux上，系统调用的编号存储在orig_rax寄存器，其他参数是在rdi、rsi、rdx等寄存器，在返回时，返回值存储在rax寄存器；
 
     - PTRACE_TRACEME：此进程允许被其父进程跟踪(用于strace+命令形式)
+
+简单来说有三大能力:
+
+- 追踪系统调用
+- 读写内存和寄存器
+- 向被追踪程序传递信号
+
+
+## golang程序 goland 远程linux amd64 运行
+
+![](../.Syscall_images/remote_amd64_machine.png)

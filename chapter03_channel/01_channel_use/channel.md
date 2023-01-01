@@ -22,7 +22,7 @@ go tool compile -N -l -S chan.go
 ![](.img/chan_runtime_func.png)
 
 ## 源码分析
-源码分析PPT: https://speakerdeck.com/kavya719/understanding-channels
+
 
 1. channel的创建  
    ![](.img/make_chan.jpg)
@@ -792,3 +792,7 @@ func closechan(c *hchan) {
 
 ## 总结一下操作 channel 的结果
 ![](.img/channel_operation_guild.png)
+
+## 参考资料
+1. [源码分析PPT](https://speakerdeck.com/kavya719/understanding-channels)
+2. [go 夜读 channel & select 源码分析](https://talkgo.org/t/topic/75)
