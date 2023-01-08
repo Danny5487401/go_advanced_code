@@ -21,6 +21,7 @@ require (
 	github.com/prometheus/client_golang v1.12.2
 	github.com/reactivex/rxgo/v2 v2.5.0
 	github.com/seccomp/libseccomp-golang v0.10.0
+	github.com/serialx/hashring v0.0.0-20200727003509-22c0c7ab6b1b
 	github.com/smallnest/chanx v1.0.0
 	github.com/smartystreets/goconvey v1.7.2
 	github.com/spf13/pflag v1.0.5
