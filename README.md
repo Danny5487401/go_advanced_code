@@ -364,7 +364,9 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [2 FAN-IN和FAN-OUT模型](chapter16_concurrentProgramming/02_fanin_fanout/fanin_fanout.md)
 
 ## 第十七章 数据结构及算法
-- [1 queue双端单向队列(泛型)](chapter17_dataStructure_n_algorithm/01_queue/queue_test.go)
+- [1 queue 双端单向队列](chapter17_dataStructure_n_algorithm/01_queue/queue.md)
+  - [1.1 array 数组实现非阻塞 Queue-->没有实现容量限制和容量收缩](chapter17_dataStructure_n_algorithm/01_queue/01_unblock_queue/queue_test.go)
+  - [1.2 array + channel 实现阻塞队列 Queue](chapter17_dataStructure_n_algorithm/01_queue/02_block_queue/blockqueue_test.go)
 - [2 加解密](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/encryption.md)
   - 2.1 对称式加密
     - [2.1.1 AES高级加密标准(Advanced Encryption Standard)](chapter17_dataStructure_n_algorithm/02_encrypt_n_decript_algorithm/01_symmetric_encryption/aes/aes.md)

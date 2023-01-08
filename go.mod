@@ -6,7 +6,6 @@ require (
 	github.com/NebulousLabs/fastrand v0.0.0-20181203155948-6fb6489aac4e
 	github.com/OneOfOne/xxhash v1.2.8
 	github.com/agiledragon/gomonkey/v2 v2.8.0
-	github.com/cheekybits/genny v1.0.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dlsniper/debugger v0.6.0
 	github.com/gin-gonic/gin v1.8.1
