@@ -1,19 +1,21 @@
-# 关系
+# 设计模式
+是一套被反复使用、多数人知晓的、经过分类的、代码设计经验的总结
+
+## 关系
 ![](.introduction_images/relation.png)
 
-# OOP七大原则
-* 开闭原则：对扩展开发，对修改关闭
-* 里氏替换原则：继承必须确保超类拥有的性质在子类中依然成立
-* 依赖倒置原则：要面向接口b编程，不要面向s实现编程
-* 单一职责原则（单一功能原则）：控制类的粒度大小，将对象解耦，提高其内聚性
-* 接口隔离原则：要为各个类建立他们需要的专用接口
-* 迪米特法则：只与你的直接朋友交谈，不跟“陌生人”交谈
-* 合成复用原则：尽量先使用组合和聚合等关系来实现，其次再考虑继承关系实现
+
+## OOP 七大原则
+* 开放封闭原则 OCP（Open-Closed Principle）：对扩展开发，对修改关闭
+* Liskov替换原则 LSP(Liskov Substitution Principle)：继承必须确保超类拥有的性质在子类中依然成立
+* 依赖倒置原则 DIP(Dependency Inversion Principle)：要面向接口b编程，不要面向s实现编程
+* 单一职责原则 SRP(Single Responsibility Principle)：控制类的粒度大小，将对象解耦，提高其内聚性
+* 接口隔离原则 ISP（Interface Isolation Principle）：要为各个类建立他们需要的专用接口
+* 迪米特原则或最少知识原则 LoD(Law Of Demeter or Principle of Least Knowledge)：只与你的直接朋友交谈，不跟“陌生人”交谈
+* 合成/聚合复用原则 CARP（Composite/Aggregate Reuse Principle）：尽量先使用组合和聚合等关系来实现，其次再考虑继承关系实现
 
 
-# 设计模式：是一套被反复使用、多数人知晓的、经过分类的、代码设计经验的总结
-
-## 之前分类：23种设计模式
+## 历史分类：23种设计模式
 ![](.introduction_images/design_mode.png)
 
 1. 创建型(单例模式、简单工厂模式、工厂方法模式、抽象厂模式、建造者模式、原型模式)
@@ -25,7 +27,7 @@
 - 代理模式包含静态代理、动态代理（采用 go generate 模拟）
 - 观察者模式包含观察者模式、eventbus
 
-## 最新分类：
+## 最新分类
 
 ### 创建型模式
 
