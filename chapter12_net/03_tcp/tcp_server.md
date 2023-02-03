@@ -1,7 +1,7 @@
 # TCP 服务端
 
 ## listen过程
-![](.tcp_images/net_pool_listen.png)
+![](../.asset/img/.tcp_images/net_pool_listen.png)
 在 golang net 的 listen 中，会完成如下几件事：
 
 1. 创建 socket 并设置非阻塞，
@@ -113,7 +113,7 @@ func netpollopen(fd uintptr, pd *pollDesc) int32 {
 
 ## Accept 过程
 
-![](.tcp_images/accept_process.png)
+![](../.asset/img/.tcp_images/accept_process.png)
 服务端在 Listen 完了之后，就是对 Accept 的调用了。该函数主要做了三件事
 
 1. 调用 accept 系统调用接收一个连接
@@ -242,7 +242,7 @@ func (pd *pollDesc) init(fd *FD) error {
 ## Read 和 Write 内部过程
 
 ### Read流程
-![](.tcp_images/read_process.png)
+![](../.asset/img/.tcp_images/read_process.png)
 ```go
 //file:/Users/zhangyanfei/sdk/go1.14.4/src/net/net.go
 func (c *conn) Read(b []byte) (int, error) {

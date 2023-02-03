@@ -7,16 +7,17 @@
 
 ![](.asset/img/.tcp_images/http_tcp.png)
 
-## tcp定义
-
 ![](.asset/img/.tcp_images/tcp_udp_service.png)
 
-网络传输层中，TCP是面向连接、可靠的、字节流传输。
-
+tcp 传输控制协议: 网络传输层中，TCP是面向连接、可靠的、字节流传输。
 TCP协议通信双方必须先建立连接，通信双方必须为该连接分配必要的内核资源，以管理连接的状态和连接上数据的传输。
 TCP是全双工的，即双方的数据读写可通过一个连接进行。完成数据交换之后，通信双方都必须断开连接以释放系统资源。
 
-### 字节流和数据报主要区别
+一个tcp连接由四元组构成，即只有一个原地址和端口，也只有一个目的地址和端口,所以两个域肯定两个tcp连接。
+
+
+
+## 字节流和数据报主要区别
 
 TCP协议使用字节流streaming（UDP使用数据报diagram），实际编程中字节流和数据报的主要区别体现在通信双方是否必须执行相同次数的读、写操作（只是表现形式），
     
@@ -69,7 +70,8 @@ TCP提供了一种可靠、面向连接、字节流、传输层的服务，采�
     
     序列号的作用是使得一个TCP接收端可丢弃重复的报文段，记录以杂乱次序到达的报文段。因为TCP使用IP来传输报文段，而IP不提供重复消除或者保证次序正确的功能。
     另一方面，TCP是一个字节流协议，绝不会以杂乱的次序给上层程序发送数据。因此TCP接收端会被迫先保持大序列号的数据不交给应用程序，直到缺失的小序列号的报文段被填满。
-    
+
+ 
 ## TCP头部
 ![](.asset/img/.tcp_images/tcp_header.png)
 
@@ -129,9 +131,10 @@ TCP提供了一种可靠、面向连接、字节流、传输层的服务，采�
     因为一个块信息占用8字节，所以TCP头部选项中实际上最多可以包含4个这样的不连续数据块（考虑选项类型和长度占用的2字节）。
     
     kind=8是时间戳选项。该选项提供了较为准确的计算通信双方之间的回路时间（Round Trip Time，RTT）的方法，从而为TCP流量控制提供重要信息。我们可以通过修改/proc/sys/net/ipv4/tcp_timestamps内核变量来启用或关闭时间戳选项。
-    
+
+  
 ## 状态转换
-![](chapter12_net/03_tcp/.tcp_images/state_trasfer.png)
+![](.asset/img/.tcp_images/state_trasfer.png)
 
 ### 三次握手
 “3次握手”的作用就是双方都能明确自己和对方的收、发能力是正常的。
@@ -196,8 +199,15 @@ static inline int before(__u32 seq1, __u32 seq2){
      0000 0001 + 1 = 0000 0010 = 2
     
     因此seq1 - seq2 < 0
-    
-    
+
+
+## timewait 过程-->过多连接会timewait等待很久,端口占用
+![time_wait.png](.asset/img/.tcp_images/time_wait.png)
+![time_wait.png](.asset/img/.tcp_images/port_exhaustion.png)
+
+## tcp拥塞控制-->tcp慢启动,探测网络环境
+![time_wait.png](.asset/img/.tcp_images/tcp_slow_start.png)
+
 ## syn flood攻击
 
 最基本的DoS攻击就是利用合理的服务请求来占用过多的服务资源，从而使合法用户无法得到服务的响应。syn flood属于Dos攻击的一种。

@@ -292,6 +292,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [socket 套接字缓冲区](chapter12_net/socket.md)
 - [tcp 传输控制协议](chapter12_net/tcp.md)
 - [I/O 多路复用及 epoll 在 Golang 工作模型体现](chapter12_net/io_multiplexing.md)
+- [http的三个版本知识介绍](chapter12_net/http.md)
 
 - 1 http 服务端高级封装演变: ServeHTTP 是 HTTP 服务器响应客户端的请求接口
   - [1.1 高级封装：使用DefaultServeMux](chapter12_net/01_http_server/01_use_DefaultServeMux/main.go)

@@ -286,9 +286,6 @@ writePointer(slot, ptr):
 混合写屏障的基本思想是：对正在被覆盖的对象进行着色，且如果当前栈未扫描完成， 则同样对指针进行着色。
 
 
-
-
-
 ## GC 触发条件
 
 1. 主动触发，通过调用 runtime.GC() 来触发 GC，此调用阻塞式地等待当前 GC 运行完毕。
@@ -306,3 +303,4 @@ writePointer(slot, ptr):
 1. [Go中内存分配源码实现](https://www.luozhiyun.com/archives/434) 
 2. [Go语言设计](https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-garbage-collector/)
 3. [BFS (Breadth First Search 广度优先遍历）-->树的层次遍历](https://github.com/Danny5487401/c_learning/blob/main/dataStructure/04_graph/graph.md)
+4. [Go 官方gc-guild](https://tip.golang.org/doc/gc-guide)
