@@ -17,7 +17,7 @@
 ![](../../go_advanced_code/chapter12_net/.http_images/http1.1.png)
 
 * 队头阻塞(head of blocking) (No Pipelining): 假如有五个请求被同时发出，如果第一个请求没有处理完成，就会导致后续的请求也无法得到处理
-* 一个连接同一时间只能处理一个请求，是串行，因为是无状态，不像tcp有序列号，http2会建立映射关系
+* 一个连接同一时间只能处理一个请求，是串行，因为是无状态，不像tcp有序列号，http2会建立映射关系.
 * 如果当前请求阻塞，那么该连接就无法复用
 
 HTTP 1.0 有一个被抱怨最多的是连接无法复用，当每次有新的请求时都会重新经历一次三次握手和四次挥手过程，并且连接的建立和释放需要耗费大量的服务器资源，在请求少的页面还尚能应对，不过随着请求的不断增多，HTTP 1.0 越来越难顶.
@@ -29,9 +29,15 @@ HTTP 1.0 议头里可以设置 Connection:Keep-Alive。在 header 里设置 Keep
 pipelining 并不是救世主，它也存在不少缺陷：
 
 - 因为只有幂等的请求比如 GET、HEAD 才能使用 pipelining ，非幂等请求比如 POST 则不能使用，因为请求之间可能存在先后依赖关系。
-- 其实队头阻塞问题并没有完全解决，因为服务器返回的响应还是要依次返回，也就是返回的请求时 FIFO - 先发先回。
+- 其实队头阻塞问题并没有完全解决，因为服务器返回的响应还是要依次返回，也就是返回的请求时 FIFO - 先发先回。对应的response按照request的顺序严格排列，因为不按顺序排列就分不清楚response是属于哪个request的。
 - 绝大多数 HTTP 代理服务器不支持 pipelining。
 - 和不支持 pipelining 的老服务器协商有问题,多数浏览器默认关闭 http1.1 pipeline.
+
+当今的Web页面有玲琅满目的图片、js、css，如果让请求一个个串行执行，那页面的渲染会变得极慢。于是只能同时创建多个TCP连接，实现并发下载数据，快速渲染出页面。这会给浏览器造成较大的资源消耗，电脑会变卡。很多浏览器为了兼顾下载速度和资源消耗，会对同一个域名限制并发的TCP连接数量，如Chrome是6个左右，剩下的请求则需要排队，Network下的Waterfall就可以观察排队情况。
+
+狡猾的人类为了避开这个数量限制，将图片、css、js等资源放在不同域名下(或二级域名)，避开排队导致的渲染延迟。快速下载的目标实现了，但这和更低的资源消耗目标相违背，背后都是高昂的带宽、CDN成本。
+
+
 
 ### SPDY
 SPDY 的目标在于解决 HTTP 的缺陷，即延迟和安全性。PDY 位于 HTTP 之下，SSL 之上，这样可以轻松的兼容老版本的 HTTP 协议，SPDY 的功能分为基础功能和高级功能两部分，基础功能是默认启用的，高级功能需要手动启用。
@@ -53,15 +59,17 @@ HTTP 1.x 的诞生使用的是明文协议，它的格式主要由三部分构�
 
 
 
-![](.grpc_images/definition.png)
+![](.http_images/definition.png)
 
 #### 优点
 ##### 1 multiplexing 多路复用(实现无序传输)，基于stream模型
-![](../../go_advanced_code/chapter12_net/.http_images/multi_routes.png)
 
-![](../../go_advanced_code/chapter12_net/.http_images/multi_routes2.png)
+HTTP2为了解决在同一个TCP连接中，没办法区分response是属于哪个请求,提出了流的概念，每一次请求对应一个流，有一个唯一ID，用来区分不同的请求。
+![](.http_images/multi_routes.png)
 
-一个tcp上面多个stream，stream 是连接中的一个虚拟信道，可以承载双向消息传输。每个流有唯一整数标识符。为了防止两端 stream id 冲突，客户端发起的流具有奇数 id，服务器端发起的流具有偶数 id。
+![](.http_images/multi_routes2.png)
+
+一个tcp上面多个stream，stream 是连接中的一个虚拟信道，可以承载双向消息传输。
 - 并行交错地发送多个请求，请求之间互不影响。
 - 并行交错地发送多个响应，响应之间互不干扰。
 - 使用一个连接并行发送多个请求和响应。
@@ -74,12 +82,15 @@ HTTP 1.x 没有真正解决连接共享还有一个主要的因素就是无法�
 HTTP1.x 中的 header 由于 cookie 和 user agent 不存在记忆性，这样导致每次都要带着这些头重新发送请求，
 HTTP 2.0 使用 encoder 来减少传输的 header 大小，通信双方会各自缓存一份 header 字段表，这样能够避免重复传输 header ，也能够减小传输的大小。
 HTTP 2.0 采用的是 HPACK 压缩算法。
-![](../../go_advanced_code/chapter12_net/.http_images/header_packed_info.png)
-![](../../go_advanced_code/chapter12_net/.http_images/header_packed_info2.png)
-![](../../go_advanced_code/chapter12_net/.http_images/header_packed_info3.png)
-![](../../go_advanced_code/chapter12_net/.http_images/header_packed_info4.png)
-  - 动态表：第二个请求只会发送与第一个请求不一样的内容
-  - 静态表：常用的缺省表
+
+
+![](.http_images/header_packed_info3.png)
+![](.http_images/header_packed_info4.png)
+- 动态表：第二个请求只会发送与第一个请求不一样的内容
+![](.http_images/header_packed_info.png)
+- 静态表：高频使用的Header编成一个静态表，每个header对应一个数组索引，每次只用传这个索引，而不是冗长的文本。
+![](.http_images/header_packed_info2.png)
+
 ##### 3 服务端推送(server push)
 Server Push指的是服务端主动向客户端推送数据，相当于对客户端的一次请求，服务端可以主动返回多次结果。
 这个功能打破了严格的请求---响应的语义，对客户端和服务端双方通信的互动上，开启了一个崭新的可能性。
@@ -102,11 +113,13 @@ Server Push指的是服务端主动向客户端推送数据，相当于对客户
   
 
 #### 二进制分帧层 binary frame
+基于流的概念，进一步提出了帧，一个请求的数据会被分成多个帧，方便进行数据分割传输，每个帧都唯一属于某一个流ID，将帧按照流ID进行分组，即可分离出不同的请求
+
 虽然 HTTP 2.0 报文格式看上去和 HTTP 1.x 的完全不同，但是实际上 HTTP 2.0 并没有改变 HTTP 1.x 的语义，它只是在 HTTP 1.x 的基础上封装了一层.
-![](../../go_advanced_code/chapter12_net/.http_images/binary_frame.png)
+![](.http_images/binary_frame.png)
 
 
-binary frame在应用层和TCP层中间
+binary frame 在应用层和TCP层中间
 - 优先级控制 
 - 流量控制
 - 服务端推送
@@ -125,6 +138,7 @@ frame 帧 是HTTP/2协议里通信的最小单位，每个帧有自己的格式�
 
 - Flags: 为一些特定类型的Frame预留的标志位，比如Header, Data, Setting, Ping等，都会用到。
 
+
 - R: 1-bit的保留位，目前没用，值必须为0
 
 - Stream Identifier: Steam的id标识，表明id的范围只能为0到2^31-1之间，其中0用来传输控制信息，比如Setting, Ping；客户端发起的Stream id 必须为奇数，服务端发起的Stream id必须为偶数；
@@ -138,7 +152,17 @@ frame 帧 是HTTP/2协议里通信的最小单位，每个帧有自己的格式�
 
 
 #### frame types类型
-![](.grpc_images/frame_type.png)
+![](.http_images/frame_type.png)
+* HEADERS：帧仅包含 HTTP header信息。
+* DATA：帧包含消息的所有或部分请求数据。
+* PRIORITY：指定分配给流的优先级。服务方可先处理高优先请求
+* RST_STREAM：错误通知：一个推送承诺遭到拒绝。终止某个流。
+* SETTINGS：指定连接配置。(用于配置，流ID为0) [会ACK确认收到]
+* PUSH_PROMISE：通知一个将资源推送到客户端的意图。
+* PING：检测信号和往返时间。（流ID为0）[会ACK]
+* GOAWAY：停止为当前连接生成流的停止通知。
+* WINDOW_UPDATE：用于流控制，约定发送窗口大小。
+* CONTINUATION：用于继续传送header片段序列。
 
 1. Magic:
 Magic 帧的主要作用是建立 HTTP/2 请求的前言。在 HTTP/2 中，要求两端都要发送一个连接前言，作为对所使用协议的最终确认，并确定 HTTP/2 连接的初始设置，客户端和服务端各自发送不同的连接前言。
@@ -168,7 +192,7 @@ user-agent：grpc-go/1.20.0-dev
 4. Data frame(数据帧)
 DATA 帧的主要作用是装填主体信息
 
-![](.grpc_images/data_frame.png)
+![](.http_images/data_frame.png)
 5. PING/PONG
 
 主要作用是判断当前连接是否仍然可用，也常用于计算往返时间。
@@ -182,8 +206,12 @@ DATA 帧的主要作用是装填主体信息
     这个就厉害了，当服务端需要维护时，发送一个GOAWAY的Frame给客户端，那么发送之前的Stream都正常处理了，发送GOAWAY后，客户端会新启用一个链接，继续刚才未完成的Stream发送。
 
 ### http3.0
-![](.grpc_images/http3.png)
+![](.http_images/http3.png)
 
+QUIC本身就是一个名字，不是缩略词，它的发音和英语单词“quick”一样
+
+QUIC是基于UDP之上实现的传输协议.
 
 ## 参考资料
 1. [http 理解](https://mp.weixin.qq.com/s?__biz=MzkwMDE1MzkwNQ==&mid=2247496030&idx=1&sn=82f56874f82f372af71e23a8e385f8cd&chksm=c04ae600f73d6f16d707c1d32b00e3f0d47e893c9cf59a2eb60ace418943aeb5c5c679cb27ea&token=1094112620&lang=zh_CN#rd)
+2. [http/3 详解](https://hungryturbo.com/HTTP3-explained/quic/%E5%8D%8F%E8%AE%AE%E7%89%B9%E7%82%B9.html)
