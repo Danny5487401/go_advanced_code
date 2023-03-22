@@ -15,6 +15,18 @@ TCP是全双工的，即双方的数据读写可通过一个连接进行。完�
 
 一个tcp连接由四元组构成，即只有一个原地址和端口，也只有一个目的地址和端口,所以两个域肯定两个tcp连接。
 
+## 基本概念
+### RTT(Round Trip Time) 往返时延
+![](.http_images/RTT.png)
+
+解释：Round trip time for a packet
+```
+公式: rtt = recvtime - sendtime
+```
+
+在计算机网络中它是一个重要的性能指标，表示从发送端发送数据开始，到发送端收到来自接收端的确认（接收端收到数据后便立即发送确认），往返延时(RTT)由三个部分决定：即链路的传播时间、末端系统的处理时间以及路由器的缓存中的排队和处理时间。
+其中，前面两个部分的值作为一个TCP连接相对固定，路由器的缓存中的排队和处理时间会随着整个网络拥塞程度的变化而变化。所以RTT的变化在一定程度上反映了网络拥塞程度的变化。
+
 
 
 ## 字节流和数据报主要区别
@@ -108,11 +120,12 @@ TCP提供了一种可靠、面向连接、字节流、传输层的服务，采�
 - 16位校验和（TCP check sum）：由发送端填充，接收端对TCP报文段执行CRC算法以检验TCP报文段在传输过程中是否损坏。注意，这个校验不仅包括TCP头部，也包括数据部分。这也是TCP可靠传输的一个重要保障。
     
 - 16位紧急指针（urgent pointer）：是一个正的偏移量。它和序号字段的值相加表示最后一个紧急数据的下一字节的序号。因此，确切地说，这个字段是紧急指针相对当前序号的偏移，不妨称之为紧急偏移。TCP的紧急指针是发送端向接收端发送紧急数据的方法。
-![](chapter12_net/03_tcp/.tcp_images/tcp_kind_option_structure.png)
+
+![](.asset/img/.tcp_images/tcp_kind_option_structure.png)
 
 - TCP头部选项：TCP头部的最后一个选项字段（options）是可变长的可选信息。这部分最多包含40字节，因为TCP头部最长是60字节（其中还包含前面讨论的20字节的固定部分）。典型的TCP头部选项结构如下图所示
 
-![](chapter12_net/03_tcp/.tcp_images/seven_kind_options.png)
+![](.asset/img/.tcp_images/seven_kind_options.png)
     
     kind=0是选项表结束选项。
     

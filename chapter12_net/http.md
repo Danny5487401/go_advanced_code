@@ -2,13 +2,8 @@
 超文本传输协议可以进行文字分割：超文本（Hypertext）、传输（Transfer）、协议（Protocol）.
 
 
-## 基本概念
-### RTT(Round Trip Time)
-![](.grpc_images/RTT.png)
 
-解释：Round trip time for a packet
 
-公式: rtt = recvtime - sendtime
 
 
 ## http的三个版本介绍
@@ -99,8 +94,8 @@ Server Push指的是服务端主动向客户端推送数据，相当于对客户
 当服务端需要主动推送某个资源时，便会发送一个 Frame Type 为 PUSH_PROMISE 的 frame ，里面带了 PUSH 需要新建的 stream id。
 意思是告诉客户端：接下来我要用这个 id 向你发送东西，客户端准备好接着。客户端解析 frame 时，发现它是一个 PUSH_PROMISE 类型，便会准备接收服务端要推送的流。
 
-![](../../go_advanced_code/chapter12_net/.http_images/serverPush.png)
-![](../../go_advanced_code/chapter12_net/.http_images/http1.1VShttp2.0.png)
+![](.http_images/serverPush.png)
+![](.http_images/http1.1VShttp2.0.png)
 
 在HTTP/1.x里，为了展示这个页面，客户端会先发起一次 GET /index.html 的请求，拿到返回结果进行分析后，再发起两个资源的请求，一共是三次请求, 并且有串行的请求存在。
 

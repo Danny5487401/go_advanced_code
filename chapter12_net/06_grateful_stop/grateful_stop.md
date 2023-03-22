@@ -691,7 +691,7 @@ docker kill
 
 当然 docker kill 可以通过 --signal 来指定要发送的信号，类似 Linux 的 kill 命令：
 ```shell
-ocker kill ----signal=SIGTERM foo
+docker kill --signal=SIGTERM foo
 ```
 
 ### k8s中流程

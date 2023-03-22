@@ -3,13 +3,15 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
+	"log"
 	"net/http"
 )
 
-func HelloWorld(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("收到%s请求\n", r.RemoteAddr)
-	w.Header().Set("Content-Type", "text/plain")
-	fmt.Fprintln(w, "hello world")
+func handle(w http.ResponseWriter, r *http.Request) {
+	// 记录请求协议
+	log.Printf("Got connection: %s", r.Proto)
+	// 向客户发送一条消息
+	w.Write([]byte("Hello"))
 }
 
 //func main() {/*默认情况下*/
@@ -22,7 +24,7 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
 //}
 
 func main() { /*修改TLS版本*/
-	http.HandleFunc("/hello", HelloWorld)
+	http.HandleFunc("/", handle)
 
 	server := &http.Server{
 		Addr:    ":443",

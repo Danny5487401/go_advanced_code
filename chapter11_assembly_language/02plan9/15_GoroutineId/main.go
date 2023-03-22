@@ -18,13 +18,13 @@ import (
 
 func main() {
 	// 方式一：汇编获取goroutineId
-	GId := GId_Package.GetGroutineId()
+	GId := GId_Package.GetGoroutineId()
 	fmt.Println("GoroutineId是", GetGoid(), GId)
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
 		// 汇编获取goroutineId
-		GId = GId_Package.GetGroutineId()
+		GId = GId_Package.GetGoroutineId()
 		fmt.Println("GoroutineId是", GetGoid(), GId)
 		wg.Done()
 	}()

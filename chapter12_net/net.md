@@ -141,10 +141,12 @@ ss 只显示已经连接、关闭、孤儿套接字等简要统计，而 netstat
 
 ## golang net包
 
-net包提供了可移植的网络I/O接口，包括TCP/IP、UDP、域名解析和Unix域socket等方式的通信。其中每一种通信方式都使用 xxConn 结构体来表示，诸如IPConn、TCPConn等，这些结构体都实现了Conn接口，Conn接口实现了基本的读、写、关闭、获取远程和本地地址、设置timeout等功能。
+net包提供了可移植的网络I/O接口，包括TCP/IP、UDP、域名解析和Unix域socket等方式的通信。
+其中每一种通信方式都使用 xxConn 结构体来表示，诸如IPConn、TCPConn等，这些结构体都实现了Conn接口，Conn接口实现了基本的读、写、关闭、获取远程和本地地址、设置timeout等功能。
 
 
-### Conn 接口
+### Conn 接口：一个通用的面向流的网络连接
+多个goroutines可以同时调用Conn上的方法
 ```go
 type Conn interface {
     // Read从连接中读取数据
@@ -174,7 +176,7 @@ type Conn interface {
 ```
 每种类型都是对应的结构体实现这些接口。
 
-### PacketConn 接口
+### PacketConn 接口：一种通用的面向数据包的网络连接
 ```go
 type PacketConn interface {
     // ReadFrom方法从连接读取一个数据包，并将有效信息写入b
@@ -202,3 +204,7 @@ type PacketConn interface {
 }
 ```
 
+
+
+
+## 参考链接

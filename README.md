@@ -324,7 +324,9 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [9.1.2 客户端不校验证书 或则 添加到证书池](chapter12_net/09_https/01_sign_one/02_client/client.go)
   - 9.2 https 双向认证
 - [10 unix domain socket 本地 IPC 进程间通信](chapter12_net/10_unix_domain_socket/uds.md)
-- [11 检查ip地址判断是否回环地址](chapter12_net/11_isLoopBack_ip/main.go)
+- [11 获取本机内网和外网Ip](chapter12_net/11_internal_n_external_ip/main.go)
+- [12 http2 使用](chapter12_net/12_http2/http2.md)
+  - let's encrypt的免费证书开发server
 
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)

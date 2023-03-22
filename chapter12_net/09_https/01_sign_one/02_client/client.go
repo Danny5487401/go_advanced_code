@@ -39,7 +39,7 @@ func main() {
 	}
 
 	/* 协议：https，非http */
-	resp, err := client.Get("https://localhost:443/hello")
+	resp, err := client.Get("https://localhost:443/")
 	if err != nil {
 		log.Fatalln(err)
 	}
