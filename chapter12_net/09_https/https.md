@@ -1,5 +1,12 @@
 # HTTPS (Secure Hypertext Transfer Protocol)安全超文本传输协议
 
+## 背景
+Having HTTPS for your website is important:
+- HTTPS encrypts the traffic between browser and server. Passwords of your users are protected from traffic sniffing on naughty intermediary servers or miscreants sniffing wifi packets in a cafe.
+- new HTTP/2 protocol is faster than HTTP/1.1 but only works over HTTPS.
+- if you care about SEO, Google ranks HTTPS websites higher than HTTP ones.
+- browser vendors will increasingly scare users of HTTP websites
+
 ## 基本概念
 ![](.https_images/tls_ssl_structure.png)
 
@@ -409,4 +416,5 @@ func (hs *serverHandshakeState) doFullHandshake() error {
 ## 参考
 1. [使用开启扩展SAN的证书](https://blog.csdn.net/m0_37322399/article/details/117308604?spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-2-117308604-blog-109230584.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-2-117308604-blog-109230584.pc_relevant_default&utm_relevant_index=5)
 2. [ssl/tls 专栏导航](https://blog.csdn.net/s2603898260/article/details/120276446)
+3. [go cookbook 关于 HTTPS for free in Go, with little help of Let's Encrypt](https://blog.kowalczyk.info/article/Jl3G/https-for-free-in-go-with-little-help-of-lets-encrypt.html)
 

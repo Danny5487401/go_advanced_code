@@ -517,5 +517,33 @@ PC 中的浏览器（火狐、IE、chrome等）已经包含了很多 CA 的根�
 
 
 
+## 免费证书从何而来
+
+每年只花60美元就可以拥有一台低端服务器，但一个证书却比这要昂贵。
+
+这是一个问题，因为SSL证书的成本是所有网站采用加密技术的明显障碍。
+
+少数几家公司决定共享他们的资源来解决这一问题，从而更有利于整个互联网。于是他们资助了Let’s Encrypt这样一家证书颁发机构，然后编制一些必要的软件并运营着颁发证书的服务器。
+
+
+### Let's Encrypt
+
+Let's Encrypt 在2015年秋季推出了免费的数字证书认证计划，旨在消除当前手动创建和安装证书的复杂性，并推广加密的万维网服务，为安全网站提供免费的SSL/TLS证书。
+Let's Encrypt 是由互联网安全研究小组（ISRG，一个公益组织）提供的服务。主要赞助商包括电子前哨基金会，Mozilla基金会，Akamai以及思科。2015年4月9日，ISRG与Linux基金会宣布合作。
+
+
+用以实现这一新的数字证书认证机构的协议被称为自动证书管理环境（ACME）
+
+原先有一些支持Let's Encrypt的 Go 工具和库， 比如lego、acme、letsencrypt、rsc/letsencrypt, 但是我推荐使用官方的库：x/crypto/acme/autocert, 简单好用，并且官方维护
+
+
+使用注意：
+1. 需要正确安装DNS
+为核实你确实是你所申请证书的域的所有者，Let’s Encrypt服务器会回叫你的服务器。
+
+为了正常工作，DNS名必须解析到你的服务器的IP地址。这意味着，HTTPS代码-路径的本地测试是很难的。
+
+
 ## 参考链接
 1. [CA证书签发过程及无 SNI 支持问题](https://www.barretlee.com/blog/2016/04/24/detail-about-ca-and-certs/)
+2. [let's encrypt 官网 acme 客户端](https://letsencrypt.org/zh-cn/docs/client-options/)

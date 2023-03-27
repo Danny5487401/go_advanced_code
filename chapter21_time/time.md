@@ -9,12 +9,13 @@
 ## 两个重要概念:单调时间和壁挂时间
 - wall time壁挂时间:
   挂钟时间，实际上就是指的是现实的时间，这是由变量xtime来记录的。系统每次启动时将CMOS上的RTC时间读入xtime，
-  这个值是"自1970-01-01起经历的秒数、本秒中经历的纳秒数"，每来一个timer interrupt，也需要去更新xtime。，常见的场景就是通过修改时间延长收费软件的试用期。
+  这个值是"自1970-01-01起经历的秒数、本秒中经历的纳秒数"，每来一个timer interrupt，也需要去更新xtime。常见的场景就是通过修改时间延长收费软件的试用期。
 - monotonic time单调时间:
   是单调时间,实际它指的是系统启动以后流逝的时间,这是由变量jiffies记录系统每次启动时jiffies初始化为0，
   每来一个timer interrupt，jiffies加1，也就是说它代表系统启动后流逝的tick数。jiffies一定是单调递增的，因为时间不够逆
 
-CLOCK_MONOTONIC是monotonic time;CLOCK_REALTIME是wall time。
+CLOCK_MONOTONIC是monotonic time;
+CLOCK_REALTIME是wall time。
 
 ### 应用
 在操作系统中如果需要 显示 时间的时候，会使用 wall time ，而需要 测量 时间的时候，会使用 monotonic time 

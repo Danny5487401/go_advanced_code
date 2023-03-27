@@ -118,4 +118,7 @@ require (
 ```
 
 
+## 参考资料
+1 [官方module文档](https://github.com/golang/go/wiki/Modules)
+
  
