@@ -479,9 +479,12 @@ Note: Go 1.18 移除用于泛型的constraints包
 - [3 AlertManager](chapter27_prometheus/alert_manager.md)
 - [4 PromQL](chapter27_prometheus/alert_manager.md)
 
-## 第二十八章 如何进行测试
+## [第二十八章 如何进行测试](chapter28_test/test.md)
 - [1 gomonkey打桩测试(暂不支持arm)](chapter28_test/01_gomonkey/gomonkey.md)
 - [2 go-mock接口测试](chapter28_test/02_mock/gomock.md)
+- 3 web 测试
+  - [01 使用标准包 httptest 进行 server handler 测试](chapter28_test/03_httptest/01_httptest/httptest.md)
+  - [02 gock 模拟HTTP流量](chapter28_test/03_httptest/02_gock/gock.md) 
 
 ## 第二十九章 module包管理
 - [1 go-module 实践篇](chapter29_module/01_use/module_operation.md)

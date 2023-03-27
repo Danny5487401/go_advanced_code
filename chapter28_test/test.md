@@ -1,8 +1,22 @@
+# Golang Testing
 
-# test
+## 单元测试
+单元测试是针对任意一个具体的函数而言，无论是一个已导出的函数接口，或者是一个并不导出的内部工具函数，你可以针对这个函数做一组测试，目的在于证明该函数的功用与其所宣称的相同
+
+对于 Golang 来说，编写单元测试很容易：
+
+- 在一个包例如 yy 之中新建一个 go 源文件，确保文件名以 _test.go 结尾，例如 yy_test.go
+- 在这个文件中可以使用 yy 或者 yy_test 作为包名
+- 编写一个测试函数入口，其签名必以 Test开头，参数必须是 t *testing.T （对于性能测试函数来说是 b *benchmark.B）
+- 在函数体中编写测试代码，如果认为测试不通过，采用 t.Fatal("...") 的方式抛出异常；如果没有异常正常地结束了函数体的运行，则被视作测试已通过。
+- 执行过程中可以使用 t.Log(...) 等方式输出日志文本。类似地 t.Fatal 也会输出日志文件，以报错的形式
 
 
-## go test接受的参数
+## 覆盖 cover 测试
+覆盖测试是单元测试的一种，我们期待的是对代码的测试覆盖率越高越好。
+
+
+## go test 命令行参数
 ```shell
 ➜  03_n git:(feature/memory) ✗ go help test                                                                             
 usage: go test [build/test flags] [packages] [build/test flags & test binary flags]
@@ -127,5 +141,38 @@ For more about specifying packages, see 'go help packages'.
 See also: go build, go vet.
 ```
 
+### 1 常规语法
+```shell
+ 在当前项目当前包文件夹下执行全部测试用例，但不递归子目录
+go test .
+# 在当前项目当前文件夹下执行全部测试用例并显示测试过程中的日志内容，不递归子目录
+go test -v .
+
+# 和 go test . 相似，但也递归子目录中的一切测试用例
+go test ./...
+go test -v ./...
+```
 
 
+### 2 执行特定的测试用例
+```shell
+1
+go test -v . -test.run '^TestOne$'
+```
+
+### 3 执行覆盖测试Permalink
+```shell
+# 以下两句连用以生成覆盖测试报告 cover.html
+go test -v . -coverprofile=coverage.txt -covermode=atomic
+go tool cover -html=coverage.txt -o cover.html
+
+# 也可以执行最长的用例执行时间，超出时则判为测试失败
+go test -v . -coverprofile=coverage.txt -covermode=atomic -timeout=20m
+```
+
+### 4 在测试时检测数据竞争问题
+
+```shell
+
+go test -v -race .
+```
