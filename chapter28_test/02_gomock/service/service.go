@@ -1,6 +1,6 @@
 package service
 
-import "github.com/Danny5487401/go_advanced_code/chapter28_test/02_mock/dao"
+import "github.com/Danny5487401/go_advanced_code/chapter28_test/02_gomock/dao"
 
 // service.service.go
 type FindService struct {

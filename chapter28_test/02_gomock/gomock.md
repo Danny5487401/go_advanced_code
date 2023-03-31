@@ -1,6 +1,6 @@
 # gomock
 
-gomock是官方提供的mock框架，用于解决单元测试中遇到的外部依赖问题，并且还有mockgen工具用来辅助生成相关的mock代码。
+gomock 是官方提供的mock框架，用于解决单元测试中遇到的外部依赖问题，并且还有mockgen工具用来辅助生成相关的mock代码。
 
 ## 原理
 
@@ -8,7 +8,7 @@ gomock是官方提供的mock框架，用于解决单元测试中遇到的外部�
 
 
 ## 使用
-gomock 有两种模式，反射模式和源码模式，都是通过接口生成对应的mock代码，测试的时候直接调用mock对象，相对于gostub不会进行地址替换更安全，且是并发安全的。
+gomock 有两种模式，反射模式和源码模式，都是通过接口生成对应的mock代码，测试的时候直接调用mock对象，相对于 gostub 不会进行地址替换更安全，且是并发安全的。
 
 * -source：包含要mock的接口的文件。
 * -package：用于生成的模拟类源代码的包名。如果不设置此项包名默认在原包名前添加mock_前缀。
@@ -17,7 +17,7 @@ gomock 有两种模式，反射模式和源码模式，都是通过接口生成�
 
 
 ### 返回值
-gomock中跟返回值相关的用法有以下几个：
+gomock 中跟返回值相关的用法有以下几个：
 
 - Return()：返回指定值
 
@@ -43,12 +43,49 @@ mockgen -source=foo.go [other options]
 ## 缺点
 - 必须引入额外的抽象(interface)
 
-## gomock源代码解析
+## gomock 源代码解析
 ![](.gomock_images/gomock_relation.png)
 
-### Controller对象—mock对象的核心
+### 1 查看生成的代码
+
+```go
+type MockSearch struct {
+    // ...
+}
+
+type MockSearchMockRecorder struct {
+	// ...
+}
+
+// 实际调用时
+func (m *MockSearch) GetNameByID(id int64) (string, error) {
+    // ..
+}
+
+// 实际调用初始化之前
+func (mr *MockSearchMockRecorder) GetNameByID(id interface{}) *gomock.Call {
+	// 。。
+}
+```
+
+### 2 初始化需要做的事
+```go
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+
+	// 然后生成一个mockSearch对象，用来替代Search接口
+	mockSearch := mock_dao.NewMockSearch(ctl)
+	// 操纵mockSearch对象的行为
+	mockSearch.
+		EXPECT().
+		GetNameByID(int64(10)). //  参数
+		Return("liangPin", nil) // 返回值
+```
+
+#### 1 初始化Controller对象—mock对象的核心
 Controller控制着mock对象的作用域和生命周期，我们操纵mock对象的行为也是将其加入到expectedCalls中，所以Controller是非常核心的一个对象。
 每个测试都应该创建一个controller对象将其注册到defer中。通常通过NewController函数来创建controller，1.14版本以后通过NewController创建的controller可以不必显式地调用ctrl.Finish()。
+
 
 ```go
 // Controller对象的定义
@@ -63,23 +100,14 @@ type Controller struct {
 }
 
 
-
 // 使用NewController来得到Controller
 func NewController(t TestReporter) *Controller {
-   h, ok := t.(TestHelper)
-   if !ok {
-      h = &nopTestHelper{t}
-   }
+    // ...
    ctrl := &Controller{
       T:             h,
       expectedCalls: newCallSet(),
    }
-   if c, ok := isCleanuper(ctrl.T); ok {
-      c.Cleanup(func() {
-         ctrl.T.Helper()
-         ctrl.finish(true, nil)
-      })
-   }
+    // ...
 
    return ctrl
 }
@@ -87,6 +115,7 @@ func NewController(t TestReporter) *Controller {
 ```
 
 Controller里最重要的属性就是expectedCalls,里面是两个map，map的key是对象和对象对应的方法，值就是Call的指针一个slice，第一个map是期望的调用，第二个map是超过期望调用次数的调用的一个存储
+
 ```go
 //储存方法
 type callSet struct {
@@ -111,9 +140,7 @@ type callSetKey struct {
 里面存储了接口和函数名.
 
 
-
-
-### Call对象—预期的mock对象行为
+Call对象—>预期的mock对象行为
 ```go
 // Call对象的定义
 type Call struct {
@@ -141,62 +168,79 @@ type Call struct {
 ```
 
 
-#### mock对象的行为注入
-使用时
+#### 2 初始化 recorder,并填加相关期望call
 ```go
-mockSearch.EXPECT().GetNameByID(int64(20)).Return("zhangHeng", nil)
-```
-
-获取记录器
-```go
+func NewMockSearch(ctrl *gomock.Controller) *MockSearch {
+	mock := &MockSearch{ctrl: ctrl}
+	mock.recorder = &MockSearchMockRecorder{mock}
+	return mock
+}
 func (m *MockSearch) EXPECT() *MockSearchMockRecorder {
-	return m.recorder
+    return m.recorder
 }
-```
-
-
-打桩具体实现
-```go
-// 生成的mock_gen文件
-
-type MockSearch struct {
-	// 一个就是全局数据管理的controller
-	ctrl     *gomock.Controller
-	// 另一个就是recorder
-	recorder *MockSearchMockRecorder
-}
-
-// MockSearchMockRecorder is the mock recorder for MockSearch.
-type MockSearchMockRecorder struct {
-	
-	// 指向上面的结构体
-    mock *MockSearch
-}
-
-// GetNameByID 打桩方法
+// 添加期望
 func (mr *MockSearchMockRecorder) GetNameByID(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNameByID", reflect.TypeOf((*MockSearch)(nil).GetNameByID), id)
 }
-
 ```
+
+打桩具体实现
 
 ```go
 // RecordCallWithMethodType is called by a mock. It should not be called by user code.
 func (ctrl *Controller) RecordCallWithMethodType(receiver interface{}, method string, methodType reflect.Type, args ...interface{}) *Call {
 	ctrl.T.Helper()
-
+    // 生成期望
 	call := newCall(ctrl.T, receiver, method, methodType, args...)
 
 	ctrl.mu.Lock()
 	defer ctrl.mu.Unlock()
+	// 添加期望
 	ctrl.expectedCalls.Add(call)
 
 	return call
 }
 
 
-// 增加调用时
+// 生成期望call
+func newCall(t TestHelper, receiver interface{}, method string, methodType reflect.Type, args ...interface{}) *Call {
+	t.Helper()
+
+	// TODO: check arity, types.
+	// 为每个参数生成s所需要的matcher,默认使用 eqMatcher
+	mArgs := make([]Matcher, len(args))
+	for i, arg := range args {
+		if m, ok := arg.(Matcher); ok {
+			mArgs[i] = m
+		} else if arg == nil {
+			// Handle nil specially so that passing a nil interface value
+			// will match the typed nils of concrete args.
+			mArgs[i] = Nil()
+		} else {
+			mArgs[i] = Eq(arg)
+		}
+	}
+
+	// callerInfo's skip should be updated if the number of calls between the user's test
+	// and this line changes, i.e. this code is wrapped in another anonymous function.
+	// 0 is us, 1 is RecordCallWithMethodType(), 2 is the generated recorder, and 3 is the user's test.
+	origin := callerInfo(3)
+	actions := []func([]interface{}) []interface{}{func([]interface{}) []interface{} {
+		// Synthesize the zero value for each of the return args' types.
+		rets := make([]interface{}, methodType.NumOut())
+		for i := 0; i < methodType.NumOut(); i++ {
+			rets[i] = reflect.Zero(methodType.Out(i)).Interface()
+		}
+		return rets
+	}}
+	return &Call{t: t, receiver: receiver, method: method, methodType: methodType,
+		args: mArgs, origin: origin, minCalls: 1, maxCalls: 1, actions: actions}
+}
+
+
+
+// 增加call
 func (cs callSet) Add(call *Call) {
 	key := callSetKey{call.receiver, call.method}
 	m := cs.expected
@@ -207,28 +251,27 @@ func (cs callSet) Add(call *Call) {
 }
 
 ```
-调用完毕后
+
+#### 3 通过 DoAndReturn 添加 action
 ```go
-func (cs callSet) Remove(call *Call) {
-	key := callSetKey{call.receiver, call.method}
-	calls := cs.expected[key]
-	for i, c := range calls {
-		if c == call {
-			// maintain order for remaining calls
-			cs.expected[key] = append(calls[:i], calls[i+1:]...)
-			cs.exhausted[key] = append(cs.exhausted[key], call)
-			break
-		}
-	}
+func (c *Call) Return(rets ...interface{}) *Call {
+    // ...
+	c.addAction(func([]interface{}) []interface{} {
+		return rets
+	})
+
+	return c
+}
+```
+```go
+func (c *Call) addAction(action func([]interface{}) []interface{}) {
+	c.actions = append(c.actions, action)
 }
 ```
 
-总结： 打桩的过程，在构建了Call对象以后呢，会将Call对象存入到expectedCalls，用到的add方法其实就是一个append操作
 
 
-
-#### 调用的过程
-
+### 3 实际调用：查看call，调用方法，并删除方法
 
 ```go
 // GetNameByID mocks base method.
@@ -240,8 +283,8 @@ func (m *MockSearch) GetNameByID(id int64) (string, error) {
 	return ret0, ret1
 }
 ```
-它实际调了Call方法。
 
+它实际调了Call方法。
 ```go
 func (ctrl *Controller) Call(receiver interface{}, method string, args ...interface{}) []interface{} {
 	ctrl.T.Helper()
@@ -254,14 +297,7 @@ func (ctrl *Controller) Call(receiver interface{}, method string, args ...interf
 
 		// 1. 找打桩的时候注入的方法
 		expected, err := ctrl.expectedCalls.FindMatch(receiver, method, args)
-		if err != nil {
-			// callerInfo's skip should be updated if the number of calls between the user's test
-			// and this line changes, i.e. this code is wrapped in another anonymous function.
-			// 0 is us, 1 is controller.Call(), 2 is the generated mock, and 3 is the user's test.
-			origin := callerInfo(3)
-			ctrl.T.Fatalf("Unexpected call to %T.%v(%v) at %s because: %s", receiver, method, args, origin, err)
-		}
-
+        // 。。。
 		// Two things happen here:
 		// * the matching call no longer needs to check prerequite calls,
 		// * and the prerequite calls are no longer expected, so remove them.
@@ -286,6 +322,27 @@ func (ctrl *Controller) Call(receiver interface{}, method string, args ...interf
 	}
 
 	return rets
+}
+```
+
+#### 查找call 
+```go
+func (cs callSet) FindMatch(receiver interface{}, method string, args []interface{}) (*Call, error) {}
+```
+
+调用完毕后
+```go
+func (cs callSet) Remove(call *Call) {
+	key := callSetKey{call.receiver, call.method}
+	calls := cs.expected[key]
+	for i, c := range calls {
+		if c == call {
+			// maintain order for remaining calls
+			cs.expected[key] = append(calls[:i], calls[i+1:]...)
+			cs.exhausted[key] = append(cs.exhausted[key], call)
+			break
+		}
+	}
 }
 ```
 
