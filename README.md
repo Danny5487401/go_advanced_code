@@ -487,6 +487,9 @@ Note: Go 1.18 移除用于泛型的constraints包
 - 3 web 测试
   - [01 使用标准包 httptest 进行 server handler 测试](chapter28_test/03_httptest/01_httptest/httptest.md)
   - [02 gock 模拟HTTP流量](chapter28_test/03_httptest/02_gock/gock.md) 
+- 4 数据库测试
+  - [01 sqlmock](chapter28_test/04_database/01_go-sqlmock/app_test.go)
+  - [02 miniredis](chapter28_test/04_database/02_miniredis/do_test.go)
 
 ## 第二十九章 module包管理
 - [1 go-module 实践篇](chapter29_module/01_use/module_operation.md)
