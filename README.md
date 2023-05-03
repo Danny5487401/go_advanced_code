@@ -36,15 +36,16 @@ Note: Go 1.18 移除用于泛型的constraints包
   - [2.2 writer](chapter01_input_output/02_bufio/02writer/main.go)
 - [3 Go 1.16 io.FS: OS 的 FS 解耦](chapter01_input_output/03_io_fs/io_fs.md)
   - [go 1.16 前后的文件io对比](chapter01_input_output/03_io_fs/embed.go)
-- [4 go的io.Pipe优雅的优化中间缓存-->在 minio 下载数据实现](chapter01_input_output/04_io_pipe/io_pipe.md)
+- [4 io.Pipe 对比使用 json.NewDecoder 流式解析 http body中间数据-->在 minio 下载数据实现](chapter01_input_output/04_io_pipe/io_pipe.md)
 
 ---
 ## 第二章 协程Goroutine
 - [1 线程模型分类及Goroutine切换原则(GPM模型)](chapter02_goroutine/01_GPM/GPM.md)
-    - [1.1 trace查看宏观调度流程(Goroutine启动时长)](chapter02_goroutine/01_GPM/trace/trace.md)
+    - [1.1 trace查看宏观调度流程(Goroutine启动时长)](chapter02_goroutine/01_GPM/01_trace/trace.md)
+    - [1.2 使用 go.uber.org/automaxprocs 在容器里设置 GOMAXPROCS 的正确姿势](chapter02_goroutine/01_GPM/02_automaxprocs/GOMAXPROCS.md)
 - [2 runtime运行时模块](chapter02_goroutine/02_runtime/runtime.md)
     - [2.1 runtime核心功能及系统信息调用](chapter02_goroutine/02_runtime/01basic_use/main.go)
-    - [2.2 Goexit()终止线程](chapter02_goroutine/02_runtime/02GoExit/main.go)
+    - [2.2 Goexit()终止线程: defer 语句仍然执行](chapter02_goroutine/02_runtime/02GoExit/main.go)
     - [2.3 data race 资源竞争一致性问题分析](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/resource_competion.md)
         - [2.3.1 -race 标志分析问题产生](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/main.go)
         - [2.3.2 mutex解决问题](chapter02_goroutine/02_runtime/03ResourceCompetition/02Fix_Resource_data_consistency/main.go)

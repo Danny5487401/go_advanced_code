@@ -71,13 +71,15 @@ User-level threads, Application-level threads, Green threads都指一样的东�
 
 Go语言中支撑整个scheduler实现的主要有4个重要结构，分别是M、G、P、Sched， 前三个定义在runtime.h中，Sched定义在proc.c中
 
-1. Sched结构就是调度器，它维护有存储M和G的队列以及调度器的一些状态信息等
-2. M结构是Machine，系统线程，它由操作系统管理的，goroutine就是跑在M之上的；
+1. Sched结构就是调度器: 它维护有存储M和G的队列以及调度器的一些状态信息等
+2. M结构是Machine: 系统线程，它由操作系统管理的，goroutine就是跑在M之上的；
     M是一个很大的结构，M 结构体对象除了记录着工作线程的诸如栈的起止位置、当前正在执行的Goroutine 以及是否空闲等等状态信息之外，还通过指针维持着与 P 结构体的实例对象之间的绑定关系。
-3. P结构代表一个虚拟的 Processor 处理器，它的主要用途就是用来执行goroutine的，它维护了一个goroutine队列，即runqueue。
+3. P结构代表一个虚拟的 Processor 处理器: 它的主要用途就是用来执行goroutine的，它维护了一个goroutine队列，即runqueue。
     Processor是让我们从N:1调度到M:N调度的重要部分. 也是 context，保存 goroutine 运行所需要的上下文。
-4. G是goroutine实现的核心结构，主要保存 goroutine 的一些状态信息以及 CPU 的一些寄存器的值，
+4. G是goroutine实现的核心结构: 主要保存 goroutine 的一些状态信息以及 CPU 的一些寄存器的值，
     例如 IP 寄存器，以便在轮到本 goroutine 执行时，CPU 知道要从哪一条指令处开始执行。
+
+M 虽然需要跟 P 绑定执行，但数量上并不与 P 相等。这是因为 M 会因为系统调用或者其他事情被阻塞，因此随着程序的执行，M 的数量可能增长，而 P 在没有用户干预的情况下，则会保持不变。
 
 ##### 特点
 
@@ -88,6 +90,7 @@ Go语言中支撑整个scheduler实现的主要有4个重要结构，分别是M�
 
 ## 四. 调度
 ![](.GPM_images/scheduler_components.png)
+
 自顶向下是调度器的4个部分：
 
 1. 全局队列（Global Queue）：存放等待运行的G。

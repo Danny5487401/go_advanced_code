@@ -1,14 +1,14 @@
-# io-pipe
+# io pipe
 
 
 ```go
 func Pipe() (*PipeReader, *PipeWriter)
 ```
 
-io.Pipe会返回一个reader和writer,对reader读取（或写入writer）后，进程会被锁住，直到writer有新数据流进入或关闭（或reader把数据读走）
+io.Pipe会返回一个reader和writer,对 reader 读取（或写入writer）后，进程会被锁住，直到writer有新数据流进入或关闭（或reader把数据读走）
 
 ## 修改前
-在向其他服务器发送json数据时，都需要先声明一个bytes缓存，然后通过json库把结构体中的内容mashal成字节流，再通过Post函数发送。
+在向其他服务器发送json数据时，都需要先声明一个bytes缓存，然后通过json库把结构体中的内容 marshal 成字节流，再通过Post函数发送。
 
 ```go
 http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

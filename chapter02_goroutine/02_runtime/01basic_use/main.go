@@ -13,16 +13,16 @@ func main() {
 	fmt.Println("GOROOT-->", runtime.GOROOT()) //E:\go
 
 	//2. 获取操作系统
-	fmt.Println("os/platform-->", runtime.GOOS) // GOOS--> darwin，mac系统   windows
+	fmt.Println("os/platform 目标操作系统-->", runtime.GOOS) // GOOS--> darwin，windows
 
 	//3.获取逻辑cpu的数量
-	fmt.Println("逻辑CPU的核数：", runtime.NumCPU()) //4
+	fmt.Println("逻辑CPU的核数-->", runtime.NumCPU()) //4
 
-	//4.设置最大可同时执行的最大CPU数：[1,256]
+	//4.设置当前进程使用的最大cpu数：[1,256]
 	n := runtime.GOMAXPROCS(runtime.NumCPU())
-	fmt.Println("最大CPU数:", n)
+	fmt.Println("设置当前进程使用的最大cpu数:", n)
 
-	// 5. Gosched()
+	// 5. Gosched():让当前线程让出 cpu 以让其它线程运行,它不会挂起当前线程，因此当前线程未来会继续执行
 	go func() {
 		for i := 0; i < 5; i++ {
 			fmt.Printf("goroutine。。。%d\n", i)
@@ -37,7 +37,7 @@ func main() {
 	}
 
 	// 6. 获取版本号
-	fmt.Println(runtime.Version())
+	fmt.Println("Go version-->", runtime.Version())
 
 	// 7. 变量绑定方法,当垃圾回收的时候进行监听
 	var i *Student = new(Student)
