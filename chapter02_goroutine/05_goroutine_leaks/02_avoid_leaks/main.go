@@ -23,7 +23,7 @@ func gen(done chan struct{}, nums ...int) <-chan int {
 
 func main() {
 	defer func() {
-		time.Sleep(time.Second * 5)                      // 保证全部关闭完后再打印
+		time.Sleep(time.Second * 2)                      // 保证全部关闭完后再打印
 		fmt.Println("关闭时线程数量: ", runtime.NumGoroutine()) //程序关闭时线程数量
 	}()
 

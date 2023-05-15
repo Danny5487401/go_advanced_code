@@ -31,7 +31,7 @@ func main() {
 	wg.Wait()
 }
 
-// 方式二：栈函数获取goroutineId
+// GetGoid 方式二：栈函数获取goroutineId
 func GetGoid() int64 {
 	var (
 		buf [64]byte
@@ -47,3 +47,24 @@ func GetGoid() int64 {
 
 	return int64(id)
 }
+
+/*
+stack 参考数据
+
+
+goroutine 4 [running]:
+go.uber.org/goleak/internal/stack.getStackBuffer(0x0)
+	/Users/python/go/pkg/mod/go.uber.org/goleak@v1.1.12/internal/stack/stacks.go:124 +0x68
+go.uber.org/goleak/internal/stack.getStacks(0x0)
+	/Users/python/go/pkg/mod/go.uber.org/goleak@v1.1.12/internal/stack/stacks.go:73 +0x44
+go.uber.org/goleak/internal/stack.Current()
+	/Users/python/go/pkg/mod/go.uber.org/goleak@v1.1.12/internal/stack/stacks.go:118 +0x30
+go.uber.org/goleak.Find({0x0, 0x0, 0x0})
+	/Users/python/go/pkg/mod/go.uber.org/goleak@v1.1.12/leaks.go:55 +0x38
+go.uber.org/goleak.VerifyNone({0x1009fbb48, 0x14000118340}, {0x0, 0x0, 0x0})
+	/Users/python/go/pkg/mod/go.uber.org/goleak@v1.1.12/leaks.go:77 +0x40
+github.com/Danny5487401/go_advanced_code/chapter02_goroutine/05_goroutine_leaks/02_avoid_leaks.TestGetDataWithGoleak(0x14000118340)
+	/Users/python/Desktop/go_advanced_code/chapter02_goroutine/05_goroutine_leaks/02_avoid_leaks/goroutine_leak_test.go:12 +0x88
+testing.tRunner(0x14000118340, 0x1009fad38)
+	/Users/python/go/go1.18/src/testing/testing.go:1439 +0x178
+*/

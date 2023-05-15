@@ -1,4 +1,5 @@
 # 逃逸分析
+> Go values whose memory cannot be allocated this way, because the Go compiler cannot determine its lifetime, are said to escape to the heap. 
 
 编译器使用逃逸分析技术去选择堆或者栈。基本思想是在编译时期进行垃圾收集工作。编译器追踪代码域变量的作用范围。
 它使用追踪数据来检查哪些变量的生命周期是完全可知的。如果变量通过这些检查，则可以在栈上进行分配。如果没通过，也就是所说的逃逸，则必须在堆上分配。

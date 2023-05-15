@@ -32,9 +32,10 @@ goleak主要关注两个方法即可：VerifyNone、VerifyTestMain
 - VerifyTestMain可以在TestMain中添加，可以减少对测试代码的入侵
 
 ### goleak 的实现原理
-使用runtime.Stack()方法获取当前运行的所有goroutine的栈信息，默认定义不需要检测的过滤项，默认定义检测次数+检测间隔，不断周期进行检测，最终在多次检查后仍没有找到剩下的goroutine则判断没有发生goroutine泄漏
+使用 runtime.Stack() 方法获取当前运行的所有goroutine的栈信息，默认定义不需要检测的过滤项，默认定义检测次数+检测间隔，不断周期进行检测，最终在多次检查后仍没有找到剩下的goroutine则判断没有发生goroutine泄漏
 
 
 ## 参考资料
 1. [goleak官网](https://github.com/uber-go/goleak)
+2. [uber-go/goleak检查goroutine泄漏原理](https://mp.weixin.qq.com/s/PGcutKTQZy3v9ln31dFvRg)
 

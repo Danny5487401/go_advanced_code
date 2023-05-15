@@ -17,6 +17,10 @@ GC，全称 GarbageCollection，即垃圾回收，是一种自动内存管理的
 
 ## 基本概念
 
+> Object—An object is a dynamically allocated piece of memory that contains one or more Go values.
+
+> Pointer—A memory address that references any value within an object. This naturally includes Go values of the form *T, but also includes parts of built-in Go values. Strings, slices, channels, maps, and interface values all contain memory addresses that the GC must trace.
+
 ### 根对象
 
 
@@ -128,6 +132,9 @@ Python如何解决循环这个问题？
 并发（Concurrent）的垃圾收集不仅能够减少程序的最长暂停时间，还能减少整个垃圾收集阶段的时间，通过开启读写屏障、利用多核优势与用户程序并行执行，并发垃圾收集器确实能够减少垃圾收集对应用程序的影响
 
 ## Go 的 GC
+> One alternative technique you may be familiar with is to actually move the objects to a new part of memory and leave behind a forwarding pointer that is later used to update all the application's pointers. We call a GC that moves objects in this way a moving GC; Go has a non-moving GC
+ 
+
 Go 的 GC 目前使用的是无分代（对象没有代际之分）、不整理（回收过程中不对对象进行移动与整理）、并发（与用户代码并发执行）的三色标记清扫算法.
 
 ### 原因
@@ -303,4 +310,4 @@ writePointer(slot, ptr):
 1. [Go中内存分配源码实现](https://www.luozhiyun.com/archives/434) 
 2. [Go语言设计](https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-garbage-collector/)
 3. [BFS (Breadth First Search 广度优先遍历）-->树的层次遍历](https://github.com/Danny5487401/c_learning/blob/main/dataStructure/04_graph/graph.md)
-4. [Go 官方gc-guild](https://tip.golang.org/doc/gc-guide)
+4. [Go 官方gc-guide](https://tip.golang.org/doc/gc-guide)
