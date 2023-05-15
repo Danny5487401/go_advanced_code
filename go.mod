@@ -32,6 +32,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasthttp v1.38.0
 	github.com/zeromicro/go-zero v1.3.5
+	go.uber.org/automaxprocs v1.5.1
 	go.uber.org/goleak v1.1.12
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
 	golang.org/x/net v0.0.0-20220531201128-c960675eff93

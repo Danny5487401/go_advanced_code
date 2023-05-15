@@ -9,11 +9,7 @@ import (
 
 func TestDoSomethingWithRedis(t *testing.T) {
 	// mock一个redis server
-	s, err := miniredis.Run()
-	if err != nil {
-		panic(err)
-	}
-	defer s.Close()
+	s := miniredis.RunT(t)
 
 	// 准备数据
 	s.Set("danny", "danny.com")
