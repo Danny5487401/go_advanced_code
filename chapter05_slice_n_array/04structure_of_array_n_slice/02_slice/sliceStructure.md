@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [切片介绍](#%E5%88%87%E7%89%87%E4%BB%8B%E7%BB%8D)
+  - [源码结构](#%E6%BA%90%E7%A0%81%E7%BB%93%E6%9E%84)
+  - [初始化](#%E5%88%9D%E5%A7%8B%E5%8C%96)
+  - [扩容](#%E6%89%A9%E5%AE%B9)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 切片介绍
 
 切片本身并不是动态数组或者数组指针。

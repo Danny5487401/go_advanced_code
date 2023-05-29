@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [逃逸分析](#%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90)
+  - [背景](#%E8%83%8C%E6%99%AF)
+  - [逃逸情况](#%E9%80%83%E9%80%B8%E6%83%85%E5%86%B5)
+  - [逃逸分析方式](#%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90%E6%96%B9%E5%BC%8F)
+  - [指针相关](#%E6%8C%87%E9%92%88%E7%9B%B8%E5%85%B3)
+  - [参考](#%E5%8F%82%E8%80%83)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 逃逸分析
 > Go values whose memory cannot be allocated this way, because the Go compiler cannot determine its lifetime, are said to escape to the heap. 
 

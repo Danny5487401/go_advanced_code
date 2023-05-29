@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [插件式编程](#%E6%8F%92%E4%BB%B6%E5%BC%8F%E7%BC%96%E7%A8%8B)
+  - [案例](#%E6%A1%88%E4%BE%8B)
+  - [第三方源码分析:grpc](#%E7%AC%AC%E4%B8%89%E6%96%B9%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90grpc)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 插件式编程
 特点:可插拨
 ## 案例

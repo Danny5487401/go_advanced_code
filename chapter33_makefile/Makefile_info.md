@@ -1,3 +1,23 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Makefile简介](#makefile%E7%AE%80%E4%BB%8B)
+  - [Makefile 常见管理内容](#makefile-%E5%B8%B8%E8%A7%81%E7%AE%A1%E7%90%86%E5%86%85%E5%AE%B9)
+  - [Makefile规则介绍](#makefile%E8%A7%84%E5%88%99%E4%BB%8B%E7%BB%8D)
+    - [规则语法](#%E8%A7%84%E5%88%99%E8%AF%AD%E6%B3%95)
+    - [伪目标](#%E4%BC%AA%E7%9B%AE%E6%A0%87)
+    - [order-only依赖](#order-only%E4%BE%9D%E8%B5%96)
+    - [引入其它Makefile](#%E5%BC%95%E5%85%A5%E5%85%B6%E5%AE%83makefile)
+  - [Makefile语法概览](#makefile%E8%AF%AD%E6%B3%95%E6%A6%82%E8%A7%88)
+    - [命令](#%E5%91%BD%E4%BB%A4)
+    - [变量赋值](#%E5%8F%98%E9%87%8F%E8%B5%8B%E5%80%BC)
+    - [条件语句](#%E6%9D%A1%E4%BB%B6%E8%AF%AD%E5%8F%A5)
+    - [函数](#%E5%87%BD%E6%95%B0)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Makefile简介
 
 Makefile是一个工程文件的编译规则，描述了整个工程的编译和链接等规则，这些规则里包含了这些内容：

@@ -1,3 +1,22 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [alert告警](#alert%E5%91%8A%E8%AD%A6)
+  - [操作](#%E6%93%8D%E4%BD%9C)
+  - [流程](#%E6%B5%81%E7%A8%8B)
+  - [应用举例](#%E5%BA%94%E7%94%A8%E4%B8%BE%E4%BE%8B)
+    - [1. 告警分组](#1-%E5%91%8A%E8%AD%A6%E5%88%86%E7%BB%84)
+    - [2. 告警抑制Inhibition](#2-%E5%91%8A%E8%AD%A6%E6%8A%91%E5%88%B6inhibition)
+    - [3. silences告警静默](#3-silences%E5%91%8A%E8%AD%A6%E9%9D%99%E9%BB%98)
+  - [Alertmanager的配置](#alertmanager%E7%9A%84%E9%85%8D%E7%BD%AE)
+    - [route](#route)
+    - [接收人（receivers)](#%E6%8E%A5%E6%94%B6%E4%BA%BAreceivers)
+      - [集成邮件系统](#%E9%9B%86%E6%88%90%E9%82%AE%E4%BB%B6%E7%B3%BB%E7%BB%9F)
+  - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # alert告警
 ![](.alert_images/alert_property.png)
 

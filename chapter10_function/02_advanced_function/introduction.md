@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [映射Map、归约reduce与过滤filter](#%E6%98%A0%E5%B0%84map%E5%BD%92%E7%BA%A6reduce%E4%B8%8E%E8%BF%87%E6%BB%A4filter)
+  - [背景](#%E8%83%8C%E6%99%AF)
+  - [介绍](#%E4%BB%8B%E7%BB%8D)
+  - [场景](#%E5%9C%BA%E6%99%AF)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 映射Map、归约reduce与过滤filter
 ![](.introduction_images/.map-reduce.png)
 

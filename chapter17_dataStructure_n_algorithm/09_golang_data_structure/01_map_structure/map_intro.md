@@ -1,3 +1,37 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Map](#map)
+  - [最主要的数据结构有两种：哈希查找表（Hashtable）、 搜索树（Searchtree）](#%E6%9C%80%E4%B8%BB%E8%A6%81%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%9C%89%E4%B8%A4%E7%A7%8D%E5%93%88%E5%B8%8C%E6%9F%A5%E6%89%BE%E8%A1%A8hashtable-%E6%90%9C%E7%B4%A2%E6%A0%91searchtree)
+    - [1. 哈希查找表（Hashtable）](#1-%E5%93%88%E5%B8%8C%E6%9F%A5%E6%89%BE%E8%A1%A8hashtable)
+    - [2. 搜索树法](#2-%E6%90%9C%E7%B4%A2%E6%A0%91%E6%B3%95)
+    - [对比](#%E5%AF%B9%E6%AF%94)
+  - [map哈希表源码解析(1.18)](#map%E5%93%88%E5%B8%8C%E8%A1%A8%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90118)
+    - [名词解释](#%E5%90%8D%E8%AF%8D%E8%A7%A3%E9%87%8A)
+      - [哈希桶](#%E5%93%88%E5%B8%8C%E6%A1%B6)
+      - [桶链](#%E6%A1%B6%E9%93%BE)
+      - [桶（bucket）](#%E6%A1%B6bucket)
+      - [溢出桶（overflow bucket）](#%E6%BA%A2%E5%87%BA%E6%A1%B6overflow-bucket)
+      - [负载因子(load factor)](#%E8%B4%9F%E8%BD%BD%E5%9B%A0%E5%AD%90load-factor)
+      - [新、旧哈希桶](#%E6%96%B0%E6%97%A7%E5%93%88%E5%B8%8C%E6%A1%B6)
+    - [文件组成](#%E6%96%87%E4%BB%B6%E7%BB%84%E6%88%90)
+    - [1. map 的结构体是 hmap，它是 hashmap 的“缩写”：](#1-map-%E7%9A%84%E7%BB%93%E6%9E%84%E4%BD%93%E6%98%AF-hmap%E5%AE%83%E6%98%AF-hashmap-%E7%9A%84%E7%BC%A9%E5%86%99)
+      - [bmap(bucket map)，描述一个桶，即可以是哈希桶也可以是溢出桶。](#bmapbucket-map%E6%8F%8F%E8%BF%B0%E4%B8%80%E4%B8%AA%E6%A1%B6%E5%8D%B3%E5%8F%AF%E4%BB%A5%E6%98%AF%E5%93%88%E5%B8%8C%E6%A1%B6%E4%B9%9F%E5%8F%AF%E4%BB%A5%E6%98%AF%E6%BA%A2%E5%87%BA%E6%A1%B6)
+    - [2. 初始化](#2-%E5%88%9D%E5%A7%8B%E5%8C%96)
+      - [哈希桶初始大小](#%E5%93%88%E5%B8%8C%E6%A1%B6%E5%88%9D%E5%A7%8B%E5%A4%A7%E5%B0%8F)
+      - [哈希函数](#%E5%93%88%E5%B8%8C%E5%87%BD%E6%95%B0)
+    - [3. 读取 mapaccess](#3-%E8%AF%BB%E5%8F%96-mapaccess)
+      - [key是string/32位整型/64位整型](#key%E6%98%AFstring32%E4%BD%8D%E6%95%B4%E5%9E%8B64%E4%BD%8D%E6%95%B4%E5%9E%8B)
+      - [minTopHash](#mintophash)
+    - [4. 赋值 mapassign](#4-%E8%B5%8B%E5%80%BC-mapassign)
+    - [5. 扩容 hashGrow](#5-%E6%89%A9%E5%AE%B9-hashgrow)
+    - [6. 遍历](#6-%E9%81%8D%E5%8E%86)
+    - [7. 删除 mapdelete](#7-%E5%88%A0%E9%99%A4-mapdelete)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Map
 
 map 的设计也被称为 “The dictionary problem”，它的任务是设计一种数据结构用来维护一个集合的数据，并且可以同时对集合进行增删查改的操作。

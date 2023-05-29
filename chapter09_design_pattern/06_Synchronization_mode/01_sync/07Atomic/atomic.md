@@ -1,3 +1,18 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [扩大原子操作的适用范围：atomic.Value](#%E6%89%A9%E5%A4%A7%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C%E7%9A%84%E9%80%82%E7%94%A8%E8%8C%83%E5%9B%B4atomicvalue)
+  - [背景](#%E8%83%8C%E6%99%AF)
+    - [做法](#%E5%81%9A%E6%B3%95)
+    - [问题](#%E9%97%AE%E9%A2%98)
+    - [原因](#%E5%8E%9F%E5%9B%A0)
+  - [原子性](#%E5%8E%9F%E5%AD%90%E6%80%A7)
+  - [atomic.Value源码分析](#atomicvalue%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [第三方应用实现:zeroLog](#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%94%E7%94%A8%E5%AE%9E%E7%8E%B0zerolog)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 扩大原子操作的适用范围：atomic.Value
 
 在 Go 语言标准库中，sync/atomic包将底层硬件提供的原子操作封装成了 Go 的函数。但这些操作只支持几种基本数据类型，因此为了扩大原子操作的适用范围，

@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [错误码 自动化生成方式](#%E9%94%99%E8%AF%AF%E7%A0%81-%E8%87%AA%E5%8A%A8%E5%8C%96%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F)
+  - [安装stringer](#%E5%AE%89%E8%A3%85stringer)
+  - [使用方式](#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F)
+    - [注意点](#%E6%B3%A8%E6%84%8F%E7%82%B9)
+  - [好处](#%E5%A5%BD%E5%A4%84)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 错误码 自动化生成方式
 go generate + stringer
 

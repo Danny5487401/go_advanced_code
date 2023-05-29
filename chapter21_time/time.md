@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Time](#time)
+  - [三个比较常用的数据结](#%E4%B8%89%E4%B8%AA%E6%AF%94%E8%BE%83%E5%B8%B8%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93)
+  - [两个重要概念:单调时间和壁挂时间](#%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E6%A6%82%E5%BF%B5%E5%8D%95%E8%B0%83%E6%97%B6%E9%97%B4%E5%92%8C%E5%A3%81%E6%8C%82%E6%97%B6%E9%97%B4)
+    - [应用](#%E5%BA%94%E7%94%A8)
+    - [wall time 相关函数](#wall-time-%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0)
+    - [monotonic time 相关函数](#monotonic-time-%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0)
+    - [CLOCK_MONOTONIC 和 CLOCK_REALTIME](#clock_monotonic-%E5%92%8C-clock_realtime)
+    - [monotonic time Vs. wall time](#monotonic-time-vs-wall-time)
+    - [Time时注意事项](#time%E6%97%B6%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9)
+  - [time源码结构](#time%E6%BA%90%E7%A0%81%E7%BB%93%E6%9E%84)
+    - [时间比较](#%E6%97%B6%E9%97%B4%E6%AF%94%E8%BE%83)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Time
 
 ## 三个比较常用的数据结

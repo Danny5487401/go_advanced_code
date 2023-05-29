@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [interface 源码分析](#interface-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [背景：](#%E8%83%8C%E6%99%AF)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [1. runtime.eface 表示不含方法的interface{}类型](#1-runtimeeface-%E8%A1%A8%E7%A4%BA%E4%B8%8D%E5%90%AB%E6%96%B9%E6%B3%95%E7%9A%84interface%E7%B1%BB%E5%9E%8B)
+    - [2. runtime.iface 表示包含方法的接口](#2-runtimeiface-%E8%A1%A8%E7%A4%BA%E5%8C%85%E5%90%AB%E6%96%B9%E6%B3%95%E7%9A%84%E6%8E%A5%E5%8F%A3)
+    - [eface 和 iface 的转换](#eface-%E5%92%8C-iface-%E7%9A%84%E8%BD%AC%E6%8D%A2)
+  - [接口类型和 nil 作比较](#%E6%8E%A5%E5%8F%A3%E7%B1%BB%E5%9E%8B%E5%92%8C-nil-%E4%BD%9C%E6%AF%94%E8%BE%83)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # interface 源码分析
 
 ## 背景：

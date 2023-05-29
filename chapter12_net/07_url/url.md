@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [URL(Uniform Resource Locator) 统一资源定位符](#urluniform-resource-locator-%E7%BB%9F%E4%B8%80%E8%B5%84%E6%BA%90%E5%AE%9A%E4%BD%8D%E7%AC%A6)
+  - [背景](#%E8%83%8C%E6%99%AF)
+  - [源码net/url分析](#%E6%BA%90%E7%A0%81neturl%E5%88%86%E6%9E%90)
+    - [转义 QueryEscape](#%E8%BD%AC%E4%B9%89-queryescape)
+    - [反转义 QueryUnescape](#%E5%8F%8D%E8%BD%AC%E4%B9%89-queryunescape)
+    - [parse](#parse)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # URL(Uniform Resource Locator) 统一资源定位符
 
 ## 背景

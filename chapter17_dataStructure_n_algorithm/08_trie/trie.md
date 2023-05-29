@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Trie前缀树 或 字典树](#trie%E5%89%8D%E7%BC%80%E6%A0%91-%E6%88%96-%E5%AD%97%E5%85%B8%E6%A0%91)
+  - [Trie的复杂度](#trie%E7%9A%84%E5%A4%8D%E6%9D%82%E5%BA%A6)
+  - [应用](#%E5%BA%94%E7%94%A8)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Trie前缀树 或 字典树
 
 

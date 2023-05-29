@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [未使用选项模式](#%E6%9C%AA%E4%BD%BF%E7%94%A8%E9%80%89%E9%A1%B9%E6%A8%A1%E5%BC%8F)
+  - [问题](#%E9%97%AE%E9%A2%98)
+  - [优点：](#%E4%BC%98%E7%82%B9)
+  - [缺点：](#%E7%BC%BA%E7%82%B9)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 
 # 未使用选项模式
 ```go

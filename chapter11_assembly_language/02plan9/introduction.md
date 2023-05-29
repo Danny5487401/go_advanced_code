@@ -1,3 +1,23 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Golang 汇编(基于 Plan9 汇编)](#golang-%E6%B1%87%E7%BC%96%E5%9F%BA%E4%BA%8E-plan9-%E6%B1%87%E7%BC%96)
+  - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
+  - [1. 通用寄存器](#1-%E9%80%9A%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8)
+  - [2. 伪寄存器](#2-%E4%BC%AA%E5%AF%84%E5%AD%98%E5%99%A8)
+    - [1 SB-> Static base pointer: global symbols.](#1-sb--static-base-pointer-global-symbols)
+    - [2 SP->Stack pointer(栈指针):](#2-sp-stack-pointer%E6%A0%88%E6%8C%87%E9%92%88)
+      - [伪寄存器的内存模型：真假 SP/FP/BP关系](#%E4%BC%AA%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E7%9C%9F%E5%81%87-spfpbp%E5%85%B3%E7%B3%BB)
+    - [3 FP->Frame pointer: arguments and locals.](#3-fp-frame-pointer-arguments-and-locals)
+    - [4 PC-> Program counter: jumps and branches.](#4-pc--program-counter-jumps-and-branches)
+  - [3. 内联](#3-%E5%86%85%E8%81%94)
+  - [4. 常见指令](#4-%E5%B8%B8%E8%A7%81%E6%8C%87%E4%BB%A4)
+  - [汇编操作](#%E6%B1%87%E7%BC%96%E6%93%8D%E4%BD%9C)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Golang 汇编(基于 Plan9 汇编)
 
 Go 编译器会输出一种抽象可移植的汇编代码，这种汇编并不对应某种真实的硬件架构。Go 的汇编器会使用这种伪汇编，再为目标硬件生成具体的机器指令。

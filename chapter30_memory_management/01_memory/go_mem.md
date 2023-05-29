@@ -1,3 +1,29 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Golang 内存管理](#golang-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86)
+  - [内存管理的几个概念](#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E7%9A%84%E5%87%A0%E4%B8%AA%E6%A6%82%E5%BF%B5)
+  - [内存分配流程](#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%B5%81%E7%A8%8B)
+  - [1. 内存管理单元 mspan](#1-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E5%8D%95%E5%85%83-mspan)
+  - [2. 内存管理组件](#2-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E7%BB%84%E4%BB%B6)
+    - [1. mcache](#1-mcache)
+    - [2. mcentral](#2-mcentral)
+    - [3. mheap](#3-mheap)
+  - [分配方法](#%E5%88%86%E9%85%8D%E6%96%B9%E6%B3%95)
+  - [分配器](#%E5%88%86%E9%85%8D%E5%99%A8)
+    - [1. tiny 类型的分配](#1-tiny-%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%88%86%E9%85%8D)
+    - [2. small 类型](#2-small-%E7%B1%BB%E5%9E%8B)
+    - [3. large 类型](#3-large-%E7%B1%BB%E5%9E%8B)
+  - [内存架构](#%E5%86%85%E5%AD%98%E6%9E%B6%E6%9E%84)
+    - [1.10及以前: 线性内存](#110%E5%8F%8A%E4%BB%A5%E5%89%8D-%E7%BA%BF%E6%80%A7%E5%86%85%E5%AD%98)
+    - [1.11及以后:稀疏内存](#111%E5%8F%8A%E4%BB%A5%E5%90%8E%E7%A8%80%E7%96%8F%E5%86%85%E5%AD%98)
+    - [内存管理器初始化](#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96)
+  - [地址空间](#%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Golang 内存管理
 
 在现代 CPU 上，除了内存分配的正确性以外，我们还要考虑分配过程的效率问题，应用执行期间小对象会不断地生成与销毁，如果每一次对象的分配与释放都需要与操作系统交互，那么成本是很高的。

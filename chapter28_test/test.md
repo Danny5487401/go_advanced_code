@@ -1,3 +1,18 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Golang Testing](#golang-testing)
+  - [单元测试](#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
+  - [覆盖 cover 测试](#%E8%A6%86%E7%9B%96-cover-%E6%B5%8B%E8%AF%95)
+  - [go test 命令行参数](#go-test-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0)
+    - [1 常规语法](#1-%E5%B8%B8%E8%A7%84%E8%AF%AD%E6%B3%95)
+    - [2 执行特定的测试用例](#2-%E6%89%A7%E8%A1%8C%E7%89%B9%E5%AE%9A%E7%9A%84%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B)
+    - [3 执行覆盖测试Permalink](#3-%E6%89%A7%E8%A1%8C%E8%A6%86%E7%9B%96%E6%B5%8B%E8%AF%95permalink)
+    - [4 在测试时检测数据竞争问题](#4-%E5%9C%A8%E6%B5%8B%E8%AF%95%E6%97%B6%E6%A3%80%E6%B5%8B%E6%95%B0%E6%8D%AE%E7%AB%9E%E4%BA%89%E9%97%AE%E9%A2%98)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Golang Testing
 
 ## 单元测试

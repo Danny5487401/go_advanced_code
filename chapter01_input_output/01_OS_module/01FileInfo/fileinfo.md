@@ -1,3 +1,12 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Fileinfo 文件属性](#fileinfo-%E6%96%87%E4%BB%B6%E5%B1%9E%E6%80%A7)
+  - [接口](#%E6%8E%A5%E5%8F%A3)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Fileinfo 文件属性
 
 文件属性，也即文件元数据。在 Go 中，文件属性具体信息通过 os.FileInfo 接口获取。

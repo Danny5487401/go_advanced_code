@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Channel关闭](#channel%E5%85%B3%E9%97%AD)
+  - [关闭 channel 的原则](#%E5%85%B3%E9%97%AD-channel-%E7%9A%84%E5%8E%9F%E5%88%99)
+  - [如何关闭](#%E5%A6%82%E4%BD%95%E5%85%B3%E9%97%AD)
+    - [优雅的关闭](#%E4%BC%98%E9%9B%85%E7%9A%84%E5%85%B3%E9%97%AD)
+  - [场景：](#%E5%9C%BA%E6%99%AF)
+  - [原理](#%E5%8E%9F%E7%90%86)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Channel关闭
 
 关于 channel 的使用，有几点不方便的地方：

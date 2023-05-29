@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [ants: goroutine 池](#ants-goroutine-%E6%B1%A0)
+  - [两种使用方式](#%E4%B8%A4%E7%A7%8D%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F)
+    - [1. 第一种方式：NewPool](#1-%E7%AC%AC%E4%B8%80%E7%A7%8D%E6%96%B9%E5%BC%8Fnewpool)
+      - [管理工人需要实现的接口](#%E7%AE%A1%E7%90%86%E5%B7%A5%E4%BA%BA%E9%9C%80%E8%A6%81%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%8E%A5%E5%8F%A3)
+  - [选项Options](#%E9%80%89%E9%A1%B9options)
+  - [第二种方式：poolWithFunc结构体](#%E7%AC%AC%E4%BA%8C%E7%A7%8D%E6%96%B9%E5%BC%8Fpoolwithfunc%E7%BB%93%E6%9E%84%E4%BD%93)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # ants: goroutine 池
 
 ## 两种使用方式

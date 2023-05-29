@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [静态工厂模式](#%E9%9D%99%E6%80%81%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F)
+  - [优点(简单)](#%E4%BC%98%E7%82%B9%E7%AE%80%E5%8D%95)
+  - [缺点(过多容易臃肿)](#%E7%BC%BA%E7%82%B9%E8%BF%87%E5%A4%9A%E5%AE%B9%E6%98%93%E8%87%83%E8%82%BF)
+  - [使用场景：](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
+  - [案例](#%E6%A1%88%E4%BE%8B)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 静态工厂模式
 
 ![](../../.img/process.jpg)

@@ -1,3 +1,24 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [HTTP 协议 Hyper Text Transfer Protocol（超文本传输协议）](#http-%E5%8D%8F%E8%AE%AE-hyper-text-transfer-protocol%E8%B6%85%E6%96%87%E6%9C%AC%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE)
+  - [http的三个版本介绍](#http%E7%9A%84%E4%B8%89%E4%B8%AA%E7%89%88%E6%9C%AC%E4%BB%8B%E7%BB%8D)
+    - [http1.0](#http10)
+    - [http1.1](#http11)
+    - [SPDY](#spdy)
+    - [http2.0](#http20)
+      - [优点](#%E4%BC%98%E7%82%B9)
+        - [1 multiplexing 多路复用(实现无序传输)，基于stream模型](#1-multiplexing-%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E5%AE%9E%E7%8E%B0%E6%97%A0%E5%BA%8F%E4%BC%A0%E8%BE%93%E5%9F%BA%E4%BA%8Estream%E6%A8%A1%E5%9E%8B)
+        - [2 header 头部压缩](#2-header-%E5%A4%B4%E9%83%A8%E5%8E%8B%E7%BC%A9)
+        - [3 服务端推送(server push)](#3-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%8E%A8%E9%80%81server-push)
+      - [二进制分帧层 binary frame](#%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%88%86%E5%B8%A7%E5%B1%82-binary-frame)
+      - [frame types类型](#frame-types%E7%B1%BB%E5%9E%8B)
+    - [http3.0](#http30)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # HTTP 协议 Hyper Text Transfer Protocol（超文本传输协议）
 超文本传输协议可以进行文字分割：超文本（Hypertext）、传输（Transfer）、协议（Protocol）.
 

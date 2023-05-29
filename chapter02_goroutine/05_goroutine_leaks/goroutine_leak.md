@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Goroutine泄漏](#goroutine%E6%B3%84%E6%BC%8F)
+  - [场景](#%E5%9C%BA%E6%99%AF)
+  - [泄露情况分类](#%E6%B3%84%E9%9C%B2%E6%83%85%E5%86%B5%E5%88%86%E7%B1%BB)
+    - [1. 发送不接收](#1-%E5%8F%91%E9%80%81%E4%B8%8D%E6%8E%A5%E6%94%B6)
+  - [检测工具 goleak](#%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7-goleak)
+    - [goleak 的实现原理](#goleak-%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Goroutine泄漏
 谈到内存管理，go语言为我们处理好了大量的细节。Go语言编译器使用逃逸分析（escape analysis）来决变量的存储。
 运行时通过使用垃圾回收器跟踪和管理堆分配。虽然在应用程序中不产生内存泄漏并不可能，但几率大大降低。

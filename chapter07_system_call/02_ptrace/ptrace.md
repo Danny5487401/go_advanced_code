@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [strace](#strace)
+  - [strace 的两种启动方式](#strace-%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%90%AF%E5%8A%A8%E6%96%B9%E5%BC%8F)
+  - [golang程序 goland 远程linux amd64 运行](#golang%E7%A8%8B%E5%BA%8F-goland-%E8%BF%9C%E7%A8%8Blinux-amd64-%E8%BF%90%E8%A1%8C)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # strace 
 strace 可用于追踪进程与内核的交互情况，包括系统调用，信号，进程状态等信息。
 

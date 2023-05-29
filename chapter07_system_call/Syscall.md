@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [系统调用](#%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8)
+  - [流程](#%E6%B5%81%E7%A8%8B)
+  - [历史](#%E5%8E%86%E5%8F%B2)
+  - [Go语言系统调用](#go%E8%AF%AD%E8%A8%80%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8)
+    - [案例分析fmt.Println("hello world")](#%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90fmtprintlnhello-world)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 系统调用
 ![](.Syscall_images/system_call.png)
 系统调用是操作系统内核提供给用户空间程序的一套标准接口。

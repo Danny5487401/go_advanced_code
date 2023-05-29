@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [桥接模式：](#%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F)
+  - [生活场景](#%E7%94%9F%E6%B4%BB%E5%9C%BA%E6%99%AF)
+  - [四个概念](#%E5%9B%9B%E4%B8%AA%E6%A6%82%E5%BF%B5)
+  - [做法](#%E5%81%9A%E6%B3%95)
+    - [案例](#%E6%A1%88%E4%BE%8B)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 桥接模式：
     将事务的多个纬度都抽象出来以解耦抽象与实际之间的绑定关系，使抽象和实际向着不同纬度改变
 

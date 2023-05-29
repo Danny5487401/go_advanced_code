@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [io.FS 的抽象](#iofs-%E7%9A%84%E6%8A%BD%E8%B1%A1)
+  - [Go 1.16 关于 io 有哪些改变](#go-116-%E5%85%B3%E4%BA%8E-io-%E6%9C%89%E5%93%AA%E4%BA%9B%E6%94%B9%E5%8F%98)
+  - [FS 接口](#fs-%E6%8E%A5%E5%8F%A3)
+  - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # io.FS 的抽象
 
 Go 在文件 IO 的场景有个神奇的事情。打开一个文件的时候，返回的竟然不是 interface ，而是一个 os.File  结构体的指针

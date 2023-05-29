@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [defer 源码分析](#defer-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [Go案例代码](#go%E6%A1%88%E4%BE%8B%E4%BB%A3%E7%A0%81)
+  - [deferproc 函数](#deferproc-%E5%87%BD%E6%95%B0)
+  - [deferreturn 函数](#deferreturn-%E5%87%BD%E6%95%B0)
+  - [jmpdefer 函数](#jmpdefer-%E5%87%BD%E6%95%B0)
+  - [汇编函数的声明](#%E6%B1%87%E7%BC%96%E5%87%BD%E6%95%B0%E7%9A%84%E5%A3%B0%E6%98%8E)
+  - [实际上 gogo 函数的声明](#%E5%AE%9E%E9%99%85%E4%B8%8A-gogo-%E5%87%BD%E6%95%B0%E7%9A%84%E5%A3%B0%E6%98%8E)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # defer 源码分析
 ![](.defer_images/defer.png)
 

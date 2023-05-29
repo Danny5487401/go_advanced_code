@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [GOMAXPROCS](#gomaxprocs)
+  - [确定 p 的数量过程](#%E7%A1%AE%E5%AE%9A-p-%E7%9A%84%E6%95%B0%E9%87%8F%E8%BF%87%E7%A8%8B)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # GOMAXPROCS
 
 GOMAXPROCS 是 Golang 提供的非常重要的一个环境变量设定。通过设定 GOMAXPROCS，用户可以调整 Runtime Scheduler 中 Processor（简称P）的数量。

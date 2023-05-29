@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [for range 源码分析](#for-range-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [Golang 1.5版本之前的 gcc 源码](#golang-15%E7%89%88%E6%9C%AC%E4%B9%8B%E5%89%8D%E7%9A%84-gcc-%E6%BA%90%E7%A0%81)
+  - [go源码](#go%E6%BA%90%E7%A0%81)
+  - [range对应的walkrange源码](#range%E5%AF%B9%E5%BA%94%E7%9A%84walkrange%E6%BA%90%E7%A0%81)
+    - [walkrange函数中当数组切片的情况下](#walkrange%E5%87%BD%E6%95%B0%E4%B8%AD%E5%BD%93%E6%95%B0%E7%BB%84%E5%88%87%E7%89%87%E7%9A%84%E6%83%85%E5%86%B5%E4%B8%8B)
+    - [walkrange函数中当节点是map的情况下](#walkrange%E5%87%BD%E6%95%B0%E4%B8%AD%E5%BD%93%E8%8A%82%E7%82%B9%E6%98%AFmap%E7%9A%84%E6%83%85%E5%86%B5%E4%B8%8B)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # for range 源码分析
 语法糖（Syntactic sugar），也译为糖衣语法
 

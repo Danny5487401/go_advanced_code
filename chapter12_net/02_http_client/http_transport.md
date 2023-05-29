@@ -1,3 +1,20 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [http 之 transport 源码详解](#http-%E4%B9%8B-transport-%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3)
+  - [接口](#%E6%8E%A5%E5%8F%A3)
+  - [实现](#%E5%AE%9E%E7%8E%B0)
+  - [重要的结构体](#%E9%87%8D%E8%A6%81%E7%9A%84%E7%BB%93%E6%9E%84%E4%BD%93)
+    - [transport 实现interface中的RoundTrip方法](#transport-%E5%AE%9E%E7%8E%B0interface%E4%B8%AD%E7%9A%84roundtrip%E6%96%B9%E6%B3%95)
+      - [注册协议对应的transport](#%E6%B3%A8%E5%86%8C%E5%8D%8F%E8%AE%AE%E5%AF%B9%E5%BA%94%E7%9A%84transport)
+      - [执行过程](#%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B)
+  - [连接管理：获取或则新建连接](#%E8%BF%9E%E6%8E%A5%E7%AE%A1%E7%90%86%E8%8E%B7%E5%8F%96%E6%88%96%E5%88%99%E6%96%B0%E5%BB%BA%E8%BF%9E%E6%8E%A5)
+    - [1. 获取空闲连接 queueForIdleConn](#1-%E8%8E%B7%E5%8F%96%E7%A9%BA%E9%97%B2%E8%BF%9E%E6%8E%A5-queueforidleconn)
+    - [2. 建立连接 queueForDial](#2-%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5-queuefordial)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # http 之 transport 源码详解
 使用golang net/http 库发送http请求，最后都是调用 transport的 RoundTrip方法中
 

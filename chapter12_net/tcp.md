@@ -1,3 +1,27 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [***TCP 传输控制协议 transmission control protocol***](#tcp-%E4%BC%A0%E8%BE%93%E6%8E%A7%E5%88%B6%E5%8D%8F%E8%AE%AE-transmission-control-protocol)
+  - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
+    - [RTT(Round Trip Time) 往返时延](#rttround-trip-time-%E5%BE%80%E8%BF%94%E6%97%B6%E5%BB%B6)
+  - [字节流和数据报主要区别](#%E5%AD%97%E8%8A%82%E6%B5%81%E5%92%8C%E6%95%B0%E6%8D%AE%E6%8A%A5%E4%B8%BB%E8%A6%81%E5%8C%BA%E5%88%AB)
+  - [应用](#%E5%BA%94%E7%94%A8)
+  - [什么是“3次握手，4次挥手”](#%E4%BB%80%E4%B9%88%E6%98%AF3%E6%AC%A1%E6%8F%A1%E6%89%8B4%E6%AC%A1%E6%8C%A5%E6%89%8B)
+  - [TCP服务模型](#tcp%E6%9C%8D%E5%8A%A1%E6%A8%A1%E5%9E%8B)
+  - [TCP头部](#tcp%E5%A4%B4%E9%83%A8)
+  - [状态转换](#%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2)
+    - [三次握手](#%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B)
+    - [四次挥手](#%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B)
+      - [为什么建立连接是三次握手，而关闭连接却是四次挥手呢？](#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5%E6%98%AF%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E8%80%8C%E5%85%B3%E9%97%AD%E8%BF%9E%E6%8E%A5%E5%8D%B4%E6%98%AF%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E5%91%A2)
+  - [ISN](#isn)
+  - [序列号回绕](#%E5%BA%8F%E5%88%97%E5%8F%B7%E5%9B%9E%E7%BB%95)
+  - [timewait 过程-->过多连接会timewait等待很久,端口占用](#timewait-%E8%BF%87%E7%A8%8B--%E8%BF%87%E5%A4%9A%E8%BF%9E%E6%8E%A5%E4%BC%9Atimewait%E7%AD%89%E5%BE%85%E5%BE%88%E4%B9%85%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8)
+  - [tcp拥塞控制-->tcp慢启动,探测网络环境](#tcp%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6--tcp%E6%85%A2%E5%90%AF%E5%8A%A8%E6%8E%A2%E6%B5%8B%E7%BD%91%E7%BB%9C%E7%8E%AF%E5%A2%83)
+  - [syn flood攻击](#syn-flood%E6%94%BB%E5%87%BB)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # ***TCP 传输控制协议 transmission control protocol***
 
 ![](.asset/img/.tcp_images/protocol.png)

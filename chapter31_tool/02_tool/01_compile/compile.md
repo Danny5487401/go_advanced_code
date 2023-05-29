@@ -1,3 +1,20 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [compile 编译](#compile-%E7%BC%96%E8%AF%91)
+  - [选项](#%E9%80%89%E9%A1%B9)
+  - [其他的编译器指令](#%E5%85%B6%E4%BB%96%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8%E6%8C%87%E4%BB%A4)
+    - [//go:noescape](#gonoescape)
+    - [//go:uintptrescapes](#gouintptrescapes)
+    - [//go:noinline](#gonoinline)
+    - [//go:norace](#gonorace)
+    - [//go:nosplit](#gonosplit)
+    - [//go:linkname localname [importpath.name]](#golinkname-localname-importpathname)
+  - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # compile 编译 
 
 compile（通常作为“go tool compile”调用）编译多个文件组成的Go包。然后，写入一个对象文件，以第一个源码文件名的.o的的中间目标文件 (intermediate object file)。

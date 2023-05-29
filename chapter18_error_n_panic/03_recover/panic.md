@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Panic产生方式](#panic%E4%BA%A7%E7%94%9F%E6%96%B9%E5%BC%8F)
+  - [1. 主动方式：](#1-%E4%B8%BB%E5%8A%A8%E6%96%B9%E5%BC%8F)
+  - [2. 被动的方式：](#2-%E8%A2%AB%E5%8A%A8%E7%9A%84%E6%96%B9%E5%BC%8F)
+- [Go 1.13.5](#go-1135)
+  - [_panic 数据结构](#_panic-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Panic产生方式
 ![](./three_ways_of_panic.png) 
 

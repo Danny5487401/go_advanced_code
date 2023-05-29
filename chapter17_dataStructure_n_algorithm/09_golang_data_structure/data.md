@@ -1,3 +1,12 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [数值类型](#%E6%95%B0%E5%80%BC%E7%B1%BB%E5%9E%8B)
+  - [struct](#struct)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 数值类型
 
 标准库中的数值类型很多:

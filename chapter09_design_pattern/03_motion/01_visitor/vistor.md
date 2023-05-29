@@ -1,3 +1,27 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [访问者模式](#%E8%AE%BF%E9%97%AE%E8%80%85%E6%A8%A1%E5%BC%8F)
+  - [需求](#%E9%9C%80%E6%B1%82)
+    - [解决方式](#%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F)
+  - [代码参考1：形状访问则](#%E4%BB%A3%E7%A0%81%E5%8F%82%E8%80%831%E5%BD%A2%E7%8A%B6%E8%AE%BF%E9%97%AE%E5%88%99)
+  - [代码参考2：根据类型断言实现访问者](#%E4%BB%A3%E7%A0%81%E5%8F%82%E8%80%832%E6%A0%B9%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%96%AD%E8%A8%80%E5%AE%9E%E7%8E%B0%E8%AE%BF%E9%97%AE%E8%80%85)
+  - [示意图](#%E7%A4%BA%E6%84%8F%E5%9B%BE)
+  - [大概的流程就是](#%E5%A4%A7%E6%A6%82%E7%9A%84%E6%B5%81%E7%A8%8B%E5%B0%B1%E6%98%AF)
+  - [角色组成：](#%E8%A7%92%E8%89%B2%E7%BB%84%E6%88%90)
+  - [源码参考：k8s](#%E6%BA%90%E7%A0%81%E5%8F%82%E8%80%83k8s)
+    - [Visitor 模式定义](#visitor-%E6%A8%A1%E5%BC%8F%E5%AE%9A%E4%B9%89)
+    - [Selector](#selector)
+    - [手工实现](#%E6%89%8B%E5%B7%A5%E5%AE%9E%E7%8E%B0)
+      - [1. 具体 Name Visitor](#1-%E5%85%B7%E4%BD%93-name-visitor)
+      - [2. OtherVisitor](#2-othervisitor)
+      - [3. LogVisitor](#3-logvisitor)
+    - [补充介绍 Chained Visitor](#%E8%A1%A5%E5%85%85%E4%BB%8B%E7%BB%8D-chained-visitor)
+- [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 访问者模式
 
 将算法与操作对象的结构分离的一种方法。这种分离的实际结果是能够在不修改结构的情况下向现有对象结构添加新操作.

@@ -1,3 +1,27 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [channel通道](#channel%E9%80%9A%E9%81%93)
+  - [使用场景](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
+  - [使用对应调用的底层函数](#%E4%BD%BF%E7%94%A8%E5%AF%B9%E5%BA%94%E8%B0%83%E7%94%A8%E7%9A%84%E5%BA%95%E5%B1%82%E5%87%BD%E6%95%B0)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [数据结构](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
+    - [一. 创建过程](#%E4%B8%80-%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B)
+  - [二. 写数据--分为阻塞写和非阻塞写](#%E4%BA%8C-%E5%86%99%E6%95%B0%E6%8D%AE--%E5%88%86%E4%B8%BA%E9%98%BB%E5%A1%9E%E5%86%99%E5%92%8C%E9%9D%9E%E9%98%BB%E5%A1%9E%E5%86%99)
+    - [使用写法](#%E4%BD%BF%E7%94%A8%E5%86%99%E6%B3%95)
+    - [对应源码](#%E5%AF%B9%E5%BA%94%E6%BA%90%E7%A0%81)
+  - [三. 读数据 --分阻塞和非阻塞](#%E4%B8%89-%E8%AF%BB%E6%95%B0%E6%8D%AE---%E5%88%86%E9%98%BB%E5%A1%9E%E5%92%8C%E9%9D%9E%E9%98%BB%E5%A1%9E)
+    - [使用](#%E4%BD%BF%E7%94%A8)
+    - [源码](#%E6%BA%90%E7%A0%81)
+  - [四. 关闭channel](#%E5%9B%9B-%E5%85%B3%E9%97%ADchannel)
+    - [关闭原则：](#%E5%85%B3%E9%97%AD%E5%8E%9F%E5%88%99)
+    - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1)
+  - [总结一下操作 channel 的结果](#%E6%80%BB%E7%BB%93%E4%B8%80%E4%B8%8B%E6%93%8D%E4%BD%9C-channel-%E7%9A%84%E7%BB%93%E6%9E%9C)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # channel通道
 
 ## 使用场景

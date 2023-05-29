@@ -1,3 +1,19 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [net 网络](#net-%E7%BD%91%E7%BB%9C)
+  - [性能指标](#%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87)
+  - [网络配置](#%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE)
+  - [套接字信息](#%E5%A5%97%E6%8E%A5%E5%AD%97%E4%BF%A1%E6%81%AF)
+  - [协议栈统计信息](#%E5%8D%8F%E8%AE%AE%E6%A0%88%E7%BB%9F%E8%AE%A1%E4%BF%A1%E6%81%AF)
+  - [golang net包](#golang-net%E5%8C%85)
+    - [Conn 接口：一个通用的面向流的网络连接](#conn-%E6%8E%A5%E5%8F%A3%E4%B8%80%E4%B8%AA%E9%80%9A%E7%94%A8%E7%9A%84%E9%9D%A2%E5%90%91%E6%B5%81%E7%9A%84%E7%BD%91%E7%BB%9C%E8%BF%9E%E6%8E%A5)
+    - [PacketConn 接口：一种通用的面向数据包的网络连接](#packetconn-%E6%8E%A5%E5%8F%A3%E4%B8%80%E7%A7%8D%E9%80%9A%E7%94%A8%E7%9A%84%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E5%8C%85%E7%9A%84%E7%BD%91%E7%BB%9C%E8%BF%9E%E6%8E%A5)
+  - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # net 网络
 ![](.net_images/net_protocol.png)
 

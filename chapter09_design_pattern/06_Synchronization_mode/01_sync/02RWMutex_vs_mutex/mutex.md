@@ -1,3 +1,35 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [mutex 互斥锁 和 RWMutex读写锁](#mutex-%E4%BA%92%E6%96%A5%E9%94%81-%E5%92%8C-rwmutex%E8%AF%BB%E5%86%99%E9%94%81)
+  - [什么时候需要用到锁？](#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E9%9C%80%E8%A6%81%E7%94%A8%E5%88%B0%E9%94%81)
+  - [死锁](#%E6%AD%BB%E9%94%81)
+    - [死锁产生的原因](#%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E7%9A%84%E5%8E%9F%E5%9B%A0)
+  - [Mutex结构体](#mutex%E7%BB%93%E6%9E%84%E4%BD%93)
+    - [互斥锁的状态](#%E4%BA%92%E6%96%A5%E9%94%81%E7%9A%84%E7%8A%B6%E6%80%81)
+    - [lock加锁过程](#lock%E5%8A%A0%E9%94%81%E8%BF%87%E7%A8%8B)
+      - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [解锁过程](#%E8%A7%A3%E9%94%81%E8%BF%87%E7%A8%8B)
+    - [案例](#%E6%A1%88%E4%BE%8B)
+      - [1. 一个goroutine](#1-%E4%B8%80%E4%B8%AAgoroutine)
+      - [2. 两个goroutine](#2-%E4%B8%A4%E4%B8%AAgoroutine)
+      - [3. 三个goroutine](#3-%E4%B8%89%E4%B8%AAgoroutine)
+      - [4. 没有加锁，直接解锁问题-异常](#4-%E6%B2%A1%E6%9C%89%E5%8A%A0%E9%94%81%E7%9B%B4%E6%8E%A5%E8%A7%A3%E9%94%81%E9%97%AE%E9%A2%98-%E5%BC%82%E5%B8%B8)
+  - [RWMutex结构体](#rwmutex%E7%BB%93%E6%9E%84%E4%BD%93)
+    - [方法](#%E6%96%B9%E6%B3%95)
+    - [读和写锁关系](#%E8%AF%BB%E5%92%8C%E5%86%99%E9%94%81%E5%85%B3%E7%B3%BB)
+    - [写锁饥饿问题](#%E5%86%99%E9%94%81%E9%A5%A5%E9%A5%BF%E9%97%AE%E9%A2%98)
+    - [写锁计数](#%E5%86%99%E9%94%81%E8%AE%A1%E6%95%B0)
+    - [读锁加锁实现](#%E8%AF%BB%E9%94%81%E5%8A%A0%E9%94%81%E5%AE%9E%E7%8E%B0)
+    - [读锁释放实现](#%E8%AF%BB%E9%94%81%E9%87%8A%E6%94%BE%E5%AE%9E%E7%8E%B0)
+    - [写锁加锁实现](#%E5%86%99%E9%94%81%E5%8A%A0%E9%94%81%E5%AE%9E%E7%8E%B0)
+    - [写锁释放实现](#%E5%86%99%E9%94%81%E9%87%8A%E6%94%BE%E5%AE%9E%E7%8E%B0)
+    - [写锁与读锁的公平性](#%E5%86%99%E9%94%81%E4%B8%8E%E8%AF%BB%E9%94%81%E7%9A%84%E5%85%AC%E5%B9%B3%E6%80%A7)
+    - [总结 读写互斥锁的实现](#%E6%80%BB%E7%BB%93-%E8%AF%BB%E5%86%99%E4%BA%92%E6%96%A5%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # mutex 互斥锁 和 RWMutex读写锁
 
 ## 什么时候需要用到锁？

@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [算法分类](#%E7%AE%97%E6%B3%95%E5%88%86%E7%B1%BB)
+  - [1.冒泡排序](#1%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F)
+  - [2.快速排序](#2%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F)
+  - [sort包分析](#sort%E5%8C%85%E5%88%86%E6%9E%90)
+    - [sort.Search](#sortsearch)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 算法分类
 ![](.sort_images/sort_category.png)
 我们常见的排序算法可以分为两大类：

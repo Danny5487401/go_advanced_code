@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [DES美国数据加密标准(Data Encryption Standard)](#des%E7%BE%8E%E5%9B%BD%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E6%A0%87%E5%87%86data-encryption-standard)
+  - [规则](#%E8%A7%84%E5%88%99)
+    - [IP置换](#ip%E7%BD%AE%E6%8D%A2)
+    - [创建16个块Cn和Dn](#%E5%88%9B%E5%BB%BA16%E4%B8%AA%E5%9D%97cn%E5%92%8Cdn)
+    - [得到16个子密钥K](#%E5%BE%97%E5%88%B016%E4%B8%AA%E5%AD%90%E5%AF%86%E9%92%A5k)
+  - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # DES美国数据加密标准(Data Encryption Standard)
 
 是一种使用密钥加密的块算,DES算法明文分组长度为64 bit，密钥长度也为64 bit，但是实际密钥长度只有56位，其中第8、16、24、32、40、48、56、64位是奇偶校验位，用于检查密钥在产生、分配及存储过程中可能发生的错误。

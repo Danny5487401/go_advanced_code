@@ -1,3 +1,20 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [建造者模式](#%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F)
+  - [背景：](#%E8%83%8C%E6%99%AF)
+  - [角色](#%E8%A7%92%E8%89%B2)
+  - [案例](#%E6%A1%88%E4%BE%8B)
+    - [1. xorm就是使用了builder设计模式](#1-xorm%E5%B0%B1%E6%98%AF%E4%BD%BF%E7%94%A8%E4%BA%86builder%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F)
+    - [2. k8s](#2-k8s)
+    - [3. zap](#3-zap)
+  - [故事](#%E6%95%85%E4%BA%8B)
+  - [建造者模式的优点](#%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F%E7%9A%84%E4%BC%98%E7%82%B9)
+  - [建造者模式的缺点](#%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F%E7%9A%84%E7%BC%BA%E7%82%B9)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 建造者模式
 将一个复杂对象的构造与它的表示分离，使同样的构建过程可以创建不同的表示。主要解决多变参数传递问题
 

@@ -1,3 +1,41 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [GC 垃圾回收](#gc-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6)
+  - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
+    - [根对象](#%E6%A0%B9%E5%AF%B9%E8%B1%A1)
+    - [垃圾](#%E5%9E%83%E5%9C%BE)
+    - [安全点Safe Point](#%E5%AE%89%E5%85%A8%E7%82%B9safe-point)
+    - [安全区域](#%E5%AE%89%E5%85%A8%E5%8C%BA%E5%9F%9F)
+  - [GC实现方式](#gc%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F)
+    - [1. 追踪式 GC(可达性分析)](#1-%E8%BF%BD%E8%B8%AA%E5%BC%8F-gc%E5%8F%AF%E8%BE%BE%E6%80%A7%E5%88%86%E6%9E%90)
+    - [2. 引用计数式 GC](#2-%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E5%BC%8F-gc)
+      - [缺点](#%E7%BC%BA%E7%82%B9)
+  - [如何清理](#%E5%A6%82%E4%BD%95%E6%B8%85%E7%90%86)
+    - [1. 标记清除](#1-%E6%A0%87%E8%AE%B0%E6%B8%85%E9%99%A4)
+      - [优化方向](#%E4%BC%98%E5%8C%96%E6%96%B9%E5%90%91)
+    - [2. 标记复制](#2-%E6%A0%87%E8%AE%B0%E5%A4%8D%E5%88%B6)
+    - [3. 标记压缩算法](#3-%E6%A0%87%E8%AE%B0%E5%8E%8B%E7%BC%A9%E7%AE%97%E6%B3%95)
+  - [GC优化方向](#gc%E4%BC%98%E5%8C%96%E6%96%B9%E5%90%91)
+    - [增量收集器](#%E5%A2%9E%E9%87%8F%E6%94%B6%E9%9B%86%E5%99%A8)
+    - [并发收集器](#%E5%B9%B6%E5%8F%91%E6%94%B6%E9%9B%86%E5%99%A8)
+  - [Go 的 GC](#go-%E7%9A%84-gc)
+    - [原因](#%E5%8E%9F%E5%9B%A0)
+    - [三色标记法的流程如下](#%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0%E6%B3%95%E7%9A%84%E6%B5%81%E7%A8%8B%E5%A6%82%E4%B8%8B)
+    - [GC时为什么要暂停用户线程？](#gc%E6%97%B6%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9A%82%E5%81%9C%E7%94%A8%E6%88%B7%E7%BA%BF%E7%A8%8B)
+      - [可能存在的问题](#%E5%8F%AF%E8%83%BD%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98)
+    - [如何解决上述**漏标**问题](#%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E4%B8%8A%E8%BF%B0%E6%BC%8F%E6%A0%87%E9%97%AE%E9%A2%98)
+      - [内存屏障](#%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C)
+      - [写屏障](#%E5%86%99%E5%B1%8F%E9%9A%9C)
+        - [Dijkstra 插入屏障--满足强三色：指针修改时，指向的新对象要标灰：](#dijkstra-%E6%8F%92%E5%85%A5%E5%B1%8F%E9%9A%9C--%E6%BB%A1%E8%B6%B3%E5%BC%BA%E4%B8%89%E8%89%B2%E6%8C%87%E9%92%88%E4%BF%AE%E6%94%B9%E6%97%B6%E6%8C%87%E5%90%91%E7%9A%84%E6%96%B0%E5%AF%B9%E8%B1%A1%E8%A6%81%E6%A0%87%E7%81%B0)
+        - [Yuasa 删除写屏障--满足弱三色：指针修改时，修改前指向的对象要标灰](#yuasa-%E5%88%A0%E9%99%A4%E5%86%99%E5%B1%8F%E9%9A%9C--%E6%BB%A1%E8%B6%B3%E5%BC%B1%E4%B8%89%E8%89%B2%E6%8C%87%E9%92%88%E4%BF%AE%E6%94%B9%E6%97%B6%E4%BF%AE%E6%94%B9%E5%89%8D%E6%8C%87%E5%90%91%E7%9A%84%E5%AF%B9%E8%B1%A1%E8%A6%81%E6%A0%87%E7%81%B0)
+        - [Hybrid write barrier 混合写屏障](#hybrid-write-barrier-%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C)
+  - [GC 触发条件](#gc-%E8%A7%A6%E5%8F%91%E6%9D%A1%E4%BB%B6)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # GC 垃圾回收
 GC，全称 GarbageCollection，即垃圾回收，是一种自动内存管理的机制
 

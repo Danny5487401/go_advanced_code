@@ -1,3 +1,25 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Timer定时器源码分析](#timer%E5%AE%9A%E6%97%B6%E5%99%A8%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [timer的使用](#timer%E7%9A%84%E4%BD%BF%E7%94%A8)
+    - [初始化结构体](#%E5%88%9D%E5%A7%8B%E5%8C%96%E7%BB%93%E6%9E%84%E4%BD%93)
+    - [runtime.addtimer](#runtimeaddtimer)
+    - [runtime.wakeNetPoller](#runtimewakenetpoller)
+  - [四叉堆原理](#%E5%9B%9B%E5%8F%89%E5%A0%86%E5%8E%9F%E7%90%86)
+    - [timer 是如何被调度的](#timer-%E6%98%AF%E5%A6%82%E4%BD%95%E8%A2%AB%E8%B0%83%E5%BA%A6%E7%9A%84)
+    - [timer 是如何加入到 timer 堆上的？](#timer-%E6%98%AF%E5%A6%82%E4%BD%95%E5%8A%A0%E5%85%A5%E5%88%B0-timer-%E5%A0%86%E4%B8%8A%E7%9A%84)
+    - [timer的执行流程](#timer%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B)
+    - [timer 的触发](#timer-%E7%9A%84%E8%A7%A6%E5%8F%91)
+      - [调度循环触发](#%E8%B0%83%E5%BA%A6%E5%BE%AA%E7%8E%AF%E8%A7%A6%E5%8F%91)
+      - [系统监控触发](#%E7%B3%BB%E7%BB%9F%E7%9B%91%E6%8E%A7%E8%A7%A6%E5%8F%91)
+  - [Timer 使用中的坑](#timer-%E4%BD%BF%E7%94%A8%E4%B8%AD%E7%9A%84%E5%9D%91)
+    - [1 错误创建很多 timer，导致资源浪费](#1-%E9%94%99%E8%AF%AF%E5%88%9B%E5%BB%BA%E5%BE%88%E5%A4%9A-timer%E5%AF%BC%E8%87%B4%E8%B5%84%E6%BA%90%E6%B5%AA%E8%B4%B9)
+    - [2 程序阻塞，造成内存或者 goroutine 泄露](#2-%E7%A8%8B%E5%BA%8F%E9%98%BB%E5%A1%9E%E9%80%A0%E6%88%90%E5%86%85%E5%AD%98%E6%88%96%E8%80%85-goroutine-%E6%B3%84%E9%9C%B2)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Timer定时器源码分析
 
 我们不管用 NewTimer, timer.After，还是 timer.AfterFun 来初始化一个 timer, 这个 timer 最终都会加入到一个全局 timer 堆中， 由 Go runtime 统一管理。

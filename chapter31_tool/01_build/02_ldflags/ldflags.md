@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [符号 & 符号表](#%E7%AC%A6%E5%8F%B7--%E7%AC%A6%E5%8F%B7%E8%A1%A8)
+  - [快速查看符号&符号表](#%E5%BF%AB%E9%80%9F%E6%9F%A5%E7%9C%8B%E7%AC%A6%E5%8F%B7%E7%AC%A6%E5%8F%B7%E8%A1%A8)
+  - [源码](#%E6%BA%90%E7%A0%81)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 符号 & 符号表
 
 符号表记录了程序中全局函数、全局变量、局部非静态变量与链接器符号解析、重定位相关的信息。

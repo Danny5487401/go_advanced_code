@@ -1,3 +1,22 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Cond条件变量](#cond%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F)
+  - [与channel对比：](#%E4%B8%8Echannel%E5%AF%B9%E6%AF%94)
+  - [背景](#%E8%83%8C%E6%99%AF)
+  - [源码体现](#%E6%BA%90%E7%A0%81%E4%BD%93%E7%8E%B0)
+  - [流程](#%E6%B5%81%E7%A8%8B)
+    - [cond.Signal()](#condsignal)
+    - [cond.Broadcast()](#condbroadcast)
+    - [cond.Wait()](#condwait)
+  - [注意事项](#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9)
+  - [NoCopy机制](#nocopy%E6%9C%BA%E5%88%B6)
+    - [工具](#%E5%B7%A5%E5%85%B7)
+  - [第三方库实现-->熔断框架hystrix-go](#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E5%AE%9E%E7%8E%B0--%E7%86%94%E6%96%AD%E6%A1%86%E6%9E%B6hystrix-go)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Cond条件变量
 
 Golang 的 sync 包中的 Cond 实现了一种条件变量，可以使用在多个Reader等待共享资源 ready 的场景（如果只有一读一写，一个锁或者channel就搞定了）。

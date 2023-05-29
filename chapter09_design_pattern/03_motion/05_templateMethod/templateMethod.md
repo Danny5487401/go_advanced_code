@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [模版模式](#%E6%A8%A1%E7%89%88%E6%A8%A1%E5%BC%8F)
+  - [优点](#%E4%BC%98%E7%82%B9)
+  - [缺点](#%E7%BC%BA%E7%82%B9)
+  - [案例](#%E6%A1%88%E4%BE%8B)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 模版模式
 定义一个算法骨架，将一些步骤延迟到子类进行。模板模式使得子类可以不改变一个算法的结构，即可重新定义该算法的某些特定步骤
 

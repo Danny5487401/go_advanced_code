@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [waitGroup同步等待组对象](#waitgroup%E5%90%8C%E6%AD%A5%E7%AD%89%E5%BE%85%E7%BB%84%E5%AF%B9%E8%B1%A1)
+  - [使用场景](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
+  - [结构体](#%E7%BB%93%E6%9E%84%E4%BD%93)
+  - [1. add()](#1-add)
+    - [为什么要将 counter 和 waiter 放在一起 ？](#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%B0%86-counter-%E5%92%8C-waiter-%E6%94%BE%E5%9C%A8%E4%B8%80%E8%B5%B7-)
+  - [Done()](#done)
+  - [3. wait()](#3-wait)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # waitGroup同步等待组对象
 
 ## 使用场景

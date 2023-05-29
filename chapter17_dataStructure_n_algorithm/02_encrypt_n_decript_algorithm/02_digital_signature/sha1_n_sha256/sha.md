@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [SHA系列](#sha%E7%B3%BB%E5%88%97)
+  - [SHA-1](#sha-1)
+  - [SHA-2/SHA-256](#sha-2sha-256)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # SHA系列
 SHA系列包括多个散列算法标准,其中, SHA-1是数字签名标准中要求使用的算法。
 - SHA-0：正式地称作SHA，这个版本在发行后不久被指出存在弱点。

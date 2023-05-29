@@ -1,3 +1,36 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [线程模型](#%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B)
+  - [一. 体系架构](#%E4%B8%80-%E4%BD%93%E7%B3%BB%E6%9E%B6%E6%9E%84)
+  - [二. 线程](#%E4%BA%8C-%E7%BA%BF%E7%A8%8B)
+    - [协程和线程有3种映射关系](#%E5%8D%8F%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B%E6%9C%893%E7%A7%8D%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB)
+  - [三. 线程模型分类：](#%E4%B8%89-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B%E5%88%86%E7%B1%BB)
+    - [1. 内核级线程模型](#1-%E5%86%85%E6%A0%B8%E7%BA%A7%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B)
+      - [优点](#%E4%BC%98%E7%82%B9)
+      - [缺点](#%E7%BC%BA%E7%82%B9)
+    - [2. 用户级线程模型](#2-%E7%94%A8%E6%88%B7%E7%BA%A7%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B)
+    - [3. 两级线程模型](#3-%E4%B8%A4%E7%BA%A7%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B)
+      - [GM模型](#gm%E6%A8%A1%E5%9E%8B)
+      - [GPM模型](#gpm%E6%A8%A1%E5%9E%8B)
+        - [特点](#%E7%89%B9%E7%82%B9)
+  - [四. 调度](#%E5%9B%9B-%E8%B0%83%E5%BA%A6)
+    - [调度器思想](#%E8%B0%83%E5%BA%A6%E5%99%A8%E6%80%9D%E6%83%B3)
+    - [goroutine切换](#goroutine%E5%88%87%E6%8D%A2)
+    - [Go语言基于信号抢占式调度](#go%E8%AF%AD%E8%A8%80%E5%9F%BA%E4%BA%8E%E4%BF%A1%E5%8F%B7%E6%8A%A2%E5%8D%A0%E5%BC%8F%E8%B0%83%E5%BA%A6)
+  - [五. Go启动时的特殊协程](#%E4%BA%94-go%E5%90%AF%E5%8A%A8%E6%97%B6%E7%9A%84%E7%89%B9%E6%AE%8A%E5%8D%8F%E7%A8%8B)
+    - [sysmon协程](#sysmon%E5%8D%8F%E7%A8%8B)
+    - [管理员-g0](#%E7%AE%A1%E7%90%86%E5%91%98-g0)
+  - [八. G_M_P 源码分析](#%E5%85%AB-g_m_p-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [G](#g)
+    - [M](#m)
+    - [P](#p)
+    - [schedt](#schedt)
+  - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 线程模型
 
 线程是处理器调度和分配的基本单位，进程则作为资源拥有的基本单位。

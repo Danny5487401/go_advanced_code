@@ -1,3 +1,29 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [证书](#%E8%AF%81%E4%B9%A6)
+  - [证书相关概念](#%E8%AF%81%E4%B9%A6%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5)
+    - [PKCS（The Public-Key Cryptography Standards）公钥密码学标准](#pkcsthe-public-key-cryptography-standards%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81%E5%AD%A6%E6%A0%87%E5%87%86)
+    - [ASN.1抽象语法标记（Abstract Syntax Notation One）](#asn1%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%87%E8%AE%B0abstract-syntax-notation-one)
+    - [证书链和交叉认证](#%E8%AF%81%E4%B9%A6%E9%93%BE%E5%92%8C%E4%BA%A4%E5%8F%89%E8%AE%A4%E8%AF%81)
+  - [密钥](#%E5%AF%86%E9%92%A5)
+    - [1. 字符串格式](#1-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%A0%BC%E5%BC%8F)
+    - [2. 证书文件扩展名](#2-%E8%AF%81%E4%B9%A6%E6%96%87%E4%BB%B6%E6%89%A9%E5%B1%95%E5%90%8D)
+    - [3. N,E参数](#3-ne%E5%8F%82%E6%95%B0)
+  - [证书种类](#%E8%AF%81%E4%B9%A6%E7%A7%8D%E7%B1%BB)
+    - [服务器证书分类](#%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AF%81%E4%B9%A6%E5%88%86%E7%B1%BB)
+  - [自建CA](#%E8%87%AA%E5%BB%BAca)
+    - [创建 root pair](#%E5%88%9B%E5%BB%BA-root-pair)
+  - [验证方式](#%E9%AA%8C%E8%AF%81%E6%96%B9%E5%BC%8F)
+    - [单向验证](#%E5%8D%95%E5%90%91%E9%AA%8C%E8%AF%81)
+    - [双向验证](#%E5%8F%8C%E5%90%91%E9%AA%8C%E8%AF%81)
+  - [免费证书从何而来](#%E5%85%8D%E8%B4%B9%E8%AF%81%E4%B9%A6%E4%BB%8E%E4%BD%95%E8%80%8C%E6%9D%A5)
+    - [Let's Encrypt](#lets-encrypt)
+  - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 证书
 
 ## 证书相关概念

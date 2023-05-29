@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [go tool](#go-tool)
+  - [go build](#go-build)
+    - [Golang编译时的参数传递（gcflags, ldflags）](#golang%E7%BC%96%E8%AF%91%E6%97%B6%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92gcflags-ldflags)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # go tool
 
 

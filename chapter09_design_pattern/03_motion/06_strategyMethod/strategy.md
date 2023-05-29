@@ -1,3 +1,12 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [策略模式（Strategy Pattern）,又叫作政策模式（Policy Pattern）](#%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8Fstrategy-pattern%E5%8F%88%E5%8F%AB%E4%BD%9C%E6%94%BF%E7%AD%96%E6%A8%A1%E5%BC%8Fpolicy-pattern)
+  - [场景](#%E5%9C%BA%E6%99%AF)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 策略模式（Strategy Pattern）,又叫作政策模式（Policy Pattern）
 ![](process.png)
 

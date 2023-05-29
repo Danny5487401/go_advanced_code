@@ -1,3 +1,30 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [template](#template)
+  - [应用场景](#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF)
+  - [使用流程](#%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B)
+  - [基本语法](#%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95)
+    - [变量](#%E5%8F%98%E9%87%8F)
+    - [控制结构](#%E6%8E%A7%E5%88%B6%E7%BB%93%E6%9E%84)
+    - [with...end](#withend)
+    - [注释](#%E6%B3%A8%E9%87%8A)
+    - [裁剪空白](#%E8%A3%81%E5%89%AA%E7%A9%BA%E7%99%BD)
+    - [管道函数](#%E7%AE%A1%E9%81%93%E5%87%BD%E6%95%B0)
+    - [文本输出](#%E6%96%87%E6%9C%AC%E8%BE%93%E5%87%BA)
+    - [模板函数](#%E6%A8%A1%E6%9D%BF%E5%87%BD%E6%95%B0)
+    - [block块](#block%E5%9D%97)
+    - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+      - [Template结构](#template%E7%BB%93%E6%9E%84)
+      - [初始化](#%E5%88%9D%E5%A7%8B%E5%8C%96)
+    - [解析](#%E8%A7%A3%E6%9E%90)
+    - [执行Execute()和ExecuteTemplate()](#%E6%89%A7%E8%A1%8Cexecute%E5%92%8Cexecutetemplate)
+    - [自定义函数](#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0)
+  - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # template 
 - Text/template：实现数据驱动模板以生成文本输出，可以理解为一组文字按照特定格式动态嵌入另一组文字中
 - Html/template：Html包 提供了用于转义和修改 HTML 文本的功能。

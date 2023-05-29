@@ -1,3 +1,19 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [go-monkey测试](#go-monkey%E6%B5%8B%E8%AF%95)
+  - [背景](#%E8%83%8C%E6%99%AF)
+  - [如何动态修改函数的行为](#%E5%A6%82%E4%BD%95%E5%8A%A8%E6%80%81%E4%BF%AE%E6%94%B9%E5%87%BD%E6%95%B0%E7%9A%84%E8%A1%8C%E4%B8%BA)
+    - [如何获取函数body的地址](#%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E5%87%BD%E6%95%B0body%E7%9A%84%E5%9C%B0%E5%9D%80)
+    - [如何修改函数body指令](#%E5%A6%82%E4%BD%95%E4%BF%AE%E6%94%B9%E5%87%BD%E6%95%B0body%E6%8C%87%E4%BB%A4)
+    - [函数跳转指令](#%E5%87%BD%E6%95%B0%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4)
+    - [以上的问题](#%E4%BB%A5%E4%B8%8A%E7%9A%84%E9%97%AE%E9%A2%98)
+  - [多协程打桩](#%E5%A4%9A%E5%8D%8F%E7%A8%8B%E6%89%93%E6%A1%A9)
+  - [参考](#%E5%8F%82%E8%80%83)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # go-monkey测试
 
 ## 背景

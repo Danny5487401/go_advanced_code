@@ -1,3 +1,19 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [socket](#socket)
+  - [socket缓冲区](#socket%E7%BC%93%E5%86%B2%E5%8C%BA)
+  - [观察 socket 缓冲区](#%E8%A7%82%E5%AF%9F-socket-%E7%BC%93%E5%86%B2%E5%8C%BA)
+  - [执行 send 发送的字节，会立马发送吗](#%E6%89%A7%E8%A1%8C-send-%E5%8F%91%E9%80%81%E7%9A%84%E5%AD%97%E8%8A%82%E4%BC%9A%E7%AB%8B%E9%A9%AC%E5%8F%91%E9%80%81%E5%90%97)
+  - [如果缓冲区满了会怎么办](#%E5%A6%82%E6%9E%9C%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BB%A1%E4%BA%86%E4%BC%9A%E6%80%8E%E4%B9%88%E5%8A%9E)
+  - [如果接收缓冲区为空，执行 recv 会怎么样？](#%E5%A6%82%E6%9E%9C%E6%8E%A5%E6%94%B6%E7%BC%93%E5%86%B2%E5%8C%BA%E4%B8%BA%E7%A9%BA%E6%89%A7%E8%A1%8C-recv-%E4%BC%9A%E6%80%8E%E4%B9%88%E6%A0%B7)
+  - [如果接收缓冲区有数据时，执行close了，会怎么样？](#%E5%A6%82%E6%9E%9C%E6%8E%A5%E6%94%B6%E7%BC%93%E5%86%B2%E5%8C%BA%E6%9C%89%E6%95%B0%E6%8D%AE%E6%97%B6%E6%89%A7%E8%A1%8Cclose%E4%BA%86%E4%BC%9A%E6%80%8E%E4%B9%88%E6%A0%B7)
+  - [如果发送缓冲区有数据时，执行close了，会怎么样？](#%E5%A6%82%E6%9E%9C%E5%8F%91%E9%80%81%E7%BC%93%E5%86%B2%E5%8C%BA%E6%9C%89%E6%95%B0%E6%8D%AE%E6%97%B6%E6%89%A7%E8%A1%8Cclose%E4%BA%86%E4%BC%9A%E6%80%8E%E4%B9%88%E6%A0%B7)
+  - [UDP也有缓冲区吗](#udp%E4%B9%9F%E6%9C%89%E7%BC%93%E5%86%B2%E5%8C%BA%E5%90%97)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # socket
 
 ![](.asset/img/.socket_images/ip_internet.png)

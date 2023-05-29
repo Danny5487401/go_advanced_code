@@ -1,3 +1,25 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [加解密](#%E5%8A%A0%E8%A7%A3%E5%AF%86)
+  - [哈希加密和对称/非对称加密 区别](#%E5%93%88%E5%B8%8C%E5%8A%A0%E5%AF%86%E5%92%8C%E5%AF%B9%E7%A7%B0%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86-%E5%8C%BA%E5%88%AB)
+  - [1. 对称加密](#1-%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86)
+    - [分类](#%E5%88%86%E7%B1%BB)
+      - [1. 序列密码](#1-%E5%BA%8F%E5%88%97%E5%AF%86%E7%A0%81)
+      - [2. 分组密码](#2-%E5%88%86%E7%BB%84%E5%AF%86%E7%A0%81)
+    - [特点](#%E7%89%B9%E7%82%B9)
+  - [2. 非对称加密](#2-%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86)
+    - [背景](#%E8%83%8C%E6%99%AF)
+    - [公钥密码体制的要求](#%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81%E4%BD%93%E5%88%B6%E7%9A%84%E8%A6%81%E6%B1%82)
+  - [3. 数字签名（Digital Signature）](#3-%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8Ddigital-signature)
+    - [用途](#%E7%94%A8%E9%80%94)
+    - [哈希算法](#%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95)
+    - [哈希加密的特点](#%E5%93%88%E5%B8%8C%E5%8A%A0%E5%AF%86%E7%9A%84%E7%89%B9%E7%82%B9)
+  - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 加解密
 第三方参考链接：https://github.com/weblazy/crypto
 

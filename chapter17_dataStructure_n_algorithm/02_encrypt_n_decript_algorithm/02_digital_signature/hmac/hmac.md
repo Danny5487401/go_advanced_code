@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [消息认证](#%E6%B6%88%E6%81%AF%E8%AE%A4%E8%AF%81)
+  - [消息认证码(MAC，Messages Authentication Codes)](#%E6%B6%88%E6%81%AF%E8%AE%A4%E8%AF%81%E7%A0%81macmessages-authentication-codes)
+  - [HMAC 哈希运算消息认证码(Hash-based Message Authentication Code)](#hmac-%E5%93%88%E5%B8%8C%E8%BF%90%E7%AE%97%E6%B6%88%E6%81%AF%E8%AE%A4%E8%AF%81%E7%A0%81hash-based-message-authentication-code)
+  - [HMAC的Go实现](#hmac%E7%9A%84go%E5%AE%9E%E7%8E%B0)
+    - [crypto/hmac包](#cryptohmac%E5%8C%85)
+    - [使用](#%E4%BD%BF%E7%94%A8)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 消息认证
 网络系统安全一般要考虑两个方面:
 1. 加密保护传送的信息，使其可以抵抗被动攻击;

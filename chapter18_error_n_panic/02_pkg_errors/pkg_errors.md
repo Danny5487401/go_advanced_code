@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [error](#error)
+  - [背景：](#%E8%83%8C%E6%99%AF)
+  - [扩展包Pkg.errors](#%E6%89%A9%E5%B1%95%E5%8C%85pkgerrors)
+    - [1. Wrap 更多的消息](#1-wrap-%E6%9B%B4%E5%A4%9A%E7%9A%84%E6%B6%88%E6%81%AF)
+    - [2. 对比](#2-%E5%AF%B9%E6%AF%94)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # error
 error 是源代码内嵌的接口类型。根据导出原则，只有大写的才能被其它源码包引用，但是 error 属于 predeclared identifiers 预定义的，并不是关键字
 

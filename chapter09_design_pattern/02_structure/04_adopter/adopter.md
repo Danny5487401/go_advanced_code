@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [适配器模式](#%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F)
+  - [4类参与者介绍：](#4%E7%B1%BB%E5%8F%82%E4%B8%8E%E8%80%85%E4%BB%8B%E7%BB%8D)
+  - [需求](#%E9%9C%80%E6%B1%82)
+  - [应用场景：](#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF)
+  - [优点：](#%E4%BC%98%E7%82%B9)
+  - [缺点：](#%E7%BC%BA%E7%82%B9)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 适配器模式
 适配器模式将一个类的接口转换为另一个类的接口，使得原本由于接口不兼容而不能一起工作的类可以一起工作
 

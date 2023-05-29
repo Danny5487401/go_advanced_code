@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [池化技术](#%E6%B1%A0%E5%8C%96%E6%8A%80%E6%9C%AF)
+  - [协程池：](#%E5%8D%8F%E7%A8%8B%E6%B1%A0)
+  - [案例：](#%E6%A1%88%E4%BE%8B)
+  - [分类：](#%E5%88%86%E7%B1%BB)
+  - [优点](#%E4%BC%98%E7%82%B9)
+  - [缺点](#%E7%BC%BA%E7%82%B9)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 池化技术
     
 池化技术 (Pool) 是一种很常见的编程技巧，在请求量大时能明显优化应用性能，降低系统频繁建连的资源开销。

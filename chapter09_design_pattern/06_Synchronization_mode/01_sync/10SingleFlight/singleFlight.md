@@ -1,3 +1,18 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [singleFlight](#singleflight)
+  - [作用](#%E4%BD%9C%E7%94%A8)
+  - [缓存击穿](#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF)
+  - [主要使用方法](#%E4%B8%BB%E8%A6%81%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [Do方法](#do%E6%96%B9%E6%B3%95)
+  - [DoChan方法](#dochan%E6%96%B9%E6%B3%95)
+  - [具体执行流程](#%E5%85%B7%E4%BD%93%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # singleFlight 
 
 ## 作用

@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [go 类型转换](#go-%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2)
+  - [一. 断言类型的语法](#%E4%B8%80-%E6%96%AD%E8%A8%80%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%AF%AD%E6%B3%95)
+    - [注意](#%E6%B3%A8%E6%84%8F)
+    - [另外一种方式：switch 断言方式](#%E5%8F%A6%E5%A4%96%E4%B8%80%E7%A7%8D%E6%96%B9%E5%BC%8Fswitch-%E6%96%AD%E8%A8%80%E6%96%B9%E5%BC%8F)
+  - [三. 反射reflect类型断言](#%E4%B8%89-%E5%8F%8D%E5%B0%84reflect%E7%B1%BB%E5%9E%8B%E6%96%AD%E8%A8%80)
+  - [四. 性能比较](#%E5%9B%9B-%E6%80%A7%E8%83%BD%E6%AF%94%E8%BE%83)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # go 类型转换
 
 go 存在 4 种类型转换分别为：断言、强制、显式、隐式。

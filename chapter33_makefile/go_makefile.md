@@ -1,3 +1,26 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Go makefile 项目](#go-makefile-%E9%A1%B9%E7%9B%AE)
+  - [makefile 结构](#makefile-%E7%BB%93%E6%9E%84)
+  - [iam 案例](#iam-%E6%A1%88%E4%BE%8B)
+  - [makefile 编写技巧](#makefile-%E7%BC%96%E5%86%99%E6%8A%80%E5%B7%A7)
+    - [1 善用通配符和自动变量](#1-%E5%96%84%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E5%92%8C%E8%87%AA%E5%8A%A8%E5%8F%98%E9%87%8F)
+    - [2 善用函数](#2-%E5%96%84%E7%94%A8%E5%87%BD%E6%95%B0)
+    - [3 依赖需要用到的工具](#3-%E4%BE%9D%E8%B5%96%E9%9C%80%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E5%B7%A5%E5%85%B7)
+    - [4 把常用功能放在 /Makefile 中，不常用的放在分类 Makefile 中](#4-%E6%8A%8A%E5%B8%B8%E7%94%A8%E5%8A%9F%E8%83%BD%E6%94%BE%E5%9C%A8-makefile-%E4%B8%AD%E4%B8%8D%E5%B8%B8%E7%94%A8%E7%9A%84%E6%94%BE%E5%9C%A8%E5%88%86%E7%B1%BB-makefile-%E4%B8%AD)
+    - [5 编写可扩展的 Makefile](#5-%E7%BC%96%E5%86%99%E5%8F%AF%E6%89%A9%E5%B1%95%E7%9A%84-makefile)
+    - [6 将所有输出存放在一个目录下，方便清理和查找](#6-%E5%B0%86%E6%89%80%E6%9C%89%E8%BE%93%E5%87%BA%E5%AD%98%E6%94%BE%E5%9C%A8%E4%B8%80%E4%B8%AA%E7%9B%AE%E5%BD%95%E4%B8%8B%E6%96%B9%E4%BE%BF%E6%B8%85%E7%90%86%E5%92%8C%E6%9F%A5%E6%89%BE)
+    - [7 使用带层级的命名方式](#7-%E4%BD%BF%E7%94%A8%E5%B8%A6%E5%B1%82%E7%BA%A7%E7%9A%84%E5%91%BD%E5%90%8D%E6%96%B9%E5%BC%8F)
+    - [8 做好目标拆分](#8-%E5%81%9A%E5%A5%BD%E7%9B%AE%E6%A0%87%E6%8B%86%E5%88%86)
+    - [9 设置 OPTIONS](#9-%E8%AE%BE%E7%BD%AE-options)
+    - [10 定义环境变量](#10-%E5%AE%9A%E4%B9%89%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F)
+    - [11 自己调用自己](#11-%E8%87%AA%E5%B7%B1%E8%B0%83%E7%94%A8%E8%87%AA%E5%B7%B1)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Go makefile 项目
 
 

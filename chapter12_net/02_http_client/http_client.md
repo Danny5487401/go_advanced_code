@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Client](#client)
+  - [源码](#%E6%BA%90%E7%A0%81)
+  - [发送请求流程](#%E5%8F%91%E9%80%81%E8%AF%B7%E6%B1%82%E6%B5%81%E7%A8%8B)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Client
 
 http.Client 表示一个http client端，用来处理HTTP相关的工作，例如cookies, redirect, timeout等工作，

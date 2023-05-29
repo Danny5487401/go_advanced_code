@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [miniredis : mock掉redis的一个利器](#miniredis--mock%E6%8E%89redis%E7%9A%84%E4%B8%80%E4%B8%AA%E5%88%A9%E5%99%A8)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [启动服务](#%E5%90%AF%E5%8A%A8%E6%9C%8D%E5%8A%A1)
+    - [设置值](#%E8%AE%BE%E7%BD%AE%E5%80%BC)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # miniredis : mock掉redis的一个利器
 
 

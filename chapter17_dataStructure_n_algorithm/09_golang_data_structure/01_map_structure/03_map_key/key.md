@@ -1,3 +1,12 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Map Key 类型](#map-key-%E7%B1%BB%E5%9E%8B)
+  - [Go语言规范关于相等](#go%E8%AF%AD%E8%A8%80%E8%A7%84%E8%8C%83%E5%85%B3%E4%BA%8E%E7%9B%B8%E7%AD%89)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Map Key 类型
 
 map中的key可以是任何的类型，只要它的值能比较是否相等，Go的语言规范已精确定义，Key的类型可以是：

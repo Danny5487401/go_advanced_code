@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [观察者模式](#%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F)
+  - [角色](#%E8%A7%92%E8%89%B2)
+  - [场景](#%E5%9C%BA%E6%99%AF)
+  - [设计](#%E8%AE%BE%E8%AE%A1)
+  - [观察者模式的优点](#%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E7%9A%84%E4%BC%98%E7%82%B9)
+  - [观察者模式的缺点](#%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E7%9A%84%E7%BC%BA%E7%82%B9)
+  - [Go内部包](#go%E5%86%85%E9%83%A8%E5%8C%85)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 观察者模式
 
 观察者模式（Observer Pattern）又叫作发布-订阅（Publish/Subscribe）模式、模型-视图（Model/View）模式、

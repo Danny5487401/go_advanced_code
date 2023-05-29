@@ -1,3 +1,25 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [gomock](#gomock)
+  - [原理](#%E5%8E%9F%E7%90%86)
+  - [使用](#%E4%BD%BF%E7%94%A8)
+    - [返回值](#%E8%BF%94%E5%9B%9E%E5%80%BC)
+    - [1. 反射模式](#1-%E5%8F%8D%E5%B0%84%E6%A8%A1%E5%BC%8F)
+    - [2. 源码模式](#2-%E6%BA%90%E7%A0%81%E6%A8%A1%E5%BC%8F)
+  - [缺点](#%E7%BC%BA%E7%82%B9)
+  - [gomock 源代码解析](#gomock-%E6%BA%90%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90)
+    - [1 查看生成的代码](#1-%E6%9F%A5%E7%9C%8B%E7%94%9F%E6%88%90%E7%9A%84%E4%BB%A3%E7%A0%81)
+    - [2 初始化需要做的事](#2-%E5%88%9D%E5%A7%8B%E5%8C%96%E9%9C%80%E8%A6%81%E5%81%9A%E7%9A%84%E4%BA%8B)
+      - [1 初始化Controller对象—mock对象的核心](#1-%E5%88%9D%E5%A7%8B%E5%8C%96controller%E5%AF%B9%E8%B1%A1mock%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%A0%B8%E5%BF%83)
+      - [2 初始化 recorder,并填加相关期望call](#2-%E5%88%9D%E5%A7%8B%E5%8C%96-recorder%E5%B9%B6%E5%A1%AB%E5%8A%A0%E7%9B%B8%E5%85%B3%E6%9C%9F%E6%9C%9Bcall)
+      - [3 通过 DoAndReturn 添加 action](#3-%E9%80%9A%E8%BF%87-doandreturn-%E6%B7%BB%E5%8A%A0-action)
+    - [3 实际调用：查看call，调用方法，并删除方法](#3-%E5%AE%9E%E9%99%85%E8%B0%83%E7%94%A8%E6%9F%A5%E7%9C%8Bcall%E8%B0%83%E7%94%A8%E6%96%B9%E6%B3%95%E5%B9%B6%E5%88%A0%E9%99%A4%E6%96%B9%E6%B3%95)
+      - [查找call](#%E6%9F%A5%E6%89%BEcall)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # gomock
 
 gomock 是官方提供的mock框架，用于解决单元测试中遇到的外部依赖问题，并且还有mockgen工具用来辅助生成相关的mock代码。

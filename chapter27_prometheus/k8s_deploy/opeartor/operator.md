@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [prometheus Operator](#prometheus-operator)
+  - [背景](#%E8%83%8C%E6%99%AF)
+  - [工作原理](#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86)
+  - [Operator能做什么](#operator%E8%83%BD%E5%81%9A%E4%BB%80%E4%B9%88)
+  - [安装](#%E5%AE%89%E8%A3%85)
+  - [操作](#%E6%93%8D%E4%BD%9C)
+    - [使用后效果](#%E4%BD%BF%E7%94%A8%E5%90%8E%E6%95%88%E6%9E%9C)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # prometheus Operator
 
 ## 背景

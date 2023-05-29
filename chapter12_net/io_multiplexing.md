@@ -1,3 +1,26 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [I/O 多路复用(I/O multiplexing)](#io-%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8io-multiplexing)
+  - [两种 I/O 事件通知的方式：水平触发和边缘触发](#%E4%B8%A4%E7%A7%8D-io-%E4%BA%8B%E4%BB%B6%E9%80%9A%E7%9F%A5%E7%9A%84%E6%96%B9%E5%BC%8F%E6%B0%B4%E5%B9%B3%E8%A7%A6%E5%8F%91%E5%92%8C%E8%BE%B9%E7%BC%98%E8%A7%A6%E5%8F%91)
+  - [1. 使用非阻塞 I/O 和水平触发通知，比如使用 select 或者 poll](#1-%E4%BD%BF%E7%94%A8%E9%9D%9E%E9%98%BB%E5%A1%9E-io-%E5%92%8C%E6%B0%B4%E5%B9%B3%E8%A7%A6%E5%8F%91%E9%80%9A%E7%9F%A5%E6%AF%94%E5%A6%82%E4%BD%BF%E7%94%A8-select-%E6%88%96%E8%80%85-poll)
+    - [select](#select)
+    - [poll](#poll)
+  - [2. 使用非阻塞 I/O 和边缘触发通知，比如 epoll](#2-%E4%BD%BF%E7%94%A8%E9%9D%9E%E9%98%BB%E5%A1%9E-io-%E5%92%8C%E8%BE%B9%E7%BC%98%E8%A7%A6%E5%8F%91%E9%80%9A%E7%9F%A5%E6%AF%94%E5%A6%82-epoll)
+    - [Non-block io](#non-block-io)
+  - [工作模型](#%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B)
+    - [1 主进程 + 多个 worker 子进程，这也是最常用的一种模型。](#1-%E4%B8%BB%E8%BF%9B%E7%A8%8B--%E5%A4%9A%E4%B8%AA-worker-%E5%AD%90%E8%BF%9B%E7%A8%8B%E8%BF%99%E4%B9%9F%E6%98%AF%E6%9C%80%E5%B8%B8%E7%94%A8%E7%9A%84%E4%B8%80%E7%A7%8D%E6%A8%A1%E5%9E%8B)
+    - [2 监听到相同端口的多进程模型](#2-%E7%9B%91%E5%90%AC%E5%88%B0%E7%9B%B8%E5%90%8C%E7%AB%AF%E5%8F%A3%E7%9A%84%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B)
+  - [Go源码分析](#go%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [接口](#%E6%8E%A5%E5%8F%A3)
+      - [netFD网络描述符](#netfd%E7%BD%91%E7%BB%9C%E6%8F%8F%E8%BF%B0%E7%AC%A6)
+      - [pollDesc底层事件驱动的封装](#polldesc%E5%BA%95%E5%B1%82%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8%E7%9A%84%E5%B0%81%E8%A3%85)
+      - [net.Listen](#netlisten)
+      - [Conn.Read/Conn.Write](#connreadconnwrite)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # I/O 多路复用(I/O multiplexing)
 
 在神作《UNIX 网络编程》里，总结归纳了 5 种 I/O 模型，包括同步和异步 I/O：

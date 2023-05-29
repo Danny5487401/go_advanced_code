@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [go开发套件](#go%E5%BC%80%E5%8F%91%E5%A5%97%E4%BB%B6)
+  - [指令](#%E6%8C%87%E4%BB%A4)
+    - [go get 和 go install](#go-get-%E5%92%8C-go-install)
+    - [环境变量](#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # go开发套件
 
 go开发套件包含一组编译和构建源码的指令和对应的程序。

@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Command 命令模式](#command-%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F)
+  - [形象描述：](#%E5%BD%A2%E8%B1%A1%E6%8F%8F%E8%BF%B0)
+  - [场景](#%E5%9C%BA%E6%99%AF)
+  - [第三方应用 ： go-redis源码分析](#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%94%E7%94%A8--go-redis%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Command 命令模式
 ![](command_process.png)
 

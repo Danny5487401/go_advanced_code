@@ -1,3 +1,50 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [汇编](#%E6%B1%87%E7%BC%96)
+  - [为什么需要汇编](#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E6%B1%87%E7%BC%96)
+  - [汇编器,链接器,调试器,编译器](#%E6%B1%87%E7%BC%96%E5%99%A8%E9%93%BE%E6%8E%A5%E5%99%A8%E8%B0%83%E8%AF%95%E5%99%A8%E7%BC%96%E8%AF%91%E5%99%A8)
+  - [汇编语言与机器语言有什么关系:](#%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%B8%8E%E6%9C%BA%E5%99%A8%E8%AF%AD%E8%A8%80%E6%9C%89%E4%BB%80%E4%B9%88%E5%85%B3%E7%B3%BB)
+  - [汇编语言优缺点](#%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%BC%98%E7%BC%BA%E7%82%B9)
+    - [优点](#%E4%BC%98%E7%82%B9)
+    - [缺点](#%E7%BC%BA%E7%82%B9)
+  - [语言组成](#%E8%AF%AD%E8%A8%80%E7%BB%84%E6%88%90)
+  - [cpu可以直接读取数据的地方](#cpu%E5%8F%AF%E4%BB%A5%E7%9B%B4%E6%8E%A5%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E7%9A%84%E5%9C%B0%E6%96%B9)
+  - [cpu对存储器(内存)的读写操作过程](#cpu%E5%AF%B9%E5%AD%98%E5%82%A8%E5%99%A8%E5%86%85%E5%AD%98%E7%9A%84%E8%AF%BB%E5%86%99%E6%93%8D%E4%BD%9C%E8%BF%87%E7%A8%8B)
+    - [1. 数据总线:宽度决定与外界的数据传输速度](#1-%E6%95%B0%E6%8D%AE%E6%80%BB%E7%BA%BF%E5%AE%BD%E5%BA%A6%E5%86%B3%E5%AE%9A%E4%B8%8E%E5%A4%96%E7%95%8C%E7%9A%84%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E9%80%9F%E5%BA%A6)
+    - [2. 控制总线：读和写](#2-%E6%8E%A7%E5%88%B6%E6%80%BB%E7%BA%BF%E8%AF%BB%E5%92%8C%E5%86%99)
+    - [3. 数据总线](#3-%E6%95%B0%E6%8D%AE%E6%80%BB%E7%BA%BF)
+  - [存储器](#%E5%AD%98%E5%82%A8%E5%99%A8)
+  - [指令集中的寄存器](#%E6%8C%87%E4%BB%A4%E9%9B%86%E4%B8%AD%E7%9A%84%E5%AF%84%E5%AD%98%E5%99%A8)
+    - [寄存器位数区分](#%E5%AF%84%E5%AD%98%E5%99%A8%E4%BD%8D%E6%95%B0%E5%8C%BA%E5%88%86)
+    - [应用层代码一般只会用到如下分为三类的19个寄存器](#%E5%BA%94%E7%94%A8%E5%B1%82%E4%BB%A3%E7%A0%81%E4%B8%80%E8%88%AC%E5%8F%AA%E4%BC%9A%E7%94%A8%E5%88%B0%E5%A6%82%E4%B8%8B%E5%88%86%E4%B8%BA%E4%B8%89%E7%B1%BB%E7%9A%8419%E4%B8%AA%E5%AF%84%E5%AD%98%E5%99%A8)
+  - [汇编指令格式](#%E6%B1%87%E7%BC%96%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F)
+  - [常用指令详解](#%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4%E8%AF%A6%E8%A7%A3)
+    - [mov指令-传送指令](#mov%E6%8C%87%E4%BB%A4-%E4%BC%A0%E9%80%81%E6%8C%87%E4%BB%A4)
+    - [add/sub指令](#addsub%E6%8C%87%E4%BB%A4)
+    - [call/ret指令](#callret%E6%8C%87%E4%BB%A4)
+    - [cmp指令：影响标志寄存器](#cmp%E6%8C%87%E4%BB%A4%E5%BD%B1%E5%93%8D%E6%A0%87%E5%BF%97%E5%AF%84%E5%AD%98%E5%99%A8)
+      - [标志位flag](#%E6%A0%87%E5%BF%97%E4%BD%8Dflag)
+    - [jmp/je/jle/jg/jge等等j开头的指令--转移指令，例如可以修改8086cpu的cs段寄存器，ip指令寄存器](#jmpjejlejgjge%E7%AD%89%E7%AD%89j%E5%BC%80%E5%A4%B4%E7%9A%84%E6%8C%87%E4%BB%A4--%E8%BD%AC%E7%A7%BB%E6%8C%87%E4%BB%A4%E4%BE%8B%E5%A6%82%E5%8F%AF%E4%BB%A5%E4%BF%AE%E6%94%B98086cpu%E7%9A%84cs%E6%AE%B5%E5%AF%84%E5%AD%98%E5%99%A8ip%E6%8C%87%E4%BB%A4%E5%AF%84%E5%AD%98%E5%99%A8)
+    - [push/pop指令-可以直接操作段寄存器](#pushpop%E6%8C%87%E4%BB%A4-%E5%8F%AF%E4%BB%A5%E7%9B%B4%E6%8E%A5%E6%93%8D%E4%BD%9C%E6%AE%B5%E5%AF%84%E5%AD%98%E5%99%A8)
+    - [leave指令](#leave%E6%8C%87%E4%BB%A4)
+    - [loop指令](#loop%E6%8C%87%E4%BB%A4)
+    - [loop指令](#loop%E6%8C%87%E4%BB%A4-1)
+    - [shl和shr逻辑移位指令](#shl%E5%92%8Cshr%E9%80%BB%E8%BE%91%E7%A7%BB%E4%BD%8D%E6%8C%87%E4%BB%A4)
+  - [定位方式](#%E5%AE%9A%E4%BD%8D%E6%96%B9%E5%BC%8F)
+  - [案例:c语言中](#%E6%A1%88%E4%BE%8Bc%E8%AF%AD%E8%A8%80%E4%B8%AD)
+    - [和系统打交道](#%E5%92%8C%E7%B3%BB%E7%BB%9F%E6%89%93%E4%BA%A4%E9%81%93)
+  - [案例:go语言编写](#%E6%A1%88%E4%BE%8Bgo%E8%AF%AD%E8%A8%80%E7%BC%96%E5%86%99)
+  - [中断](#%E4%B8%AD%E6%96%AD)
+    - [内中断过程](#%E5%86%85%E4%B8%AD%E6%96%AD%E8%BF%87%E7%A8%8B)
+    - [外中断](#%E5%A4%96%E4%B8%AD%E6%96%AD)
+      - [可屏蔽](#%E5%8F%AF%E5%B1%8F%E8%94%BD)
+      - [不可屏蔽](#%E4%B8%8D%E5%8F%AF%E5%B1%8F%E8%94%BD)
+  - [标号](#%E6%A0%87%E5%8F%B7)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 汇编
 ![汇编到机器码过程](.introduction_images/process.png)
 

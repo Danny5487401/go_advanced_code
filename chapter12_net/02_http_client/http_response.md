@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [http.Response源码解析](#httpresponse%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90)
+  - [Response结构体](#response%E7%BB%93%E6%9E%84%E4%BD%93)
+  - [流程](#%E6%B5%81%E7%A8%8B)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # http.Response源码解析
 
 关于response

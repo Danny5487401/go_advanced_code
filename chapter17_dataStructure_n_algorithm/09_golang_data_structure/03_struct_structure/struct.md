@@ -1,3 +1,18 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [结构体数据结构](#%E7%BB%93%E6%9E%84%E4%BD%93%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
+  - [结构体大小](#%E7%BB%93%E6%9E%84%E4%BD%93%E5%A4%A7%E5%B0%8F)
+  - [内存对齐 memory alignment](#%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90-memory-alignment)
+    - [为什么需要内存对齐](#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90)
+    - [结构体的大小不完全由结构体的字段决定](#%E7%BB%93%E6%9E%84%E4%BD%93%E7%9A%84%E5%A4%A7%E5%B0%8F%E4%B8%8D%E5%AE%8C%E5%85%A8%E7%94%B1%E7%BB%93%E6%9E%84%E4%BD%93%E7%9A%84%E5%AD%97%E6%AE%B5%E5%86%B3%E5%AE%9A)
+  - [结构体内存布局的特殊场景](#%E7%BB%93%E6%9E%84%E4%BD%93%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E7%9A%84%E7%89%B9%E6%AE%8A%E5%9C%BA%E6%99%AF)
+    - [空结构体字段对齐](#%E7%A9%BA%E7%BB%93%E6%9E%84%E4%BD%93%E5%AD%97%E6%AE%B5%E5%AF%B9%E9%BD%90)
+  - [hot path](#hot-path)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 结构体数据结构
 
 ## 结构体大小

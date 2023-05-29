@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [io pipe](#io-pipe)
+  - [修改前](#%E4%BF%AE%E6%94%B9%E5%89%8D)
+  - [修改后](#%E4%BF%AE%E6%94%B9%E5%90%8E)
+  - [第三方应用：minio](#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%94%E7%94%A8minio)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # io pipe
 
 

@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [信号量](#%E4%BF%A1%E5%8F%B7%E9%87%8F)
+  - [定义（英语：semaphore）](#%E5%AE%9A%E4%B9%89%E8%8B%B1%E8%AF%ADsemaphore)
+  - [工作原理](#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86)
+  - [适用场景](#%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 信号量
 
 ## 定义（英语：semaphore）

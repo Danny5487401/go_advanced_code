@@ -1,3 +1,27 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [PromQL](#promql)
+  - [表达式类型](#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%B1%BB%E5%9E%8B)
+  - [范围查询](#%E8%8C%83%E5%9B%B4%E6%9F%A5%E8%AF%A2)
+  - [Offset modifier时间位移操作](#offset-modifier%E6%97%B6%E9%97%B4%E4%BD%8D%E7%A7%BB%E6%93%8D%E4%BD%9C)
+  - [聚合操作](#%E8%81%9A%E5%90%88%E6%93%8D%E4%BD%9C)
+  - [标量(Scalar)和字符串(String)](#%E6%A0%87%E9%87%8Fscalar%E5%92%8C%E5%AD%97%E7%AC%A6%E4%B8%B2string)
+  - [操作符](#%E6%93%8D%E4%BD%9C%E7%AC%A6)
+    - [Binary operator precedence操作符优先级](#binary-operator-precedence%E6%93%8D%E4%BD%9C%E7%AC%A6%E4%BC%98%E5%85%88%E7%BA%A7)
+    - [集合运算法](#%E9%9B%86%E5%90%88%E8%BF%90%E7%AE%97%E6%B3%95)
+    - [匹配模式](#%E5%8C%B9%E9%85%8D%E6%A8%A1%E5%BC%8F)
+      - [1. 一对一 匹配模式会从操作符两边表达式获取的瞬时向量依次比较并找到唯一匹配(标签完全一致)的样本值](#1-%E4%B8%80%E5%AF%B9%E4%B8%80-%E5%8C%B9%E9%85%8D%E6%A8%A1%E5%BC%8F%E4%BC%9A%E4%BB%8E%E6%93%8D%E4%BD%9C%E7%AC%A6%E4%B8%A4%E8%BE%B9%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%8E%B7%E5%8F%96%E7%9A%84%E7%9E%AC%E6%97%B6%E5%90%91%E9%87%8F%E4%BE%9D%E6%AC%A1%E6%AF%94%E8%BE%83%E5%B9%B6%E6%89%BE%E5%88%B0%E5%94%AF%E4%B8%80%E5%8C%B9%E9%85%8D%E6%A0%87%E7%AD%BE%E5%AE%8C%E5%85%A8%E4%B8%80%E8%87%B4%E7%9A%84%E6%A0%B7%E6%9C%AC%E5%80%BC)
+      - [2. 多对一和一对多](#2-%E5%A4%9A%E5%AF%B9%E4%B8%80%E5%92%8C%E4%B8%80%E5%AF%B9%E5%A4%9A)
+  - [聚合操作](#%E8%81%9A%E5%90%88%E6%93%8D%E4%BD%9C-1)
+  - [函数](#%E5%87%BD%E6%95%B0)
+    - [计算counter指标增长率](#%E8%AE%A1%E7%AE%97counter%E6%8C%87%E6%A0%87%E5%A2%9E%E9%95%BF%E7%8E%87)
+    - [动态标签替换](#%E5%8A%A8%E6%80%81%E6%A0%87%E7%AD%BE%E6%9B%BF%E6%8D%A2)
+  - [案例](#%E6%A1%88%E4%BE%8B)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 
 ## PromQL
 Prometheus通过指标名称（metrics name）以及对应的一组标签（labelset）唯一定义一条时间序列。

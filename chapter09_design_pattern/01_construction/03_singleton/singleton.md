@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [单例模式](#%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F)
+  - [意图](#%E6%84%8F%E5%9B%BE)
+  - [主要解决](#%E4%B8%BB%E8%A6%81%E8%A7%A3%E5%86%B3)
+  - [何时使用](#%E4%BD%95%E6%97%B6%E4%BD%BF%E7%94%A8)
+  - [如何解决](#%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3)
+    - [关键代码：构造函数是私有的。](#%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E6%98%AF%E7%A7%81%E6%9C%89%E7%9A%84)
+  - [使用场景](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
+  - [优点](#%E4%BC%98%E7%82%B9)
+  - [缺点：](#%E7%BC%BA%E7%82%B9)
+  - [分类：](#%E5%88%86%E7%B1%BB)
+  - [标准库实现](#%E6%A0%87%E5%87%86%E5%BA%93%E5%AE%9E%E7%8E%B0)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 单例模式
 在程序的运行中只产生一个实例。
 

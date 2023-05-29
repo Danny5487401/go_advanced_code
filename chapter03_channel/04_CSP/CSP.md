@@ -1,3 +1,12 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [CSP(Communicating Sequential Process )](#cspcommunicating-sequential-process-)
+  - [并发编程模型](#%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # CSP(Communicating Sequential Process )
 中文可以叫做通信顺序进程，是一种并发编程模型，是一个很强大的并发数据模型.
 

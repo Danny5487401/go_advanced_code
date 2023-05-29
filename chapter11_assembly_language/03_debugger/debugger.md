@@ -1,3 +1,18 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [调试器](#%E8%B0%83%E8%AF%95%E5%99%A8)
+  - [Debugger types 调试器分类](#debugger-types-%E8%B0%83%E8%AF%95%E5%99%A8%E5%88%86%E7%B1%BB)
+  - [依赖](#%E4%BE%9D%E8%B5%96)
+    - [调试符号信息](#%E8%B0%83%E8%AF%95%E7%AC%A6%E5%8F%B7%E4%BF%A1%E6%81%AF)
+    - [调试支持](#%E8%B0%83%E8%AF%95%E6%94%AF%E6%8C%81)
+    - [符号调试器扩展](#%E7%AC%A6%E5%8F%B7%E8%B0%83%E8%AF%95%E5%99%A8%E6%89%A9%E5%B1%95)
+      - [断点](#%E6%96%AD%E7%82%B9)
+      - [单步执行](#%E5%8D%95%E6%AD%A5%E6%89%A7%E8%A1%8C)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 调试器
 
 开发人员希望定位代码中的问题时，通常会借助 Print语句（如fmt.Println） 来打印变量的值，进而推断程序执行结果是否符合预期。在某些更复杂的场景下，打印语句可能难以胜任，调试器会更好地协助我们定位问题。

@@ -1,3 +1,22 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [golangci-lint](#golangci-lint)
+  - [应用](#%E5%BA%94%E7%94%A8)
+  - [常用的Linter介绍](#%E5%B8%B8%E7%94%A8%E7%9A%84linter%E4%BB%8B%E7%BB%8D)
+    - [linter 分两类](#linter-%E5%88%86%E4%B8%A4%E7%B1%BB)
+  - [命令介绍](#%E5%91%BD%E4%BB%A4%E4%BB%8B%E7%BB%8D)
+    - [run 命令](#run-%E5%91%BD%E4%BB%A4)
+    - [cache 命令](#cache-%E5%91%BD%E4%BB%A4)
+  - [nolint 用法：](#nolint-%E7%94%A8%E6%B3%95)
+  - [建议在根目录下放一个通用的 golangci-lint 配置文件](#%E5%BB%BA%E8%AE%AE%E5%9C%A8%E6%A0%B9%E7%9B%AE%E5%BD%95%E4%B8%8B%E6%94%BE%E4%B8%80%E4%B8%AA%E9%80%9A%E7%94%A8%E7%9A%84-golangci-lint-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6)
+  - [结合 pre-commit应用](#%E7%BB%93%E5%90%88-pre-commit%E5%BA%94%E7%94%A8)
+    - [git hooks](#git-hooks)
+  - [参考地址](#%E5%8F%82%E8%80%83%E5%9C%B0%E5%9D%80)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # golangci-lint
 
 GolangCI-Lint是一个lint聚合器，它的速度很快，平均速度是gometalinter的5倍。

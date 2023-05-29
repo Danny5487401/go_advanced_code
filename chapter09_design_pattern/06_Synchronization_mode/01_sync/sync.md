@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Sync同步模块(synchronization)](#sync%E5%90%8C%E6%AD%A5%E6%A8%A1%E5%9D%97synchronization)
+- [一. 互斥锁（同步)](#%E4%B8%80-%E4%BA%92%E6%96%A5%E9%94%81%E5%90%8C%E6%AD%A5)
+- [二. 条件变量（同步）](#%E4%BA%8C-%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F%E5%90%8C%E6%AD%A5)
+- [三. 读写锁（同步）](#%E4%B8%89-%E8%AF%BB%E5%86%99%E9%94%81%E5%90%8C%E6%AD%A5)
+- [四. 自旋锁（同步)](#%E5%9B%9B-%E8%87%AA%E6%97%8B%E9%94%81%E5%90%8C%E6%AD%A5)
+- [五. 信号量（同步与互斥）](#%E4%BA%94-%E4%BF%A1%E5%8F%B7%E9%87%8F%E5%90%8C%E6%AD%A5%E4%B8%8E%E4%BA%92%E6%96%A5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Sync同步模块(synchronization)
 内存同步访问控制（原文是 memory access synchronization）
 # 一. 互斥锁（同步)

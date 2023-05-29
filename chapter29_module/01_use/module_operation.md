@@ -1,3 +1,29 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Go Modules相关操作](#go-modules%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C)
+  - [配置环境变量](#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F)
+    - [关于GOPROXY](#%E5%85%B3%E4%BA%8Egoproxy)
+  - [在module-get模式下:](#%E5%9C%A8module-get%E6%A8%A1%E5%BC%8F%E4%B8%8B)
+  - [更换依赖版本](#%E6%9B%B4%E6%8D%A2%E4%BE%9D%E8%B5%96%E7%89%88%E6%9C%AC)
+  - [go mod vendor说明](#go-mod-vendor%E8%AF%B4%E6%98%8E)
+  - [模块缓存](#%E6%A8%A1%E5%9D%97%E7%BC%93%E5%AD%98)
+  - [go mod & sum格式](#go-mod--sum%E6%A0%BC%E5%BC%8F)
+  - [1. go.sum](#1-gosum)
+  - [2. go.mod](#2-gomod)
+    - [module path](#module-path)
+    - [go directive](#go-directive)
+    - [require](#require)
+    - [indirect注释](#indirect%E6%B3%A8%E9%87%8A)
+    - [incompatible](#incompatible)
+    - [exclude](#exclude)
+    - [replace](#replace)
+    - [retract](#retract)
+  - [最佳实践](#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Go Modules相关操作
 ![](.godule_operation_images/gomodule_operation.png)
 

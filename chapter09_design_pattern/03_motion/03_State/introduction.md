@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [状态模式：](#%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F)
+  - [状态模式结构图中包含如下几个角色：](#%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F%E7%BB%93%E6%9E%84%E5%9B%BE%E4%B8%AD%E5%8C%85%E5%90%AB%E5%A6%82%E4%B8%8B%E5%87%A0%E4%B8%AA%E8%A7%92%E8%89%B2)
+  - [需求：](#%E9%9C%80%E6%B1%82)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 
 # 状态模式：
 	当一个对象的内部状态发生改变时，会导致其行为的改变，对象看起来似乎修改了它的类。

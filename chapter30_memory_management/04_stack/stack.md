@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [stack](#stack)
+  - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
+    - [栈分裂 stack-split](#%E6%A0%88%E5%88%86%E8%A3%82-stack-split)
+    - [栈拷贝(stack copying)](#%E6%A0%88%E6%8B%B7%E8%B4%9Dstack-copying)
+  - [分段栈和连续栈](#%E5%88%86%E6%AE%B5%E6%A0%88%E5%92%8C%E8%BF%9E%E7%BB%AD%E6%A0%88)
+    - [分段栈(Segmented Stacks)](#%E5%88%86%E6%AE%B5%E6%A0%88segmented-stacks)
+    - [连续栈(continuous stacks）](#%E8%BF%9E%E7%BB%AD%E6%A0%88continuous-stacks)
+  - [栈的分配](#%E6%A0%88%E7%9A%84%E5%88%86%E9%85%8D)
+    - [小栈内存分配](#%E5%B0%8F%E6%A0%88%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D)
+    - [大栈内存分配](#%E5%A4%A7%E6%A0%88%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # stack
 
 

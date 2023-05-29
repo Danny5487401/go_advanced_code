@@ -1,3 +1,22 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [函数式编程概论](#%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%E6%A6%82%E8%AE%BA)
+  - [背景](#%E8%83%8C%E6%99%AF)
+  - [函数](#%E5%87%BD%E6%95%B0)
+  - [函数使用](#%E5%87%BD%E6%95%B0%E4%BD%BF%E7%94%A8)
+    - [1.定义函数类型：](#1%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0%E7%B1%BB%E5%9E%8B)
+    - [2.声明函数类型的变量和为变量赋值：](#2%E5%A3%B0%E6%98%8E%E5%87%BD%E6%95%B0%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%8F%98%E9%87%8F%E5%92%8C%E4%B8%BA%E5%8F%98%E9%87%8F%E8%B5%8B%E5%80%BC)
+    - [3.函数作为其他函数入参](#3%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E5%85%B6%E4%BB%96%E5%87%BD%E6%95%B0%E5%85%A5%E5%8F%82)
+    - [4. 函数作为返回值+动态创建](#4-%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E8%BF%94%E5%9B%9E%E5%80%BC%E5%8A%A8%E6%80%81%E5%88%9B%E5%BB%BA)
+    - [5. 匿名函数](#5-%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0)
+    - [6. 闭包](#6-%E9%97%AD%E5%8C%85)
+      - [定义](#%E5%AE%9A%E4%B9%89)
+      - [解析](#%E8%A7%A3%E6%9E%90)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 函数式编程概论
 ## 背景
 硬件性能的提升以及编译技术和虚拟机技术的改进，一些曾被性能问题所限制的动态语言开始受到关注，Python、Ruby 和 Lua 等语言都开始在应用中崭露头角。

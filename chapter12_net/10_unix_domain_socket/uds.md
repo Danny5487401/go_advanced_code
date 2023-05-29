@@ -1,3 +1,12 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Unix domain socket](#unix-domain-socket)
+  - [IPC 进程间通信（interprocess communication）](#ipc-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1interprocess-communication)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Unix domain socket
 
 Unix domain socket 必须是同主机间进程才能使用，而且 API 完全兼容 TCP socket，使用简单，

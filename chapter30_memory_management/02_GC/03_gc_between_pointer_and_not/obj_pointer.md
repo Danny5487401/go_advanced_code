@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [检测内存对象中的指针](#%E6%A3%80%E6%B5%8B%E5%86%85%E5%AD%98%E5%AF%B9%E8%B1%A1%E4%B8%AD%E7%9A%84%E6%8C%87%E9%92%88)
+  - [运行时类型信息（rtype)](#%E8%BF%90%E8%A1%8C%E6%97%B6%E7%B1%BB%E5%9E%8B%E4%BF%A1%E6%81%AFrtype)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 检测内存对象中的指针
 
 

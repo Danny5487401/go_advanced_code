@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Generic泛型](#generic%E6%B3%9B%E5%9E%8B)
+  - [使用背景](#%E4%BD%BF%E7%94%A8%E8%83%8C%E6%99%AF)
+  - [Go泛型方案](#go%E6%B3%9B%E5%9E%8B%E6%96%B9%E6%A1%88)
+    - [1. 字典(dictionaries)：单份代码实例，以字典传递类型参数信息。](#1-%E5%AD%97%E5%85%B8dictionaries%E5%8D%95%E4%BB%BD%E4%BB%A3%E7%A0%81%E5%AE%9E%E4%BE%8B%E4%BB%A5%E5%AD%97%E5%85%B8%E4%BC%A0%E9%80%92%E7%B1%BB%E5%9E%8B%E5%8F%82%E6%95%B0%E4%BF%A1%E6%81%AF)
+    - [2. 模版(stenciling)：为每次调用生成代码实例，即便类型参数相同。](#2-%E6%A8%A1%E7%89%88stenciling%E4%B8%BA%E6%AF%8F%E6%AC%A1%E8%B0%83%E7%94%A8%E7%94%9F%E6%88%90%E4%BB%A3%E7%A0%81%E5%AE%9E%E4%BE%8B%E5%8D%B3%E4%BE%BF%E7%B1%BB%E5%9E%8B%E5%8F%82%E6%95%B0%E7%9B%B8%E5%90%8C)
+    - [3. 混合方案（GC Shape Stenciling）](#3-%E6%B7%B7%E5%90%88%E6%96%B9%E6%A1%88gc-shape-stenciling)
+  - [类型形参(Type Parameters)](#%E7%B1%BB%E5%9E%8B%E5%BD%A2%E5%8F%82type-parameters)
+    - [类型约束(Type Constraint)](#%E7%B1%BB%E5%9E%8B%E7%BA%A6%E6%9D%9Ftype-constraint)
+    - [类型具化（instantiation）与类型推导（type inference）](#%E7%B1%BB%E5%9E%8B%E5%85%B7%E5%8C%96instantiation%E4%B8%8E%E7%B1%BB%E5%9E%8B%E6%8E%A8%E5%AF%BCtype-inference)
+  - [类型集合(Type sets)](#%E7%B1%BB%E5%9E%8B%E9%9B%86%E5%90%88type-sets)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Generic泛型
 Go的泛型指的是在Go的类型声明和函数声明中增加可选的类型形参(type parameters)。
 类型形参(type parameters)要受到类型约束（constraint），Go使用嵌入额外元素的接口类型来定义类型约束，类型约束定义了一组满足约束的类型集(Type Set)

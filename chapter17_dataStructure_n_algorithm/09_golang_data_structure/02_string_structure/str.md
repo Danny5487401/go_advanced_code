@@ -1,3 +1,22 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [string的底层存储结构](#string%E7%9A%84%E5%BA%95%E5%B1%82%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84)
+  - [类型转换](#%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2)
+  - [举例](#%E4%B8%BE%E4%BE%8B)
+  - [rune](#rune)
+    - [unicode 字符集和字符编码](#unicode-%E5%AD%97%E7%AC%A6%E9%9B%86%E5%92%8C%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81)
+  - [字符串拼接性能问题](#%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%8B%BC%E6%8E%A5%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98)
+    - [优化前](#%E4%BC%98%E5%8C%96%E5%89%8D)
+    - [1.优化第一版本](#1%E4%BC%98%E5%8C%96%E7%AC%AC%E4%B8%80%E7%89%88%E6%9C%AC)
+    - [2. 优化第二版本](#2-%E4%BC%98%E5%8C%96%E7%AC%AC%E4%BA%8C%E7%89%88%E6%9C%AC)
+  - [潜在的内存泄漏](#%E6%BD%9C%E5%9C%A8%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F)
+    - [问题](#%E9%97%AE%E9%A2%98)
+    - [解决方式](#%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # string的底层存储结构
 
 ```go

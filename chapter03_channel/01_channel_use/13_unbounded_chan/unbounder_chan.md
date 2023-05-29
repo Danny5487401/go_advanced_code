@@ -1,3 +1,12 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [实现无限缓存的channel](#%E5%AE%9E%E7%8E%B0%E6%97%A0%E9%99%90%E7%BC%93%E5%AD%98%E7%9A%84channel)
+  - [特点](#%E7%89%B9%E7%82%B9)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 实现无限缓存的channel
 
 

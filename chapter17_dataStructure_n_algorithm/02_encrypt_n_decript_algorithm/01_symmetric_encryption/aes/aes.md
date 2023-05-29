@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [AES高级加密标准（Advanced Encryption Standard）](#aes%E9%AB%98%E7%BA%A7%E5%8A%A0%E5%AF%86%E6%A0%87%E5%87%86advanced-encryption-standard)
+  - [背景](#%E8%83%8C%E6%99%AF)
+  - [主要介绍：密码分组链接模式（Cipher Block Chaining (CBC)）](#%E4%B8%BB%E8%A6%81%E4%BB%8B%E7%BB%8D%E5%AF%86%E7%A0%81%E5%88%86%E7%BB%84%E9%93%BE%E6%8E%A5%E6%A8%A1%E5%BC%8Fcipher-block-chaining-cbc)
+  - [AES的Go实现](#aes%E7%9A%84go%E5%AE%9E%E7%8E%B0)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # AES高级加密标准（Advanced Encryption Standard）
 又称Rijndael加密法，一个对称分组密码算法，是美国联邦政府采用的一种区块加密标准。这个标准用来替代原先的DES（Data Encryption Standard），已经被多方分析且广为全世界所使用。
 AES中常见的有三种解决方案，分别为AES-128、AES-192和AES-256。

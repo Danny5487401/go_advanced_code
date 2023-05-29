@@ -1,3 +1,48 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [***高级Goland学习代码*** _github.com/Danny5487401/go_advanced_code_](#%E9%AB%98%E7%BA%A7goland%E5%AD%A6%E4%B9%A0%E4%BB%A3%E7%A0%81-_githubcomdanny5487401go_advanced_code_)
+- [*目录*](#%E7%9B%AE%E5%BD%95)
+  - [*推荐 GoVersion: 1.18(涉及泛型)*](#%E6%8E%A8%E8%8D%90-goversion-118%E6%B6%89%E5%8F%8A%E6%B3%9B%E5%9E%8B)
+  - [必备知识:](#%E5%BF%85%E5%A4%87%E7%9F%A5%E8%AF%86)
+  - [第一章 I/O](#%E7%AC%AC%E4%B8%80%E7%AB%A0-io)
+  - [第二章 协程Goroutine](#%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E5%8D%8F%E7%A8%8Bgoroutine)
+  - [第三章 通道Channel](#%E7%AC%AC%E4%B8%89%E7%AB%A0-%E9%80%9A%E9%81%93channel)
+  - [第四章 interface 和反射](#%E7%AC%AC%E5%9B%9B%E7%AB%A0-interface-%E5%92%8C%E5%8F%8D%E5%B0%84)
+  - [第五章 切片和数组](#%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%87%E7%89%87%E5%92%8C%E6%95%B0%E7%BB%84)
+  - [第六章 指针](#%E7%AC%AC%E5%85%AD%E7%AB%A0-%E6%8C%87%E9%92%88)
+  - [第七章 系统调用](#%E7%AC%AC%E4%B8%83%E7%AB%A0-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8)
+  - [第八章 defer函数及汇编语言理解](#%E7%AC%AC%E5%85%AB%E7%AB%A0-defer%E5%87%BD%E6%95%B0%E5%8F%8A%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E7%90%86%E8%A7%A3)
+  - [第九章 设计模式-OOP七大准则](#%E7%AC%AC%E4%B9%9D%E7%AB%A0-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-oop%E4%B8%83%E5%A4%A7%E5%87%86%E5%88%99)
+  - [第十章 函数式编程](#%E7%AC%AC%E5%8D%81%E7%AB%A0-%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B)
+  - [第十一章 汇编理解go语言底层源码(AMD芯片运行代码)](#%E7%AC%AC%E5%8D%81%E4%B8%80%E7%AB%A0-%E6%B1%87%E7%BC%96%E7%90%86%E8%A7%A3go%E8%AF%AD%E8%A8%80%E5%BA%95%E5%B1%82%E6%BA%90%E7%A0%81amd%E8%8A%AF%E7%89%87%E8%BF%90%E8%A1%8C%E4%BB%A3%E7%A0%81)
+  - [第十二章 net 网络--涉及性能指标,协议栈统计,套接字信息](#%E7%AC%AC%E5%8D%81%E4%BA%8C%E7%AB%A0-net-%E7%BD%91%E7%BB%9C--%E6%B6%89%E5%8F%8A%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87%E5%8D%8F%E8%AE%AE%E6%A0%88%E7%BB%9F%E8%AE%A1%E5%A5%97%E6%8E%A5%E5%AD%97%E4%BF%A1%E6%81%AF)
+  - [第十三章 CGO调用C语言](#%E7%AC%AC%E5%8D%81%E4%B8%89%E7%AB%A0-cgo%E8%B0%83%E7%94%A8c%E8%AF%AD%E8%A8%80)
+  - [第十四章 Context上下文-源码分析涉及父类EmptyCtx](#%E7%AC%AC%E5%8D%81%E5%9B%9B%E7%AB%A0-context%E4%B8%8A%E4%B8%8B%E6%96%87-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E6%B6%89%E5%8F%8A%E7%88%B6%E7%B1%BBemptyctx)
+  - [第十五章 接口嵌套编程](#%E7%AC%AC%E5%8D%81%E4%BA%94%E7%AB%A0-%E6%8E%A5%E5%8F%A3%E5%B5%8C%E5%A5%97%E7%BC%96%E7%A8%8B)
+  - [第十六章 并发编程](#%E7%AC%AC%E5%8D%81%E5%85%AD%E7%AB%A0-%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B)
+  - [第十七章 数据结构及算法](#%E7%AC%AC%E5%8D%81%E4%B8%83%E7%AB%A0-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%8A%E7%AE%97%E6%B3%95)
+  - [第十八章 错误跟踪和panic](#%E7%AC%AC%E5%8D%81%E5%85%AB%E7%AB%A0-%E9%94%99%E8%AF%AF%E8%B7%9F%E8%B8%AA%E5%92%8Cpanic)
+  - [第十九章 nil预定义标识](#%E7%AC%AC%E5%8D%81%E4%B9%9D%E7%AB%A0-nil%E9%A2%84%E5%AE%9A%E4%B9%89%E6%A0%87%E8%AF%86)
+  - [第二十章 for-range源码分析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E7%AB%A0-for-range%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [第二十一章 time标准包源码分析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B8%80%E7%AB%A0-time%E6%A0%87%E5%87%86%E5%8C%85%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [第二十二章 数据驱动模板源码分析-->kratos工具](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%BA%8C%E7%AB%A0-%E6%95%B0%E6%8D%AE%E9%A9%B1%E5%8A%A8%E6%A8%A1%E6%9D%BF%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90--kratos%E5%B7%A5%E5%85%B7)
+  - [第二十三章 调试内部对象](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B8%89%E7%AB%A0-%E8%B0%83%E8%AF%95%E5%86%85%E9%83%A8%E5%AF%B9%E8%B1%A1)
+  - [第二十四章 命令行参数解析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%9B%9B%E7%AB%A0-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0%E8%A7%A3%E6%9E%90)
+  - [第二十四章 Flag命令行参数及源码分析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%9B%9B%E7%AB%A0-flag%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0%E5%8F%8A%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [第二十五章 结构体类型方法](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%BA%94%E7%AB%A0-%E7%BB%93%E6%9E%84%E4%BD%93%E7%B1%BB%E5%9E%8B%E6%96%B9%E6%B3%95)
+  - [第二十六章 strconv字符串和数值型转换源码分析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%85%AD%E7%AB%A0-strconv%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%92%8C%E6%95%B0%E5%80%BC%E5%9E%8B%E8%BD%AC%E6%8D%A2%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [第二十七章 Prometheus](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B8%83%E7%AB%A0-prometheus)
+  - [第二十八章 如何进行测试](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%85%AB%E7%AB%A0-%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E6%B5%8B%E8%AF%95)
+  - [第二十九章 module包管理](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B9%9D%E7%AB%A0-module%E5%8C%85%E7%AE%A1%E7%90%86)
+  - [第三十章 内存管理](#%E7%AC%AC%E4%B8%89%E5%8D%81%E7%AB%A0-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86)
+  - [第三十一章 go开发套件](#%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%80%E7%AB%A0-go%E5%BC%80%E5%8F%91%E5%A5%97%E4%BB%B6)
+  - [第三十二章 Generic 泛型](#%E7%AC%AC%E4%B8%89%E5%8D%81%E4%BA%8C%E7%AB%A0-generic-%E6%B3%9B%E5%9E%8B)
+  - [第三十三章 makefile 使用](#%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%89%E7%AB%A0-makefile-%E4%BD%BF%E7%94%A8)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # ***高级Goland学习代码*** _github.com/Danny5487401/go_advanced_code_
 ![](https://changkun.de/urlstat?mode=github&repo=)
 [![Go Report Card](https://goreportcard.com/badge/github.com/talkgo/night?style=flat-square)](https://goreportcard.com/report/github.com/Danny5487401/github.com/Danny5487401/go_advanced_code)

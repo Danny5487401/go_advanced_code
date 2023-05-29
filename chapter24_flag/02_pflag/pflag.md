@@ -1,3 +1,22 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [pflag](#pflag)
+  - [应用](#%E5%BA%94%E7%94%A8)
+  - [注意项](#%E6%B3%A8%E6%84%8F%E9%A1%B9)
+    - [shorthand 短选项用法](#shorthand-%E7%9F%AD%E9%80%89%E9%A1%B9%E7%94%A8%E6%B3%95)
+    - [NoOptDefVal 用法：指定了选项但是没有指定选项值时的默认值](#nooptdefval-%E7%94%A8%E6%B3%95%E6%8C%87%E5%AE%9A%E4%BA%86%E9%80%89%E9%A1%B9%E4%BD%86%E6%98%AF%E6%B2%A1%E6%9C%89%E6%8C%87%E5%AE%9A%E9%80%89%E9%A1%B9%E5%80%BC%E6%97%B6%E7%9A%84%E9%BB%98%E8%AE%A4%E5%80%BC)
+  - [Normalize 用法:标准化参数的名称](#normalize-%E7%94%A8%E6%B3%95%E6%A0%87%E5%87%86%E5%8C%96%E5%8F%82%E6%95%B0%E7%9A%84%E5%90%8D%E7%A7%B0)
+    - [deprecated 用法:把参数标记为即将废弃](#deprecated-%E7%94%A8%E6%B3%95%E6%8A%8A%E5%8F%82%E6%95%B0%E6%A0%87%E8%AE%B0%E4%B8%BA%E5%8D%B3%E5%B0%86%E5%BA%9F%E5%BC%83)
+    - [hidden 用法:在帮助文档中隐藏参数](#hidden-%E7%94%A8%E6%B3%95%E5%9C%A8%E5%B8%AE%E5%8A%A9%E6%96%87%E6%A1%A3%E4%B8%AD%E9%9A%90%E8%97%8F%E5%8F%82%E6%95%B0)
+  - [使用](#%E4%BD%BF%E7%94%A8)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [Flag](#flag)
+    - [FLagSet](#flagset)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # pflag
 
 pflag是Go的flag包的直接替代，实现了POSIX / GNU样式的–flags。pflag是Go的本机标志包的直接替代。

@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [内存对齐](#%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90)
+  - [编译器为什么要做内存对齐这种事情呢?](#%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%81%9A%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90%E8%BF%99%E7%A7%8D%E4%BA%8B%E6%83%85%E5%91%A2)
+  - [对齐系数](#%E5%AF%B9%E9%BD%90%E7%B3%BB%E6%95%B0)
+  - [go 结构体的内存布局](#go-%E7%BB%93%E6%9E%84%E4%BD%93%E7%9A%84%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80)
+  - [空结构体字段对齐](#%E7%A9%BA%E7%BB%93%E6%9E%84%E4%BD%93%E5%AD%97%E6%AE%B5%E5%AF%B9%E9%BD%90)
+  - [检测工具 go vet检查](#%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7-go-vet%E6%A3%80%E6%9F%A5)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 内存对齐
 
 > 现代计算机中内存空间都是按照字节(byte)进行划分的，所以从理论上讲对于任何类型的变量访问都可以从任意地址开始，

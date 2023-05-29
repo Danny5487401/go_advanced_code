@@ -1,3 +1,12 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Golang使用pkg-config自动获取头文件和链接库的方法](#golang%E4%BD%BF%E7%94%A8pkg-config%E8%87%AA%E5%8A%A8%E8%8E%B7%E5%8F%96%E5%A4%B4%E6%96%87%E4%BB%B6%E5%92%8C%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E6%96%B9%E6%B3%95)
+  - [使用](#%E4%BD%BF%E7%94%A8)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Golang使用pkg-config自动获取头文件和链接库的方法
 
 在Golang中使用cgo调用C库的时候，如果需要引用很多不同的第三方库，那么使用#cgo CFLAGS:和#cgo LDFLAGS:的方式会引入很多行代码。

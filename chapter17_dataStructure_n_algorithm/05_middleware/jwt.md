@@ -1,3 +1,18 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Jwt（JSON Web Token）](#jwtjson-web-token)
+  - [jwt构成](#jwt%E6%9E%84%E6%88%90)
+    - [头部 Header](#%E5%A4%B4%E9%83%A8-header)
+    - [Payload：载荷](#payload%E8%BD%BD%E8%8D%B7)
+    - [Signature：签名](#signature%E7%AD%BE%E5%90%8D)
+  - [安全](#%E5%AE%89%E5%85%A8)
+  - [缺点](#%E7%BC%BA%E7%82%B9)
+  - [go-jwt源码分析](#go-jwt%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Jwt（JSON Web Token）
 JSON Web Token（JWT）是一个开放标准（RFC 7519），它定义了一种紧凑且自包含的方式，用于在各方之间以JSON方式安全地传输信息。
 由于此信息是经过数字签名的，因此可以被验证和信任。可以使用秘密（使用HMAC算法）或使用RSA或ECDSA的公钥/私钥对对JWT进行签名

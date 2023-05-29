@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [sync.Map](#syncmap)
+  - [背景](#%E8%83%8C%E6%99%AF)
+  - [做法](#%E5%81%9A%E6%B3%95)
+  - [使用](#%E4%BD%BF%E7%94%A8)
+  - [sync.Map特性](#syncmap%E7%89%B9%E6%80%A7)
+  - [源码结构](#%E6%BA%90%E7%A0%81%E7%BB%93%E6%9E%84)
+    - [1. 结构体](#1-%E7%BB%93%E6%9E%84%E4%BD%93)
+    - [2. 存储store](#2-%E5%AD%98%E5%82%A8store)
+    - [3. 加载load](#3-%E5%8A%A0%E8%BD%BDload)
+  - [劣势](#%E5%8A%A3%E5%8A%BF)
+  - [适用场景](#%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # sync.Map
 
 sync.Map 类似 map[interface{}]interface{}，但是是并发安全的。sync.Map 类型是为特殊目的准备的，一般的代码还是应该使用普通的 Go map 类型，

@@ -1,3 +1,22 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Golang指针](#golang%E6%8C%87%E9%92%88)
+  - [分类](#%E5%88%86%E7%B1%BB)
+  - [为什么有 unsafe](#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89-unsafe)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [1. func Sizeof(x ArbitraryType) uintptr](#1-func-sizeofx-arbitrarytype-uintptr)
+    - [2. func Offsetof(x ArbitraryType) uintptr](#2-func-offsetofx-arbitrarytype-uintptr)
+    - [3. func Alignof(x ArbitraryType) uintptr](#3-func-alignofx-arbitrarytype-uintptr)
+  - [应用：](#%E5%BA%94%E7%94%A8)
+    - [1. map 源码中的应用](#1-map-%E6%BA%90%E7%A0%81%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8)
+      - [简单应用](#%E7%AE%80%E5%8D%95%E5%BA%94%E7%94%A8)
+      - [复杂应用](#%E5%A4%8D%E6%9D%82%E5%BA%94%E7%94%A8)
+    - [2. atomic.value中应用](#2-atomicvalue%E4%B8%AD%E5%BA%94%E7%94%A8)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Golang指针
 
 ## 分类

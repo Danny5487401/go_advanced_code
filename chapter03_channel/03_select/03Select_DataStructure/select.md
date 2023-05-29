@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [select](#select)
+  - [基本使用](#%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8)
+  - [源码分析runtime/select.go](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90runtimeselectgo)
+    - [运行时](#%E8%BF%90%E8%A1%8C%E6%97%B6)
+    - [主要讲解两个函数](#%E4%B8%BB%E8%A6%81%E8%AE%B2%E8%A7%A3%E4%B8%A4%E4%B8%AA%E5%87%BD%E6%95%B0)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # select
 
 ## 基本使用

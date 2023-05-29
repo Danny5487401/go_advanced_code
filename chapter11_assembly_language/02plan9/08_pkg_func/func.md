@@ -1,3 +1,19 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [高级汇编语言--以stack操作为例](#%E9%AB%98%E7%BA%A7%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80--%E4%BB%A5stack%E6%93%8D%E4%BD%9C%E4%B8%BA%E4%BE%8B)
+  - [函数声明](#%E5%87%BD%E6%95%B0%E5%A3%B0%E6%98%8E)
+  - [GO版本变化： 函数调用时，传递参数做了修改](#go%E7%89%88%E6%9C%AC%E5%8F%98%E5%8C%96-%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E6%97%B6%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0%E5%81%9A%E4%BA%86%E4%BF%AE%E6%94%B9)
+  - [栈](#%E6%A0%88)
+  - [栈结构](#%E6%A0%88%E7%BB%93%E6%9E%84)
+  - [Goroutine 栈操作](#goroutine-%E6%A0%88%E6%93%8D%E4%BD%9C)
+  - [G 的创建](#g-%E7%9A%84%E5%88%9B%E5%BB%BA)
+  - [栈的初始化](#%E6%A0%88%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96)
+  - [案例](#%E6%A1%88%E4%BE%8B)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 高级汇编语言--以stack操作为例
 
 Go汇编语言其实是一种高级的汇编语言。在这里高级一词并没有任何褒义或贬义的色彩，而是要强调Go汇编代码和最终真实执行的代码并不完全等价。

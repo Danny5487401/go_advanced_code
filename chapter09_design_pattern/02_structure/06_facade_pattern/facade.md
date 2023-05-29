@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [门面模式（Facade Pattern）](#%E9%97%A8%E9%9D%A2%E6%A8%A1%E5%BC%8Ffacade-pattern)
+- [场景](#%E5%9C%BA%E6%99%AF)
+- [设计](#%E8%AE%BE%E8%AE%A1)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 门面模式（Facade Pattern）
 
     又叫作外观模式，提供了一个统一的接口，用来访问子系统中的一群接口。其主要特征是定义了一个高层接口，让子系统更容易使用

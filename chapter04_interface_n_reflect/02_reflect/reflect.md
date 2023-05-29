@@ -1,3 +1,22 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [反射](#%E5%8F%8D%E5%B0%84)
+  - [一. 背景](#%E4%B8%80-%E8%83%8C%E6%99%AF)
+    - [为什么要用反射?](#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8%E5%8F%8D%E5%B0%84)
+    - [不建议使用反射的原因：](#%E4%B8%8D%E5%BB%BA%E8%AE%AE%E4%BD%BF%E7%94%A8%E5%8F%8D%E5%B0%84%E7%9A%84%E5%8E%9F%E5%9B%A0)
+  - [二. 用到反射的包：](#%E4%BA%8C-%E7%94%A8%E5%88%B0%E5%8F%8D%E5%B0%84%E7%9A%84%E5%8C%85)
+    - [举例](#%E4%B8%BE%E4%BE%8B)
+  - [三. 源码分析](#%E4%B8%89-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [数据结构介绍](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D)
+    - [反射的基本函数](#%E5%8F%8D%E5%B0%84%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%87%BD%E6%95%B0)
+      - [1. TypeOf函数](#1-typeof%E5%87%BD%E6%95%B0)
+      - [2. ValueOf函数](#2-valueof%E5%87%BD%E6%95%B0)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 反射
 
 在计算机科学中，反射是指计算机程序在运行时（Run time）可以访问、检测和修改它本身状态或行为的一种能力。

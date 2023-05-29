@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [reflect.DeepEqual函数：判断两个值是否一致](#reflectdeepequal%E5%87%BD%E6%95%B0%E5%88%A4%E6%96%AD%E4%B8%A4%E4%B8%AA%E5%80%BC%E6%98%AF%E5%90%A6%E4%B8%80%E8%87%B4)
+  - [背景](#%E8%83%8C%E6%99%AF)
+  - [使用](#%E4%BD%BF%E7%94%A8)
+  - [源码](#%E6%BA%90%E7%A0%81)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # reflect.DeepEqual函数：判断两个值是否一致
 
 

@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [sync 的扩展包errgroup](#sync-%E7%9A%84%E6%89%A9%E5%B1%95%E5%8C%85errgroup)
+  - [需求：](#%E9%9C%80%E6%B1%82)
+  - [解决方案](#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88)
+    - [初级版本：](#%E5%88%9D%E7%BA%A7%E7%89%88%E6%9C%AC)
+    - [中级版本](#%E4%B8%AD%E7%BA%A7%E7%89%88%E6%9C%AC)
+    - [终极版本](#%E7%BB%88%E6%9E%81%E7%89%88%E6%9C%AC)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # sync 的扩展包errgroup
 
 ## 需求：

@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [代理模式](#%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F)
+  - [场景](#%E5%9C%BA%E6%99%AF)
+  - [优点](#%E4%BC%98%E7%82%B9)
+  - [缺点](#%E7%BC%BA%E7%82%B9)
+  - [三个角色](#%E4%B8%89%E4%B8%AA%E8%A7%92%E8%89%B2)
+  - [代码案例](#%E4%BB%A3%E7%A0%81%E6%A1%88%E4%BE%8B)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 代理模式
 
 代理模式（Proxy Pattern）指为其他对象提供一种代理，以控制对这个对象的访问。

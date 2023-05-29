@@ -1,3 +1,24 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [sql源码分析](#sql%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [连接池性能测试结果](#%E8%BF%9E%E6%8E%A5%E6%B1%A0%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C)
+  - [连接池问题](#%E8%BF%9E%E6%8E%A5%E6%B1%A0%E9%97%AE%E9%A2%98)
+    - [重要的结构体](#%E9%87%8D%E8%A6%81%E7%9A%84%E7%BB%93%E6%9E%84%E4%BD%93)
+  - [流程](#%E6%B5%81%E7%A8%8B)
+    - [1. 引入包自动注册驱动](#1-%E5%BC%95%E5%85%A5%E5%8C%85%E8%87%AA%E5%8A%A8%E6%B3%A8%E5%86%8C%E9%A9%B1%E5%8A%A8)
+    - [2. 初始化数据库：打开DB句柄](#2-%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%B0%E6%8D%AE%E5%BA%93%E6%89%93%E5%BC%80db%E5%8F%A5%E6%9F%84)
+    - [3. 执行sql语句时  获取连接](#3-%E6%89%A7%E8%A1%8Csql%E8%AF%AD%E5%8F%A5%E6%97%B6--%E8%8E%B7%E5%8F%96%E8%BF%9E%E6%8E%A5)
+      - [1. 从连接池里面直接获取](#1-%E4%BB%8E%E8%BF%9E%E6%8E%A5%E6%B1%A0%E9%87%8C%E9%9D%A2%E7%9B%B4%E6%8E%A5%E8%8E%B7%E5%8F%96)
+      - [2. 没有空闲连接:阻塞等待](#2-%E6%B2%A1%E6%9C%89%E7%A9%BA%E9%97%B2%E8%BF%9E%E6%8E%A5%E9%98%BB%E5%A1%9E%E7%AD%89%E5%BE%85)
+      - [3. 没有空闲连接:直接创建新连接](#3-%E6%B2%A1%E6%9C%89%E7%A9%BA%E9%97%B2%E8%BF%9E%E6%8E%A5%E7%9B%B4%E6%8E%A5%E5%88%9B%E5%BB%BA%E6%96%B0%E8%BF%9E%E6%8E%A5)
+    - [4. 连接回收到连接池](#4-%E8%BF%9E%E6%8E%A5%E5%9B%9E%E6%94%B6%E5%88%B0%E8%BF%9E%E6%8E%A5%E6%B1%A0)
+    - [5. 处理过期的连接](#5-%E5%A4%84%E7%90%86%E8%BF%87%E6%9C%9F%E7%9A%84%E8%BF%9E%E6%8E%A5)
+  - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # sql源码分析
 
 ![](.sql_images/database_sql.png)

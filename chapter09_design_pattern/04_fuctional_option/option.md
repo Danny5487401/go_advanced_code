@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [自定义New结构体（option模式）](#%E8%87%AA%E5%AE%9A%E4%B9%89new%E7%BB%93%E6%9E%84%E4%BD%93option%E6%A8%A1%E5%BC%8F)
+  - [在zap源码中实现](#%E5%9C%A8zap%E6%BA%90%E7%A0%81%E4%B8%AD%E5%AE%9E%E7%8E%B0)
+    - [结构体logger](#%E7%BB%93%E6%9E%84%E4%BD%93logger)
+    - [初始化](#%E5%88%9D%E5%A7%8B%E5%8C%96)
+    - [option](#option)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 自定义New结构体（option模式）
 
 ## 在zap源码中实现

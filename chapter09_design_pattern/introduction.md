@@ -1,3 +1,26 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [设计模式](#%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F)
+  - [关系](#%E5%85%B3%E7%B3%BB)
+  - [OOP 七大原则](#oop-%E4%B8%83%E5%A4%A7%E5%8E%9F%E5%88%99)
+  - [历史分类：23种设计模式](#%E5%8E%86%E5%8F%B2%E5%88%86%E7%B1%BB23%E7%A7%8D%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F)
+  - [最新分类](#%E6%9C%80%E6%96%B0%E5%88%86%E7%B1%BB)
+    - [创建型模式](#%E5%88%9B%E5%BB%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F)
+    - [结构模式](#%E7%BB%93%E6%9E%84%E6%A8%A1%E5%BC%8F)
+    - [行为模式](#%E8%A1%8C%E4%B8%BA%E6%A8%A1%E5%BC%8F)
+    - [同步模式](#%E5%90%8C%E6%AD%A5%E6%A8%A1%E5%BC%8F)
+    - [并行模式](#%E5%B9%B6%E8%A1%8C%E6%A8%A1%E5%BC%8F)
+    - [消息传递模式](#%E6%B6%88%E6%81%AF%E4%BC%A0%E9%80%92%E6%A8%A1%E5%BC%8F)
+    - [稳定模式](#%E7%A8%B3%E5%AE%9A%E6%A8%A1%E5%BC%8F)
+    - [剖析模式](#%E5%89%96%E6%9E%90%E6%A8%A1%E5%BC%8F)
+    - [成例](#%E6%88%90%E4%BE%8B)
+    - [反模式](#%E5%8F%8D%E6%A8%A1%E5%BC%8F)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 设计模式
 是一套被反复使用、多数人知晓的、经过分类的、代码设计经验的总结
 

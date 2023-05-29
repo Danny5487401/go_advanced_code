@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [flag命令行](#flag%E5%91%BD%E4%BB%A4%E8%A1%8C)
+  - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
+  - [标准包flag包源码分析](#%E6%A0%87%E5%87%86%E5%8C%85flag%E5%8C%85%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [有两重要的数据结构来表示flag](#%E6%9C%89%E4%B8%A4%E9%87%8D%E8%A6%81%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%9D%A5%E8%A1%A8%E7%A4%BAflag)
+    - [参数解析](#%E5%8F%82%E6%95%B0%E8%A7%A3%E6%9E%90)
+    - [错误处理方式](#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E6%96%B9%E5%BC%8F)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # flag命令行
 
 命令行参数用于向应用程序传递一些定制参数，使得程序的功能更加丰富和多样化。

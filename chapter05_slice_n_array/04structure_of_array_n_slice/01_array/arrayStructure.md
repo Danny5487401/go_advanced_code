@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [数组结构：](#%E6%95%B0%E7%BB%84%E7%BB%93%E6%9E%84)
+  - [源码：cmd/compile/internal/types.Array](#%E6%BA%90%E7%A0%81cmdcompileinternaltypesarray)
+  - [初始化](#%E5%88%9D%E5%A7%8B%E5%8C%96)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 数组结构：
 一组相同元素类型的集合,数组是一块固定大小的连续的内存空间
 

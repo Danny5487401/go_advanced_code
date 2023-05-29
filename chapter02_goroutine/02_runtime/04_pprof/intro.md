@@ -1,3 +1,19 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Go 中监控代码性能pprof](#go-%E4%B8%AD%E7%9B%91%E6%8E%A7%E4%BB%A3%E7%A0%81%E6%80%A7%E8%83%BDpprof)
+  - [展示参数](#%E5%B1%95%E7%A4%BA%E5%8F%82%E6%95%B0)
+    - [源码](#%E6%BA%90%E7%A0%81)
+  - [两个包：](#%E4%B8%A4%E4%B8%AA%E5%8C%85)
+  - [net/http/pprof 源码分析](#nethttppprof-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [Profile 举例](#profile-%E4%B8%BE%E4%BE%8B)
+  - [介绍：](#%E4%BB%8B%E7%BB%8D)
+  - [pprof 文件分析](#pprof-%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90)
+  - [第三方性能分析来分析代码包](#%E7%AC%AC%E4%B8%89%E6%96%B9%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E6%9D%A5%E5%88%86%E6%9E%90%E4%BB%A3%E7%A0%81%E5%8C%85)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Go 中监控代码性能pprof
 
 pprof 是用于可视化和分析性能分析数据的工具

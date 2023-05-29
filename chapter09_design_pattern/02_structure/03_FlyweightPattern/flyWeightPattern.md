@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [享元模式：](#%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F)
+  - [优点：](#%E4%BC%98%E7%82%B9)
+  - [缺点](#%E7%BC%BA%E7%82%B9)
+  - [在享元模式中，有以下几种角色：](#%E5%9C%A8%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F%E4%B8%AD%E6%9C%89%E4%BB%A5%E4%B8%8B%E5%87%A0%E7%A7%8D%E8%A7%92%E8%89%B2)
+  - [举例：](#%E4%B8%BE%E4%BE%8B)
+  - [何时使用：](#%E4%BD%95%E6%97%B6%E4%BD%BF%E7%94%A8)
+  - [注意事项：](#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 享元模式：
 尝试重用现有的同类对象，如果未找到匹配的对象，则创建新的对象。
 

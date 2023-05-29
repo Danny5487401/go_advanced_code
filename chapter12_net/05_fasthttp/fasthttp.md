@@ -1,3 +1,18 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [fasthttp](#fasthttp)
+  - [对比net/http](#%E5%AF%B9%E6%AF%94nethttp)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [初始化](#%E5%88%9D%E5%A7%8B%E5%8C%96)
+    - [具体获取过程: 工作协程的复用](#%E5%85%B7%E4%BD%93%E8%8E%B7%E5%8F%96%E8%BF%87%E7%A8%8B-%E5%B7%A5%E4%BD%9C%E5%8D%8F%E7%A8%8B%E7%9A%84%E5%A4%8D%E7%94%A8)
+      - [工作池结构池 workerPool](#%E5%B7%A5%E4%BD%9C%E6%B1%A0%E7%BB%93%E6%9E%84%E6%B1%A0-workerpool)
+    - [获取连接](#%E8%8E%B7%E5%8F%96%E8%BF%9E%E6%8E%A5)
+    - [内存变量复用](#%E5%86%85%E5%AD%98%E5%8F%98%E9%87%8F%E5%A4%8D%E7%94%A8)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # fasthttp
 高性能主要源自于“复用”，通过服务协程和内存变量的复用，节省了大量资源分配的成本。
 

@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Goland随机数](#goland%E9%9A%8F%E6%9C%BA%E6%95%B0)
+  - [math/rand伪随机](#mathrand%E4%BC%AA%E9%9A%8F%E6%9C%BA)
+    - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [crypto/rand真随机](#cryptorand%E7%9C%9F%E9%9A%8F%E6%9C%BA)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Goland随机数
 
 随机数分为真随机和伪随机，

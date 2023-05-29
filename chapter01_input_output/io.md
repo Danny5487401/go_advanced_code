@@ -1,3 +1,24 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Linux的文件系统](#linux%E7%9A%84%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F)
+  - [文件系统的特点](#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%89%B9%E7%82%B9)
+  - [I/O输入输出分类](#io%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E5%88%86%E7%B1%BB)
+  - [文件的I/O操作](#%E6%96%87%E4%BB%B6%E7%9A%84io%E6%93%8D%E4%BD%9C)
+  - [整个 Unix 体系结构](#%E6%95%B4%E4%B8%AA-unix-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84)
+  - [fd文件描述符](#fd%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6)
+  - [标准库中对IO封装](#%E6%A0%87%E5%87%86%E5%BA%93%E4%B8%AD%E5%AF%B9io%E5%B0%81%E8%A3%85)
+    - [IO 接口描述（语义）](#io-%E6%8E%A5%E5%8F%A3%E6%8F%8F%E8%BF%B0%E8%AF%AD%E4%B9%89)
+    - [分类](#%E5%88%86%E7%B1%BB)
+  - [磁盘性能指标](#%E7%A3%81%E7%9B%98%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87)
+    - [磁盘 I/O 观测](#%E7%A3%81%E7%9B%98-io-%E8%A7%82%E6%B5%8B)
+    - [进程 I/O 观测](#%E8%BF%9B%E7%A8%8B-io-%E8%A7%82%E6%B5%8B)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [数据结构](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Linux的文件系统
 
 ![](.io_images/linux_file_system.png)

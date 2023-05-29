@@ -1,3 +1,22 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [CGO](#cgo)
+  - [背景:站在前人(C语言库)的肩膀](#%E8%83%8C%E6%99%AF%E7%AB%99%E5%9C%A8%E5%89%8D%E4%BA%BAc%E8%AF%AD%E8%A8%80%E5%BA%93%E7%9A%84%E8%82%A9%E8%86%80)
+  - [go 命令使用 cgo](#go-%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8-cgo)
+  - [标准库案例](#%E6%A0%87%E5%87%86%E5%BA%93%E6%A1%88%E4%BE%8B)
+  - [#cgo语句](#cgo%E8%AF%AD%E5%8F%A5)
+  - [Go与C类型转换](#go%E4%B8%8Ec%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2)
+    - [类型转换](#%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2)
+  - [cgo 内部机制](#cgo-%E5%86%85%E9%83%A8%E6%9C%BA%E5%88%B6)
+    - [CGO生成的中间文件](#cgo%E7%94%9F%E6%88%90%E7%9A%84%E4%B8%AD%E9%97%B4%E6%96%87%E4%BB%B6)
+    - [内部调用流程 Go->C](#%E5%86%85%E9%83%A8%E8%B0%83%E7%94%A8%E6%B5%81%E7%A8%8B-go-c)
+    - [内部调用流程：C->Go](#%E5%86%85%E9%83%A8%E8%B0%83%E7%94%A8%E6%B5%81%E7%A8%8Bc-go)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # CGO 
 ## 背景:站在前人(C语言库)的肩膀
 

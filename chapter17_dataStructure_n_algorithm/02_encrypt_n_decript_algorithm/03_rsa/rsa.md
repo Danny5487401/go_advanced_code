@@ -1,3 +1,26 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [RSA（Rivest–Shamir–Adleman）加密](#rsarivestshamiradleman%E5%8A%A0%E5%AF%86)
+  - [前置知识](#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86)
+    - [1. 欧拉函数](#1-%E6%AC%A7%E6%8B%89%E5%87%BD%E6%95%B0)
+    - [2. 欧拉定理](#2-%E6%AC%A7%E6%8B%89%E5%AE%9A%E7%90%86)
+    - [3. 模反元素](#3-%E6%A8%A1%E5%8F%8D%E5%85%83%E7%B4%A0)
+  - [RSA密钥对生成算法](#rsa%E5%AF%86%E9%92%A5%E5%AF%B9%E7%94%9F%E6%88%90%E7%AE%97%E6%B3%95)
+  - [RSA加密有常见的三种情况](#rsa%E5%8A%A0%E5%AF%86%E6%9C%89%E5%B8%B8%E8%A7%81%E7%9A%84%E4%B8%89%E7%A7%8D%E6%83%85%E5%86%B5)
+    - [实现](#%E5%AE%9E%E7%8E%B0)
+  - [应用](#%E5%BA%94%E7%94%A8)
+  - [Go源码RSA](#go%E6%BA%90%E7%A0%81rsa)
+    - [crypto/x509包](#cryptox509%E5%8C%85)
+      - [序列化](#%E5%BA%8F%E5%88%97%E5%8C%96)
+      - [解析](#%E8%A7%A3%E6%9E%90)
+    - [crypto/rsa包](#cryptorsa%E5%8C%85)
+      - [生成RSA密钥对](#%E7%94%9F%E6%88%90rsa%E5%AF%86%E9%92%A5%E5%AF%B9)
+  - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # RSA（Rivest–Shamir–Adleman）加密
 1977年，三位数学家Rivest、Shamir 和 Adleman 设计了一种算法，可以实现非对称加密。
 这种算法用他们三个人的名字命名，叫做RSA算法。从那时直到现在，RSA算法一直是最广为使用的"非对称加密算法"。

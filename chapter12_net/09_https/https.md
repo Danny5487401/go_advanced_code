@@ -1,3 +1,23 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [HTTPS (Secure Hypertext Transfer Protocol)安全超文本传输协议](#https-secure-hypertext-transfer-protocol%E5%AE%89%E5%85%A8%E8%B6%85%E6%96%87%E6%9C%AC%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE)
+  - [背景](#%E8%83%8C%E6%99%AF)
+  - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
+    - [SSL](#ssl)
+    - [TLS](#tls)
+    - [TLS 四次握手](#tls-%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B)
+    - [SSL证书](#ssl%E8%AF%81%E4%B9%A6)
+    - [SAN(Subject Alternative Name)](#sansubject-alternative-name)
+  - [代码注意点](#%E4%BB%A3%E7%A0%81%E6%B3%A8%E6%84%8F%E7%82%B9)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [TLS](#tls-1)
+    - [https 启动流程](#https-%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B)
+  - [参考](#%E5%8F%82%E8%80%83)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # HTTPS (Secure Hypertext Transfer Protocol)安全超文本传输协议
 
 ## 背景

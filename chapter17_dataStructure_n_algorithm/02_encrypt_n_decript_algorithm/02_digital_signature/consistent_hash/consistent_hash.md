@@ -1,3 +1,19 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [一致性hash](#%E4%B8%80%E8%87%B4%E6%80%A7hash)
+  - [使用场景](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
+  - [算法特点](#%E7%AE%97%E6%B3%95%E7%89%B9%E7%82%B9)
+    - [均衡性(Balance)](#%E5%9D%87%E8%A1%A1%E6%80%A7balance)
+    - [单调性(Monotonicity)](#%E5%8D%95%E8%B0%83%E6%80%A7monotonicity)
+    - [分散性(Spread)](#%E5%88%86%E6%95%A3%E6%80%A7spread)
+  - [库](#%E5%BA%93)
+    - ["https://github.com/serialx/hashring" -->buildkit 使用](#httpsgithubcomserialxhashring---buildkit-%E4%BD%BF%E7%94%A8)
+    - [go-zero实现](#go-zero%E5%AE%9E%E7%8E%B0)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 一致性hash 
 哈希算法是一种从任何一种数据中创建小的数字“指纹”的方法，解决如何将数据映射到固定槽问题。而一致性哈希算法是为了解决当槽数目变化的时候如何将映射结果的变化降到最小
 

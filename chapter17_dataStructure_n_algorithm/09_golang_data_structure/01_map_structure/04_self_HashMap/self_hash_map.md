@@ -1,3 +1,12 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [自我实现 hashmap](#%E8%87%AA%E6%88%91%E5%AE%9E%E7%8E%B0-hashmap)
+  - [功能](#%E5%8A%9F%E8%83%BD)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 自我实现 hashmap
 
 ## 功能

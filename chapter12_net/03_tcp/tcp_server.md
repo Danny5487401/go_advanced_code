@@ -1,3 +1,23 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [TCP 服务端](#tcp-%E6%9C%8D%E5%8A%A1%E7%AB%AF)
+  - [listen过程](#listen%E8%BF%87%E7%A8%8B)
+    - [1. 创建socket](#1-%E5%88%9B%E5%BB%BAsocket)
+    - [2. 绑定和监听](#2-%E7%BB%91%E5%AE%9A%E5%92%8C%E7%9B%91%E5%90%AC)
+    - [3. epoll创建和初始化](#3-epoll%E5%88%9B%E5%BB%BA%E5%92%8C%E5%88%9D%E5%A7%8B%E5%8C%96)
+  - [Accept 过程](#accept-%E8%BF%87%E7%A8%8B)
+    - [1. 接收一个连接](#1-%E6%8E%A5%E6%94%B6%E4%B8%80%E4%B8%AA%E8%BF%9E%E6%8E%A5)
+    - [2. 阻塞当前协程](#2-%E9%98%BB%E5%A1%9E%E5%BD%93%E5%89%8D%E5%8D%8F%E7%A8%8B)
+    - [3. 将新连接添加到 epoll 中](#3-%E5%B0%86%E6%96%B0%E8%BF%9E%E6%8E%A5%E6%B7%BB%E5%8A%A0%E5%88%B0-epoll-%E4%B8%AD)
+  - [Read 和 Write 内部过程](#read-%E5%92%8C-write-%E5%86%85%E9%83%A8%E8%BF%87%E7%A8%8B)
+    - [Read流程](#read%E6%B5%81%E7%A8%8B)
+    - [Write 内部过程](#write-%E5%86%85%E9%83%A8%E8%BF%87%E7%A8%8B)
+  - [Golang 唤醒](#golang-%E5%94%A4%E9%86%92)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # TCP 服务端
 
 ## listen过程

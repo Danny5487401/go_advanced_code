@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [encoding/pem包(Privacy Enhance Mail)](#encodingpem%E5%8C%85privacy-enhance-mail)
+  - [PEM 编码格式如下](#pem-%E7%BC%96%E7%A0%81%E6%A0%BC%E5%BC%8F%E5%A6%82%E4%B8%8B)
+    - [1. 证书文件](#1-%E8%AF%81%E4%B9%A6%E6%96%87%E4%BB%B6)
+    - [2. 私钥文件：](#2-%E7%A7%81%E9%92%A5%E6%96%87%E4%BB%B6)
+    - [3. 请求文件：](#3-%E8%AF%B7%E6%B1%82%E6%96%87%E4%BB%B6)
+  - [Go 源码](#go-%E6%BA%90%E7%A0%81)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # encoding/pem包(Privacy Enhance Mail)
 
 pem包实现了PEM数据编码（保密增强邮件协议）。目前PEM编码主要用于TLS密钥和证书.

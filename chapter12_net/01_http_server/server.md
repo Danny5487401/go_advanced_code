@@ -1,3 +1,18 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [http server](#http-server)
+  - [搭建流程](#%E6%90%AD%E5%BB%BA%E6%B5%81%E7%A8%8B)
+  - [具体监听处理服务流程](#%E5%85%B7%E4%BD%93%E7%9B%91%E5%90%AC%E5%A4%84%E7%90%86%E6%9C%8D%E5%8A%A1%E6%B5%81%E7%A8%8B)
+  - [路由处理对象ServeMux结构体](#%E8%B7%AF%E7%94%B1%E5%A4%84%E7%90%86%E5%AF%B9%E8%B1%A1servemux%E7%BB%93%E6%9E%84%E4%BD%93)
+  - [路由注册接口](#%E8%B7%AF%E7%94%B1%E6%B3%A8%E5%86%8C%E6%8E%A5%E5%8F%A3)
+  - [开启服务](#%E5%BC%80%E5%90%AF%E6%9C%8D%E5%8A%A1)
+    - [重要的server结构体](#%E9%87%8D%E8%A6%81%E7%9A%84server%E7%BB%93%E6%9E%84%E4%BD%93)
+  - [处理请求](#%E5%A4%84%E7%90%86%E8%AF%B7%E6%B1%82)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # http server 
 
 ## 搭建流程

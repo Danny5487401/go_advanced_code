@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [问题描述](#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0)
+  - [需求：](#%E9%9C%80%E6%B1%82)
+  - [实现](#%E5%AE%9E%E7%8E%B0)
+    - [1. 通过内存进行交流](#1-%E9%80%9A%E8%BF%87%E5%86%85%E5%AD%98%E8%BF%9B%E8%A1%8C%E4%BA%A4%E6%B5%81)
+    - [2. 通过交流分享内存](#2-%E9%80%9A%E8%BF%87%E4%BA%A4%E6%B5%81%E5%88%86%E4%BA%AB%E5%86%85%E5%AD%98)
+    - [3. 通过channel中的函数进行交流](#3-%E9%80%9A%E8%BF%87channel%E4%B8%AD%E7%9A%84%E5%87%BD%E6%95%B0%E8%BF%9B%E8%A1%8C%E4%BA%A4%E6%B5%81)
+    - [总结：](#%E6%80%BB%E7%BB%93)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 问题描述
 
 区块链是构建在P2P网络之上，在P2P网络中：

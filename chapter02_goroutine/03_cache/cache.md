@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [缓存](#%E7%BC%93%E5%AD%98)
+  - [cache局部性原理](#cache%E5%B1%80%E9%83%A8%E6%80%A7%E5%8E%9F%E7%90%86)
+  - [缓存行](#%E7%BC%93%E5%AD%98%E8%A1%8C)
+  - [cache伪共享](#cache%E4%BC%AA%E5%85%B1%E4%BA%AB)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 缓存
 ![](.cache_images/cache.png)
 ![](.cache_images/cpu_n_memory.png)

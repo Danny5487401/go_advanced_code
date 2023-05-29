@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [go build](#go-build)
+  - [packages](#packages)
+  - [介绍build选项](#%E4%BB%8B%E7%BB%8Dbuild%E9%80%89%E9%A1%B9)
+    - [-n 不执行地打印流程中用到的命令](#-n-%E4%B8%8D%E6%89%A7%E8%A1%8C%E5%9C%B0%E6%89%93%E5%8D%B0%E6%B5%81%E7%A8%8B%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%91%BD%E4%BB%A4)
+    - [--work保留可执行文件](#--work%E4%BF%9D%E7%95%99%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6)
+  - [Go 语言的包导入](#go-%E8%AF%AD%E8%A8%80%E7%9A%84%E5%8C%85%E5%AF%BC%E5%85%A5)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # go build 
 
 build过程细化成两部分，compile与link，即编译和链接。

@@ -1,3 +1,19 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [base64](#base64)
+  - [编/解码原理](#%E7%BC%96%E8%A7%A3%E7%A0%81%E5%8E%9F%E7%90%86)
+  - [具体Encoding类型-在Go源码](#%E5%85%B7%E4%BD%93encoding%E7%B1%BB%E5%9E%8B-%E5%9C%A8go%E6%BA%90%E7%A0%81)
+    - [StdEncoding](#stdencoding)
+    - [URLEncoding](#urlencoding)
+    - [RawStdEncoding](#rawstdencoding)
+    - [RawURLEncoding](#rawurlencoding)
+    - [编码](#%E7%BC%96%E7%A0%81)
+    - [解码](#%E8%A7%A3%E7%A0%81)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # base64
 Base64不是一种加密方式,而是一种编码方式.是一种任意二进制到文本字符串的编码方法，常用于在URL、Cookie、网页中传输少量二进制数据。
 

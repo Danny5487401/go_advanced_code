@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [hash 算法](#hash-%E7%AE%97%E6%B3%95)
+  - [hash 函数分类：有加密型和非加密型](#hash-%E5%87%BD%E6%95%B0%E5%88%86%E7%B1%BB%E6%9C%89%E5%8A%A0%E5%AF%86%E5%9E%8B%E5%92%8C%E9%9D%9E%E5%8A%A0%E5%AF%86%E5%9E%8B)
+  - [常见的 Hash 函数有：](#%E5%B8%B8%E8%A7%81%E7%9A%84-hash-%E5%87%BD%E6%95%B0%E6%9C%89)
+  - [HASH 算法主要应用：](#hash-%E7%AE%97%E6%B3%95%E4%B8%BB%E8%A6%81%E5%BA%94%E7%94%A8)
+    - [数字签名](#%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D)
+      - [数字签名 对比 消息加密/消息认证](#%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D-%E5%AF%B9%E6%AF%94-%E6%B6%88%E6%81%AF%E5%8A%A0%E5%AF%86%E6%B6%88%E6%81%AF%E8%AE%A4%E8%AF%81)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # hash 算法
 哈希算法只需满足把一个元素映射到另一个区间的要求。该要求是如此之低。
 

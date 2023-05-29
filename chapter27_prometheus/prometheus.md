@@ -1,3 +1,33 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Prometheus](#prometheus)
+  - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
+    - [数据模型](#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B)
+    - [样本](#%E6%A0%B7%E6%9C%AC)
+    - [指标名和标签](#%E6%8C%87%E6%A0%87%E5%90%8D%E5%92%8C%E6%A0%87%E7%AD%BE)
+    - [指标类型](#%E6%8C%87%E6%A0%87%E7%B1%BB%E5%9E%8B)
+      - [1. Counter计数器](#1-counter%E8%AE%A1%E6%95%B0%E5%99%A8)
+      - [2. Gauge仪表盘](#2-gauge%E4%BB%AA%E8%A1%A8%E7%9B%98)
+      - [3. Histogram直方图](#3-histogram%E7%9B%B4%E6%96%B9%E5%9B%BE)
+      - [4. Summary摘要](#4-summary%E6%91%98%E8%A6%81)
+    - [作业和实例](#%E4%BD%9C%E4%B8%9A%E5%92%8C%E5%AE%9E%E4%BE%8B)
+  - [部署](#%E9%83%A8%E7%BD%B2)
+  - [prometheus/client_golang 源码分析](#prometheusclient_golang-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [Metrics](#metrics)
+    - [collector](#collector)
+    - [Custom Collectors and constant Metrics](#custom-collectors-and-constant-metrics)
+    - [Advanced Uses of the Registry](#advanced-uses-of-the-registry)
+    - [counter相关函数](#counter%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0)
+    - [WithLabelValues方法](#withlabelvalues%E6%96%B9%E6%B3%95)
+    - [Registry 的高级用法](#registry-%E7%9A%84%E9%AB%98%E7%BA%A7%E7%94%A8%E6%B3%95)
+  - [Prometheus拉取Exporter的哪些数据](#prometheus%E6%8B%89%E5%8F%96exporter%E7%9A%84%E5%93%AA%E4%BA%9B%E6%95%B0%E6%8D%AE)
+    - [promhttp 包](#promhttp-%E5%8C%85)
+  - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Prometheus
 ![](.prometheus_images/prometheus_structure.png)
 - Exporter :收集系统或进程信息，转换为 Prometheus 可以识别的数据指标，以 http 或 https 服务的方式暴露给 Prometheus

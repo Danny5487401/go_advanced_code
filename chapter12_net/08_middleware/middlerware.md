@@ -1,3 +1,12 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [HTTP中间件](#http%E4%B8%AD%E9%97%B4%E4%BB%B6)
+  - [优雅连接中间件：alice](#%E4%BC%98%E9%9B%85%E8%BF%9E%E6%8E%A5%E4%B8%AD%E9%97%B4%E4%BB%B6alice)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # HTTP中间件
 
 当你构建一个web应用程序时,可能有一些共享的功能,你想参加许多(甚至是全部)HTTP请求。 您可能想要记录每个请求,gzip每个响应,或做一些繁重的处理之前检查缓存。

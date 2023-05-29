@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Trace 可视化分析goroutine的调度](#trace-%E5%8F%AF%E8%A7%86%E5%8C%96%E5%88%86%E6%9E%90goroutine%E7%9A%84%E8%B0%83%E5%BA%A6)
+  - [运行](#%E8%BF%90%E8%A1%8C)
+    - [Goroutine analysis](#goroutine-analysis)
+    - [view trace](#view-trace)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Trace 可视化分析goroutine的调度
 
 ## 运行

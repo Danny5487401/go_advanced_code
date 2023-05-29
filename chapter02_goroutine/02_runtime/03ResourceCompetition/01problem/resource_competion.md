@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [data race 资源竞争](#data-race-%E8%B5%84%E6%BA%90%E7%AB%9E%E4%BA%89)
+  - [推荐做法](#%E6%8E%A8%E8%8D%90%E5%81%9A%E6%B3%95)
+  - [解决方式](#%E8%A7%A3%E5%86%B3%E6%96%B9%E5%BC%8F)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # data race 资源竞争
 
 ## 推荐做法

@@ -1,11 +1,36 @@
-# sync.Pool 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [sync.Pool](#syncpool)
+  - [背景](#%E8%83%8C%E6%99%AF)
+    - [缺点](#%E7%BC%BA%E7%82%B9)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [Pool结构体](#pool%E7%BB%93%E6%9E%84%E4%BD%93)
+    - [sync.Pool 的 init 函数](#syncpool-%E7%9A%84-init-%E5%87%BD%E6%95%B0)
+    - [sync.Pool的 Get 函数](#syncpool%E7%9A%84-get-%E5%87%BD%E6%95%B0)
+    - [sync.Pool的 Put 函数](#syncpool%E7%9A%84-put-%E5%87%BD%E6%95%B0)
+  - [常见问题](#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
+    - [1. Pool 的内容会清理？清理会造成数据丢失吗？](#1-pool-%E7%9A%84%E5%86%85%E5%AE%B9%E4%BC%9A%E6%B8%85%E7%90%86%E6%B8%85%E7%90%86%E4%BC%9A%E9%80%A0%E6%88%90%E6%95%B0%E6%8D%AE%E4%B8%A2%E5%A4%B1%E5%90%97)
+    - [2. runtime.GOMAXPROCS 与 pool 之间的关系？](#2-runtimegomaxprocs-%E4%B8%8E-pool-%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB)
+    - [3. New() 的作用？假如没有 New 会出现什么情况？](#3-new-%E7%9A%84%E4%BD%9C%E7%94%A8%E5%81%87%E5%A6%82%E6%B2%A1%E6%9C%89-new-%E4%BC%9A%E5%87%BA%E7%8E%B0%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5)
+    - [4. 先 Put，再 Get 会出现什么情况？](#4-%E5%85%88-put%E5%86%8D-get-%E4%BC%9A%E5%87%BA%E7%8E%B0%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5)
+    - [5. 只 Get 不 Put 会内存泄露吗？](#5-%E5%8F%AA-get-%E4%B8%8D-put-%E4%BC%9A%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%90%97)
+  - [优秀应用实践](#%E4%BC%98%E7%A7%80%E5%BA%94%E7%94%A8%E5%AE%9E%E8%B7%B5)
+    - [1. 官方包fmt源码分析](#1-%E5%AE%98%E6%96%B9%E5%8C%85fmt%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [2. 第三方库应用（gin)](#2-%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E5%BA%94%E7%94%A8gin)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+# sync.Pool
 
 定位不是做类似连接池的东西，它的用途仅仅是增加对象重用的几率，减少gc的负担.
 
 sync.Pool 是一个内存池。通常内存池是用来防止内存泄露的（例如C/C++)。sync.Pool 这个内存池却不是干这个的，
 带 GC 功能的语言都存在垃圾回收 STW 问题，需要回收的内存块越多，STW 持续时间就越长。如果能让 new 出来的变量，一直不被回收，得到重复利用，是不是就减轻了 GC 的压力
 
-## 背景：
+## 背景
 
 Go是自动垃圾回收的(garbage collector)，这大大减少了程序编程负担。但gc是一把双刃剑，带来了编程的方便但同时也增加了运行时开销，
 使用不当甚至会严重影响程序的性能。因此性能要求高的场景不能任意产生太多的垃圾（有gc但又不能完全依赖它挺恶心的），如何解决呢？
@@ -18,10 +43,13 @@ Go是自动垃圾回收的(garbage collector)，这大大减少了程序编程�
 因此使用sync.pool是没办法做到控制缓存对象数量的个数的。另外sync.pool缓存对象的期限是很诡异的，这是很多人错误理解的地方，
 
 ## 源码分析
+
 ![](.pool_images/sync_pool_structure.png)
 
 ### Pool结构体
+
 ![](.pool_images/pool_structure.png)
+
 ```go
 type Pool struct {
 	noCopy noCopy
@@ -67,8 +95,8 @@ type poolLocal struct {
 	// 伪共享，仅占位用，防止在 cache line 上分配多个 poolLocalInternal
 	pad [128 - unsafe.Sizeof(poolLocalInternal{})%128]byte
 }
-
 ```
+
 pad涉及伪共享]
 [伪共享](chapter02_goroutine/03_cache/cache.md)
 
@@ -97,10 +125,10 @@ type poolChainElt struct {
 	// prev 被 consumer 写，producer 读。所以只会从 non-nil 变成 nil
 	next, prev *poolChainElt
 }
-
-
 ```
+
 ![](.pool_images/poolDequeueTrait.png)
+
 ```go
 type poolDequeue struct {
     // headTail 包含一个 32 位的 head 和一个 32 位的 tail 指针。这两个值都和 len(vals)-1 取模过。
@@ -115,6 +143,7 @@ type poolDequeue struct {
 	vals []eface
 }
 ```
+
 poolDequeue 被实现为单生产者、多消费者的固定大小的无锁（atomic 实现） Ring 式队列（底层存储使用数组，使用两个指针标记 head、tail）。
 生产者可以从 head 插入、head 删除，而消费者仅可从 tail 删除。
 
@@ -123,7 +152,9 @@ headTail 指向队列的头和尾，通过位运算将 head 和 tail 存入 head
 我们看到 Pool 并没有直接使用 poolDequeue，原因是它的大小是固定的，而 Pool 的大小是没有限制的。因此，在 poolDequeue 之上包装了一下，变成了一个 poolChainElt 的双向链表，可以动态增长
 
 ### sync.Pool 的 init 函数
+
 对于 Pool 而言，并不能无限扩展，否则对象占用内存太多了，会引起内存溢出。
+
 ```go
 func init() {
     runtime_registerPoolCleanup(poolCleanup)
@@ -149,11 +180,12 @@ func sync_runtime_registerPoolCleanup(f func()) {
 
 正因为这样，我们是不可以使用sync.Pool去实现一个socket连接池的。
 
-![](sync_pool_structure.png)
+![](.pool_images/sync_pool_structure.png)
 一个goroutine固定在一个局部调度器P上，从当前 P 对应的 poolLocal 取值， 若取不到，则从对应的 shared 数组上取，若还是取不到；
 则尝试从其他 P 的 shared 中偷。 若偷不到，则调用 New 创建一个新的对象。池中所有临时对象在一次 GC 后会被全部清空。
 
 ### sync.Pool的 Get 函数
+
 ![](.pool_images/pool_get.png)
 
 ```go
@@ -178,7 +210,9 @@ func (p *Pool) Get() interface{} {
 ```
 
 ### sync.Pool的 Put 函数
+
 ![](.pool_images/pool_put.png)
+
 ```go
 // src/sync/pool.go
 
@@ -204,6 +238,7 @@ func (p *Pool) Put(x interface{}) {
 ## 常见问题
 
 ### 1. Pool 的内容会清理？清理会造成数据丢失吗？
+
 Go 会在每个 GC 周期内定期清理 sync.Pool 内的数据。
 
 要分几个方面来说这个问题。
@@ -212,8 +247,8 @@ Go 会在每个 GC 周期内定期清理 sync.Pool 内的数据。
 在第一个 GC 周期内 Put 到 sync.Pool 的数值，在第二个 GC 周期没有被 Get 使用，就会被放在 local.victim 中。如果在 第三个 GC 周期仍然没有被使用就会被 GC 回收。
 
 ### 2. runtime.GOMAXPROCS 与 pool 之间的关系？
-```go
 
+```go
 func (p *Pool) pinSlow() (*poolLocal, int) {
 	// Retry under the mutex.
 	// Can not lock the mutex while pinned.
@@ -241,11 +276,13 @@ func (p *Pool) pinSlow() (*poolLocal, int) {
 ```
 
 ### 3. New() 的作用？假如没有 New 会出现什么情况？
+
 从上面的 pool.Get 流程图可以看出来，从 sync.Pool 获取一个内存会尝试从当前 private，shared，其他的 p 的 shared 获取或者 victim 获取，如果实在获取不到时，才会调用 New 函数来获取。也就是 New() 函数才是真正开辟内存空间的。New() 开辟出来的的内存空间使用完毕后，调用 pool.Put 函数放入到 sync.Pool 中被重复利用。
 
 如果 New 函数没有被初始化会怎样呢？很明显，sync.Pool 就废掉了，因为没有了初始化内存的地方了。
 
 ### 4. 先 Put，再 Get 会出现什么情况？
+
 ```go
 func main(){
     pool:= sync.Pool{
@@ -258,6 +295,7 @@ func main(){
     fmt.Println(data)
 }
 ```
+
 如果你直接跑这个例子，能得到你想像的结果，但是在某些情况下就不是这个结果了。
 
 在 Pool.Get 注释里面有这么一句话：“Callers should not assume any relation between values passed to Put and the values returned by Get.”，告诉我们不能把值 Pool.Put 到 sync.Pool 中，再使用 Pool.Get 取出来，因为 sync.Pool 不是 map 或者 slice，放入的值是有可能拿不到的，sync.Pool 的数据结构就不支持做这个事情。
@@ -270,6 +308,7 @@ func main(){
 - 情况4：还有很多情况
 
 ### 5. 只 Get 不 Put 会内存泄露吗？
+
 使用其他的池，如连接池，如果取连接使用后不放回连接池，就会出现连接池泄露，「是不是 sync.Pool 也有这个问题呢？」
 
 通过上面的流程图，可以看出来 Pool.Get 的时候会尝试从当前 private，shared，其他的 p 的 shared 获取或者 victim 获取，如果实在获取不到时，才会调用 New 函数来获取，New 出来的内容本身还是受系统 GC 来控制的。所以如果我们提供的 New 实现不存在内存泄露的话，那么 sync.Pool 是不会内存泄露的。当 New 出来的变量如果不再被使用，就会被系统 GC 给回收掉。
@@ -277,7 +316,9 @@ func main(){
 如果不 Put 回 sync.Pool，会造成 Get 的时候每次都调用的 New 来从堆栈申请空间，达不到减轻 GC 压力。
 
 ## 优秀应用实践
+
 ### 1. 官方包fmt源码分析
+
 ```go
 func Printf(format string, a ...interface{}) (n int, err error) {
 	return Fprintf(os.Stdout, format, a...)
@@ -291,7 +332,9 @@ func Fprintf(w io.Writer, format string, a ...interface{}) (n int, err error) {
     return
 }
 ```
+
 获取对象
+
 ```go
 // newPrinter allocates a new pp struct or grabs a cached one.
 func newPrinter() *pp {
@@ -307,7 +350,9 @@ var ppFree = sync.Pool{
     New: func() interface{} { return new(pp) },
 }
 ```
+
 归还
+
 ```go
 func (p *pp) free() {
   if cap(p.buf) > 64<<10 {
@@ -323,7 +368,9 @@ func (p *pp) free() {
 ```
 
 ### 2. 第三方库应用（gin)
+
 /Users/python/go/pkg/mod/github.com/gin-gonic/gin@v1.7.7/gin.go
+
 ```go
 // ServeHTTP conforms to the http.Handler interface.
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -337,3 +384,8 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	engine.pool.Put(c)
 }
 ```
+
+## 参考资料
+
+1
+

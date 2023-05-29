@@ -1,3 +1,19 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [备忘录模式【Memento】](#%E5%A4%87%E5%BF%98%E5%BD%95%E6%A8%A1%E5%BC%8Fmemento)
+  - [意图：](#%E6%84%8F%E5%9B%BE)
+  - [适用性：](#%E9%80%82%E7%94%A8%E6%80%A7)
+  - [比如：](#%E6%AF%94%E5%A6%82)
+  - [需求：](#%E9%9C%80%E6%B1%82)
+  - [实现：](#%E5%AE%9E%E7%8E%B0)
+  - [角色](#%E8%A7%92%E8%89%B2)
+  - [优点：](#%E4%BC%98%E7%82%B9)
+  - [缺点：](#%E7%BC%BA%E7%82%B9)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 备忘录模式【Memento】
 
 ## 意图：

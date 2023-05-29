@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [装饰模式：](#%E8%A3%85%E9%A5%B0%E6%A8%A1%E5%BC%8F)
+  - [使用场景：](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
+  - [举例](#%E4%B8%BE%E4%BE%8B)
+  - [装饰器在第三方应用->Grpc源码分析](#%E8%A3%85%E9%A5%B0%E5%99%A8%E5%9C%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%94%E7%94%A8-grpc%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [Resolver解析器](#resolver%E8%A7%A3%E6%9E%90%E5%99%A8)
+      - [resolver的工作原理](#resolver%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 装饰模式：
 一种动态地往一个类中添加新的行为的设计模式.
 ![](img/process.png)

@@ -1,3 +1,34 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [优雅退出](#%E4%BC%98%E9%9B%85%E9%80%80%E5%87%BA)
+  - [信号](#%E4%BF%A1%E5%8F%B7)
+    - [信号类型](#%E4%BF%A1%E5%8F%B7%E7%B1%BB%E5%9E%8B)
+    - [kill pid与kill -9 pid的区别](#kill-pid%E4%B8%8Ekill--9-pid%E7%9A%84%E5%8C%BA%E5%88%AB)
+  - [思路](#%E6%80%9D%E8%B7%AF)
+  - [Go os/signal包](#go-ossignal%E5%8C%85)
+    - [信号是如何存储的，os/signal中信号的是存储在handlers](#%E4%BF%A1%E5%8F%B7%E6%98%AF%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E7%9A%84ossignal%E4%B8%AD%E4%BF%A1%E5%8F%B7%E7%9A%84%E6%98%AF%E5%AD%98%E5%82%A8%E5%9C%A8handlers)
+      - [关于handler的设计](#%E5%85%B3%E4%BA%8Ehandler%E7%9A%84%E8%AE%BE%E8%AE%A1)
+        - [信号的存储](#%E4%BF%A1%E5%8F%B7%E7%9A%84%E5%AD%98%E5%82%A8)
+        - [信号持有状态的获取：](#%E4%BF%A1%E5%8F%B7%E6%8C%81%E6%9C%89%E7%8A%B6%E6%80%81%E7%9A%84%E8%8E%B7%E5%8F%96)
+        - [信号持有状态的清空：](#%E4%BF%A1%E5%8F%B7%E6%8C%81%E6%9C%89%E7%8A%B6%E6%80%81%E7%9A%84%E6%B8%85%E7%A9%BA)
+    - [1. Ignore 函数](#1-ignore-%E5%87%BD%E6%95%B0)
+    - [2. Notify 函数](#2-notify-%E5%87%BD%E6%95%B0)
+      - [watchSignalLoop](#watchsignalloop)
+    - [3. Stop 函数](#3-stop-%E5%87%BD%E6%95%B0)
+    - [4. Reset 函数](#4-reset-%E5%87%BD%E6%95%B0)
+    - [SIGPIPE](#sigpipe)
+    - [连接的状态](#%E8%BF%9E%E6%8E%A5%E7%9A%84%E7%8A%B6%E6%80%81)
+    - [源码分析:http 中提供了 server.ShutDown()](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90http-%E4%B8%AD%E6%8F%90%E4%BE%9B%E4%BA%86-servershutdown)
+  - [第三方应用：go-zero流程](#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%94%E7%94%A8go-zero%E6%B5%81%E7%A8%8B)
+  - [流程](#%E6%B5%81%E7%A8%8B)
+    - [docker中流程](#docker%E4%B8%AD%E6%B5%81%E7%A8%8B)
+    - [k8s中流程](#k8s%E4%B8%AD%E6%B5%81%E7%A8%8B)
+      - [shell启动为什么接收不到SIGTERM信号呢？](#shell%E5%90%AF%E5%8A%A8%E4%B8%BA%E4%BB%80%E4%B9%88%E6%8E%A5%E6%94%B6%E4%B8%8D%E5%88%B0sigterm%E4%BF%A1%E5%8F%B7%E5%91%A2)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # 优雅退出
 在服务端程序更新或重启时，如果我们直接 kill -9 杀掉旧进程并启动新进程，会有以下几个问题：
 

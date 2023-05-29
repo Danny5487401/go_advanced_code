@@ -1,3 +1,20 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [module包管理](#module%E5%8C%85%E7%AE%A1%E7%90%86)
+  - [背景](#%E8%83%8C%E6%99%AF)
+  - [原理](#%E5%8E%9F%E7%90%86)
+    - [semantic version语义化版本 2.0.0](#semantic-version%E8%AF%AD%E4%B9%89%E5%8C%96%E7%89%88%E6%9C%AC-200)
+    - [Minimal Version Selection 最小版本选择算法](#minimal-version-selection-%E6%9C%80%E5%B0%8F%E7%89%88%E6%9C%AC%E9%80%89%E6%8B%A9%E7%AE%97%E6%B3%95)
+      - [Algorithm 1: Construct Build List●](#algorithm-1-construct-build-list%E2%97%8F)
+      - [Algorithm 2. Upgrade All Modules](#algorithm-2-upgrade-all-modules)
+      - [Algorithm 3. Upgrade One Module](#algorithm-3-upgrade-one-module)
+      - [Algorithm 4. Downgrade One Module](#algorithm-4-downgrade-one-module)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # module包管理
 
 go官方库管理方式叫做go module。 先前，我们的库都是以package来组织的，package以一个文件或者多个文件实现单一的功能，一个项目包含一个package或者多个package。
