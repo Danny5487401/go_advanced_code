@@ -68,7 +68,7 @@ Note: Go 1.18 移除用于泛型的constraints包
 
 
 ## [第一章 I/O](chapter01_input_output/io.md)
-- 1 os操作系统模块
+- 1 os 操作系统模块
     - [1.1 os中 FileInfo 文件属性](chapter01_input_output/01_OS_module/01FileInfo/fileinfo.md)
     - [1.2 os文件操作](chapter01_input_output/01_OS_module/02FileOperation/main.go)   
     - 1.3 io包底层 Reader 和 Writer 接口   
@@ -76,10 +76,10 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [1.4 io断点续传 ](chapter01_input_output/01_OS_module/04seeker/02resume_from_break-point/main.go) 
     - [1.5 FilePath包 ](chapter01_input_output/01_OS_module/05filePath/walk.go)    
         - [1.5.1 walkPath遍历目录及文件(匹配文件名)](chapter01_input_output/01_OS_module/05filePath/walk.go)
-- [2 bufio缓存读写](chapter01_input_output/02_bufio/bufio.md)
+- [2 bufio 缓存读写](chapter01_input_output/02_bufio/bufio.md)
   - [2.1 reader](chapter01_input_output/02_bufio/01reader/main.go)
   - [2.2 writer](chapter01_input_output/02_bufio/02writer/main.go)
-- [3 Go 1.16 io.FS: OS 的 FS 解耦](chapter01_input_output/03_io_fs/io_fs.md)
+- [3 Go 1.16 io.FS: Go 理解的文件系统](chapter01_input_output/03_io_fs/io_fs.md)
   - [go 1.16 前后的文件io对比](chapter01_input_output/03_io_fs/embed.go)
 - [4 io.Pipe 对比使用 json.NewDecoder 流式解析 http body中间数据-->在 minio 下载数据实现](chapter01_input_output/04_io_pipe/io_pipe.md)
 
