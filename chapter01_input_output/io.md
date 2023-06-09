@@ -137,7 +137,22 @@ ulimit -n
 #我的mac os系统上进程默认最多打开 256 文件
 ```
 ## 标准库中对IO封装
-![](.io_images/io_realized.png)
+![](.io_images/io_all_realized.png)
+
+- io：基础的IO库，提供了Reader和Writer接口。其中的os包、net包、string包、bytes包以及bufio包都实现了io中的Reader或Writer接口。
+- os：提供了访问底层操作系统资源的能力，如文件读写、进程控制等。
+- net：提供了网络相关的IO功能，如TCP、UDP通信、HTTP请求等。
+- string.Reader：提供了string的读取。因为string不能写，所以只有Reader。
+- bytes.Buffer和Reader：提供了对字节内容的读写。
+- bufio：提供带缓存的I/O操作，解决频繁、少量读取场景下的性能问题。这里利用了计算机的局部性原理。
+- ioutil：提供了一些方便的文件读写函数，如ReadFile和WriteFile
+
+
+操作选择：
+- 如果只是简单的文件读写，可以使用ioutil库；
+- 如果需要处理大量数据，则应该选择bufio库；
+- 如果需要访问底层操作系统功能，则可以使用os库；
+- 如果涉及到网络通信，则选择net库
 
 ###  IO 接口描述（语义）
 包括四个接口: Reader/Writer/Closer/Seeker,分别对应io的读写关闭和偏移.
@@ -204,6 +219,7 @@ type Seeker interface {
 - 参数offset和whence确定了具体的偏移地址
    - whence定义了三个值(SeekStart/SeekCurrent/SeekEnd)
    - 第一个返回值是基于文档头的偏移量
+
 ### 分类
 io 库的内容，如果按照接口的定义维度大致可以分为 3 大类：
 1. 基础类型

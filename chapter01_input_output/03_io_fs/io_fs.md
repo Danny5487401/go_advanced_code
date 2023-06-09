@@ -18,8 +18,8 @@ func Open(name string) (*File, error) {
 }
 ```
 这个意味着，Go 的文件系统的概念和 OS 的文件系统的概念直接关联起来。你必须传入一个文件路径，并且必须真的要去打开一个操作系统的文件.
-![](chapter01_input_output/.io_images/io_issue.png)
-![](chapter01_input_output/.io_imagesio_issue_fix.png)
+![](../.io_images/io_issue.png)
+![](../.io_images/io_issue_fix.png)
 
 ## Go 1.16 关于 io 有哪些改变
 
