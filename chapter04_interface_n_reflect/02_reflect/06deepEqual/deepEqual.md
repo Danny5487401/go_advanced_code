@@ -6,6 +6,7 @@
   - [背景](#%E8%83%8C%E6%99%AF)
   - [使用](#%E4%BD%BF%E7%94%A8)
   - [源码](#%E6%BA%90%E7%A0%81)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
