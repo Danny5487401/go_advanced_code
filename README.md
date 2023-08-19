@@ -160,6 +160,10 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - [2.8 reflect.MakeFunc 构建函数](chapter04_interface_n_reflect/02_reflect/08_make_func/make_func.md)
       - [2.8.1 构建逆序打印切片函数](chapter04_interface_n_reflect/02_reflect/08_make_func/01_invertInts/invertslice.go)
       - [2.8.2 构建求和函数分别用于字符串和数字](chapter04_interface_n_reflect/02_reflect/08_make_func/02_sum/reflect_sum.go)
+    - 2.9 go-cmp-->比 reflect.DeepEqual 更灵活
+      - [2.9.1 结构体内嵌指针：与 == 对比进行相等判断](chapter04_interface_n_reflect/02_reflect/09_go-cmp/01_compare_with_equal)
+      - [2.9.2 IgnoreUnexported 忽略未导出字段,AllowUnexported 指定某些类型的未导出字段需要比较](chapter04_interface_n_reflect/02_reflect/09_go-cmp/02_ignoreUnexported/main.go)
+      - [2.9.3 切片变量值为nil 对比 长度为 0 的切片](chapter04_interface_n_reflect/02_reflect/09_go-cmp/03_nil_and_empty_slice/main.go)
 ---
 
 ## 第五章 切片和数组

@@ -14,7 +14,18 @@
 
 ## 背景
 
-对于array、slice、map、struct等类型，想要比较两个值是否相等，不能使用==，处理起来十分麻烦，在对效率没有太大要求的情况下，reflect包中的DeepEqual函数完美的解决了比较问题
+golang 中的数据类型可以分为以下 4 大类：
+
+- 基本类型：整型（int/uint/int8/uint8/int16/uint16/int32/uint32/int64/uint64/byte/rune等）、浮点数（float32/float64）、复数类型（complex64/complex128）、字符串（string）。
+- 复合类型（又叫聚合类型）：数组和结构体类型。
+- 引用类型：切片（slice）、map、channel、指针。
+  - 切片之间不允许比较。切片只能与nil值比较。 
+  - map之间不允许比较。map只能与nil值比较。
+- 接口类型：如error
+
+== 操作最重要的一个前提是：两个操作数类型必须相同！类型必须相同！类型必须相同！
+
+对于 array、slice、map、struct 等类型，想要比较两个值是否相等，不能使用==，处理起来十分麻烦，在对效率没有太大要求的情况下，reflect包中的DeepEqual函数完美的解决了比较问题
 
 ![](.deepEqual_images/deepEqual.png)
 ```go
@@ -50,7 +61,7 @@
 
 但是，有一些异常情况：
 - 比如 func 类型是不可比较的类型，只有在两个 func 类型都是 nil 的情况下，才是“深度”相等；
-- float 类型，由于精度的原因，也是不能使用 == 比较的；
+- float 类型，由于精度的原因，也是不能使用 == 比较的；这个问题不是 golang 独有的，只要浮点数遵循 IEEE 754 标准的编程语言都有这个问题。
 - 包含 func 类型或者 float 类型的 struct， interface， array 等。
 
 对于指针而言，当两个值相等的指针就是“深度”相等，因为两者指向的内容是相等的，即使两者指向的是 func 类型或者 float 类型，这种情况下不关心指针所指向的内容。
@@ -238,3 +249,6 @@ func deepValueEqual(v1, v2 Value, visited map[visit]bool) bool {
 一直递归到最基本的数据类型，比较 int，string 等可以直接得出 true 或者 false，
 再一层层地返回，最终得到“深度”相等的比较结果。
 
+
+## 参考资料
+1 [深入理解Go之==](https://darjun.github.io/2019/08/20/golang-equal/)
