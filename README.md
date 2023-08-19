@@ -1,10 +1,20 @@
+# ***高级Goland学习代码*** _github.com/Danny5487401/go_advanced_code_
+![](https://changkun.de/urlstat?mode=github&repo=)
+[![Go Report Card](https://goreportcard.com/badge/github.com/talkgo/night?style=flat-square)](https://goreportcard.com/report/github.com/Danny5487401/github.com/Danny5487401/go_advanced_code)
+[![GitHub stars](https://img.shields.io/github/stars/talkgo/night.svg?label=Stars&style=flat-square)](https://github.com/Danny5487401/github.com/Danny5487401/go_advanced_code)
+[![GitHub forks](https://img.shields.io/github/forks/talkgo/night.svg?label=Fork&style=flat-square)](https://github.com/Danny5487401/github.com/Danny5487401/go_advanced_code)
+![](https://img.shields.io/github/contributors/talkgo/night.svg?style=flat-square&color=orange&label=all%20contributors)
+[![Documentation](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](http://godoc.org/github.com/Danny5487401/github.com/Danny5487401/go_advanced_code)
+[![GitHub issues](https://img.shields.io/github/issues/talkgo/night.svg?label=Issue&style=flat-square)](https://github.com/Danny5487401/github.com/Danny5487401/go_advanced_code/issues)
+![](https://changkun.de/urlstat?mode=github&repo=Danny5487401/github.com/Danny5487401/go_advanced_code)
+[![license](https://img.shields.io/github/license/talkgo/night.svg?style=flat-square)](https://github.com/Danny5487401/github.com/Danny5487401/go_advanced_code/blob/master/LICENSE)
+
+![高级go编程](.assets/logo/golang.jpeg)
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [***高级Goland学习代码*** _github.com/Danny5487401/go_advanced_code_](#%E9%AB%98%E7%BA%A7goland%E5%AD%A6%E4%B9%A0%E4%BB%A3%E7%A0%81-_githubcomdanny5487401go_advanced_code_)
 - [*目录*](#%E7%9B%AE%E5%BD%95)
-  - [*推荐 GoVersion: 1.18(涉及泛型)*](#%E6%8E%A8%E8%8D%90-goversion-118%E6%B6%89%E5%8F%8A%E6%B3%9B%E5%9E%8B)
   - [必备知识:](#%E5%BF%85%E5%A4%87%E7%9F%A5%E8%AF%86)
   - [第一章 I/O](#%E7%AC%AC%E4%B8%80%E7%AB%A0-io)
   - [第二章 协程Goroutine](#%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E5%8D%8F%E7%A8%8Bgoroutine)
@@ -42,25 +52,9 @@
   - [第三十三章 makefile 使用](#%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%89%E7%AB%A0-makefile-%E4%BD%BF%E7%94%A8)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-# ***高级Goland学习代码*** _github.com/Danny5487401/go_advanced_code_
-![](https://changkun.de/urlstat?mode=github&repo=)
-[![Go Report Card](https://goreportcard.com/badge/github.com/talkgo/night?style=flat-square)](https://goreportcard.com/report/github.com/Danny5487401/github.com/Danny5487401/go_advanced_code)
-[![GitHub stars](https://img.shields.io/github/stars/talkgo/night.svg?label=Stars&style=flat-square)](https://github.com/Danny5487401/github.com/Danny5487401/go_advanced_code)
-[![GitHub forks](https://img.shields.io/github/forks/talkgo/night.svg?label=Fork&style=flat-square)](https://github.com/Danny5487401/github.com/Danny5487401/go_advanced_code)
-![](https://img.shields.io/github/contributors/talkgo/night.svg?style=flat-square&color=orange&label=all%20contributors)
-[![Documentation](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](http://godoc.org/github.com/Danny5487401/github.com/Danny5487401/go_advanced_code)
-[![GitHub issues](https://img.shields.io/github/issues/talkgo/night.svg?label=Issue&style=flat-square)](https://github.com/Danny5487401/github.com/Danny5487401/go_advanced_code/issues)
-![](https://changkun.de/urlstat?mode=github&repo=Danny5487401/github.com/Danny5487401/go_advanced_code)
-[![license](https://img.shields.io/github/license/talkgo/night.svg?style=flat-square)](https://github.com/Danny5487401/github.com/Danny5487401/go_advanced_code/blob/master/LICENSE)
-
-![高级go编程](.assets/logo/golang.jpeg)
-
 # *目录*
+Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运行,*推荐 GoVersion: 1.18(涉及泛型)*
 
-Note:目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运行
-## *推荐 GoVersion: 1.18(涉及泛型)*
-Note: Go 1.18 移除用于泛型的constraints包
 
 ## 必备知识:
 - [module包管理](chapter29_module/02_discipline/module.md)
@@ -166,6 +160,10 @@ Note: Go 1.18 移除用于泛型的constraints包
     - [2.8 reflect.MakeFunc 构建函数](chapter04_interface_n_reflect/02_reflect/08_make_func/make_func.md)
       - [2.8.1 构建逆序打印切片函数](chapter04_interface_n_reflect/02_reflect/08_make_func/01_invertInts/invertslice.go)
       - [2.8.2 构建求和函数分别用于字符串和数字](chapter04_interface_n_reflect/02_reflect/08_make_func/02_sum/reflect_sum.go)
+    - 2.9 go-cmp-->比 reflect.DeepEqual 更灵活
+      - [2.9.1 结构体内嵌指针：与 == 对比进行相等判断](chapter04_interface_n_reflect/02_reflect/09_go-cmp/01_compare_with_equal)
+      - [2.9.2 IgnoreUnexported 忽略未导出字段,AllowUnexported 指定某些类型的未导出字段需要比较](chapter04_interface_n_reflect/02_reflect/09_go-cmp/02_ignoreUnexported/main.go)
+      - [2.9.3 切片变量值为nil 对比 长度为 0 的切片](chapter04_interface_n_reflect/02_reflect/09_go-cmp/03_nil_and_empty_slice/main.go)
 ---
 
 ## 第五章 切片和数组
