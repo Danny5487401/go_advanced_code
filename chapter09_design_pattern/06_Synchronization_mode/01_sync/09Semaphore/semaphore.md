@@ -9,9 +9,8 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# 信号量
+# 信号量(semaphore）
 
-## 定义（英语：semaphore）
 
 	信号量(Semaphore)，有时被称为信号灯，是[多线程环境下使用的一种设施，是可以用来保证两个或多个关键代码段不被并发调用。
 	在进入一个关键代码段之前，线程必须获取一个信号量；一旦该关键代码段完成了，那么该线程必须释放信号量。
@@ -28,31 +27,51 @@
 
 信号量是由操作系统来维护的，信号量只能进行两种操作等待和发送信号，操作总结来说，核心就是PV操作：
 	
-	*P原语：P是荷兰语Proberen(测试)的首字母。为阻塞原语，负责把当前进程由运行状态转换为阻塞状态，直到另外一个进程唤醒它。
+- P原语：P是荷兰语Proberen(测试)的首字母。为阻塞原语，负责把当前进程由运行状态转换为阻塞状态，直到另外一个进程唤醒它。
 		操作为：申请一个空闲资源(把信号量减1)，若成功，则退出；若失败，则该进程被阻塞；
 
-	*V原语：V是荷兰语Verhogen(增加)的首字母。为唤醒原语，负责把一个被阻塞的进程唤醒，它有一个参数表，存放着等待被唤醒的进程信息。
+- V原语：V是荷兰语Verhogen(增加)的首字母。为唤醒原语，负责把一个被阻塞的进程唤醒，它有一个参数表，存放着等待被唤醒的进程信息。
 		操作为：释放一个被占用的资源(把信号量加1)，如果发现有被阻塞的进程，则选择一个唤醒之。
-	在信号量进行PV操作时都为原子操作，并且在PV原语执行期间不允许有中断的发生。
+
+在信号量进行PV操作时都为原子操作，并且在PV原语执行期间不允许有中断的发生。
 
 PV原语对信号量的操作可以分为三种情况：
 
-	把信号量视为某种类型的共享资源的剩余个数，实现对一类共享资源的访问
-	把信号量用作进程间的同步
-	视信号量为一个加锁标志，实现对一个共享变量的访问
+1. 把信号量视为某种类型的共享资源的剩余个数，实现对一类共享资源的访问
+2. 量用作进程间的同步
+3. 视信号量为一个加锁标志，实现对一个共享变量的访问
 
 
 ## 适用场景
-	semaphore对象适用于控制一个仅支持有限个用户的共享资源，是一种不需要使用忙碌等待（busy waiting）的方法。
 
-内部包源码:
+semaphore对象适用于控制一个仅支持有限个用户的共享资源，是一种不需要使用忙碌等待（busy waiting）的方法。
+
+如果信号量是一个任意的整数，通常被称为计数信号量（Counting semaphore），或一般信号量（general semaphore）；
+如果信号量只有二进制的0或1，称为二进制信号量（binary semaphore）。在linux系统中，二进制信号量（binary semaphore）又称互斥锁（Mutex）
+
+我们一般用信号量保护一组资源，比如数据库连接池、一组客户端的连接等等。
+**每次获取资源时都会将信号量中的计数器减去对应的数值，在释放资源时重新加回来。当信号量没资源时尝试获取信号量的线程就会进入休眠，等待其他线程释放信号量。
+如果信号量是只有0和1的二进位信号量，那么，它的 P/V 就和互斥锁的 Lock/Unlock 就一样了
+
+
+
+
+## 源码分析
+Go 内部使用信号量来控制goroutine的阻塞和唤醒，比如互斥锁sync.Mutex结构体定义的第二个字段就是一个信号量
+```go
+type Mutex struct {
+    state int32
+    sema  uint32
+}
+```
+信号量的PV操作在Go内部是通过下面这几个底层函数实现的
 ```go
 func runtime_Semacquire(s *uint32)
 func runtime_SemacquireMutex(s *uint32, lifo bool, skipframes int)
 func runtime_Semrelease(s *uint32, handoff bool, skipframes int)
 
 ```
-这几个函数就是信号量的PV操作，不过他们都是给Go内部使用的，如果想使用信号量，那就可以使用官方的扩展包：Semaphore，这是一个带权重的信号量
+这几个函数就是信号量的PV操作，不过他们都是给Go内部使用的，如果想使用信号量，那就可以使用官方的扩展包golang.org/x/sync：Semaphore，这是一个带权重的信号量
 
 扩展包源码：
 ```go
@@ -80,13 +99,13 @@ type waiter struct {
 ```
 
 semaphore库核心结构就是Weighted，主要有4个字段：
-	size：这个代表的是最大权值，在创建Weighted对象指定
-	cur：相当于一个游标，来记录当前已使用的权值
-	mu：互斥锁，并发情况下做临界区保护
-	waiters：阻塞等待的调用者列表，使用链表数据结构保证先进先出的顺序，存储的数据是waiter对象
+- size：这个代表的是最大权值，在创建Weighted对象指定
+- cur：相当于一个游标，来记录当前已使用的权值
+- mu：互斥锁，并发情况下做临界区保护
+- waiters：阻塞等待的调用者列表，使用链表数据结构保证先进先出的顺序，存储的数据是waiter对象
 
-
-阻塞获取权值的方法 acquire
+### Acquire请求信号量资源
+Acquire方法会监控资源是否可用，而且还要检测传递进来的context.Context对象是否发送了超时过期或者取消的信号
 ```go
 func (s *Weighted) Acquire(ctx context.Context, n int64) error {
 	s.mu.Lock() // 加锁保护临界区
@@ -144,6 +163,23 @@ func (s *Weighted) Acquire(ctx context.Context, n int64) error {
 
 ```
 
+### Release归还信号量资源  
+
+```func (s *Weighted) Release(n int64) {
+    s.mu.Lock()
+    s.cur -= n
+    if s.cur < 0 {
+      s.mu.Unlock()
+      panic("semaphore: released more than held")
+    }
+    s.notifyWaiters()
+    s.mu.Unlock()
+}
+
+```
+
+## 参考资料
+1. [信号量的使用方法和其实现原理](https://juejin.cn/post/6906677772479889422#heading-5)
 
 
 
