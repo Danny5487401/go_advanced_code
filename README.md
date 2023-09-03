@@ -281,7 +281,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - [6.8 ErrorGroup获取协程中error](chapter09_design_pattern/06_Synchronization_mode/01_sync/08ErrorGroup/errGroup.md)
         - [6.8.1 不带context](chapter09_design_pattern/06_Synchronization_mode/01_sync/08ErrorGroup/01WithoutContext/main.go)
         - [6.8.2 带context](chapter09_design_pattern/06_Synchronization_mode/01_sync/08ErrorGroup/02WithContext/main.go)
-    - [6.9 信号量Semaphore](chapter09_design_pattern/06_Synchronization_mode/01_sync/09Semaphore/semaphore.md)
+    - [6.9 信号量 Semaphore-->mutex是二进制信号量 binary semaphore](chapter09_design_pattern/06_Synchronization_mode/01_sync/09Semaphore/semaphore.md)
     - [6.10 SingleFlight避免缓存击穿](chapter09_design_pattern/06_Synchronization_mode/01_sync/10SingleFlight/singleFlight.md)
         - [6.10.1 Do方法](chapter09_design_pattern/06_Synchronization_mode/01_sync/10SingleFlight/01_do/main.go)
         - [6.10.2 DoChan方法](chapter09_design_pattern/06_Synchronization_mode/01_sync/10SingleFlight/02_do_chan/main.go)

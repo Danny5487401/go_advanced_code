@@ -1,11 +1,6 @@
 package main
 
 /*
-semaphore的作用
-	信号量是在并发编程中比较常见的一种同步机制，它会保证持有的计数器在0到初始化的权重之间，
-	每次获取资源时都会将信号量中的计数器减去对应的数值，在释放时重新加回来，当遇到计数器大于信号量大小时就会进入休眠等待其他进程释放信号。
-	go中的semaphore，提供sleep和wakeup原语，使其能够在其它同步原语中的竞争情况下使用。
-	当一个goroutine需要休眠时，将其进行集中存放，当需要wakeup时，再将其取出，重新放入调度器中。
 需求：
 	考拉兹猜想，是指对于每一个正整数，如果它是奇数，则对它乘3再加1，如果它是偶数，则对它除以2，如此循环，最终都能够得到1。
 	通过信号量实现并发对 考拉兹猜想的示例，对1-32之间的数字进行计算，并打印32个符合结果的值
@@ -87,12 +82,3 @@ func collatzSteps(n int) (steps int) {
 
 	return steps
 }
-
-/*
-golang/sync/semaphore.Weighted.Acquire 方法获取过程
-	1。当信号量中剩余的资源大于获取的资源并且没有等待的 Goroutine 时，会直接获取信号量；
-	2。当需要获取的信号量大于 golang/sync/semaphore.Weighted 的上限时，由于不可能满足条件会直接返回错误；
-	3。遇到其他情况时会将当前 Goroutine 加入到等待列表并通过 select 等待调度器唤醒当前 Goroutine，Goroutine 被唤醒后会获取信号量；
-获取信号量的方法 golang/sync/semaphore.Weighted.TryAcquire方法获取过程
-	只会非阻塞地判断当前信号量是否有充足的资源，如果有充足的资源会直接立刻返回 true，否则会返回 false
-*/
