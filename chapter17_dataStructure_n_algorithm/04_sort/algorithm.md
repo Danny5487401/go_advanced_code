@@ -184,7 +184,7 @@ sort包内置的四种排序方法是不公开的，只能被用于sort包内部
 ```go
 type Interface interface{
     Len() int //返回集合中的元素个数
-    Less(i,j int) bool//i>j 返回索引i和元素是否比索引j的元素小
+    Less(i,j int) bool//i>j 返回索引i的元素是否比索引j的元素小
     Swap(i,j int)//交换i和j的值
 }
 ```

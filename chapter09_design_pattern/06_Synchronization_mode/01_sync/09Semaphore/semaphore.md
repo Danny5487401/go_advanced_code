@@ -2,10 +2,13 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [信号量](#%E4%BF%A1%E5%8F%B7%E9%87%8F)
-  - [定义（英语：semaphore）](#%E5%AE%9A%E4%B9%89%E8%8B%B1%E8%AF%ADsemaphore)
+- [信号量(semaphore）](#%E4%BF%A1%E5%8F%B7%E9%87%8Fsemaphore)
   - [工作原理](#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86)
   - [适用场景](#%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [Acquire请求信号量资源](#acquire%E8%AF%B7%E6%B1%82%E4%BF%A1%E5%8F%B7%E9%87%8F%E8%B5%84%E6%BA%90)
+    - [Release归还信号量资源](#release%E5%BD%92%E8%BF%98%E4%BF%A1%E5%8F%B7%E9%87%8F%E8%B5%84%E6%BA%90)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
