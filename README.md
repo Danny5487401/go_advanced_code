@@ -458,7 +458,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - [9.3 Struct 底层结构,内存布局,空结构体内存对齐](chapter17_dataStructure_n_algorithm/09_golang_data_structure/03_struct_structure/struct.md)
 ## 第十八章 错误跟踪和panic
 - [0 错误(err)和异常（exception）区别及处理方式](chapter18_error_n_panic/00_diff_between_err_n_exception/main.go)
-- 1 自定义错误类型打印错误栈
+- [1 自定义错误类型打印错误栈](chapter18_error_n_panic/01_customized_error/customized_error.go)
 - [2 扩展包pkg.errors](chapter18_error_n_panic/02_pkg_errors/pkg_errors.md)
 - [3 Gin的错误recover分析(panic和recover源码分析)](chapter18_error_n_panic/03_recover/panic.md)
 - 4 生成errCode错误码及信息
@@ -466,7 +466,9 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
   - [4.2 stringer + go generate 自带工具生成errCode错误码及信息->效率高于map映射错误](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
 - [5 error如何正确比较](chapter18_error_n_panic/05_err_comparision/main.go)
 - [6 收集多个errors-->go-multierror实现](chapter18_error_n_panic/06_multi_error/01_one_goroutine_n_errors/main.go)
-
+- [7 错误链](chapter18_error_n_panic/07_chain_error/chain_err.md)
+  - [7.1 errors.Unwrap 获取错误链中最后面的一个 root error](chapter18_error_n_panic/07_chain_error/01_root_error/main.go)
+  - [7.2 errors.As函数 提取 error chain中特定类型的error](chapter18_error_n_panic/07_chain_error/02_error_as/main.go)  
 ## 第十九章 nil预定义标识
 - 1 不同类型为nil时的地址和size大小
 - 2 不同类型与nil的比较

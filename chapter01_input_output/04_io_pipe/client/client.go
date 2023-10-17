@@ -14,8 +14,13 @@ func init() {
 	log.SetFlags(log.Lshortfile)
 }
 
-// 修改后
 func main() {
+	//modifyBefore()
+	modifyAfter()
+}
+
+// 修改后
+func modifyAfter() {
 	cli := http.Client{}
 
 	msg := struct {
@@ -55,16 +60,15 @@ func main() {
 	body := resp.Body
 	defer body.Close()
 
-	if body_bytes, err := ioutil.ReadAll(body); err == nil {
-		log.Println("response:", string(body_bytes))
+	if bodyBytes, err := ioutil.ReadAll(body); err == nil {
+		log.Println("response:", string(bodyBytes))
 	} else {
 		log.Fatalln(err)
 	}
 }
 
 // 修改前
-
-func main() {
+func modifyBefore() {
 	cli := http.Client{}
 
 	msg := struct {
@@ -86,7 +90,7 @@ func main() {
 	body := resp.Body
 	defer body.Close()
 
-	if bodyBytes, err := ioutil.ReadAll(body); err == nil {
+	if bodyBytes, err := io.ReadAll(body); err == nil {
 		log.Println("response:", string(bodyBytes))
 	} else {
 		log.Fatalln(err)
