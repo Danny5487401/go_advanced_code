@@ -129,7 +129,7 @@ func osRead() {
 	defer file.Close()
 
 	//step2：读取数据
-	bs := make([]byte, 4, 4)
+	bs := make([]byte, 4)
 	/*
 		//第一次读取
 		n,err :=file.Read(bs)

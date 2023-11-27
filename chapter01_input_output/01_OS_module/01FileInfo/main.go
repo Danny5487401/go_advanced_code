@@ -44,5 +44,5 @@ func main() {
 	// sys
 	sys := fileInfo.Sys()
 	stat := sys.(*syscall.Stat_t)
-	fmt.Println("对文件上次访问时间", time.Unix(stat.Atimespec.Unix()))
+	fmt.Println("对文件上次访问时间", time.Unix(stat.Atim.Unix()))
 }

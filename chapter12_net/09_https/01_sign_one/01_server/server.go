@@ -9,19 +9,10 @@ import (
 
 func handle(w http.ResponseWriter, r *http.Request) {
 	// 记录请求协议
-	log.Printf("Got connection: %s", r.Proto)
+	log.Printf("Got connection: %s, tls version :%v , tls suite: %v", r.Proto, r.TLS.Version, r.TLS.CipherSuite)
 	// 向客户发送一条消息
 	w.Write([]byte("Hello"))
 }
-
-//func main() {/*默认情况下*/
-//	http.HandleFunc("/", HelloWorld)
-//
-//	err := http.ListenAndServeTLS(":1280", "./cert/server.crt", "./cert/server.key", nil)
-//	if err != nil {
-//		fmt.Println(err)
-//	}
-//}
 
 func main() { /*修改TLS版本*/
 	http.HandleFunc("/", handle)
@@ -30,7 +21,7 @@ func main() { /*修改TLS版本*/
 		Addr:    ":443",
 		Handler: nil,
 		TLSConfig: &tls.Config{
-			MinVersion: tls.VersionTLS10,
+			MinVersion: tls.VersionTLS11,
 			MaxVersion: tls.VersionTLS13,
 		},
 	}

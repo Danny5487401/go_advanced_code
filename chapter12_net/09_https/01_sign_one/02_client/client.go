@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -18,7 +19,7 @@ func main() {
 	//}
 	// 方式二：添加CA证书到池
 	// 读取CA证书
-	CACrt, err := ioutil.ReadFile("chapter17_dataStructure_n_algorithm/06_certificate/02_x509/cert.pem")
+	CACrt, err := os.ReadFile("chapter17_dataStructure_n_algorithm/06_certificate/02_x509/cert.pem")
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -30,7 +31,8 @@ func main() {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
 			/* 设置CA证书池，池里的CA证书，均为可信的 */
-			RootCAs: CAPool,
+			RootCAs:    CAPool,
+			MaxVersion: tls.VersionTLS13,
 		},
 	}
 
