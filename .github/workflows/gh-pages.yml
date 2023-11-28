@@ -1,38 +1,31 @@
-name: GitHub Pages
-
+name: pages-auto-build-deploy
 on:
+  # workflow_dispatch:
   push:
     branches:
-      - main  # Set a branch name to trigger deployment
-  pull_request:
+      - master
 
 jobs:
-  deploy:
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: write
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+  build-and-deploy:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
-          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+          submodules: true
+          fetch-depth: 0
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: '0.110.0'
+          hugo-version: '0.100.2'
+          extended: true
 
-      - name: Build
-        run: hugo --minify
+      - name: Build Hugo
+        run: hugo -b "https://danny.github.io/" -e "production"
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
-        # If you're changing the branch from main,
-        # also change the `main` in `refs/heads/main`
-        # below accordingly.
-        if: github.ref == 'refs/heads/main'
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_PAGE_ACTION_TOKEN }}
           publish_dir: ./public
+          commit_message: ${{ github.event.head_commit.message }}
