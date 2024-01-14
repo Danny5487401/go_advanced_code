@@ -49,9 +49,9 @@ PKCS代表“公钥密码学标准”。这是一组由RSA Security Inc.设计�
 
 ● PKCS＃10 1.7认证请求标准，请参阅RFC2986。发送给认证机构以请求公钥证书的消息格式，请参阅证书签名请求。
 
-● PKCS＃11 2.40密码令牌接口，也称为“ Cryptoki”。定义密码令牌通用接口的API（另请参阅硬件安全模块）。常用于单点登录，公共密钥加密和磁盘加密[10]系统。 RSA Security已将PKCS＃11标准的进一步开发移交给了OASIS PKCS 11技术委员会。
+● PKCS＃11 2.40密码令牌接口，也称为“ Cryptoki”。定义密码令牌通用接口的API（另请参阅硬件安全模块）。常用于单点登录，公共密钥加密和磁盘加密系统。 RSA Security已将PKCS＃11标准的进一步开发移交给了OASIS PKCS 11技术委员会。
 
-● PKCS＃12 1.1个人信息交换语法标准，请参阅RFC7292。定义一种文件格式，个人信息交换语法标准[11]见RFC 7292。定义一种文件格式，通常用于存储私钥和附带的公钥证书，并使用基于Password的对称密钥进行保护。PFX是PKCS#12的前身。
+● PKCS＃12 1.1个人信息交换语法标准，请参阅RFC7292。定义一种文件格式，个人信息交换语法标准见RFC 7292。定义一种文件格式，通常用于存储私钥和附带的公钥证书，并使用基于Password的对称密钥进行保护。PFX是PKCS#12的前身。
 
 第一代PKI标准主要是基于抽象语法符号（Abstract Syntax Notation One，ASN.1）编码的，实现比较困难，这也在一定程度上影响了标准的推广。
 
@@ -131,12 +131,12 @@ xx.key：私钥文件
 xx.req：请求文件
 
 
-xx.csr：请求文件(Certificate Signing Request))
+xx.csr：(Certificate Signing Request 证书签名请求),是向 CA 发出的证书申领请求，其核心内容包含一个「公钥」及其他主体信息，在生成该请求时，也会生成相应的「私钥」
 
-xx.pem（隐私增强型电子邮件)：一般是文本格式，可保存证书，可保存私钥。DER编码的证书再进行Base64编码,Privacy Enhanced Mail，以 -----BEGIN-----开头，以 -----END----- 结尾。
+xx.pem（Privacy Enhanced Mail 隐私增强型电子邮件)：一般是文本格式，可保存证书，可保存私钥。以 -----BEGIN-----开头，以 -----END----- 结尾。
 中间的内容是 BASE64 编码。这种格式可以保存证书和私钥，有时我们也把PEM 格式的私钥的后缀改为 .key 以区别证书与私钥.
 
-xx.der：文件是二进制格式，只保存证书，不保存私钥。Java 和 Windows 服务器偏向于使用这种编码格式。
+xx.der(Distinguished Encoding Rules)：二进制格式。Java 和 Windows 服务器偏向于使用这种编码格式。
 
 Note: 实际上，上述文件的扩展名可以随意命名。只是为了容易理解文件的功能而选择大家都认识的命名方式。但是，上述文件是有格式的，只能是 pem 格式或者 der 格式。使用什么格式的文件取决于需求。
 
@@ -169,7 +169,7 @@ openssl pkcs12 -in in.p12 -out out.pem -nodes
 OpenSSL命令分为以下3个部分:
 ![](.image/openssl_info.png)
 ```shell
-➜  go_advanced_code git:(feature/certificate) ✗ openssl version -a
+✗ openssl version -a
 LibreSSL 2.8.3
 built on: date not available
 platform: information not available
@@ -178,7 +178,7 @@ compiler: information not available
 OPENSSLDIR: "/private/etc/ssl" # # OpenSSL 默认查找和配置证书目录
 
 # 查看可用命令：openssl help
-(⎈:danny-xia)➜  github.com/Danny5487401/go_advanced_code git:(main) ✗ openssl help                                                         
+✗ openssl help                                                         
 openssl:Error: 'help' is an invalid command.
 
 Standard commands
@@ -218,6 +218,24 @@ rc4-40
 
 ```
 * 标准命令Standard commands
+```shell
+~ openssl pkcs12 --help
+Usage: pkcs12 [options]
+
+General options:
+ -help               Display this summary
+ -in infile          Input file
+ -out outfile        Output file
+ -passin val         Input file pass phrase source
+ -passout val        Output file pass phrase source
+ -password val       Set PKCS#12 import/export password source
+ -twopass            Separate MAC, encryption passwords
+ -nokeys             Don't output private keys
+ -nocerts            Don't output certificates
+ -noout              Don't output anything, just verify PKCS#12 input
+ -legacy             Use legacy encryption: 3DES_CBC for keys, RC2_CBC for certs
+ -engine val         Use engine, possibly a hardware device
+```
 
 openssl参数解析
 * pkcs12:PKCS#12数据的管理
@@ -272,7 +290,6 @@ func parse2bigInt(s string) (bi *big.Int, err error) {
 ```
 
 
-
 ## 证书种类
 证书分为根证书、服务器证书、客户端证书。根证书文件（ca.crt）和根证书对应的私钥文件（ca.key）由 CA（证书授权中心，国际认可）生成和保管。那么服务器如何获得证书呢？向 CA 申请！步骤如下：
 
@@ -307,7 +324,7 @@ OpenSSL 是一个免费开源的库，它提供了构建数字证书的命令行
 ### 创建 root pair
 1. 创建 root key
 ```shell
-➜  ca git:(feature/asm) ✗ openssl genrsa -aes256 -out private/ca.key.pem 4096
+✗ openssl genrsa -aes256 -out private/ca.key.pem 4096
 Generating RSA private key, 4096 bit long modulus
 ........................................++
 .........................................................................................................................................................................................++
@@ -338,7 +355,7 @@ Verifying - Enter pass phrase for private/ca.key.pem:
 
 ```
 ```shell
-➜  ca git:(feature/asm) ✗ openssl req -config openssl.cnf \
+✗ openssl req -config openssl.cnf \
       -key private/ca.key.pem \
       -new -x509 -days 7300 -sha256 -extensions v3_ca \
       -out certs/ca.cert.pem
@@ -363,7 +380,7 @@ Email Address []:540021730@qq.com
 
 3. 验证证书
 ```shell
-➜  ca git:(feature/asm) ✗ openssl x509 -noout -text -in certs/ca.cert.pem
+✗ openssl x509 -noout -text -in certs/ca.cert.pem
 
 Certificate:
     Data:
@@ -511,7 +528,6 @@ Note:在生成server.csr(Certificate Signing Request)时，主机名填写的是
 
 ## 验证方式
 
-
 验证方式分为单向验证和双向验证。
 
 
@@ -545,9 +561,7 @@ PC 中的浏览器（火狐、IE、chrome等）已经包含了很多 CA 的根�
 
 ## 免费证书从何而来
 
-每年只花60美元就可以拥有一台低端服务器，但一个证书却比这要昂贵。
-
-这是一个问题，因为SSL证书的成本是所有网站采用加密技术的明显障碍。
+每年只花60美元就可以拥有一台低端服务器，但一个证书却比这要昂贵。 这是一个问题，因为SSL证书的成本是所有网站采用加密技术的明显障碍。
 
 少数几家公司决定共享他们的资源来解决这一问题，从而更有利于整个互联网。于是他们资助了Let’s Encrypt这样一家证书颁发机构，然后编制一些必要的软件并运营着颁发证书的服务器。
 
