@@ -580,4 +580,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [Makefile常用函数列表](chapter33_makefile/makefile_func.md)
 - [golang makefile 最佳实践](chapter33_makefile/iam_makefile_structure.png)
 
+## [regexp 正则表达式 Regular Expression](chapter34_regexp/regexp.md)
+- [基本正则表达式使用](chapter34_regexp/01_basic_grammar/main.go)
+
 
