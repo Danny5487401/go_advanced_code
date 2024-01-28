@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [regexp 正则表达式 Regular Expression](#regexp-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F-regular-expression)
+  - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
+  - [分类](#%E5%88%86%E7%B1%BB)
+    - [BRE 和 ERE 的区别](#bre-%E5%92%8C-ere-%E7%9A%84%E5%8C%BA%E5%88%AB)
+  - [Linux 中常用文本工具与正则表达式的关系](#linux-%E4%B8%AD%E5%B8%B8%E7%94%A8%E6%96%87%E6%9C%AC%E5%B7%A5%E5%85%B7%E4%B8%8E%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E5%85%B3%E7%B3%BB)
+    - [1 grep , egrep 正则表达式特点：](#1-grep--egrep-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%89%B9%E7%82%B9)
+    - [2 sed 正则表达式特点](#2-sed-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%89%B9%E7%82%B9)
+    - [3 Awk（gawk）正则表达式特点](#3-awkgawk%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%89%B9%E7%82%B9)
+  - [golang regexp](#golang-regexp)
+    - [通过正则判断是否匹配](#%E9%80%9A%E8%BF%87%E6%AD%A3%E5%88%99%E5%88%A4%E6%96%AD%E6%98%AF%E5%90%A6%E5%8C%B9%E9%85%8D)
+  - [参考](#%E5%8F%82%E8%80%83)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # regexp 正则表达式 Regular Expression
 
 在计算机科学中，是指一个用来描述或者匹配一系列符合某个句法规则的字符串的单个字符串。在很多文本编辑器或其他工具里，正则表达式通常被用来检索和/或替换那些符合某个模式的文本内容。

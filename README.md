@@ -50,6 +50,7 @@
   - [第三十一章 go开发套件](#%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%80%E7%AB%A0-go%E5%BC%80%E5%8F%91%E5%A5%97%E4%BB%B6)
   - [第三十二章 Generic 泛型](#%E7%AC%AC%E4%B8%89%E5%8D%81%E4%BA%8C%E7%AB%A0-generic-%E6%B3%9B%E5%9E%8B)
   - [第三十三章 makefile 使用](#%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%89%E7%AB%A0-makefile-%E4%BD%BF%E7%94%A8)
+  - [regexp 正则表达式 Regular Expression](#regexp-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F-regular-expression)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 # *目录*
@@ -271,7 +272,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
         - [6.5.2 newFunc与GC前后Get对比](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/02NewFunc/newFunc.go)
         - [6.5.3 何时使用对象缓存](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/03When2Use_object_pool/main.go)
         - [6.5.4 第三方对象池object pool(bytebufferpool)](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/04_byteBufferPool/main.go)
-    - [6.6 Cond条件变量通知所有协程及NoCopy机制-->熔断框架hystrix-go实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/06Cond/Cond.md)
+    - [6.6 Cond 条件变量协调想要访问共享资源的goroutine及 NoCopy机制-->熔断框架 hystrix-go 优秀实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/06Cond/Cond.md)
     - [6.7 atomic原子操作源码分析-->zerolog源码中实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/atomic.md)
         - [6.7.0 Value的load和store](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/00_value/main.go)
         - [6.7.1 add及补码减](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/01_add/main.go)

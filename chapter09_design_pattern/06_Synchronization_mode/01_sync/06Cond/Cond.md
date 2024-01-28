@@ -3,12 +3,14 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Cond条件变量](#cond%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F)
-  - [与channel对比：](#%E4%B8%8Echannel%E5%AF%B9%E6%AF%94)
+  - [与channel对比](#%E4%B8%8Echannel%E5%AF%B9%E6%AF%94)
+  - [sync.Cond 基于互斥锁/读写锁，它和互斥锁的区别是什么呢](#synccond-%E5%9F%BA%E4%BA%8E%E4%BA%92%E6%96%A5%E9%94%81%E8%AF%BB%E5%86%99%E9%94%81%E5%AE%83%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%E5%91%A2)
   - [背景](#%E8%83%8C%E6%99%AF)
   - [源码体现](#%E6%BA%90%E7%A0%81%E4%BD%93%E7%8E%B0)
   - [流程](#%E6%B5%81%E7%A8%8B)
-    - [cond.Signal()](#condsignal)
-    - [cond.Broadcast()](#condbroadcast)
+    - [NewCond 创建实例](#newcond-%E5%88%9B%E5%BB%BA%E5%AE%9E%E4%BE%8B)
+    - [cond.Signal() 唤醒一个协程](#condsignal-%E5%94%A4%E9%86%92%E4%B8%80%E4%B8%AA%E5%8D%8F%E7%A8%8B)
+    - [cond.Broadcast() 广播唤醒](#condbroadcast-%E5%B9%BF%E6%92%AD%E5%94%A4%E9%86%92)
     - [cond.Wait()](#condwait)
   - [注意事项](#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9)
   - [NoCopy机制](#nocopy%E6%9C%BA%E5%88%B6)
@@ -19,13 +21,20 @@
 
 # Cond条件变量
 
-Golang 的 sync 包中的 Cond 实现了一种条件变量，可以使用在多个Reader等待共享资源 ready 的场景（如果只有一读一写，一个锁或者channel就搞定了）。
+sync.Cond 条件变量用来协调想要访问共享资源的 那些 goroutine，当共享资源的状态发生变化的时候，它可以用来通知被互斥锁阻塞的 goroutine。
 
 Cond的汇合点：多个goroutines等待、1个goroutine通知事件发生。
 
-## 与channel对比：
+## 与channel对比
 
 提供了 Broadcast 方法，可以通知所有的等待者。
+
+## sync.Cond 基于互斥锁/读写锁，它和互斥锁的区别是什么呢
+
+- 互斥锁 sync.Mutex 通常用来保护临界区和共享资源
+
+- 条件变量 sync.Cond 用来协调想要访问共享资源的 goroutine，sync.Cond 经常用在多个 goroutine 等待，一个 goroutine 通知（事件发生）的场景。如果是一个通知，一个等待，使用互斥锁或 channel 就能搞定了
+
 
 ## 背景
 怎么去通知阻塞协程继续运行：
@@ -70,7 +79,7 @@ func (s *signal) signalReRun() {
 比较适合任务调用场景，一个 Master goroutine 通知事件发生，多个 Worker goroutine 在资源没准备好的时候就挂起，等待通知。
 
 ## 源码体现
-结构体
+数据结构
 ```go
 type Cond struct {
     noCopy noCopy  //不允许copy
@@ -78,8 +87,8 @@ type Cond struct {
     // L is held while observing or changing the condition
     L Locker
 
-    notify  notifyList
-    checker copyChecker
+    notify  notifyList // 通知唤起列表
+    checker copyChecker // 复制检测，禁止第一次使用的Cond被复制拷贝
 }
 // copyChecker 对象，实际上是 uintptr 对象，保存自身对象地址。.
 type copyChecker uintptr
@@ -98,30 +107,45 @@ func (c *copyChecker) check() {
 check 方法在第一次调用的时候，会将 checker 对象地址赋值给 checker，也就是将自身内存地址赋值给自身。 再次调用 checker 方法的时候，会将当前 checker 对象地址值与 checker 中保存的地址值（原始地址）进行比较，若不相同则表示当前 checker 的地址不是第一次调用 check 方法时候的地址，即 cond 对象被复制了，导致checker 被重新分配了内存地址。
 
 notifyList 对象，维护等待唤醒的 goroutine 队列,使用链表实现
+![](.Cond_images/notify_list.png)
 ```go
 // /usr/local/go/src/sync/runtime2.go
 type notifyList struct {
-	wait   uint32
-	notify uint32
+	wait   uint32 // 当前wait的index
+	notify uint32 // 当前notify的index
 	lock   uintptr // key field of the mutex
 	head   unsafe.Pointer
 	tail   unsafe.Pointer
 }
 ```
+wait 和 notify。这两个都是ticket值，每次调 Wait 时，ticket 都会递增. 
+wait 表示下次 sync.Cond Wait 的 ticket 值，notify 表示下次要唤醒的 goroutine 的 ticket 的值。这两个值都只增不减的。
 
 ## 流程
-### cond.Signal()
-![](signal_process.png)
+条件变量有四个方法，创建实例(NewCond )，等待通知(wait)，单发通知(signal)，广播通知(broadcast)。当互斥锁锁定时，可以进行等待通知；当互斥锁解锁时，可以进行单发通知和广播通知
+### NewCond 创建实例
+
+```go
+// NewCond returns a new Cond with Locker l.
+func NewCond(l Locker) *Cond {
+	return &Cond{L: l}
+}
+
+```
+
+### cond.Signal() 唤醒一个协程
+![](.Cond_images/signal_process.png)
 ```go
 func (c *Cond) Signal() {
     // 1.复制检查
     c.checker.check() 
-    // 2.顺序唤醒一个等待的gorountine
+    // 2.顺序唤醒一个等待的goroutine
     runtime_notifyListNotifyOne(&c.notify)
 }
 ```
 ```go
-// /usr/local/go/src/runtime/sema.go
+
+//go:linkname notifyListNotifyOne sync.runtime_notifyListNotifyOne
 func notifyListNotifyOne(l *notifyList) {
    // 1.等待序号和唤醒序号相同则说明没有需要唤醒的 goroutine 直接返回
    if atomic.Load(&l.wait) == atomic.Load(&l.notify) {
@@ -162,7 +186,7 @@ func notifyListNotifyOne(l *notifyList) {
 }
 ```
 
-### cond.Broadcast()
+### cond.Broadcast() 广播唤醒
 ![](broadcast_process.png)
 
 ```go
@@ -174,6 +198,7 @@ func (c *Cond) Broadcast() {
 }
 ```
 ```go
+//go:linkname notifyListNotifyAll sync.runtime_notifyListNotifyAll
 func notifyListNotifyAll(l *notifyList) {
     // 1.等待序号和唤醒序号相同则说明没有需要唤醒的 goroutine 直接返回
     if atomic.Load(&l.wait) == atomic.Load(&l.notify) {
@@ -203,30 +228,39 @@ func notifyListNotifyAll(l *notifyList) {
 ```
 
 ### cond.Wait()
-![](wait_process.png)
+![](.Cond_images/wait_process.png)
+![](.Cond_images/easy_wait_process.png)
+
+调用 Wait 会自动释放锁 c.L，并挂起调用者所在的 goroutine，因此当前协程会阻塞在 Wait 方法调用的地方。如果其他协程调用了 Signal 或 Broadcast 唤醒了该协程，那么 Wait 方法在结束阻塞时，会重新给 c.L 加锁，并且继续执行 Wait 后面的代码
+
 ```go
 func (c *Cond) Wait() {
     // 1.每次操作之前都要检测一下 cond 是否被复制了。
     c.checker.check() 
     // 2.将 notifyList 中的 wait 值加1并返回之前的值
     t := runtime_notifyListAdd(&c.notify) 
-    // 3.释放锁，因此在调用Wait方法前，必须保证获取到了cond的锁，否则会报错
+    // 3.释放锁，切走之前，必须先把 Locker 解锁了。要不然其他 goroutine 获取不到这个锁，将会造成死锁问题。
     c.L.Unlock()
     // 4.将当前goroutine挂起，等待唤醒信号
     runtime_notifyListWait(&c.notify, t) 
-    // 5.gorountine被唤醒，重新获取锁
+    // 5.goroutine被唤醒，重新获取锁.如果其他 goroutine 调用了 Signal 或者 Broadcast 唤醒了该 goroutine。
     c.L.Lock()
 }
 ```
 
 ```go
+// go1.20/src/runtime/sema.go
+// //go:linkname notifyListAdd sync.runtime_notifyListAdd
 func notifyListAdd(l *notifyList) uint32 {
     return atomic.Xadd(&l.wait, 1) - 1
 }
 ```
+
+主要将当前 goroutine 追加到 notifyList 链表最后以及调用 gopark 切走 goroutine。
 ```go
 // 获取当前 goroutine 添加到链表末端，然后 goparkunlock 函数休眠阻塞当前 goroutine
 // goparkunlock 函数会让出当前处理器的使用权并等待调度器的唤醒
+//go:linkname notifyListWait sync.runtime_notifyListWait
 func notifyListWait(l *notifyList, t uint32) {
     // 1.锁住 notify 队列
     lock(&l.lock)
@@ -266,13 +300,16 @@ func notifyListWait(l *notifyList, t uint32) {
 
 
 ## 注意事项
-1. 不能不加锁直接调用 cond.Wait
+1. 不能不加锁直接调用 cond.Wait()
 我们看到 Wait 内部会先调用 c.L.Unlock()，来先释放锁。如果调用方不先加锁的话，会触发“fatal error: sync: unlock of unlocked mutex”。
 
 2. 为什么不能 sync.Cond 不能复制 ？
 sync.Cond 不能被复制的原因，并不是因为 sync.Cond 内部嵌套了 Locker。因为 NewCond 时传入的 Mutex/RWMutex 指针，对于 Mutex 指针复制是没有问题的。
 主要原因是 sync.Cond 内部是维护着一个 notifyList。如果这个队列被复制的话，那么就在并发场景下导致不同 goroutine 之间操作的 notifyList.wait、notifyList.notify 并不是同一个，这会导致出现有些 goroutine 会一直堵塞。
 
+3. Wait 调用的条件检查一定要放在 for 循环中，代码如上。这是因为当 Boardcast 唤醒时，有可能其他 goroutine 先于当前 goroutine 唤醒并抢到锁，导致轮到当前 goroutine 抢到锁的时候，条件又不再满足了。因此，需要将条件检查放在 for 循环中。
+
+4. Signal 和 Broadcast 两个唤醒操作不需要加锁
 ## NoCopy机制
 
 noCopy 是 go1.7 开始引入的一个静态检查机制。它不仅仅工作在运行时或标准库，同时也对用户代码有效

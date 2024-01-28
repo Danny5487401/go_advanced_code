@@ -16,7 +16,7 @@ func main() {
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go func(number int) {
-			// wait()方法内部是先释放锁 然后在加锁 所以这里需要先 Lock()
+			// note: wait()方法内部是先释放锁 然后在加锁 所以这里需要先 Lock()
 			cond.L.Lock()
 			defer cond.L.Unlock()
 			cond.Wait() // 等待通知,阻塞当前 goroutine
