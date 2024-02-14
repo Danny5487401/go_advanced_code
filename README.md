@@ -54,7 +54,7 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 # *目录*
-Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运行,*推荐 GoVersion: 1.18(涉及泛型)*
+Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运行,*推荐 GoVersion: 1.20(涉及泛型及新版本特性)*
 
 
 ## 必备知识:
@@ -153,7 +153,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - [2.3 获取结构体字段及获取方法名字](chapter04_interface_n_reflect/02_reflect/03StructField_n_method/main.go)
     - [2.4 通过 reflect.Value 修改值，调用结构体方法，调用普通函数](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
     - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05PerformanceInprove/main.go)
-    - [2.6 通过反射进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
+    - [2.6 通过reflect.DeepEqual进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
         - 底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
         - 一个nil值的map和非nil值但是空的map*是否“深度”相等
         - 带有环的数据对比*是否“深度”相等
@@ -164,7 +164,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - 2.9 go-cmp-->比 reflect.DeepEqual 更灵活
       - [2.9.1 结构体内嵌指针：与 == 对比进行相等判断](chapter04_interface_n_reflect/02_reflect/09_go-cmp/01_compare_with_equal)
       - [2.9.2 IgnoreUnexported 忽略未导出字段,AllowUnexported 指定某些类型的未导出字段需要比较](chapter04_interface_n_reflect/02_reflect/09_go-cmp/02_ignoreUnexported/main.go)
-      - [2.9.3 切片变量值为nil 对比 长度为 0 的切片](chapter04_interface_n_reflect/02_reflect/09_go-cmp/03_nil_and_empty_slice/main.go)
+      - [2.9.3 切片变量值为 nil 对比长度为 0 的切片](chapter04_interface_n_reflect/02_reflect/09_go-cmp/03_nil_and_empty_slice/main.go)
 ---
 
 ## 第五章 切片和数组
@@ -179,11 +179,12 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
   - [2.4 有足够容量时函数传递疑惑揭秘: 底层len长度没变](chapter05_slice_n_array/02_slice_pass/04_slice_pass_confusition_with_enough_cap)
 - [3 带索引初始化数组和切片](chapter05_slice_n_array/03_make_slice_with_index/make_slice_with_index.go)
 - 4 底层数据结构
-  - [4.1 数组数据结构](chapter05_slice_n_array/04structure_of_array_n_slice/01_array/arrayStructure.md)
-  - [4.2 切片数据结构及拷贝copy源码分析](chapter05_slice_n_array/04structure_of_array_n_slice/02_slice/sliceStructure.md)
+  - [4.1 数组数据结构](chapter05_slice_n_array/04_structure_of_array_n_slice/01_array/arrayStructure.md)
+  - [4.2 切片数据结构及拷贝copy源码分析](chapter05_slice_n_array/04_structure_of_array_n_slice/02_slice/sliceStructure.md)
+  - [4.3 slice 转 array 在版本 1.20 前后变化](chapter05_slice_n_array/04_structure_of_array_n_slice/03_slice_to_array/main.go)
 - [5 nil 切片和 empty 切片](chapter05_slice_n_array/05nilSlice_n_NoneSlice/nil_n_empty_slice.md)
 - [6 扩容策略](chapter05_slice_n_array/06GrowSlice/grow_size_policy.md)
-- [7 不同类型的切片间互转](chapter05_slice_n_array/07Transfer_slice_in_different_type/main.go)
+- [7 不同类型的切片间互转](chapter05_slice_n_array/07_transfer_slice_in_different_type/main.go)
 - [8 切片复制方式对比: copy和=复制](chapter05_slice_n_array/08_reslice_n_copy/slice_copy.md)
 ---
 
@@ -362,7 +363,9 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [6 优雅退出原理分析-涉及linux信号介绍（go-zero实践）](chapter12_net/06_grateful_stop/grateful_stop.md)
   - [6.1 信号监听处理](chapter12_net/06_grateful_stop/signal.go)
 - [7 URL的解析 Parse，query 数据的转义与反转义](chapter12_net/07_url/url.md)
-- [8 使用alice优雅编排中间件](chapter12_net/08_middleware/middlerware.md)
+- [8 使用 alice 优雅编排中间件](chapter12_net/08_middleware/middleware.md)
+  - [5.1 jwt 中间件载体 Symmetric 对称加密->HSA](chapter12_net/08_middleware/01_symmetric/jwt_test.go)
+  - [5.2 jwt 中间件载体 asymmetric 非对称加密(更安全)->RSA](chapter12_net/08_middleware/02_asymmetric/jwt_test.go)
 - [9 HTTPS, SAN, SLS, TLS及源码分析握手过程](chapter12_net/09_https/https.md)
   - 9.1 https 单向认证
     - [9.1.1 服务端修改 tls 版本](chapter12_net/09_https/01_sign_one/01_server/server.go)
@@ -438,9 +441,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - 不同结构体切片根据反射reflect实现自定义排序 
     - map根据key实现排序
     - sort.Search 根据排序切片找索引
-- [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
-  - [5.1 Symmetric 对称加密->HSA](chapter17_dataStructure_n_algorithm/05_middleware/01_symmetric/jwt_test.go)
-  - [5.2 asymmetric 非对称加密(更安全)->RSA](chapter17_dataStructure_n_algorithm/05_middleware/02_asymmetric/jwt_test.go)
+
 - [6 certificate 证书-->openssl 使用](chapter17_dataStructure_n_algorithm/06_certificate/certificate.md)
   - [6.1 pem(Privacy Enhanced Mail Certificate保密增强邮件协议](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/pem.md)
     - [6.1.1 生成公私钥的 .pem 文件(公钥使用RSA算法)](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/01_pem_generate/main.go)

@@ -1,6 +1,6 @@
 module github.com/Danny5487401/go_advanced_code
 
-go 1.18
+go 1.20
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
