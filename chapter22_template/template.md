@@ -15,12 +15,13 @@
     - [文本输出](#%E6%96%87%E6%9C%AC%E8%BE%93%E5%87%BA)
     - [模板函数](#%E6%A8%A1%E6%9D%BF%E5%87%BD%E6%95%B0)
     - [block块](#block%E5%9D%97)
-    - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
       - [Template结构](#template%E7%BB%93%E6%9E%84)
       - [初始化](#%E5%88%9D%E5%A7%8B%E5%8C%96)
     - [解析](#%E8%A7%A3%E6%9E%90)
     - [执行Execute()和ExecuteTemplate()](#%E6%89%A7%E8%A1%8Cexecute%E5%92%8Cexecutetemplate)
     - [自定义函数](#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0)
+  - [常见问题](#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
   - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -111,14 +112,17 @@ with用来设置"."的值。两种格式
 上面将输出xx，因为"."已经设置为"xx"。
 
 ### 注释
+注释后的内容不会被引擎进行替换。但需要注意，注释行在替换的时候也会占用行，所以应该去除前缀和后缀空白，否则会多一空行
 ```go
-{{*/\* comment \*/*}}
-
+{{- /* a comment without prefix/suffix space */}}
+{{/* a comment without prefix/suffix space */ -}}
+{{- /* a comment without prefix/suffix space */ -}}
 ```
 
 ### 裁剪空白
 
-template引擎在进行替换的时候，是完全按照文本格式进行替换的。除了需要评估和替换的地方，所有的行分隔符、空格等等空白都原样保留。所以，对于要解析的内容，不要随意缩进、随意换行
+template引擎在进行替换的时候，是完全按照文本格式进行替换的。除了需要评估和替换的地方，所有的行分隔符、空格等等空白都原样保留。
+所以，**对于要解析的内容，不要随意缩进、随意换行**.
 
 ```go
 // 裁剪 content 前后的空格
@@ -179,27 +183,48 @@ t = t.Funcs(template.FuncMap{"handleFieldName": HandleFunc})
 
 ```
 内置模板函数
-```go
-var builtins = FuncMap{
-    "and":      and,
-    "call":     call,
-    "html":     HTMLEscaper,
-    "index":    index,
-    "js":       JSEscaper,
-    "len":      length,
-    "not":      not,
-    "or":       or,
-    "print":    fmt.Sprint,
-    "printf":   fmt.Sprintf,
-    "println":  fmt.Sprintln,
-    "urlquery": URLQueryEscaper,
-}
 
+```go
+// go1.18/src/text/template/funcs.go
+func builtins() FuncMap {
+	return FuncMap{
+		"and":      and,
+		"call":     call,
+		"html":     HTMLEscaper,
+		"index":    index,
+		"slice":    slice,
+		"js":       JSEscaper,
+		"len":      length,
+		"not":      not,
+		"or":       or,
+		"print":    fmt.Sprint,
+		"printf":   fmt.Sprintf,
+		"println":  fmt.Sprintln,
+		"urlquery": URLQueryEscaper,
+
+		// Comparisons
+		"eq": eq, // ==
+		"ge": ge, // >=
+		"gt": gt, // >
+		"le": le, // <=
+		"lt": lt, // <
+		"ne": ne, // !=
+	}
+}
 ```
 
+index: 对可索引对象进行索引取值。
+第一个参数是索引对象，后面的参数是索引位。"index x 1 2 3"代表的是x[1][2][3]。可索引对象包括map、slice、array
+
+
+call:显式调用函数。第一个参数必须是函数类型，且不是template中的函数，而是外部函数。
+例如一个struct中的某个字段是func类型的。
+"call .X.Y 1 2"表示调用dot.X.Y(, )，Y必须是func类型，函数参数是和。
+函数必须只能有一个或个返回值，如果有第二个返回值，则必须为error类型。
 
 ### block块
 ```go
+// go1.18/src/text/template/doc.go
 {{block "name" pipeline}} T1 {{end}}
     A block is shorthand for defining a template
         {{define "name"}} T1 {{end}}
@@ -209,7 +234,7 @@ var builtins = FuncMap{
     then customized by redefining the block templates within.
 ```
 
-根据官方文档的解释：block等价于define定义一个名为name的模板，并在"有需要"的地方执行这个模板，执行时将"."设置为pipeline的值。
+> 根据官方文档的解释：block等价于define定义一个名为name的模板，并在"有需要"的地方执行这个模板，执行时将"."设置为pipeline的值。
 
 但应该注意，block的第一个动作是执行名为name的模板，如果不存在，则在此处自动定义这个模板，并执行这个临时定义的模板。换句话说，block可以认为是设置一个默认模板。
 
@@ -221,8 +246,82 @@ var builtins = FuncMap{
 如果没找到T1，则临时定义一个{{define "T1"}} one {{end}}，并执行它。
 
 
-### 源码分析
+下面是正常情况下不使用block的示例。
+```html
+// home.html
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Go Web Programming</title>
+    </head>
+    <body>
+        {{ template "content" }}
+    </body>
+</html>
+```
+在此文件中指定了要执行一个名为"content"的模板，但此文件中没有使用define定义该模板，所以需要在其它文件中定义名为content的模板。现在分别在两个文件中定义两个content模板：
 
+
+```html
+//red.html
+{{ define "content" }}
+    <h1 style="color: red;">Hello World!</h1>
+{{ end }}
+```
+```html
+//blue.html
+{{ define "content" }}
+    <h1 style="color: blue;">Hello World!</h1>
+{{ end }}
+```
+
+```go
+// handler.go
+func process(w http.ResponseWriter, r *http.Request) {
+    rand.Seed(time.Now().Unix())
+    t := template.New("test")
+    if rand.Intn() >  {
+        t, _ = template.ParseFiles("home.html", "red.html")
+    } else {
+        t, _ = template.ParseFiles("home.html", "blue.html")
+    }
+    t.Execute(w,"")
+}
+```
+
+
+接下来使用 block，那么可以设置默认的content模板：将原本定义在blue.html中的content设置为默认模板。
+```html
+// home.html
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Go Web Programming</title>
+    </head>
+    <body>
+        {{ block "content" . }}
+            <h1 style="color: blue;">Hello World!</h1>
+        {{ end }}
+    </body>
+</html>
+```
+
+```go
+// handler.ho
+func process(w http.ResponseWriter, r *http.Request) {
+    rand.Seed(time.Now().Unix())
+    t := template.New("test")
+    if rand.Intn() >  {
+        t, _ = template.ParseFiles("home.html", "red.html")
+    } else {
+        t, _ = template.ParseFiles("home.html")
+    }
+    t.Execute(w,"")
+}
+```
+
+
+## 源码分析
 
 #### Template结构
 ![](.text_template_images/common_struct.png)
@@ -364,6 +463,9 @@ func builtins() FuncMap {
 
 自定义函数的优先级高于内置的函数优先级，即先检索自定义函数，再检索内置函数。也就是说，如果自定义函数的函数名和内置函数名相同，则内置函数将失效。
 
+
+## 常见问题
+- [bad character U+002F '/'](https://stackoverflow.com/questions/76439684/kubectl-o-go-template-bad-character-u002f)
 
 
 

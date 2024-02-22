@@ -32,7 +32,6 @@ func init() {
 
 }
 
-// index
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	_ = htmlTplEngine.ExecuteTemplate(
 		w,
@@ -51,7 +50,6 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 	err = t.ExecuteTemplate(w, "T", "<script>alert('you have been pwned')</script>")
 }
 
-// news
 func NewsHandler(w http.ResponseWriter, r *http.Request) {
 	_ = htmlTplEngine.ExecuteTemplate(
 		w,

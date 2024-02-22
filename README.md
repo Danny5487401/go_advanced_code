@@ -436,8 +436,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
   - [3.1 math_rand使用](chapter17_dataStructure_n_algorithm/03_rand/01_math_rand/main.go)
   - [3.2 crypto_rand使用](chapter17_dataStructure_n_algorithm/03_rand/02_crypto_rand/main.go)
   - [3.3 fastrand 优化使用](chapter17_dataStructure_n_algorithm/03_rand/03_fastrand/main.go)
-- [4 排序算法分类及图解(sort包源码分析)](chapter17_dataStructure_n_algorithm/04_sort/algorithm.md)
-  - [4.1 sort包使用](chapter17_dataStructure_n_algorithm/04_sort/sorted_info/main.go)
+- [4 排序算法分类及图解(sort包源码分析)](chapter17_dataStructure_n_algorithm/04_sort/sort.md)
+  - [4.1 sort包使用](chapter17_dataStructure_n_algorithm/04_sort/01_sorted_info/main.go)
     - 不同结构体切片根据反射reflect实现自定义排序 
     - map根据key实现排序
     - sort.Search 根据排序切片找索引
@@ -497,6 +497,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [2 自定义扩展模版函数 FuncMap ](chapter22_template/02_template_func/main.go)
 - [3 html模版](chapter22_template/03_html_template/main.go)
 - [4 generate 根据模版代码生成](chapter22_template/04_gen_template/gen_main.go)
+- [5 推荐第三方 sprig 模版函数](chapter22_template/05_sprig_func/sprig.md)
 
 ## 第二十三章 调试内部对象
 - [1 fmt打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)

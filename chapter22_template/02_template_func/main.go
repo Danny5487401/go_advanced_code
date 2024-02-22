@@ -7,7 +7,7 @@ import (
 
 // 模版函数
 
-// 需求：给仓库不同材质物品数量加10个打印
+// 需求：给仓库不同材质物品数量加10个,然后进行打印
 
 func CheckErr(err error) {
 	if err != nil {
@@ -28,7 +28,6 @@ func NewInventory(Fields []Inventory) Store {
 }
 
 func main() {
-
 	sweaters := NewInventory([]Inventory{
 		Inventory{Material: "wool", Count: 19},
 		Inventory{Material: "wooltwo", Count: 20},

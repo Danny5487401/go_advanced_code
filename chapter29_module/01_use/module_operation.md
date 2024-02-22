@@ -75,7 +75,7 @@ direct用于指示 Go 回源到模块版本的源地址去抓取(比如 GitHub �
 
 查看gin所有历史版本:
 ```shell
-go list -m -versions github.com/gin-gonic/gin 
+$ go list -m -versions github.com/gin-gonic/gin 
 github.com/gin-gonic/gin v1.1.1 v1.1.2 v1.1.3 v1.1.4 v1.3.0 v1.4.0 v1.5.0 v1.6.0 v1.6.1 v1.6.2 v1.6.3
 ```
 
