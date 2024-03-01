@@ -15,7 +15,15 @@
 
 # Golang Testing
 
-## 单元测试
+## 基本概念
+
+### BDD - Behavior-Driven Development 行为驱动开发
+
+### Test-Driven Development (TDD) 测试驱动开发，侧重于系统的实现
+
+
+
+### 单元测试
 单元测试是针对任意一个具体的函数而言，无论是一个已导出的函数接口，或者是一个并不导出的内部工具函数，你可以针对这个函数做一组测试，目的在于证明该函数的功用与其所宣称的相同
 
 对于 Golang 来说，编写单元测试很容易：
@@ -33,7 +41,7 @@
 
 ## go test 命令行参数
 ```shell
-➜  03_n git:(feature/memory) ✗ go help test                                                                             
+➜  ✗ go help test                                                                             
 usage: go test [build/test flags] [packages] [build/test flags & test binary flags]
 
 'Go test' automates testing the packages named by the import paths.

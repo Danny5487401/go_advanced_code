@@ -29,13 +29,15 @@ go在调用这些子命令对应的程序时， 会传递用于处理package层�
 ## 指令
 
 
-| col1  | col2                                                                                                                                                          |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| go    | 管理go源码和运行其他的指令                                                                                                                                    |
+| col1  | col2                                                                                                                                                         |
+|-------| ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| go    | 管理go源码和运行其他的指令                                                                                                                                   |
 | asm   | Asm, typically invoked as “go tool asm”, assembles the source file into an object file named for the basename of the argument source file with a .o suffix. |
-| fmt   | 格式化源码                                                                                                                                                    |
-| godoc | 导出并生成go代码中的文档                                                                                                                                      |
-| fix   | 用于将使用了语言或lib的旧特性的程序，改写成新特性                                                                                                             |
+| fmt   | 格式化源码                                                                                                                                                   |
+| godoc | 导出并生成go代码中的文档                                                                                                                                     |
+| fix   | 用于将使用了语言或lib的旧特性的程序，改写成新特性                                                                                                            |
+| list  | 提供指定代码包的更深层次的信息                                                                                                       |
+| clean | 删除掉执行其它命令时产生的一些文件和目录                                                                                                       |
 
 
 
@@ -50,6 +52,9 @@ go install [build flags] [packages]
 go install也会将可执行文件安装到GOBIN目录下。
 
 
+### go clean 删除掉执行其它命令时产生的一些文件和目录
+
+
 
 ### 环境变量
 
@@ -58,7 +63,7 @@ go install也会将可执行文件安装到GOBIN目录下。
 修改环境变量NAME go env -w <NAME>=<VALUE>
 
 ```shell
-➜  03_n git:(feature/memory) ✗ go env                         
+✗ go env                         
 GO111MODULE="on"
 GOARCH="arm64"
 GOBIN=""

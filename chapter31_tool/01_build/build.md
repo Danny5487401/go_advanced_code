@@ -14,7 +14,7 @@
 
 # go build 
 
-build过程细化成两部分，compile与link，即编译和链接。
+build 过程细化成两部分，compile 与 link，即编译和链接。
 
 go run 可等价于 go build + 执行。
 
@@ -39,32 +39,10 @@ go build [-o output] [build flags] [packages]
 ## 介绍build选项
 ![](01_tags/.build_images/build_commnd.png)
 ```shell
-➜  03_n git:(feature/memory) ✗ go help build            
+✗ go help build            
 usage: go build [-o output] [build flags] [packages]
 
-Build compiles the packages named by the import paths,
-along with their dependencies, but it does not install the results.
-
-If the arguments to build are a list of .go files from a single directory,
-build treats them as a list of source files specifying a single package.
-
-When compiling packages, build ignores files that end in '_test.go'.
-
-When compiling a single main package, build writes
-the resulting executable to an output file named after
-the first source file ('go build ed.go rx.go' writes 'ed' or 'ed.exe')
-or the source code directory ('go build unix/sam' writes 'sam' or 'sam.exe').
-The '.exe' suffix is added when writing a Windows executable.
-
-When compiling multiple packages or a single non-main package,
-build compiles the packages but discards the resulting object,
-serving only as a check that the packages can be built.
-
-The -o flag forces build to write the resulting executable or object
-to the named output file or directory, instead of the default behavior described
-in the last two paragraphs. If the named output is an existing directory or
-ends with a slash or backslash, then any resulting executables
-will be written to that directory.
+...
 
 The -i flag installs the packages that are dependencies of the target.
 The -i flag is deprecated. Compiled packages are cached automatically.
@@ -74,7 +52,7 @@ and test commands:
 
         -a  强制重新编译（缓存的编译结果）已经是最新的包
         -n
-                print the commands but do not run them.
+                打印编译期间所用到的其它命令，但是并不真正执行它们.
         -p n
                 the number of programs, such as build commands or
                 test binaries, that can be run in parallel.
@@ -91,9 +69,9 @@ and test commands:
         -asan
                 enable interoperation with address sanitizer.
                 Supported only on linux/arm64, linux/amd64.
-        -v      在编译一个包时，打印包名.
-        -work   打印临时工作目录（temporary work directory），并且退出时不删除
-        -x      打印指令
+        -v      打印出那些被编译的代码包的名字.
+        -work   打印临时工作目录（temporary work directory）,并且退出时不删除
+        -x      打印编译期间所用到的其它命令。注意它与-n标记的区别。
 
         -asmflags '[pattern=]arg list'
                 会传递给所有的go tool asm调用
@@ -168,35 +146,7 @@ and test commands:
                 The TOOLEXEC_IMPORTPATH environment variable will be set,
                 matching 'go list -f {{.ImportPath}}' for the package being built.
 
-The -asmflags, -gccgoflags, -gcflags, and -ldflags flags accept a
-space-separated list of arguments to pass to an underlying tool
-during the build. To embed spaces in an element in the list, surround
-it with either single or double quotes. The argument list may be
-preceded by a package pattern and an equal sign, which restricts
-the use of that argument list to the building of packages matching
-that pattern (see 'go help packages' for a description of package
-patterns). Without a pattern, the argument list applies only to the
-packages named on the command line. The flags may be repeated
-with different patterns in order to specify different arguments for
-different sets of packages. If a package matches patterns given in
-multiple flags, the latest match on the command line wins.
-For example, 'go build -gcflags=-S fmt' prints the disassembly
-only for package fmt, while 'go build -gcflags=all=-S fmt'
-prints the disassembly for fmt and all its dependencies.
-
-For more about specifying packages, see 'go help packages'.
-For more about where packages and binaries are installed,
-run 'go help gopath'.
-For more about calling between Go and C/C++, run 'go help c'.
-
-Note: Build adheres to certain conventions such as those described
-by 'go help gopath'. Not all projects can follow these conventions,
-however. Installations that have their own conventions or that use
-a separate software build system may choose to use lower-level
-invocations such as 'go tool compile' and 'go tool link' to avoid
-some of the overheads and design decisions of the build tool.
-
-See also: go install, go get, go clean.
+...
 
 ```
 
