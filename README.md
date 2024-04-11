@@ -54,7 +54,7 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 # *目录*
-Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运行,*推荐 GoVersion: 1.18(涉及泛型)*
+Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运行,*推荐 GoVersion: 1.20(涉及泛型及新版本特性)*
 
 
 ## 必备知识:
@@ -153,7 +153,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - [2.3 获取结构体字段及获取方法名字](chapter04_interface_n_reflect/02_reflect/03StructField_n_method/main.go)
     - [2.4 通过 reflect.Value 修改值，调用结构体方法，调用普通函数](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
     - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05PerformanceInprove/main.go)
-    - [2.6 通过反射进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
+    - [2.6 通过reflect.DeepEqual进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
         - 底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
         - 一个nil值的map和非nil值但是空的map*是否“深度”相等
         - 带有环的数据对比*是否“深度”相等
@@ -161,10 +161,10 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - [2.8 reflect.MakeFunc 构建函数](chapter04_interface_n_reflect/02_reflect/08_make_func/make_func.md)
       - [2.8.1 构建逆序打印切片函数](chapter04_interface_n_reflect/02_reflect/08_make_func/01_invertInts/invertslice.go)
       - [2.8.2 构建求和函数分别用于字符串和数字](chapter04_interface_n_reflect/02_reflect/08_make_func/02_sum/reflect_sum.go)
-    - 2.9 go-cmp-->比 reflect.DeepEqual 更灵活
+    - [2.9 go-cmp-->reflect.DeepEqual 的替代品]()
       - [2.9.1 结构体内嵌指针：与 == 对比进行相等判断](chapter04_interface_n_reflect/02_reflect/09_go-cmp/01_compare_with_equal)
       - [2.9.2 IgnoreUnexported 忽略未导出字段,AllowUnexported 指定某些类型的未导出字段需要比较](chapter04_interface_n_reflect/02_reflect/09_go-cmp/02_ignoreUnexported/main.go)
-      - [2.9.3 切片变量值为nil 对比 长度为 0 的切片](chapter04_interface_n_reflect/02_reflect/09_go-cmp/03_nil_and_empty_slice/main.go)
+      - [2.9.3 切片变量值为 nil 对比长度为 0 的切片](chapter04_interface_n_reflect/02_reflect/09_go-cmp/03_nil_and_empty_slice/main.go)
 ---
 
 ## 第五章 切片和数组
@@ -173,18 +173,21 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
   - [1.2 引用传递-->数组指针，切片和指针切片传递](chapter05_slice_n_array/01_pass_as_param/02passByReference/main.go)
   - [1.3 切片和数组作为参数传递性能对比及注意项](chapter05_slice_n_array/01_pass_as_param/03_Array_n_slice_pass_performance/main_test.go)
 - 2 切片传递的疑惑
-  - [2.1 没有足够容量时函数中切片传递的疑惑1](chapter05_slice_n_array/02_slice_pass/01_slice_pass_confusition_without_enough_cap/main.go)
+  - [2.1 没有足够容量时函数中切片传递的疑惑](chapter05_slice_n_array/02_slice_pass/01_slice_pass_confusition_without_enough_cap/main.go)
   - [2.2 没有足够容量切片传递疑惑揭秘：底层扩容指向的数据变化](chapter05_slice_n_array/02_slice_pass/02_slice_pass_reality_without_enough_cap/main.go)
   - [2.3 有足够容量时函数中切片传递的疑惑](chapter05_slice_n_array/02_slice_pass/03_slice_pass_confusition_fix_with_enough_cap)
   - [2.4 有足够容量时函数传递疑惑揭秘: 底层len长度没变](chapter05_slice_n_array/02_slice_pass/04_slice_pass_confusition_with_enough_cap)
 - [3 带索引初始化数组和切片](chapter05_slice_n_array/03_make_slice_with_index/make_slice_with_index.go)
 - 4 底层数据结构
-  - [4.1 数组数据结构](chapter05_slice_n_array/04structure_of_array_n_slice/01_array/arrayStructure.md)
-  - [4.2 切片数据结构及拷贝copy源码分析](chapter05_slice_n_array/04structure_of_array_n_slice/02_slice/sliceStructure.md)
+  - [4.1 数组数据结构](chapter05_slice_n_array/04_structure_of_array_n_slice/01_array/arrayStructure.md)
+  - [4.2 切片数据结构及拷贝copy源码分析](chapter05_slice_n_array/04_structure_of_array_n_slice/02_slice/sliceStructure.md)
+  - [4.3 slice 转 array 在版本 1.20 前后变化](chapter05_slice_n_array/04_structure_of_array_n_slice/03_slice_to_array/main.go)
 - [5 nil 切片和 empty 切片](chapter05_slice_n_array/05nilSlice_n_NoneSlice/nil_n_empty_slice.md)
+  - [5.1 优雅的清空切片，复用内存](chapter05_slice_n_array/05nilSlice_n_NoneSlice/clear_slice.go)
 - [6 扩容策略](chapter05_slice_n_array/06GrowSlice/grow_size_policy.md)
-- [7 不同类型的切片间互转](chapter05_slice_n_array/07Transfer_slice_in_different_type/main.go)
+- [7 不同类型的切片间互转](chapter05_slice_n_array/07_transfer_slice_in_different_type/main.go)
 - [8 切片复制方式对比: copy和=复制](chapter05_slice_n_array/08_reslice_n_copy/slice_copy.md)
+- [8 append 切片常用考题](chapter05_slice_n_array/09_append/main.go)
 ---
 
 ## 第六章 指针
@@ -362,7 +365,9 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [6 优雅退出原理分析-涉及linux信号介绍（go-zero实践）](chapter12_net/06_grateful_stop/grateful_stop.md)
   - [6.1 信号监听处理](chapter12_net/06_grateful_stop/signal.go)
 - [7 URL的解析 Parse，query 数据的转义与反转义](chapter12_net/07_url/url.md)
-- [8 使用alice优雅编排中间件](chapter12_net/08_middleware/middlerware.md)
+- [8 使用 alice 优雅编排中间件](chapter12_net/08_middleware/middleware.md)
+  - [5.1 jwt 中间件载体 Symmetric 对称加密->HSA](chapter12_net/08_middleware/01_symmetric/jwt_test.go)
+  - [5.2 jwt 中间件载体 asymmetric 非对称加密(更安全)->RSA](chapter12_net/08_middleware/02_asymmetric/jwt_test.go)
 - [9 HTTPS, SAN, SLS, TLS及源码分析握手过程](chapter12_net/09_https/https.md)
   - 9.1 https 单向认证
     - [9.1.1 服务端修改 tls 版本](chapter12_net/09_https/01_sign_one/01_server/server.go)
@@ -371,7 +376,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [10 unix domain socket 本地 IPC 进程间通信](chapter12_net/10_unix_domain_socket/uds.md)
 - [11 获取本机内网和外网Ip](chapter12_net/11_internal_n_external_ip/main.go)
 - [12 http2 使用](chapter12_net/12_http2/http2.md)
-  - let's encrypt的免费证书开发server
+  - [let's encrypt 免费证书 开发server](chapter12_net/12_http2/01_server/server.go)
+- [13 flusher 实现 stream 流式返回](chapter12_net/13_flusher/flusher.md)
 
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
@@ -433,14 +439,12 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
   - [3.1 math_rand使用](chapter17_dataStructure_n_algorithm/03_rand/01_math_rand/main.go)
   - [3.2 crypto_rand使用](chapter17_dataStructure_n_algorithm/03_rand/02_crypto_rand/main.go)
   - [3.3 fastrand 优化使用](chapter17_dataStructure_n_algorithm/03_rand/03_fastrand/main.go)
-- [4 排序算法分类及图解(sort包源码分析)](chapter17_dataStructure_n_algorithm/04_sort/algorithm.md)
-  - [4.1 sort包使用](chapter17_dataStructure_n_algorithm/04_sort/sorted_info/main.go)
+- [4 排序算法分类及图解(sort包源码分析)](chapter17_dataStructure_n_algorithm/04_sort/sort.md)
+  - [4.1 sort包使用](chapter17_dataStructure_n_algorithm/04_sort/01_sorted_info/main.go)
     - 不同结构体切片根据反射reflect实现自定义排序 
     - map根据key实现排序
     - sort.Search 根据排序切片找索引
-- [5 Jwt源码分析及中间件使用](chapter17_dataStructure_n_algorithm/05_middleware/jwt.md)
-  - [5.1 Symmetric 对称加密->HSA](chapter17_dataStructure_n_algorithm/05_middleware/01_symmetric/jwt_test.go)
-  - [5.2 asymmetric 非对称加密(更安全)->RSA](chapter17_dataStructure_n_algorithm/05_middleware/02_asymmetric/jwt_test.go)
+
 - [6 certificate 证书-->openssl 使用](chapter17_dataStructure_n_algorithm/06_certificate/certificate.md)
   - [6.1 pem(Privacy Enhanced Mail Certificate保密增强邮件协议](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/pem.md)
     - [6.1.1 生成公私钥的 .pem 文件(公钥使用RSA算法)](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/01_pem_generate/main.go)
@@ -496,6 +500,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [2 自定义扩展模版函数 FuncMap ](chapter22_template/02_template_func/main.go)
 - [3 html模版](chapter22_template/03_html_template/main.go)
 - [4 generate 根据模版代码生成](chapter22_template/04_gen_template/gen_main.go)
+- [5 推荐第三方 sprig 模版函数](chapter22_template/05_sprig_func/sprig.md)
 
 ## 第二十三章 调试内部对象
 - [1 fmt打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)

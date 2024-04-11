@@ -5,6 +5,7 @@
 - [go开发套件](#go%E5%BC%80%E5%8F%91%E5%A5%97%E4%BB%B6)
   - [指令](#%E6%8C%87%E4%BB%A4)
     - [go get 和 go install](#go-get-%E5%92%8C-go-install)
+    - [go clean 删除掉执行其它命令时产生的一些文件和目录](#go-clean-%E5%88%A0%E9%99%A4%E6%8E%89%E6%89%A7%E8%A1%8C%E5%85%B6%E5%AE%83%E5%91%BD%E4%BB%A4%E6%97%B6%E4%BA%A7%E7%94%9F%E7%9A%84%E4%B8%80%E4%BA%9B%E6%96%87%E4%BB%B6%E5%92%8C%E7%9B%AE%E5%BD%95)
     - [环境变量](#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F)
   - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
 
@@ -29,13 +30,15 @@ go在调用这些子命令对应的程序时， 会传递用于处理package层�
 ## 指令
 
 
-| col1  | col2                                                                                                                                                          |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| go    | 管理go源码和运行其他的指令                                                                                                                                    |
+| col1  | col2                                                                                                                                                         |
+|-------| ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| go    | 管理go源码和运行其他的指令                                                                                                                                   |
 | asm   | Asm, typically invoked as “go tool asm”, assembles the source file into an object file named for the basename of the argument source file with a .o suffix. |
-| fmt   | 格式化源码                                                                                                                                                    |
-| godoc | 导出并生成go代码中的文档                                                                                                                                      |
-| fix   | 用于将使用了语言或lib的旧特性的程序，改写成新特性                                                                                                             |
+| fmt   | 格式化源码                                                                                                                                                   |
+| godoc | 导出并生成go代码中的文档                                                                                                                                     |
+| fix   | 用于将使用了语言或lib的旧特性的程序，改写成新特性                                                                                                            |
+| list  | 提供指定代码包的更深层次的信息                                                                                                       |
+| clean | 删除掉执行其它命令时产生的一些文件和目录                                                                                                       |
 
 
 
@@ -50,6 +53,9 @@ go install [build flags] [packages]
 go install也会将可执行文件安装到GOBIN目录下。
 
 
+### go clean 删除掉执行其它命令时产生的一些文件和目录
+
+
 
 ### 环境变量
 
@@ -58,7 +64,7 @@ go install也会将可执行文件安装到GOBIN目录下。
 修改环境变量NAME go env -w <NAME>=<VALUE>
 
 ```shell
-➜  03_n git:(feature/memory) ✗ go env                         
+✗ go env                         
 GO111MODULE="on"
 GOARCH="arm64"
 GOBIN=""

@@ -3,7 +3,10 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Golang Testing](#golang-testing)
-  - [单元测试](#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
+  - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
+    - [BDD - Behavior-Driven Development 行为驱动开发](#bdd---behavior-driven-development-%E8%A1%8C%E4%B8%BA%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91)
+    - [Test-Driven Development (TDD) 测试驱动开发，侧重于系统的实现](#test-driven-development-tdd-%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E4%BE%A7%E9%87%8D%E4%BA%8E%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%AE%9E%E7%8E%B0)
+    - [单元测试](#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
   - [覆盖 cover 测试](#%E8%A6%86%E7%9B%96-cover-%E6%B5%8B%E8%AF%95)
   - [go test 命令行参数](#go-test-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0)
     - [1 常规语法](#1-%E5%B8%B8%E8%A7%84%E8%AF%AD%E6%B3%95)
@@ -15,7 +18,15 @@
 
 # Golang Testing
 
-## 单元测试
+## 基本概念
+
+### BDD - Behavior-Driven Development 行为驱动开发
+
+### Test-Driven Development (TDD) 测试驱动开发，侧重于系统的实现
+
+
+
+### 单元测试
 单元测试是针对任意一个具体的函数而言，无论是一个已导出的函数接口，或者是一个并不导出的内部工具函数，你可以针对这个函数做一组测试，目的在于证明该函数的功用与其所宣称的相同
 
 对于 Golang 来说，编写单元测试很容易：
@@ -33,7 +44,7 @@
 
 ## go test 命令行参数
 ```shell
-➜  03_n git:(feature/memory) ✗ go help test                                                                             
+➜  ✗ go help test                                                                             
 usage: go test [build/test flags] [packages] [build/test flags & test binary flags]
 
 'Go test' automates testing the packages named by the import paths.

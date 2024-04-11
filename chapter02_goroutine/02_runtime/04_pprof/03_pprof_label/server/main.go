@@ -1,19 +1,21 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+)
 
 func main() {
-	engine := gin.Default()
-	engine.GET("/", handler)
-	engine.GET("/login", handler)
-	engine.GET("/logout", handler)
-	engine.GET("/products", handler)
-	engine.GET("/product/:productID", handler)
-	engine.GET("/basket", handler)
-	engine.GET("/about", handler)
-	engine.Run(":8080")
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", emptyHandler)
+	mux.HandleFunc("/login", emptyHandler)
+	mux.HandleFunc("/logout", emptyHandler)
+	mux.HandleFunc("/products", emptyHandler)
+	mux.HandleFunc("/product/:productID", emptyHandler)
+	mux.HandleFunc("/basket", emptyHandler)
+	mux.HandleFunc("/about", emptyHandler)
+	http.ListenAndServe(":8080", mux)
 }
 
-func handler(c *gin.Context) {
+var emptyHandler = func(writer http.ResponseWriter, request *http.Request) {
 
 }

@@ -6,9 +6,10 @@ import (
 	"flag"
 	"fmt"
 	"golang.org/x/net/http2"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
 const url = "https://localhost:443"
@@ -20,7 +21,7 @@ func main() {
 	client := &http.Client{}
 	// Create a pool with the server certificate since it is not signed
 	// by a known CA
-	caCert, err := ioutil.ReadFile("chapter17_dataStructure_n_algorithm/06_certificate/02_x509/cert.pem")
+	caCert, err := os.ReadFile("chapter17_dataStructure_n_algorithm/06_certificate/02_x509/cert.pem")
 	if err != nil {
 		log.Fatalf("Reading server certificate: %s", err)
 	}
@@ -49,7 +50,7 @@ func main() {
 		log.Fatalf("Failed get: %s", err)
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalf("Failed reading response body: %s", err)
 	}
