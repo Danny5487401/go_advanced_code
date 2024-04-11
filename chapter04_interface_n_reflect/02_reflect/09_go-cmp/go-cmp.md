@@ -9,6 +9,13 @@
 
 # go-cmp
 
+reflect.DeepEqual 的替代品
+
+特点
+- reflect.DeepEqual不够灵活，无法提供选项实现我们想要的行为，例如允许浮点数误差，对test 不友好 
+- 其他类型可以通过 equal 方法扩展
+- 不会比较未导出字段（即字段名首字母小写的字段）。遇到未导出字段，cmp.Equal()直接panic
+
 
 ## 参考资料
 

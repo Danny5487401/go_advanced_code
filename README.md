@@ -161,7 +161,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - [2.8 reflect.MakeFunc 构建函数](chapter04_interface_n_reflect/02_reflect/08_make_func/make_func.md)
       - [2.8.1 构建逆序打印切片函数](chapter04_interface_n_reflect/02_reflect/08_make_func/01_invertInts/invertslice.go)
       - [2.8.2 构建求和函数分别用于字符串和数字](chapter04_interface_n_reflect/02_reflect/08_make_func/02_sum/reflect_sum.go)
-    - 2.9 go-cmp-->比 reflect.DeepEqual 更灵活
+    - [2.9 go-cmp-->reflect.DeepEqual 的替代品]()
       - [2.9.1 结构体内嵌指针：与 == 对比进行相等判断](chapter04_interface_n_reflect/02_reflect/09_go-cmp/01_compare_with_equal)
       - [2.9.2 IgnoreUnexported 忽略未导出字段,AllowUnexported 指定某些类型的未导出字段需要比较](chapter04_interface_n_reflect/02_reflect/09_go-cmp/02_ignoreUnexported/main.go)
       - [2.9.3 切片变量值为 nil 对比长度为 0 的切片](chapter04_interface_n_reflect/02_reflect/09_go-cmp/03_nil_and_empty_slice/main.go)
@@ -376,7 +376,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [10 unix domain socket 本地 IPC 进程间通信](chapter12_net/10_unix_domain_socket/uds.md)
 - [11 获取本机内网和外网Ip](chapter12_net/11_internal_n_external_ip/main.go)
 - [12 http2 使用](chapter12_net/12_http2/http2.md)
-  - let's encrypt的免费证书开发server
+  - [let's encrypt 免费证书 开发server](chapter12_net/12_http2/01_server/server.go)
+- [13 flusher 实现 stream 流式返回](chapter12_net/13_flusher/flusher.md)
 
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)

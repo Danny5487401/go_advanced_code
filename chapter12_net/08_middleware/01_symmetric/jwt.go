@@ -2,13 +2,12 @@ package _1_symmetric
 
 import (
 	"errors"
-	"github.com/Danny5487401/go_advanced_code/chapter12_net/08_middleware/models"
 	"net/http"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
-
+	"github.com/Danny5487401/go_advanced_code/chapter12_net/08_middleware/models"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type JWTConfig struct {
