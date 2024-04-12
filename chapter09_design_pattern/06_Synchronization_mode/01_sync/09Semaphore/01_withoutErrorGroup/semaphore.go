@@ -15,10 +15,10 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
-// Example_workerPool demonstrates how to use a semaphore to limit the number of
+// Example_workerPool demonstrates how to user a semaphore to limit the number of
 // goroutines working on parallel tasks.
 //
-// This use of a semaphore mimics a typical “worker pool” pattern, but without
+// This user of a semaphore mimics a typical “worker pool” pattern, but without
 // the need to explicitly shut down idle workers when the work is done.
 func main() {
 	ctx := context.TODO()

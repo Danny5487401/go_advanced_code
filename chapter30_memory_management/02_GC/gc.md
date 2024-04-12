@@ -347,5 +347,5 @@ writePointer(slot, ptr):
 ## 参考资料
 1. [Go中内存分配源码实现](https://www.luozhiyun.com/archives/434) 
 2. [Go语言设计](https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-garbage-collector/)
-3. [BFS (Breadth First Search 广度优先遍历）-->树的层次遍历](https://github.com/Danny5487401/c_learning/blob/main/dataStructure/04_graph/graph.md)
+3. [BFS (Breadth First Search 广度优先遍历）-->树的层次遍历](https://github.com/Danny5487401/algorithm-in-go-and-c/blob/master/01_dataStructure/04_graph/graph.md)
 4. [Go 官方gc-guide](https://tip.golang.org/doc/gc-guide)

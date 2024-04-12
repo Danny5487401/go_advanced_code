@@ -137,7 +137,7 @@ hot path 是指执行非常频繁的指令序列。
 
 // Once is an object that will perform exactly one action.
 //
-// A Once must not be copied after first use.
+// A Once must not be copied after first user.
 type Once struct {
 	// done indicates whether the action has been performed.
 	// It is first in the struct because it is used in the hot path.

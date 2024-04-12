@@ -26,4 +26,4 @@ func c(x [1000]int) {
 	println(`func c`)
 }
 
-// go build -gcflags -S main.go
+// go build -gcflags -S myenumstr.go

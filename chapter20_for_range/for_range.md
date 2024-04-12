@@ -180,7 +180,7 @@ func main() {
 	case TMAP:
 		// 副本
 		// order.stmt allocated the iterator for us.
-		// we only use a once, so no copy needed.
+		// we only user a once, so no copy needed.
 		ha := a
 
 		hit := prealloc[n]

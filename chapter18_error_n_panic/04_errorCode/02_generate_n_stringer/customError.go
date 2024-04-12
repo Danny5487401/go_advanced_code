@@ -2,7 +2,7 @@ package _2generate_n_stringer
 
 import (
 	"fmt"
-	"github.com/Danny5487401/go_advanced_code/chapter18_error_n_panic/04_errorCode/02generate_n_stringer/errcode"
+	"github.com/Danny5487401/go_advanced_code/chapter18_error_n_panic/04_errorCode/02_generate_n_stringer/errcode"
 )
 
 type Xerror interface {

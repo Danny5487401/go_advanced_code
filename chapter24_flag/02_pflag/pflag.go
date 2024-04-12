@@ -35,10 +35,10 @@ func main() {
 	flag.Lookup("age").NoOptDefVal = "25"
 
 	// 把 badflag 参数标记为即将废弃的，请用户使用 des-detail 参数
-	flag.CommandLine.MarkDeprecated("badflag", "please use --des-detail instead")
+	flag.CommandLine.MarkDeprecated("badflag", "please user --des-detail instead")
 
 	// 把 badflag 参数的 shorthand 简写形式标记为即将废弃的，请用户使用 des-detail 的 shorthand 参数
-	flag.CommandLine.MarkShorthandDeprecated("badflag", "please use -d instead")
+	flag.CommandLine.MarkShorthandDeprecated("badflag", "please user -d instead")
 
 	// 在帮助文档中隐藏参数 gender
 	flag.CommandLine.MarkHidden("gender")

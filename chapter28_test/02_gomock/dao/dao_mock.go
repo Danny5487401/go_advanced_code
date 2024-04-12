@@ -28,7 +28,7 @@ func NewMockSearch(ctrl *gomock.Controller) *MockSearch {
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT returns an object that allows the caller to indicate expected user.
 func (m *MockSearch) EXPECT() *MockSearchMockRecorder {
 	return m.recorder
 }

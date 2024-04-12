@@ -467,8 +467,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [2 扩展包pkg.errors](chapter18_error_n_panic/02_pkg_errors/pkg_errors.md)
 - [3 Gin的错误recover分析(panic和recover源码分析)](chapter18_error_n_panic/03_recover/panic.md)
 - 4 生成errCode错误码及信息
-  - [4.1 传统方式：命名错误码、状态码的同时，又要map同步写码对应的翻译](chapter18_error_n_panic/04_errorCode/01traditional/main.go)
-  - [4.2 stringer + go generate 自带工具生成errCode错误码及信息->效率高于map映射错误](chapter18_error_n_panic/04_errorCode/02generate_n_stringer/intro.md)
+  - [4.1 传统方式：命名错误码、状态码的同时，又要map同步写码对应的翻译](chapter18_error_n_panic/04_errorCode/01_traditional/main.go)
+  - [4.2 stringer + go generate 自带工具生成errCode错误码及信息->效率高于map映射错误](chapter18_error_n_panic/04_errorCode/02_generate_n_stringer/intro.md)
 - [5 error如何正确比较](chapter18_error_n_panic/05_err_comparision/main.go)
 - [6 收集多个errors-->go-multierror实现](chapter18_error_n_panic/06_multi_error/01_one_goroutine_n_errors/main.go)
 - [7 错误链](chapter18_error_n_panic/07_chain_error/chain_err.md)
@@ -575,6 +575,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [2 Go tool 自带工具](chapter31_tool/02_tool/tool.md)
   - [2.1 tool compile编译](chapter31_tool/02_tool/01_compile/compile.md)
   - [2.2 tool link链接](chapter31_tool/02_tool/02_link/link.md)
+  - [2.3 generate 批量执行任何命令](chapter31_tool/02_tool/03_generate/genarate.md)
 
 
 ## [第三十二章 Generic 泛型](chapter32_generic/generic.md)

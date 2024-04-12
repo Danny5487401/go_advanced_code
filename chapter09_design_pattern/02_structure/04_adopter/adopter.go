@@ -19,7 +19,7 @@ type keyboard struct {
 
 // keyboard实现了USB接口
 func (k *keyboard) UseUSB() string {
-	return "I use USB interface"
+	return "I user USB interface"
 }
 
 // 适配器
@@ -27,12 +27,12 @@ type adapter struct {
 	USB // 组合内嵌
 }
 
-//UseTypeC实现了Type-C接口
+// UseTypeC实现了Type-C接口
 func (a *adapter) UseTypeC() string {
-	return a.UseUSB() + ", but now I use Type-C interface"
+	return a.UseUSB() + ", but now I user Type-C interface"
 }
 
-//NewAdapter 是适配器的工厂函数
+// NewAdapter 是适配器的工厂函数
 func NewAdapter(keyboard USB) TypeC {
 	return &adapter{
 		USB: keyboard,

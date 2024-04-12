@@ -92,7 +92,7 @@ type driverConn struct {
 
 	sync.Mutex  // guards following
 	ci          driver.Conn
-	needReset   bool // The connection session should be reset before use if true.
+	needReset   bool // The connection session should be reset before user if true.
 	closed      bool // 确定连接最终都关闭后才是最终关闭
 	finalClosed bool // 确定依赖都被关闭后，才会执行最后的关闭
 	openStmt    map[*driverStmt]bool

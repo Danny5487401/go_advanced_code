@@ -2,7 +2,7 @@ package _2generate_n_stringer
 
 import (
 	"fmt"
-	"github.com/Danny5487401/go_advanced_code/chapter18_error_n_panic/04_errorCode/02generate_n_stringer/errcode"
+	"github.com/Danny5487401/go_advanced_code/chapter18_error_n_panic/04_errorCode/02_generate_n_stringer/errcode"
 	"github.com/pkg/errors"
 	"testing"
 )
@@ -40,11 +40,12 @@ func TestText(t *testing.T) {
 }
 
 func searchBook(bookName string) error {
-	// 1 发现图书馆不存在这本书 - 认为是错误，需要打印详细的错误信息
+
 	if len(bookName) > 15 {
+		// 1 发现图书馆不存在这本书
 		return NewErrCode(errcode.BookNotFoundError)
 	} else if len(bookName) > 10 {
-		// 2 发现书被借走了 - 打印一下被接走的提示即可，不认为是错误
+		// 2 发现书被借走了
 		return NewErrCodeMsg(errcode.BookHasBeenBorrowedError, "借书失败")
 	} else if len(bookName) > 6 {
 		return NewErrMsg("呵呵")

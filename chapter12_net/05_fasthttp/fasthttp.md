@@ -49,7 +49,7 @@ type Server struct {
 	// Handler for processing incoming requests.
 	//
 	// Take into account that no `panic` recovery is done by `fasthttp` (thus any `panic` will take down the entire server).
-	// Instead the user should use `recover` to handle these situations.
+	// Instead the user should user `recover` to handle these situations.
 	Handler RequestHandler
 
 	// ErrorHandler for returning a response in case of an error while receiving or parsing the request.

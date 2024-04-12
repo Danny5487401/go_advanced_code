@@ -86,7 +86,7 @@ require (
 go module作者只需在自己的go.mod中的module声明上面用**// Deprecated: comment**对module做出注释，就像下面这样：
 
 ```go
-// Deprecated: use example.com/mod/v2 instead.
+// Deprecated: user example.com/mod/v2 instead.
 module example.com/mod
 ```
 

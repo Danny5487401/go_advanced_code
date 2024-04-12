@@ -67,7 +67,7 @@ usage: compile [options] file.go...
   -dwarf
         generate DWARF symbols (default true)  生成DWARF符号
   -dwarfbasentries
-        use base address selection entries in DWARF
+        user base address selection entries in DWARF
   -dwarflocationlists
         add location lists to DWARF in optimized mode (default true) 优化模式中， 向DWARF增加位置列表 （location list）
   -dynlink 允许引用在共享库中的go符号
@@ -175,7 +175,7 @@ uintptrescapes后续需要紧跟一个函数声明。 指令表明该函数的ui
 //
 // AllThreadsSyscall is unaware of any threads that are launched
 // explicitly by cgo linked code, so the function always returns
-// ENOTSUP in binaries that use cgo.
+// ENOTSUP in binaries that user cgo.
 //go:uintptrescapes
 func AllThreadsSyscall(trap, a1, a2, a3 uintptr) (r1, r2 uintptr, err Errno) {
 	if cgo_libc_setegid != nil {

@@ -274,8 +274,8 @@ type g struct {
 	
     // goroutine 的运行现场,存储 Goroutine 的调度相关的数据
 	sched        gobuf
-	syscallsp    uintptr        // if status==Gsyscall, syscallsp = sched.sp to use during gc
-	syscallpc    uintptr        // if status==Gsyscall, syscallpc = sched.pc to use during gc
+	syscallsp    uintptr        // if status==Gsyscall, syscallsp = sched.sp to user during gc
+	syscallpc    uintptr        // if status==Gsyscall, syscallpc = sched.pc to user during gc
 	stktopsp     uintptr        // expected sp at top of stack, to check in traceback
 
 	// wakeup 时传入的参数
@@ -458,7 +458,7 @@ type m struct {
     // cgo 调用总计数
 	ncgocall      uint64      // number of cgo calls in total
 	ncgo          int32       // number of cgo calls currently in progress
-	cgoCallersUse uint32      // if non-zero, cgoCallers in use temporarily
+	cgoCallersUse uint32      // if non-zero, cgoCallers in user temporarily
 	cgoCallers    *cgoCallers // cgo traceback if crashing in cgo call
 	
 	// 没有 goroutine 需要运行时，工作线程睡眠在这个 park 成员上，

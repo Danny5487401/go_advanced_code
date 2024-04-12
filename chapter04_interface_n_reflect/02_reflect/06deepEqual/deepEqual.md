@@ -129,7 +129,7 @@ func deepValueEqual(v1, v2 Value, visited map[visit]bool) bool {
 			if v1.typ.ptrdata == 0 {
 				// go:notinheap pointers can't be cyclic.
 				// At least, all of our current uses of go:notinheap have
-				// that property. The runtime ones aren't cyclic (and we don't use
+				// that property. The runtime ones aren't cyclic (and we don't user
 				// DeepEqual on them anyway), and the cgo-generated ones are
 				// all empty structs.
 				return false

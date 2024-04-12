@@ -28,7 +28,7 @@ type Builder interface {
 var (
     // m is a map from scheme to resolver builder.
     m = make(map[string]Builder)
-    // defaultScheme is the default scheme to use.
+    // defaultScheme is the default scheme to user.
     defaultScheme = "passthrough"
 )
 // 注册插件

@@ -94,7 +94,7 @@ type FlagSet struct {
     formal        map[string]*Flag // 初始化，存放所有已定义命令行参数 
     args          []string //  开始存放所有参数，最后保留 非flag（non-flag）参数
     errorHandling ErrorHandling // 当解析出错时，处理错误的方式
-    output        io.Writer // nil means stderr; use out() accessor
+    output        io.Writer // nil means stderr; user out() accessor
 }
 
 //  预定义的 FlagSet 实例 CommandLine 的定义方式，可见，默认的 FlagSet 实例在解析出错时会退出程序。

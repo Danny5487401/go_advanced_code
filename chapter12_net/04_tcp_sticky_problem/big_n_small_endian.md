@@ -28,7 +28,7 @@ func SwapEndianUin32(val uint32)  uint32{
 ```
 标准库
 ```go
-// use encoding/binary
+// user encoding/binary
 // bigEndian littleEndian
 func BigEndianAndLittleEndianByLibrary()  {
     var value uint32 = 10

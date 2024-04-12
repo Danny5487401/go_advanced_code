@@ -31,7 +31,7 @@ const (
     // StackSystem is a number of additional bytes to add
     // to each stack below the usual guard area for OS-specific
     // purposes like signal handling. Used on Windows, Plan 9,
-    // and iOS because they do not use a separate stack.
+    // and iOS because they do not user a separate stack.
     _StackSystem = goos.IsWindows*512*goarch.PtrSize + goos.IsPlan9*512 + goos.IsIos*goarch.IsArm64*1024
     
     // The minimum size of stack used by Go code

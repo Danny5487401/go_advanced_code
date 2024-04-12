@@ -102,7 +102,7 @@ type Transport struct {
 	*/
 	TLSHandshakeTimeout time.Duration
  
-	// DisableKeepAlives, if true, prevents re-use of TCP connections
+	// DisableKeepAlives, if true, prevents re-user of TCP connections
 	// between different HTTP requests.
 	DisableKeepAlives bool   //如果为true，则阻止在不同http请求之间重用TCP连接
  

@@ -47,14 +47,14 @@ type (
 	// MapFunc is used to do element processing and write the output to writer.
 	MapFunc func(item interface{}, writer Writer)
 	// MapperFunc is used to do element processing and write the output to writer,
-	// use cancel func to cancel the processing.
+	// user cancel func to cancel the processing.
 	// 2. 数据加工func
 	// item - 生产出来的数据
 	// writer - 调用writer.Write()可以将加工后的向后传递至reducer
 	// cancel - 终止流程func
 	MapperFunc func(item interface{}, writer Writer, cancel func(error))
 	// ReducerFunc is used to reduce all the mapping output and write to writer,
-	// use cancel func to cancel the processing.
+	// user cancel func to cancel the processing.
 	// 3. 数据聚合func
 	// pipe - 加工出来的数据
 	// writer - 调用writer.Write()可以将聚合后的数据返回给用户
@@ -200,7 +200,7 @@ func mapReduceWithPanicChan(source <-chan interface{}, panicChan *onceChan, mapp
 	// 支持阻塞写入chan的writer
 	writer := newGuardedWriter(options.ctx, output, done)
 	var closeOnce sync.Once
-	// use atomic.Value to avoid data race
+	// user atomic.Value to avoid data race
 	var retErr errorx.AtomicError
 	// 数据聚合任务已结束，发送完成标志
 	finish := func() {

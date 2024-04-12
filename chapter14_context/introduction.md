@@ -54,7 +54,7 @@ Context 为同一任务的多个 goroutine 之间提供了 *退出信号通知* 
 
 不要将 Contexts 放入结构体，相反context应该作为第一个参数传入，命名为ctx。
 ```go
-func DoSomething(ctx context.Context，arg Arg)error { // ... use ctx ... }
+func DoSomething(ctx context.Context，arg Arg)error { // ... user ctx ... }
 ```
 
 **即使函数允许，也不要传入nil的 Context。如果不知道用哪种 Context，可以使用context.TODO()。**

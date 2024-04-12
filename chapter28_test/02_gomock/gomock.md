@@ -311,7 +311,7 @@ func (m *MockSearch) GetNameByID(id int64) (string, error) {
 func (ctrl *Controller) Call(receiver interface{}, method string, args ...interface{}) []interface{} {
 	ctrl.T.Helper()
 
-	// Nest this code so we can use defer to make sure the lock is released.
+	// Nest this code so we can user defer to make sure the lock is released.
 	actions := func() []func([]interface{}) []interface{} {
 		ctrl.T.Helper()
 		ctrl.mu.Lock()

@@ -137,7 +137,7 @@ func (g *Group) doCall(c *call, key string, fn func() (interface{}, error)) {
 	normalReturn := false
 	recovered := false
 
-	// use double-defer to distinguish panic from runtime.Goexit,
+	// user double-defer to distinguish panic from runtime.Goexit,
 	// more details see https://golang.org/cl/134395
 	defer func() {
 		// the given function invoked runtime.Goexit

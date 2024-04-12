@@ -101,13 +101,13 @@ Parsed Arguments     Resulting Value
 在程序的不断升级中添加新的参数和废弃旧的参数都是常见的用例，pflag 包对废弃参数也提供了很好的支持。
 通过 MarkDeprecated 和 MarkShorthandDeprecated 方法可以分别把参数及其 shorthand 标记为废弃：
 ```go
-	flag.CommandLine.MarkDeprecated("badflag", "please use --des-detail instead")
+	flag.CommandLine.MarkDeprecated("badflag", "please user --des-detail instead")
 ```
 
 ```shell
 ➜  02_pflag git:(feature/flag) ✗ go run pflag.go -b test                     
-Flag shorthand -b has been deprecated, please use -d instead
-Flag --badflag has been deprecated, please use --des-detail instead
+Flag shorthand -b has been deprecated, please user -d instead
+Flag --badflag has been deprecated, please user --des-detail instead
 name= nick
 age= 22
 gender= male

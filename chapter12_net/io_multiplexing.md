@@ -433,16 +433,16 @@ func accept(s int) (int, syscall.Sockaddr, string, error) {
 	default: // errors other than the ones listed
 		return -1, sa, "accept4", err
 	case syscall.ENOSYS: // syscall missing
-	case syscall.EINVAL: // some Linux use this instead of ENOSYS
-	case syscall.EACCES: // some Linux use this instead of ENOSYS
-	case syscall.EFAULT: // some Linux use this instead of ENOSYS
+	case syscall.EINVAL: // some Linux user this instead of ENOSYS
+	case syscall.EACCES: // some Linux user this instead of ENOSYS
+	case syscall.EFAULT: // some Linux user this instead of ENOSYS
 	}
 
 	// See ../syscall/exec_unix.go for description of ForkLock.
 	// It is probably okay to hold the lock across syscall.Accept
 	// because we have put fd.sysfd into non-blocking mode.
 	// However, a call to the File method will put it back into
-	// blocking mode. We can't take that risk, so no use of ForkLock here.
+	// blocking mode. We can't take that risk, so no user of ForkLock here.
 	ns, sa, err = AcceptFunc(s)
 	if err == nil {
 		syscall.CloseOnExec(ns)
@@ -520,13 +520,13 @@ type netFD struct {
 	// immutable until Close
 	family      int
 	sotype      int
-	isConnected bool // handshake completed or use of association with peer
+	isConnected bool // handshake completed or user of association with peer
 	net         string
 	laddr       Addr
 	raddr       Addr
 }
 
-// FD is a file descriptor. The net and os packages use this type as a
+// FD is a file descriptor. The net and os packages user this type as a
 // field of a larger type representing a network connection or OS file.
 type FD struct {
 	// Lock sysfd and serialize access to Read and Write methods.
@@ -813,7 +813,7 @@ func poll_runtime_pollWait(pd *pollDesc, mode int) int {
 	if errcode != pollNoError {
 		return errcode
 	}
-	// As for now only Solaris, illumos, and AIX use level-triggered IO.
+	// As for now only Solaris, illumos, and AIX user level-triggered IO.
 	if GOOS == "solaris" || GOOS == "illumos" || GOOS == "aix" {
 		netpollarm(pd, mode)
 	}

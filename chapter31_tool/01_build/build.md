@@ -89,7 +89,7 @@ and test commands:
         -gcflags '[pattern=]arg list'
                 arguments to pass on each go tool compile invocation. 传递给所有的go tool compile的参数
         -installsuffix suffix
-                a suffix to use in the name of the package installation directory,
+                a suffix to user in the name of the package installation directory,
                 in order to keep output separate from default builds.
                 If using the -race flag, the install suffix is automatically set to race
                 or, if set explicitly, has _race appended to it. Likewise for the -msan
@@ -101,7 +101,7 @@ and test commands:
                 build code that will be linked against shared libraries previously
                 created with -buildmode=shared.
         -mod mode
-                module download mode to use: readonly, vendor, or mod.
+                module download mode to user: readonly, vendor, or mod.
                 go.mod中的版本大于等于1.14且存在vendor文件夹，那么会使用-mod=vendor； 反之，使用-mod=readonly
                 See https://golang.org/ref/mod#build-commands for details.
         -modcacherw
@@ -128,7 +128,7 @@ and test commands:
         -pkgdir dir
                 替换所有的安装和加载所有的包的路径
                 For example, when building with a non-standard configuration,
-                use -pkgdir to keep generated packages in a separate location.
+                user -pkgdir to keep generated packages in a separate location.
         -tags tag,list
                 逗号分割的编译tag列表. For more information about build tags, see the description of
                 build constraints in the documentation for the go/build package.
@@ -140,7 +140,7 @@ and test commands:
                 will begin either a module path@version (when using modules),
                 or a plain import path (when using the standard library, or GOPATH).
         -toolexec 'cmd args'
-                a program to use to invoke toolchain programs like vet and asm.
+                a program to user to invoke toolchain programs like vet and asm.
                 For example, instead of running asm, the go command will run
                 'cmd args /path/to/asm <arguments for asm>'.
                 The TOOLEXEC_IMPORTPATH environment variable will be set,

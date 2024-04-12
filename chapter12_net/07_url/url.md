@@ -107,7 +107,7 @@ func shouldEscape(c byte, mode encoding) bool {
 		// We add [ ] because we include [ipv6]:port as part of host.
 		// We add < > because they're the only characters left that
 		// we could possibly allow, and Parse will reject them if we
-		// escape them (because hosts can't use %-encoding for
+		// escape them (because hosts can't user %-encoding for
 		// ASCII bytes).
 		switch c {
 		case '!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=', ':', '[', ']', '<', '>', '"':
@@ -220,7 +220,7 @@ func unescape(s string, mode encoding) (string, error) {
 				// and that even non-ASCII can be redundantly escaped,
 				// but it seems prudent to restrict %-escaped bytes here to those
 				// that are valid host name bytes in their unescaped form.
-				// That is, you can use escaping in the zone identifier but not
+				// That is, you can user escaping in the zone identifier but not
 				// to introduce bytes you couldn't just write directly.
 				// But Windows puts spaces here! Yay.
 				v := unhex(s[i+1])<<4 | unhex(s[i+2])

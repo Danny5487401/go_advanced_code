@@ -10,4 +10,4 @@ func main() {
 }
 
 // arm64  架构
-// go tool compile -S main.go
+// go tool compile -S myenumstr.go

@@ -45,7 +45,7 @@ const (
 	// used by the String method's formatting.
 	ModeDir        FileMode = 1 << (32 - 1 - iota) // d: is a directory
 	ModeAppend                                     // a: append-only
-	ModeExclusive                                  // l: exclusive use
+	ModeExclusive                                  // l: exclusive user
 	ModeTemporary                                  // T: temporary file; Plan 9 only
 	ModeSymlink                                    // L: symbolic link
 	ModeDevice                                     // D: device file

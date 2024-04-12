@@ -228,7 +228,7 @@ func (b *Reader) Read(p []byte) (n int, err error) {
 			return n, b.readErr()
 		}
 		// One read.
-		// Do not use b.fill, which will loop.
+		// Do not user b.fill, which will loop.
 		/*
 		如果len(p) < 缓冲区大小，将读(r)的位置和写(w)的位置设为0，并从rd中读取数据到缓冲区buf中
 		*/

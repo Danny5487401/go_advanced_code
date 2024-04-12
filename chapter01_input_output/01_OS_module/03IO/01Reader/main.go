@@ -10,8 +10,9 @@ import (
 )
 
 /*
-	读取数据(Reader接口)：
-		Read(p []byte)(n int, error)
+读取数据(Reader接口)：
+
+	Read(p []byte)(n int, error)
 */
 func main() {
 
@@ -25,6 +26,7 @@ func main() {
 
 /*
 bytes.Buffer源码分析
+
 	type Buffer struct {
 		buf      []byte // contents are the bytes buf[off : len(buf)]   缓冲区
 		off      int    // 写的索引值，指针偏移量
@@ -34,7 +36,7 @@ bytes.Buffer源码分析
 	//readOp常量描述了对缓冲区执行的最后一个操作
 	type readOp int8
 
-	// Don't use iota for these, as the values need to correspond with the
+	// Don't user iota for these, as the values need to correspond with the
 	// names and comments, which is easier to see when being explicit.
 	const (
 	   opRead      readOp = -1 // Any other read operation.  任何其他操作
@@ -73,7 +75,6 @@ bytes.Buffer源码分析
 	将缓冲区重置为空，但它会保留底层存储以供将来的写入使用。（清空数据，cap不变）
 	offset 偏移量置为0
 	lastRead置为未读取
-
 */
 func byteRead() {
 	// 1.申明缓冲区大小

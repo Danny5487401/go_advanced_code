@@ -223,8 +223,8 @@ mcentral被所有的工作线程共同享有，存在多个goroutine竞争的情
 type mcentral struct {
 	spanclass spanClass
 
-	// partial and full contain two mspan sets: one of swept in-use
-	// spans, and one of unswept in-use spans. These two trade
+	// partial and full contain two mspan sets: one of swept in-user
+	// spans, and one of unswept in-user spans. These two trade
 	// roles on each GC cycle. The unswept set is drained either by
 	// allocation or by the background sweeper in every GC cycle,
 	// so only two roles are necessary.
@@ -295,8 +295,8 @@ type mheap struct {
 	// progress has already been made.
 	pagesInUse         atomic.Uint64 // pages of spans in stats mSpanInUse
 	pagesSwept         atomic.Uint64 // pages swept this cycle
-	pagesSweptBasis    atomic.Uint64 // pagesSwept to use as the origin of the sweep ratio
-	sweepHeapLiveBasis uint64        // value of gcController.heapLive to use as the origin of sweep ratio; written with lock, read without
+	pagesSweptBasis    atomic.Uint64 // pagesSwept to user as the origin of the sweep ratio
+	sweepHeapLiveBasis uint64        // value of gcController.heapLive to user as the origin of sweep ratio; written with lock, read without
 	sweepPagesPerByte  float64       // proportional sweep ratio; written with lock, read without
 	// TODO(austin): pagesInUse should be a uintptr, but the 386
 	// compiler can't 8-byte align fields.
@@ -439,10 +439,10 @@ type fixalloc struct {
 	first  func(arg, p unsafe.Pointer) // called first time p is returned
 	arg    unsafe.Pointer
 	list   *mlink
-	chunk  uintptr // use uintptr instead of unsafe.Pointer to avoid write barriers
+	chunk  uintptr // user uintptr instead of unsafe.Pointer to avoid write barriers
 	nchunk uint32  // bytes remaining in current chunk
 	nalloc uint32  // size of new chunks in bytes
-	inuse  uintptr // in-use bytes now
+	inuse  uintptr // in-user bytes now
 	stat   *sysMemStat
 	zero   bool // zero allocations
 }
@@ -517,7 +517,7 @@ type heapArena struct {
 	//
 	// Modifications are protected by mheap.lock. Reads can be
 	// performed without locking, but ONLY from indexes that are
-	// known to contain in-use or stack spans. This means there
+	// known to contain in-user or stack spans. This means there
 	// must not be a safe-point between establishing that an
 	// address is live and looking it up in the spans array.
 	spans [pagesPerArena]*mspan
@@ -610,7 +610,7 @@ func mallocinit() {
 		// In little-endian, that's c0 00, c1 00, ... None of those are valid
 		// UTF-8 sequences, and they are otherwise as far away from
 		// ff (likely a common byte) as possible. If that fails, we try other 0xXXc0
-		// addresses. An earlier attempt to use 0x11f8 caused out of memory errors
+		// addresses. An earlier attempt to user 0x11f8 caused out of memory errors
 		// on OS X during thread allocations.  0x00c0 causes conflicts with
 		// AddressSanitizer which reserves all memory up to 0x0100.
 		// These choices reduce the odds of a conservative garbage collector
@@ -642,7 +642,7 @@ func mallocinit() {
 				p = uintptr(i)<<40 | uintptrMask&(0x0040<<32)
 			case GOOS == "aix":
 				if i == 0 {
-					// We don't use addresses directly after 0x0A00000000000000
+					// We don't user addresses directly after 0x0A00000000000000
 					// to avoid collisions with others mmaps done by non-go programs.
 					continue
 				}

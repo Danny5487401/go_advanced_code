@@ -8,6 +8,9 @@
     - [注意点](#%E6%B3%A8%E6%84%8F%E7%82%B9)
   - [好处](#%E5%A5%BD%E5%A4%84)
   - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [工具 github 源码](#%E5%B7%A5%E5%85%B7-github-%E6%BA%90%E7%A0%81)
+    - [工具生成的代码](#%E5%B7%A5%E5%85%B7%E7%94%9F%E6%88%90%E7%9A%84%E4%BB%A3%E7%A0%81)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -18,7 +21,7 @@ stringer命令旨在自动创建满足 fmt.Stringer 的方法。 它为指定类
 
 ## 安装stringer
 ```shell script
-go get golang.org/x/tools/cmd/stringer
+go install golang.org/x/tools/cmd/stringer
 ```
 
 
@@ -55,6 +58,12 @@ go get golang.org/x/tools/cmd/stringer
 生成的代码做了一些优化，减少了字符串对象的数量
 
 ## 源码分析
+### [工具 github 源码](https://github.com/golang/tools/blob/627959a8e32af98dce9ff3e65ef6f491d3dcb9f6/cmd/stringer/stringer.go)
+
+
+
+
+### 工具生成的代码
 1. 使用硬编码值生成String()函数效率更高：
 ```go
 var (
@@ -102,6 +111,10 @@ func _() {
 }
 
 ```
+
+
+## 参考
+
 
 
 

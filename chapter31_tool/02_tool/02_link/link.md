@@ -21,7 +21,7 @@ usage: link [options] main.o
   -H type
         set header type
   -I linker
-        use linker as ELF dynamic linker
+        user linker as ELF dynamic linker
   -L directory
         add specified directory to library path
   -R quantum
@@ -59,7 +59,7 @@ usage: link [options] main.o
   -extar string
         archive program for buildmode=c-archive
   -extld linker
-        use linker when linking in external mode
+        user linker when linking in external mode
   -extldflags flags
         pass flags to external linker
   -f    ignore version mismatch
@@ -72,7 +72,7 @@ usage: link [options] main.o
   -k symbol
         set field tracking symbol
   -libgcc string
-        compiler support lib for internal linking; use "none" to disable
+        compiler support lib for internal linking; user "none" to disable
   -linkmode mode
         set link mode
   -linkshared
@@ -96,7 +96,7 @@ usage: link [options] main.o
   -strictdups int
         sanity check duplicate symbol contents during object file reading (1=warn 2=err).
   -tmpdir directory
-        use directory for temporary files
+        user directory for temporary files
   -v    print link trace
   -w    disable DWARF generation
 
