@@ -3,20 +3,34 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Golang Testing](#golang-testing)
+  - [背景](#%E8%83%8C%E6%99%AF)
   - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
     - [BDD - Behavior-Driven Development 行为驱动开发](#bdd---behavior-driven-development-%E8%A1%8C%E4%B8%BA%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91)
     - [Test-Driven Development (TDD) 测试驱动开发，侧重于系统的实现](#test-driven-development-tdd-%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E4%BE%A7%E9%87%8D%E4%BA%8E%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%AE%9E%E7%8E%B0)
-    - [单元测试](#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
+    - [Unit Test 单元测试](#unit-test-%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
   - [覆盖 cover 测试](#%E8%A6%86%E7%9B%96-cover-%E6%B5%8B%E8%AF%95)
   - [go test 命令行参数](#go-test-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0)
     - [1 常规语法](#1-%E5%B8%B8%E8%A7%84%E8%AF%AD%E6%B3%95)
     - [2 执行特定的测试用例](#2-%E6%89%A7%E8%A1%8C%E7%89%B9%E5%AE%9A%E7%9A%84%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B)
     - [3 执行覆盖测试Permalink](#3-%E6%89%A7%E8%A1%8C%E8%A6%86%E7%9B%96%E6%B5%8B%E8%AF%95permalink)
     - [4 在测试时检测数据竞争问题](#4-%E5%9C%A8%E6%B5%8B%E8%AF%95%E6%97%B6%E6%A3%80%E6%B5%8B%E6%95%B0%E6%8D%AE%E7%AB%9E%E4%BA%89%E9%97%AE%E9%A2%98)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Golang Testing
+
+
+## 背景
+
+不写单元测试（Unit Test,UT)也许能使代码交付更快，但是我们无法保证写出来的代码真的能够正确地执行。写UT可以减少后期解决bug的时间，也能让我们放心地使用自己写出来的代码。从长远来看，后者更能有效地节省开发时间。
+
+既然UT这么重要，是什么原因在阻止开发人员写UT呢？这是因为除了开发人员的惰性习惯之外，编写UT代码同样存在难点。
+
+- 代码耦合度高，缺少必要的抽象与拆分，以至于不知道如何写UT。
+- 存在第三方依赖，例如依赖数据库连接、HTTP请求、数据缓存等。
+
+
 
 ## 基本概念
 
@@ -25,8 +39,7 @@
 ### Test-Driven Development (TDD) 测试驱动开发，侧重于系统的实现
 
 
-
-### 单元测试
+### Unit Test 单元测试
 单元测试是针对任意一个具体的函数而言，无论是一个已导出的函数接口，或者是一个并不导出的内部工具函数，你可以针对这个函数做一组测试，目的在于证明该函数的功用与其所宣称的相同
 
 对于 Golang 来说，编写单元测试很容易：
@@ -202,3 +215,7 @@ go test -v . -coverprofile=coverage.txt -covermode=atomic -timeout=20m
 
 go test -v -race .
 ```
+
+
+## 参考
+
