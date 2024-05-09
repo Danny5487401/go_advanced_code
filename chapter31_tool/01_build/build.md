@@ -4,7 +4,7 @@
 
 - [go build](#go-build)
   - [packages](#packages)
-  - [介绍build选项](#%E4%BB%8B%E7%BB%8Dbuild%E9%80%89%E9%A1%B9)
+  - [介绍 build 选项](#%E4%BB%8B%E7%BB%8D-build-%E9%80%89%E9%A1%B9)
     - [-n 不执行地打印流程中用到的命令](#-n-%E4%B8%8D%E6%89%A7%E8%A1%8C%E5%9C%B0%E6%89%93%E5%8D%B0%E6%B5%81%E7%A8%8B%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%91%BD%E4%BB%A4)
     - [--work保留可执行文件](#--work%E4%BF%9D%E7%95%99%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6)
   - [Go 语言的包导入](#go-%E8%AF%AD%E8%A8%80%E7%9A%84%E5%8C%85%E5%AF%BC%E5%85%A5)
@@ -15,6 +15,7 @@
 # go build 
 
 build 过程细化成两部分，compile 与 link，即编译和链接。
+![](.build_images/compile_n_link.png)
 
 go run 可等价于 go build + 执行。
 
@@ -36,8 +37,11 @@ go build [-o output] [build flags] [packages]
 （如果传入了文件列表）第一个文件的名字
 （没有指定文件列表）源码目录的名字
 
-## 介绍build选项
+
+
+## 介绍 build 选项
 ![](01_tags/.build_images/build_commnd.png)
+
 ```shell
 ✗ go help build            
 usage: go build [-o output] [build flags] [packages]
@@ -155,7 +159,7 @@ and test commands:
 
 - [案例](chapter31_tool/01_build/03_n/hello.go)
 ```shell
-➜  03_n git:(feature/memory) ✗ go build -n hello.go
+✗ go build -n hello.go
 
 #
 # command-line-arguments
@@ -242,7 +246,7 @@ mv $WORK/b001/exe/a.out hello
 
 对比 go run 
 ```shell
-➜  03_n git:(feature/memory) ✗ go run -x hello.go                                                                 
+✗ go run -x hello.go                                                                 
 WORK=/var/folders/sk/m49vysmj3ss_y50cv9cvcn800000gn/T/go-build3865472980
 mkdir -p $WORK/b001/
 cat >$WORK/b001/importcfg << 'EOF' # internal
@@ -310,8 +314,8 @@ hello
 
 ```shell
 # -x 执行并打印流程中用到的命令,要注意下它与-n选项的区别
-➜  03_n git:(feature/memory) ✗ go run -x --work hello.go
-➜  03_n git:(feature/memory) ✗ ls /var/folders/sk/m49vysmj3ss_y50cv9cvcn800000gn/T/go-build2348639944/b001/exe 
+✗ go run -x --work hello.go
+✗ ls /var/folders/sk/m49vysmj3ss_y50cv9cvcn800000gn/T/go-build2348639944/b001/exe 
 hello
 
 ```

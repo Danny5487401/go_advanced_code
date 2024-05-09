@@ -30,7 +30,7 @@ file一定需要是一整个package所有的代码文件。
 ## 选项
 
 ```shell
-➜  03_n git:(feature/memory) ✗ go tool compile --help    
+✗ go tool compile --help    
 usage: compile [options] file.go...
   -% int
         debug non-static initializers

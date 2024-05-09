@@ -2,17 +2,17 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [waitGroup同步等待组对象](#waitgroup%E5%90%8C%E6%AD%A5%E7%AD%89%E5%BE%85%E7%BB%84%E5%AF%B9%E8%B1%A1)
+- [waitGroup 同步等待组对象](#waitgroup-%E5%90%8C%E6%AD%A5%E7%AD%89%E5%BE%85%E7%BB%84%E5%AF%B9%E8%B1%A1)
   - [使用场景](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
   - [结构体](#%E7%BB%93%E6%9E%84%E4%BD%93)
   - [1. add()](#1-add)
     - [为什么要将 counter 和 waiter 放在一起 ？](#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%B0%86-counter-%E5%92%8C-waiter-%E6%94%BE%E5%9C%A8%E4%B8%80%E8%B5%B7-)
-  - [Done()](#done)
+  - [2 Done()](#2-done)
   - [3. wait()](#3-wait)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# waitGroup同步等待组对象
+# waitGroup 同步等待组对象
 
 ## 使用场景
 
@@ -23,20 +23,32 @@ sync.WaitGroup主要用于等待一组goroutine退出，本质上其实就是一
 
 
 ## 结构体
+
 ```go
+// go1.20/src/sync/waitgroup.go
 type WaitGroup struct {
-    noCopy noCopy
-    state1 [3]uint32
+	noCopy noCopy
+
+	state atomic.Uint64 // high 32 bits are counter, low 32 bits are waiter count.
+	sema  uint32
 }
 ```
-WaitGroup.state1 其实代表三个字段：counter，waiter，sema。
+state 代表两个字段：counter，waiter 
 - counter ：可以理解为一个计数器，计算经过 wg.Add(N), wg.Done() 后的值。
 - waiter ：当前等待 WaitGroup 任务结束的等待者数量。其实就是调用 wg.Wait() 的次数，所以通常这个值是 1 。
 - sema ：信号量，用来唤醒 Wait() 函数。
 
 
 ## 1. add()
+
 ![](.waitGroup_images/waitGroup_add.png)
+
+Add()不止是简单的将信号量增 delta，还需要考虑很多因素
+
+- 内部运行计数不能为负
+- Add 必须与 Wait 属于 happens before 关系
+  - 毕竟 Wait 是同步屏障，没有 Add，Wait 就没有了意义
+- 通过信号量通知所有正在等待的 goroutine
 
 ### 为什么要将 counter 和 waiter 放在一起 ？
 
@@ -57,9 +69,9 @@ func (wg *WaitGroup) Add(delta int) {
 		race.Disable()
 		defer race.Enable()
 	}
-	// // 使用高32位进行counter计数
+	// 使用高32位进行counter计数
 	state := atomic.AddUint64(statep, uint64(delta)<<32)
-	// 获取当前需要等待done的数量
+    // 运行计数
 	v := int32(state >> 32)
 	// 获取低32位即waiter等待计数
 	w := uint32(state)
@@ -70,16 +82,20 @@ func (wg *WaitGroup) Add(delta int) {
 		race.Read(unsafe.Pointer(semap))
 	}
 	if v < 0 {
+		// 任务计数器不能为负数
 		panic("sync: negative WaitGroup counter")
 	}
 
 	if w != 0 && delta > 0 && v == int32(delta) {
+      // 添加与等待同时调用（应该是happens before的关系）
+      // 已经执行了Wait，不容许再执行Add
 		panic("sync: WaitGroup misuse: Add called concurrently with Wait")
 	}
-    // 如果当前v>0,则表示还需要继续未完成的goroutine进行Done操作
-    // 如果w ==0,则表示当前并没有goroutine在wait等待结束
-    // 以上两种情况直接返回即可
+
 	if v > 0 || w == 0 {
+        // 如果当前v>0,则表示还需要继续未完成的goroutine进行Done操作
+        // 如果w ==0,则表示当前并没有goroutine在wait等待结束
+        // 以上两种情况直接返回即可
 		return
 	}
 	// This goroutine has set counter to 0 when waiters > 0.
@@ -97,7 +113,7 @@ func (wg *WaitGroup) Add(delta int) {
 		panic("sync: WaitGroup misuse: Add called concurrently with Wait")
 	}
 	// Reset waiters count to 0.
-	//  将当前state的状态设置为0，就可以进行下次的重用了
+	// 将当前state的状态设置为0，就可以进行下次的重用了
 	*statep = 0
 	for ; w != 0; w-- {
 		//  // 释放所有排队的waiter
@@ -127,9 +143,9 @@ func (wg *WaitGroup) state() (statep *uint64, semap *uint32) {
 早期 WaitGroup 的实现 sema 是和 state1 分开的，也就造成了使用 WaitGroup 就会造成 4 个字节浪费，不过 go1.11 之后就是现在的结构了。
 
 
-## Done()
+## 2 Done()
 ```go
-```go
+
 func (wg *WaitGroup) Done() {
     // 减去一个-1
     wg.Add(-1)
@@ -138,6 +154,8 @@ func (wg *WaitGroup) Done() {
 
 
 ## 3. wait()
+Wait()主要用于阻塞 g，直到 WaitGroup 的计数为 0。
+
 ![](.waitGroup_images/waitGroup_wait.png)
 ```go
 func (wg *WaitGroup) Wait() {

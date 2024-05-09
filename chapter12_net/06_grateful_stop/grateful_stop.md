@@ -5,7 +5,12 @@
 - [优雅退出](#%E4%BC%98%E9%9B%85%E9%80%80%E5%87%BA)
   - [信号](#%E4%BF%A1%E5%8F%B7)
     - [信号类型](#%E4%BF%A1%E5%8F%B7%E7%B1%BB%E5%9E%8B)
-    - [kill pid与kill -9 pid的区别](#kill-pid%E4%B8%8Ekill--9-pid%E7%9A%84%E5%8C%BA%E5%88%AB)
+      - [SIGHUP，hong up  挂断](#sighuphong-up--%E6%8C%82%E6%96%AD)
+      - [SIGINT /* interrupt */](#sigint--interrupt-)
+      - [SIGQUIT /* quit */](#sigquit--quit-)
+      - [SIGTRAP](#sigtrap)
+      - [SIGKILL](#sigkill)
+      - [SIGTERM](#sigterm)
   - [思路](#%E6%80%9D%E8%B7%AF)
   - [Go os/signal包](#go-ossignal%E5%8C%85)
     - [信号是如何存储的，os/signal中信号的是存储在handlers](#%E4%BF%A1%E5%8F%B7%E6%98%AF%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E7%9A%84ossignal%E4%B8%AD%E4%BF%A1%E5%8F%B7%E7%9A%84%E6%98%AF%E5%AD%98%E5%82%A8%E5%9C%A8handlers)
@@ -71,7 +76,6 @@
 
 在SUSv2和POSIX.1-2001标准中的信号列表:
 ![](.grateful_stop_images/sus_signal.png)
-
 解析:
 - 第1列为信号名；
 - 第2列为对应的信号值，需要注意的是，有些信号名对应着3个信号值，这是因为这些信号值与平台相关，将man手册中对3个信号值的说明摘出如下，the first one is usually valid for alpha and sparc, the middle one for i386, ppc and sh, and the last one for mips.
@@ -80,7 +84,31 @@
 
 需要特别说明的是，SIGKILL和SIGSTOP这两个信号既不能被应用程序捕获，也不能被操作系统阻塞或忽略。
 
-### kill pid与kill -9 pid的区别
+#### SIGHUP，hong up  挂断
+本信号在用户终端连接(正常或非正常)结束时发出, 通常是在终端的控制进程结束时, 通知同一session内的各个作业, 这时它们与控制终端不再关联。
+
+登录Linux时，系统会分配给登录用户一个终端(Session)。在这个终端运行的所有程序，包括前台进程组和 后台进程组，一般都属于这个 Session。当用户退出Linux登录时，前台进程组和后台有对终端输出的进程将会收到SIGHUP信号。
+这个信号的默认操作为终止进程，因此前台进 程组和后台有终端输出的进程就会中止。不过可以捕获这个信号，比如wget能捕获SIGHUP信号，并忽略它，这样就算退出了Linux登录，wget也 能继续下载。
+
+#### SIGINT /* interrupt */
+
+程序终止(interrupt)信号, 在用户键入INTR字符(通常是Ctrl+C)时发出，用于通知前台进程组终止进程。
+
+#### SIGQUIT /* quit */
+和SIGINT类似, 但由QUIT字符(通常是Ctrl+)来控制. 进程在因收到SIGQUIT退出时会产生core文件, 在这个意义上类似于一个程序错误信号
+
+
+#### SIGTRAP
+由断点指令或其它陷阱（trap）指令产生. 由debugger使用。
+
+
+#### SIGKILL
+用来立即结束程序的运行. 本信号不能被阻塞、处理和忽略。如果管理员发现某个进程终止不了，可尝试发送这个信号，终极大招
+
+#### SIGTERM
+程序结束(terminate)信号, 与SIGKILL不同的是该信号可以被阻塞和处理。通常用来要求程序自己正常退出，shell命令kill缺省产生这个信号。如果进程终止不了，我们才会尝试SIGKILL。
+
+kill pid 与 kill -9 pid的区别
 - kill pid的作用是向进程号为pid的进程发送SIGTERM（这是kill默认发送的信号），该信号是一个结束进程的信号且可以被应用程序捕获。
   若应用程序没有捕获并响应该信号的逻辑代码，则该信号的默认动作是kill掉进程。这是终止指定进程的推荐做法。
 

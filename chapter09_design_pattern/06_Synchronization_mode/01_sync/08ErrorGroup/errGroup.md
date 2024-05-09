@@ -3,9 +3,9 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [sync 的扩展包errgroup](#sync-%E7%9A%84%E6%89%A9%E5%B1%95%E5%8C%85errgroup)
-  - [需求：](#%E9%9C%80%E6%B1%82)
+  - [需求](#%E9%9C%80%E6%B1%82)
   - [解决方案](#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88)
-    - [初级版本：](#%E5%88%9D%E7%BA%A7%E7%89%88%E6%9C%AC)
+    - [初级版本](#%E5%88%9D%E7%BA%A7%E7%89%88%E6%9C%AC)
     - [中级版本](#%E4%B8%AD%E7%BA%A7%E7%89%88%E6%9C%AC)
     - [终极版本](#%E7%BB%88%E6%9E%81%E7%89%88%E6%9C%AC)
   - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
@@ -14,19 +14,22 @@
 
 # sync 的扩展包errgroup
 
-## 需求：
-	一般在golang 中想要并发运行业务时会直接开goroutine，关键字go,但是直接go的话函数是无法对返回数据进行处理error的。
+## 需求
+一般在golang 中想要并发运行业务时会直接开goroutine，关键字go,但是直接go的话函数是无法对返回数据进行处理error的。
+
 ## 解决方案
 
-### 初级版本：
-	一般是直接在出错的地方打入log日志,将出的错误记录到日志文件中，也可以集合日志收集系统直接将该错误用邮箱或者办公软件发送给你如：钉钉机器人+graylog.
+### 初级版本
+
+一般是直接在出错的地方打入log日志,将出的错误记录到日志文件中，也可以集合日志收集系统直接将该错误用邮箱或者办公软件发送给你如：钉钉机器人+graylog.
 
 ### 中级版本
-	当然你也可以自己在log包里封装好可以接受channel。
-	利用channel通道，将go中出现的error传入到封装好的带有channel接受器的log包中，进行错误收集或者通知通道接受return出来即可
+当然你也可以自己在log包里封装好可以接受channel。
+利用channel通道，将go中出现的error传入到封装好的带有channel接受器的log包中，进行错误收集或者通知通道接受return出来即可
 
 ### 终极版本
-	errgroup
+
+errgroup
 
 ## 源码分析
 ```go

@@ -40,6 +40,5 @@ func main() {
 	wg.Wait()
 	//c的值有可能不等于100，频繁修改变量值情况下，CAS操作有可能不成功。
 	fmt.Println("c : ", c)
-	fmt.Println("----------------")
 
 }

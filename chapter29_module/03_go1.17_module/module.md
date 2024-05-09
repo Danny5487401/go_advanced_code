@@ -2,14 +2,15 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Go 1.17新特性: module依赖图修剪与延迟module加载](#go-117%E6%96%B0%E7%89%B9%E6%80%A7-module%E4%BE%9D%E8%B5%96%E5%9B%BE%E4%BF%AE%E5%89%AA%E4%B8%8E%E5%BB%B6%E8%BF%9Fmodule%E5%8A%A0%E8%BD%BD)
+- [Go 1.17 新特性: module依赖图修剪与延迟module加载](#go-117-%E6%96%B0%E7%89%B9%E6%80%A7-module%E4%BE%9D%E8%B5%96%E5%9B%BE%E4%BF%AE%E5%89%AA%E4%B8%8E%E5%BB%B6%E8%BF%9Fmodule%E5%8A%A0%E8%BD%BD)
   - [module依赖图修剪 module graph pruning](#module%E4%BE%9D%E8%B5%96%E5%9B%BE%E4%BF%AE%E5%89%AA-module-graph-pruning)
   - [延迟module加载(lazy module loading)](#%E5%BB%B6%E8%BF%9Fmodule%E5%8A%A0%E8%BD%BDlazy-module-loading)
   - [module deprecation注释](#module-deprecation%E6%B3%A8%E9%87%8A)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Go 1.17新特性: module依赖图修剪与延迟module加载
+# Go 1.17 新特性: module依赖图修剪与延迟module加载
+
 ## module依赖图修剪 module graph pruning
 
 ![](.module_images/module_graph.png)

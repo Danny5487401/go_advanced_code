@@ -12,7 +12,7 @@
 
 ## 选项
 ```shell
-➜  03_n git:(feature/memory) ✗ go tool link --help
+✗ go tool link --help
 usage: link [options] main.o
   -B note
         add an ELF NT_GNU_BUILD_ID note when using ELF

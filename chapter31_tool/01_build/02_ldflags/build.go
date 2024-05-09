@@ -18,10 +18,10 @@ func main() {
 
 // Note: 不用前路径前缀 -ldflags "-X chapter31_tool.01_build.main.buildVer=1.0"
 /*
-(⎈ |:gitlab-go)➜  go_advanced_code git:(feature/asm) ✗ pwd
+✗ pwd
 /Users/python/Desktop/go_advanced_code
-(⎈ |:gitlab-go)➜  go_advanced_code git:(feature/asm) ✗ go build -ldflags "-X main.buildVer=1.0" -o chapter31_tool/01_build/02_ldflags/build chapter31_tool/01_build/02_ldflags/build.go
-(⎈ |:gitlab-go)➜  go_advanced_code git:(feature/asm) ✗ ./chapter31_tool/01_build/02_ldflags/build
+✗ go build -ldflags "-X main.buildVer=1.0" -o chapter31_tool/01_build/02_ldflags/build chapter31_tool/01_build/02_ldflags/build.go
+✗ ./chapter31_tool/01_build/02_ldflags/build
 link 传参数为:  1.0
 
 */
