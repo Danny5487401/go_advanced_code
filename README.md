@@ -104,6 +104,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [5 channel导致goroutine泄漏分析及处理](chapter02_goroutine/05_goroutine_leaks/goroutine_leak.md)
   - [5.1 channel未正常关闭导致goroutine泄漏-->使用 goleak 工具检查](chapter02_goroutine/05_goroutine_leaks/01_leaks_happen/goroutine_leak_test.go)
   - [5.2 channel监听避免goroutine泄漏](chapter02_goroutine/05_goroutine_leaks/02_avoid_leaks/main.go)
+- [6 Go routine 编排框架：oklog/run 包: 将各个组件作为一个整体运行，并有序地结束-->vault 应用](chapter02_goroutine/06_oklog_run/oklog_run.md)
 ---
 
 ## 第三章 通道Channel
@@ -222,15 +223,15 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 ---
 
 ## [第九章 设计模式-OOP七大准则](chapter09_design_pattern/introduction.md)
-- 1 创建型模式
+- 1 创建型模式 Creational Patterns
     - 1.1 工厂模式(Factory Design Pattern)
       - [1.1.1 简单工厂模式-->new关键字函数实现简单工厂](chapter09_design_pattern/01_construction/01_factory/01_StaticFactory/static_factory.md)
       - [1.1.2 工厂方法模式-->k8s中实现](chapter09_design_pattern/01_construction/01_factory/02_factory_mode/factory.md)
       - [1.1.3 抽象工厂模式](chapter09_design_pattern/01_construction/01_factory/03_abstract_factory/abstract_factory.md)
-    - [1.3 单例模式(Singleton Design Pattern)-->标准库strings/replace实现](chapter09_design_pattern/01_construction/03_singleton/singleton.md)
-    - [1.4 原型模式(Prototype Design Pattern)-->confluent-kafka中map实现](chapter09_design_pattern/01_construction/04_prototype/prototype.md)
-    - [1.5 建造者模式(Builder Design Pattern)-->xorm,k8s,zap中实现](chapter09_design_pattern/01_construction/05_builder/builder_info.md)
-- 2 结构型模式
+    - [1.2 单例模式(Singleton Design Pattern)-->标准库strings/replace实现](chapter09_design_pattern/01_construction/03_singleton/singleton.md)
+    - [1.3 原型模式(Prototype Design Pattern)-->confluent-kafka中map实现](chapter09_design_pattern/01_construction/04_prototype/prototype.md)
+    - [1.4 建造者模式(Builder Design Pattern)-->xorm,k8s,zap中实现](chapter09_design_pattern/01_construction/05_builder/builder_info.md)
+- 2 结构型模式 Structural Patterns
     - 2.1 组合模式(Composite Design Pattern)
         - [2.1.1 修改前：使用面向对象处理](chapter09_design_pattern/02_structure/01_Composite/01_modify_before/composite.go)
         - [2.1.2 修改后：使用组合模式处理](chapter09_design_pattern/02_structure/01_Composite/02_modify_after/conposite.go)
@@ -243,11 +244,11 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - [2.5 桥接模式(Bridge Design Pattern)](chapter09_design_pattern/02_structure/05_bridgeMethod/bridge_method.md)
     - [2.6 门面模式(外观模式Facade Design Pattern)-->在gin中render应用(封装多个子服务)](chapter09_design_pattern/02_structure/06_facade_pattern/facade.md)
     - [2.7 代理模式(Proxy Design Pattern)](chapter09_design_pattern/02_structure/07_proxy/proxy.md)
-- 3 行为型模式
+- 3 行为型模式 Behavioral Patterns
     - [3.1  访问者模式(Visitor Design Pattern)-->k8s中kubectl实现](chapter09_design_pattern/03_motion/01_visitor/vistor.md)
     - [3.2  迭代器(Iterator Design Pattern)-->标准库container/ring中实现](chapter09_design_pattern/03_motion/02_Iterator/main.go)
     - [3.3  状态模式(State Design Pattern)](chapter09_design_pattern/03_motion/03_State/introduction.md)
-    - [3.4  责任链模式(Chain Of Responsibility Design Pattern)](chapter09_design_pattern/03_motion/04_duty_chain_method/duty_chain.md)
+    - [3.4  责任链模式(Chain Of Responsibility Design Pattern)-->gin 中间件中使用](chapter09_design_pattern/03_motion/04_duty_chain_method/duty_chain.md)
     - [3.5  模版模式(Template Method Design Pattern)](chapter09_design_pattern/03_motion/05_templateMethod/templateMethod.md)
     - [3.6  策略模式(Strategy Method Design Pattern)-->if-else的另类写法(内部算法封装)](chapter09_design_pattern/03_motion/06_strategyMethod/strategy.md)
     - [3.7  解释器模式(Interpreter Design Pattern)](chapter09_design_pattern/03_motion/07_InterpreterMethod/interpreter.md)
@@ -573,8 +574,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
   - [1.2 Go build 选项给 go 链接器传入参数 -ldflags="-X key=value来重写一个符号定义"-->符号表应用](chapter31_tool/01_build/02_ldflags/build.go)
   - [1.3 Go build 选项 -n 查看构建过程用到的命令](chapter31_tool/01_build/03_n/hello.go)
 - [2 Go tool 自带工具](chapter31_tool/02_tool/tool.md)
-  - [2.1 tool compile编译](chapter31_tool/02_tool/01_compile/compile.md)
-  - [2.2 tool link链接](chapter31_tool/02_tool/02_link/link.md)
+  - [2.1 tool compile 编译](chapter31_tool/02_tool/01_compile/compile.md)
+  - [2.2 tool link 链接](chapter31_tool/02_tool/02_link/link.md)
   - [2.3 generate 批量执行任何命令](chapter31_tool/02_tool/03_generate/genarate.md)
 
 

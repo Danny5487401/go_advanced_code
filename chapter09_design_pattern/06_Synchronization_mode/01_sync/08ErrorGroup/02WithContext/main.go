@@ -35,7 +35,7 @@ func main() {
 				time.Sleep(1 * time.Second)
 
 				//检查 其他协程已经发生错误，如果已经发生异常，则不再执行下面的代码
-				err := CheckGoroutineErr(errCtx)
+				err := checkGoroutineErr(errCtx)
 				if err != nil {
 					return err
 				}
@@ -55,8 +55,8 @@ func main() {
 	}
 }
 
-//校验是否有协程已发生错误
-func CheckGoroutineErr(errContext context.Context) error {
+// 校验是否有协程已发生错误
+func checkGoroutineErr(errContext context.Context) error {
 	select {
 	// errgroup 可以使用 context 实现协程撤销。或者超时撤销。子协程中使用 ctx.Done()来获取撤销信号
 	case <-errContext.Done():

@@ -2,35 +2,38 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [mutex 互斥锁 和 RWMutex读写锁](#mutex-%E4%BA%92%E6%96%A5%E9%94%81-%E5%92%8C-rwmutex%E8%AF%BB%E5%86%99%E9%94%81)
+- [锁](#%E9%94%81)
   - [什么时候需要用到锁？](#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E9%9C%80%E8%A6%81%E7%94%A8%E5%88%B0%E9%94%81)
   - [死锁](#%E6%AD%BB%E9%94%81)
     - [死锁产生的原因](#%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E7%9A%84%E5%8E%9F%E5%9B%A0)
-  - [Mutex结构体](#mutex%E7%BB%93%E6%9E%84%E4%BD%93)
-    - [互斥锁的状态](#%E4%BA%92%E6%96%A5%E9%94%81%E7%9A%84%E7%8A%B6%E6%80%81)
-    - [lock加锁过程](#lock%E5%8A%A0%E9%94%81%E8%BF%87%E7%A8%8B)
+  - [锁的种类](#%E9%94%81%E7%9A%84%E7%A7%8D%E7%B1%BB)
+    - [自旋锁](#%E8%87%AA%E6%97%8B%E9%94%81)
+      - [自旋锁的优缺点](#%E8%87%AA%E6%97%8B%E9%94%81%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9)
+    - [Mutex 互斥锁](#mutex-%E4%BA%92%E6%96%A5%E9%94%81)
+      - [互斥锁的状态](#%E4%BA%92%E6%96%A5%E9%94%81%E7%9A%84%E7%8A%B6%E6%80%81)
+      - [lock加锁过程](#lock%E5%8A%A0%E9%94%81%E8%BF%87%E7%A8%8B)
       - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
-    - [解锁过程](#%E8%A7%A3%E9%94%81%E8%BF%87%E7%A8%8B)
-    - [案例](#%E6%A1%88%E4%BE%8B)
-      - [1. 一个goroutine](#1-%E4%B8%80%E4%B8%AAgoroutine)
-      - [2. 两个goroutine](#2-%E4%B8%A4%E4%B8%AAgoroutine)
-      - [3. 三个goroutine](#3-%E4%B8%89%E4%B8%AAgoroutine)
-      - [4. 没有加锁，直接解锁问题-异常](#4-%E6%B2%A1%E6%9C%89%E5%8A%A0%E9%94%81%E7%9B%B4%E6%8E%A5%E8%A7%A3%E9%94%81%E9%97%AE%E9%A2%98-%E5%BC%82%E5%B8%B8)
-  - [RWMutex结构体](#rwmutex%E7%BB%93%E6%9E%84%E4%BD%93)
-    - [方法](#%E6%96%B9%E6%B3%95)
-    - [读和写锁关系](#%E8%AF%BB%E5%92%8C%E5%86%99%E9%94%81%E5%85%B3%E7%B3%BB)
-    - [写锁饥饿问题](#%E5%86%99%E9%94%81%E9%A5%A5%E9%A5%BF%E9%97%AE%E9%A2%98)
-    - [写锁计数](#%E5%86%99%E9%94%81%E8%AE%A1%E6%95%B0)
-    - [读锁加锁实现](#%E8%AF%BB%E9%94%81%E5%8A%A0%E9%94%81%E5%AE%9E%E7%8E%B0)
-    - [读锁释放实现](#%E8%AF%BB%E9%94%81%E9%87%8A%E6%94%BE%E5%AE%9E%E7%8E%B0)
-    - [写锁加锁实现](#%E5%86%99%E9%94%81%E5%8A%A0%E9%94%81%E5%AE%9E%E7%8E%B0)
-    - [写锁释放实现](#%E5%86%99%E9%94%81%E9%87%8A%E6%94%BE%E5%AE%9E%E7%8E%B0)
-    - [写锁与读锁的公平性](#%E5%86%99%E9%94%81%E4%B8%8E%E8%AF%BB%E9%94%81%E7%9A%84%E5%85%AC%E5%B9%B3%E6%80%A7)
-    - [总结 读写互斥锁的实现](#%E6%80%BB%E7%BB%93-%E8%AF%BB%E5%86%99%E4%BA%92%E6%96%A5%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0)
+      - [解锁过程](#%E8%A7%A3%E9%94%81%E8%BF%87%E7%A8%8B)
+      - [案例1 一个goroutine](#%E6%A1%88%E4%BE%8B1-%E4%B8%80%E4%B8%AAgoroutine)
+      - [案例2 两个goroutine](#%E6%A1%88%E4%BE%8B2-%E4%B8%A4%E4%B8%AAgoroutine)
+      - [案例3 三个goroutine](#%E6%A1%88%E4%BE%8B3-%E4%B8%89%E4%B8%AAgoroutine)
+      - [案例4 没有加锁，直接解锁问题-异常](#%E6%A1%88%E4%BE%8B4-%E6%B2%A1%E6%9C%89%E5%8A%A0%E9%94%81%E7%9B%B4%E6%8E%A5%E8%A7%A3%E9%94%81%E9%97%AE%E9%A2%98-%E5%BC%82%E5%B8%B8)
+    - [RWMutex 读写锁](#rwmutex-%E8%AF%BB%E5%86%99%E9%94%81)
+      - [方法](#%E6%96%B9%E6%B3%95)
+      - [读和写锁关系](#%E8%AF%BB%E5%92%8C%E5%86%99%E9%94%81%E5%85%B3%E7%B3%BB)
+      - [写锁饥饿问题](#%E5%86%99%E9%94%81%E9%A5%A5%E9%A5%BF%E9%97%AE%E9%A2%98)
+      - [写锁计数](#%E5%86%99%E9%94%81%E8%AE%A1%E6%95%B0)
+      - [读锁加锁实现](#%E8%AF%BB%E9%94%81%E5%8A%A0%E9%94%81%E5%AE%9E%E7%8E%B0)
+      - [读锁释放实现](#%E8%AF%BB%E9%94%81%E9%87%8A%E6%94%BE%E5%AE%9E%E7%8E%B0)
+      - [写锁加锁实现](#%E5%86%99%E9%94%81%E5%8A%A0%E9%94%81%E5%AE%9E%E7%8E%B0)
+      - [写锁释放实现](#%E5%86%99%E9%94%81%E9%87%8A%E6%94%BE%E5%AE%9E%E7%8E%B0)
+      - [写锁与读锁的公平性](#%E5%86%99%E9%94%81%E4%B8%8E%E8%AF%BB%E9%94%81%E7%9A%84%E5%85%AC%E5%B9%B3%E6%80%A7)
+      - [总结 读写互斥锁的实现](#%E6%80%BB%E7%BB%93-%E8%AF%BB%E5%86%99%E4%BA%92%E6%96%A5%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# mutex 互斥锁 和 RWMutex读写锁
+# 锁
+
 
 ## 什么时候需要用到锁？
 
@@ -38,6 +41,8 @@
 1. 多个线程在读相同的数据时
 2. 多个线程在写相同的数据时
 3. 同一个资源，有读又有写
+
+
 
 ## 死锁
 多线程以及多进程改善了系统资源的利用率并提高了系统 的处理能力。然而，并发执行也带来了新的问题——死锁。
@@ -52,9 +57,56 @@
 进程在运行过程中，请求和释放资源的顺序不当，也同样会导致死锁。例如，并发进程 P1、P2分别保持了资源R1、R2，而进程P1申请资源R2，进程P2申请资源R1时，两者都会因为所需资源被占用而阻塞。
 信号量使用不当也会造成死锁。进程间彼此相互等待对方发来的消息，结果也会使得这 些进程间无法继续向前推进。例如，进程A等待进程B发的消息，进程B又在等待进程A 发的消息，可以看出进程A和B不是因为竞争同一资源，而是在等待对方的资源导致死锁。
 
+## 锁的种类
+
+根据表现形式，常见的锁有互斥锁、自旋锁(spinlock)、读写锁。
 
 
-## Mutex结构体
+
+### 自旋锁
+自旋锁是指在进程试图取得锁失败的时候选择忙等待而不是阻塞自己。选择忙等待的优点在于如果该进程在其自身的CPU时间片内拿到锁（说明锁占用时间都比较短），则相比阻塞少了上下文切换。注意这里还有一个隐藏条件：多处理器。因为单个处理器的情况下，由于当前自旋进程占用着CPU，持有锁的进程只有等待自旋进程耗尽CPU时间才有机会执行，这样CPU就空转了。
+```go
+// github.com/panjf2000/ants/v2@v2.5.0/internal/spinlock.go
+
+
+type spinLock uint32
+
+const maxBackoff = 16
+
+func (sl *spinLock) Lock() {
+	backoff := 1
+	for !atomic.CompareAndSwapUint32((*uint32)(sl), 0, 1) {
+		// Leverage the exponential backoff algorithm, see https://en.wikipedia.org/wiki/Exponential_backoff.
+		for i := 0; i < backoff; i++ {
+			runtime.Gosched()
+		}
+		if backoff < maxBackoff {
+			backoff <<= 1
+		}
+	}
+}
+
+func (sl *spinLock) Unlock() {
+	atomic.StoreUint32((*uint32)(sl), 0)
+}
+
+// NewSpinLock instantiates a spin-lock.
+func NewSpinLock() sync.Locker {
+	re
+```
+
+#### 自旋锁的优缺点
+
+自旋锁尽可能的减少线程的阻塞，这对于锁的竞争不激烈，且占用锁时间非常短的代码块来说性能能大幅度的提升，因为自旋的消耗会小于线程阻塞挂起再唤醒的操作的消耗，这些操作会导致线程发生两次上下文切换！
+
+但是如果锁的竞争激烈，或者持有锁的线程需要长时间占用锁执行同步块，这时候就不适合使用自旋锁了，因为自旋锁在获取锁前一直都是占用 cpu 做无用功，占着 XX 不 XX，同时有大量线程在竞争一个锁，会导致获取锁的时间很长，线程自旋的消耗大于线程阻塞挂起操作的消耗，其它需要 cpu 的线程又不能获取到 cpu，造成 cpu 的浪费。所以这种情况下我们要关闭自旋锁
+
+
+
+
+### Mutex 互斥锁
+
+只有取得互斥锁的进程才能进入临界区，无论读写
 
 ```go
 type Mutex struct {
@@ -64,7 +116,7 @@ type Mutex struct {
 ```
 Mutex 的实现主要借助了 CAS 指令 + 自旋 + 信号量来实现
 
-### 互斥锁的状态
+#### 互斥锁的状态
 在默认情况下，互斥锁的所有状态位都是 0，int32 中的不同位分别表示了不同的状态：
 ```go
 const (
@@ -105,7 +157,7 @@ const (
 Note：注意Mutex 状态（mutexLocked，mutexWoken，mutexStarving，mutexWaiterShift） 与 Goroutine 之间的状态（starving，awoke）改变
 
 
-### lock加锁过程
+#### lock加锁过程
 ![](.mutex_images/mutex_lock.png)
 
 如果互斥锁的状态不是 0 时就会调用 sync.Mutex.lockSlow 尝试通过自旋（Spinning）等方式等待锁的释放，该方法的主体是一个非常大 for 循环，这里将它分成几个部分介绍获取锁的过程：
@@ -191,7 +243,7 @@ func (m *Mutex) unlockSlow(new int32) {
 ```
 
 
-### 解锁过程
+#### 解锁过程
 ![](.mutex_images/mutex_unlock.png)
 
 1. 当互斥锁已经被解锁时，调用 sync.Mutex.Unlock 会直接抛出异常；
@@ -201,18 +253,20 @@ func (m *Mutex) unlockSlow(new int32) {
 ![](.mutex_images/lock_member.png)
 
 
-### 案例
-#### 1. 一个goroutine
+#### 案例1 一个goroutine
+
 ![](.mutex_images/one_goroutine_lock.png)
-#### 2. 两个goroutine
+#### 案例2 两个goroutine
+
 ![](.mutex_images/two_gorountine_lock.png)
-#### 3. 三个goroutine
+#### 案例3 三个goroutine
 ![](.mutex_images/three_goroutine_lock.png)
 
-#### 4. 没有加锁，直接解锁问题-异常
+#### 案例4 没有加锁，直接解锁问题-异常
 ![](.mutex_images/unlock_again.png)
 
-## RWMutex结构体
+### RWMutex 读写锁
+：读写锁要根据进程进入临界区的具体行为（读，写）来决定锁的占用情况。这样锁的状态就有三种了：读模式加锁、写模式加锁、无锁。
 ```go
 
 type RWMutex struct {
@@ -233,32 +287,31 @@ type RWMutex struct {
 ```go
 const rwmutexMaxReaders = 1 << 30 // 支持最多2^30个读锁
 ```
-### 方法
+#### 方法
 
 写操作使用 sync.RWMutex.Lock 和 sync.RWMutex.Unlock 方法；
 
-
 读操作使用 sync.RWMutex.RLock 和 sync.RWMutex.RUnlock 方法；
 
-### 读和写锁关系
+#### 读和写锁关系
 调用 sync.RWMutex.Lock 尝试获取写锁时；
 1. 每次 sync.RWMutex.RUnlock 都会将 readerCount 其减一，当它归零时该 Goroutine 会获得写锁；
 2. 将 readerCount 减少 rwmutexMaxReaders 个数以阻塞后续的读操作；
 
 调用 sync.RWMutex.Unlock 释放写锁时，会先通知所有的读操作，然后才会释放持有的互斥锁
 
-### 写锁饥饿问题
+#### 写锁饥饿问题
 因为读锁是共享的，所以如果当前已经有读锁，那后续goroutine继续加读锁正常情况下是可以加锁成功，
 但是如果一直有读锁进行加锁，那尝试加写锁的goroutine则可能会长期获取不到锁，这就是因为读锁而导致的写锁饥饿问题
 
-### 写锁计数
+#### 写锁计数
 
 读写锁中允许加读锁的最大数量是4294967296，在go里面对写锁的计数采用了负值进行，通过递减最大允许加读锁的数量从而进行写锁对读锁的抢占
 ```go
 const rwmutexMaxReaders = 1 << 30
 ```
 
-### 读锁加锁实现
+#### 读锁加锁实现
 ![](.mutex_images/readerMutex_lock.png)
 
 ```go
@@ -280,7 +333,7 @@ func (rw *RWMutex) RLock() {
 }
 ```
 
-### 读锁释放实现
+#### 读锁释放实现
 ![](.mutex_images/readerMutex_release.png)
 
 ```go
@@ -309,7 +362,7 @@ func (rw *RWMutex) RUnlock() {
 }
 ```
 
-### 写锁加锁实现
+#### 写锁加锁实现
 ![](.mutex_images/writerMutex_lock.png)
 ```go
 func (rw *RWMutex) Lock() {
@@ -337,7 +390,7 @@ func (rw *RWMutex) Lock() {
 
 ```
 
-### 写锁释放实现
+#### 写锁释放实现
 ![](.mutex_images/writer_mutex_release.png)
 ```go
 func (rw *RWMutex) Unlock() {
@@ -365,7 +418,7 @@ func (rw *RWMutex) Unlock() {
 }
 ```
 
-### 写锁与读锁的公平性
+#### 写锁与读锁的公平性
 
 在加读锁和写锁的工程中都使用atomic.AddInt32来进行递增，而该指令在底层是会通过LOCK来进行CPU总线加锁的，
 
@@ -373,9 +426,9 @@ func (rw *RWMutex) Unlock() {
 谁先达到谁先被CPU调度执行，进行LOCK锁cache line成功，谁就加成功锁
 
 
-### 总结 读写互斥锁的实现
+#### 总结 读写互斥锁的实现
 
 1. 读锁不能阻塞读锁，引入readerCount实现
 2. 读锁需要阻塞写锁，直到所有读锁都释放，引入readerSem实现
-3. 写锁需要阻塞读锁，直到所有写锁都释放，引入wirterSem实现
-4. 写锁需要阻塞写锁，引入Metux实现
+3. 写锁需要阻塞读锁，直到所有写锁都释放，引入writerSem实现
+4. 写锁需要阻塞写锁，引入Mutex实现

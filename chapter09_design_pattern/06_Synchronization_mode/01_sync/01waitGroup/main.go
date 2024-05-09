@@ -6,6 +6,7 @@ import (
 )
 
 var wg sync.WaitGroup // 创建同步等待组对象
+
 func main() {
 	/*
 		WaitGroup：同步等待组

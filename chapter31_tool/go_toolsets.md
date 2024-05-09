@@ -109,11 +109,11 @@ GOGCCFLAGS="-fPIC -arch arm64 -pthread -fno-caret-diagnostics -Qunused-arguments
 
 - GO111MODULE 控制是否运行在module-aware模式下。
 - GCCGO go build -compiler=gccgo使用的指令。
-- GOARCH 目标指令集。
+- GOARCH 目标指令集: amd64(intel), 386(老cpu), arm(mac m1), ppc64
 - GOBIN go install的目标路径。
 - GOCACHE 构建缓存存放的文件夹。
 - GOMODCACHE 下载的模块的缓存的文件夹。
-- GODEBUG 激活多种调试机制。？
+- GODEBUG 激活多种调试机制
 - GOENV 存储go环境变量的文件。
 - GOFLAGS 空格分割的-flag=value列表， 当要执行的go指令支持这些flag时，会传递给go指令。 优先级低于直接在命令中给出的flag。
 - GOINSECURE 一组逗号分割的模块通配符， 符合的模块会被使用不安全的方法来获取。 只在直接获取的模块上生效。
@@ -127,6 +127,8 @@ GOGCCFLAGS="-fPIC -arch arm64 -pthread -fno-caret-diagnostics -Qunused-arguments
 - GOSUMDB 需要使用的校验和数据库。
 - GOTMPDIR go指令使用的临时文件夹。
 - GOVCS 会用来尝试匹配服务器的版本控制指令
+- CC - 使用命令编译C代码 
+- CXX - 使用命令编译C++代码
 
 ## 参考资料
 

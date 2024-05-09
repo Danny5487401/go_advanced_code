@@ -1,22 +1,21 @@
-package test
+package mediator
 
 import (
-	mediator "github.com/Danny5487401/go_advanced_code/chapter09_design_pattern/03_motion/11_Mediator"
 	"testing"
 )
 
 func Test_MediatorPattern(t *testing.T) {
 	// 设备注册中心
-	center := mediator.DefaultCloudCenter
+	center := DefaultCloudCenter
 
 	// 创建设备号为1的 智能灯
-	light := mediator.NewMockSmartLight(1)
+	light := NewMockSmartLight(1)
 
 	// 注册设备
 	center.Register(light)
 
 	// 创建客户端app
-	app := mediator.NewMockPhoneApp(mediator.DefaultCloudMediator)
+	app := NewMockPhoneApp(DefaultCloudMediator)
 
 	// 定义动作
 	fnCallAndLog := func(fn func() error) {

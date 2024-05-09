@@ -15,6 +15,7 @@
 # go build 
 
 build 过程细化成两部分，compile 与 link，即编译和链接。
+![](.build_images/compile_n_link.png)
 
 go run 可等价于 go build + 执行。
 
@@ -158,7 +159,7 @@ and test commands:
 
 - [案例](chapter31_tool/01_build/03_n/hello.go)
 ```shell
-➜  03_n git:(feature/memory) ✗ go build -n hello.go
+✗ go build -n hello.go
 
 #
 # command-line-arguments
@@ -245,7 +246,7 @@ mv $WORK/b001/exe/a.out hello
 
 对比 go run 
 ```shell
-➜  03_n git:(feature/memory) ✗ go run -x hello.go                                                                 
+✗ go run -x hello.go                                                                 
 WORK=/var/folders/sk/m49vysmj3ss_y50cv9cvcn800000gn/T/go-build3865472980
 mkdir -p $WORK/b001/
 cat >$WORK/b001/importcfg << 'EOF' # internal

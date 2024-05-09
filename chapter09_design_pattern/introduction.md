@@ -97,7 +97,7 @@
 - Semaphore：负责协调各个线程，以保证它们能够正确、合理地使用公共资源。
 
 ### 并行模式
-- Bounded Parallelism：完成大量资源限制的独立任务；
+- [Bounded Parallelism](https://github.com/tmrts/go-patterns/blob/master/concurrency/bounded_parallelism.go)：完成大量资源限制的独立任务
 - 广播（Broadcast）：把一个消息同时传输到所有接收端；
 - 协同（Coroutines）：允许在特定地方暂停和继续执行的子程序；
 - 生成器：一次性生成一系列值；
@@ -122,7 +122,7 @@
 - 稳定状态（Steady-State）：为每一个服务积累一个资源，其它服务必须回收这些资源；
 
 ### 剖析模式
-- Timing Functions：包装和执行日志的函数；
+- [Timing Functions](https://github.com/tmrts/go-patterns/blob/master/profiling/timing.md)：包装和执行日志的函数；
 	
 ### 成例
 - Functional Options：允许给默认值创建clean API和惯用重载；
@@ -133,5 +133,7 @@
 
 ## 参考资料
 
-1. [常用设计模式](https://github.com/mohuishou/go-design-pattern/blob/master/readme.md)
+1. https://github.com/mohuishou/go-design-pattern
+2. https://github.com/tmrts/go-patterns
+3. https://github.com/hitzhangjie/go-patterns
 

@@ -20,6 +20,7 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/justinas/alice v1.2.0
+	github.com/oklog/run v1.1.0
 	github.com/onsi/ginkgo/v2 v2.15.0
 	github.com/onsi/gomega v1.30.0
 	github.com/panjf2000/ants/v2 v2.5.0
