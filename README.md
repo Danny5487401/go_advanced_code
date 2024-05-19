@@ -577,6 +577,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
   - [2.1 tool compile 编译](chapter31_tool/02_tool/01_compile/compile.md)
   - [2.2 tool link 链接](chapter31_tool/02_tool/02_link/link.md)
   - [2.3 generate 批量执行任何命令](chapter31_tool/02_tool/03_generate/genarate.md)
+- 3 delve 调试
+- [4 ast 抽象语法树](chapter31_tool/04_ast/ast.md)
 
 
 ## [第三十二章 Generic 泛型](chapter32_generic/generic.md)
@@ -591,4 +593,6 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 ## [第三十四章 regexp 正则表达式 Regular Expression](chapter34_regexp/regexp.md)
 - [1 基本正则表达式使用](chapter34_regexp/01_basic_grammar/main.go)
 
+
+## [第三十五章 编码 Unicode](chapter35_unicode/unicode.md)
 
