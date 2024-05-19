@@ -1,3 +1,22 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [AST（Abstract Syntax Tree 抽象语法树）](#astabstract-syntax-tree-%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91)
+  - [Token](#token)
+  - [AST的常见的几个用途](#ast%E7%9A%84%E5%B8%B8%E8%A7%81%E7%9A%84%E5%87%A0%E4%B8%AA%E7%94%A8%E9%80%94)
+  - [go/token 源码](#gotoken-%E6%BA%90%E7%A0%81)
+    - [FileSet & File](#fileset--file)
+    - [Position](#position)
+  - [go/ast 源码](#goast-%E6%BA%90%E7%A0%81)
+    - [Lit](#lit)
+    - [Expression](#expression)
+    - [Declaration Node](#declaration-node)
+    - [General declaration](#general-declaration)
+  - [参考](#%E5%8F%82%E8%80%83)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # AST（Abstract Syntax Tree 抽象语法树）
 
 ![](.ast_images/ast.png)

@@ -51,6 +51,7 @@
   - [第三十二章 Generic 泛型](#%E7%AC%AC%E4%B8%89%E5%8D%81%E4%BA%8C%E7%AB%A0-generic-%E6%B3%9B%E5%9E%8B)
   - [第三十三章 makefile 使用](#%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%89%E7%AB%A0-makefile-%E4%BD%BF%E7%94%A8)
   - [第三十四章 regexp 正则表达式 Regular Expression](#%E7%AC%AC%E4%B8%89%E5%8D%81%E5%9B%9B%E7%AB%A0-regexp-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F-regular-expression)
+  - [第三十五章 编码 Unicode](#%E7%AC%AC%E4%B8%89%E5%8D%81%E4%BA%94%E7%AB%A0-%E7%BC%96%E7%A0%81-unicode)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 # *目录*

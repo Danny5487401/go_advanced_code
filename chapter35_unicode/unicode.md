@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [unicode](#unicode)
+  - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
+  - [UTF-8 的例子](#utf-8-%E7%9A%84%E4%BE%8B%E5%AD%90)
+  - [一个string类型的值在底层是怎样被表达的？](#%E4%B8%80%E4%B8%AAstring%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%80%BC%E5%9C%A8%E5%BA%95%E5%B1%82%E6%98%AF%E6%80%8E%E6%A0%B7%E8%A2%AB%E8%A1%A8%E8%BE%BE%E7%9A%84)
+  - [Unicode 与 Golang](#unicode-%E4%B8%8E-golang)
+    - [使用](#%E4%BD%BF%E7%94%A8)
+  - [源码](#%E6%BA%90%E7%A0%81)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # unicode
 
 中国常用的编码是 GBK 以及 GB2312。
