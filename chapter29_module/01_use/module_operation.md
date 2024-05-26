@@ -37,15 +37,15 @@ go env -w GO111MODULE=on
 go env -w GOPROXY=https://goproxy.cn,direct
 ```
 
-- go install才会链接到GOBIN;
+- go install 才会链接到GOBIN,如果你在模块目录中，并且你不带 @version 执行安装的话，只能安装 go.mod 中已经包含的版本.否则会报错 requires a version when current directory is not in a module
 
-- go build之后你的可执行文件和你的main.go在同一目录下
+- go build 之后你的可执行文件和你的main.go在同一目录下
 
 
 Note: Go1.13新增了 go env -w 用于写入环境变量，而写入的地方是os.UserConfigDir所返回的路径
 
 
-### 关于GOPROXY
+### 关于 GOPROXY
 
 
 这个环境变量主要是用于设置 Go 模块代理

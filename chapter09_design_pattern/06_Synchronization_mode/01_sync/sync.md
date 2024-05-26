@@ -9,7 +9,7 @@
 
 # Sync 同步模块(synchronization)
 
-
+sync是synchronization同步这个词的缩写，所以也会叫做同步包
 
 ## 进程间通信（Inter Process Communication, IPC）
 

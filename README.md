@@ -263,8 +263,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - 4.3 带参数的选项模式
       - [不返回error](chapter09_design_pattern/04_fuctional_option/03_FunctionalOption/01_simple_solution/main.go)
       - [返回error](chapter09_design_pattern/04_fuctional_option/03_FunctionalOption/02_complexed_with_error/main.go)
-- 5 [插件式编程-->grpc中实现](chapter09_design_pattern/05_plugin_programming/plugin.md)
-- 6 [同步模式(sync同步原语以及扩展原语)](chapter09_design_pattern/06_Synchronization_mode/01_sync/sync.md)
+- [5 插件式编程-->grpc中实现](chapter09_design_pattern/05_plugin_programming/plugin.md)
+- [6 同步模式(sync同步原语以及扩展原语)](chapter09_design_pattern/06_Synchronization_mode/01_sync/sync.md)
     - [6.1 waitGroup同步等待组对象](chapter09_design_pattern/06_Synchronization_mode/01_sync/01waitGroup/waitGroup.md)
     - 6.2 使用互斥锁（sync.Mutex）实现读写功能和直接使用读写锁（sync.RWMutex）性能对比
       - [6.2.1 使用互斥锁（sync.Mutex）实现读写功能](chapter09_design_pattern/06_Synchronization_mode/01_sync/02RWMutex_vs_mutex/Mutex/main.go)
@@ -463,7 +463,10 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
         - [9.1.4 简单实现 hashMap](chapter17_dataStructure_n_algorithm/09_golang_data_structure/01_map_structure/04_self_HashMap/self_hash_map.md)
     - [9.2 String 底层结构,字符集和字符编码,性能分析及内存泄漏分析](chapter17_dataStructure_n_algorithm/09_golang_data_structure/02_string_structure/str.md)
     - [9.3 Struct 底层结构,内存布局,空结构体内存对齐](chapter17_dataStructure_n_algorithm/09_golang_data_structure/03_struct_structure/struct.md)
-## 第十八章 错误跟踪和panic
+- [10 copy_on_write 写入时复制](chapter17_dataStructure_n_algorithm/10_copy_on-write/copy_on_write.md)
+  - [10.1 使用 RWMutex 缺点](chapter17_dataStructure_n_algorithm/10_copy_on-write/01_rwmutex/main.go)
+  - [10.2 使用 copy_on_write 优化](chapter17_dataStructure_n_algorithm/10_copy_on-write/02_copy_on_write/main.go)
+## 第十八章 错误跟踪 error 和 panic
 - [0 错误(err)和异常（exception）区别及处理方式](chapter18_error_n_panic/00_diff_between_err_n_exception/main.go)
 - [1 自定义错误类型打印错误栈](chapter18_error_n_panic/01_customized_error/customized_error.go)
 - [2 扩展包pkg.errors](chapter18_error_n_panic/02_pkg_errors/pkg_errors.md)
