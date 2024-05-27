@@ -33,7 +33,7 @@
   - [第十五章 接口嵌套编程](#%E7%AC%AC%E5%8D%81%E4%BA%94%E7%AB%A0-%E6%8E%A5%E5%8F%A3%E5%B5%8C%E5%A5%97%E7%BC%96%E7%A8%8B)
   - [第十六章 并发编程](#%E7%AC%AC%E5%8D%81%E5%85%AD%E7%AB%A0-%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B)
   - [第十七章 数据结构及算法](#%E7%AC%AC%E5%8D%81%E4%B8%83%E7%AB%A0-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%8A%E7%AE%97%E6%B3%95)
-  - [第十八章 错误跟踪和panic](#%E7%AC%AC%E5%8D%81%E5%85%AB%E7%AB%A0-%E9%94%99%E8%AF%AF%E8%B7%9F%E8%B8%AA%E5%92%8Cpanic)
+  - [第十八章 错误跟踪 error 和 panic](#%E7%AC%AC%E5%8D%81%E5%85%AB%E7%AB%A0-%E9%94%99%E8%AF%AF%E8%B7%9F%E8%B8%AA-error-%E5%92%8C-panic)
   - [第十九章 nil预定义标识](#%E7%AC%AC%E5%8D%81%E4%B9%9D%E7%AB%A0-nil%E9%A2%84%E5%AE%9A%E4%B9%89%E6%A0%87%E8%AF%86)
   - [第二十章 for-range源码分析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E7%AB%A0-for-range%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
   - [第二十一章 time标准包源码分析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B8%80%E7%AB%A0-time%E6%A0%87%E5%87%86%E5%8C%85%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
@@ -463,7 +463,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
         - [9.1.4 简单实现 hashMap](chapter17_dataStructure_n_algorithm/09_golang_data_structure/01_map_structure/04_self_HashMap/self_hash_map.md)
     - [9.2 String 底层结构,字符集和字符编码,性能分析及内存泄漏分析](chapter17_dataStructure_n_algorithm/09_golang_data_structure/02_string_structure/str.md)
     - [9.3 Struct 底层结构,内存布局,空结构体内存对齐](chapter17_dataStructure_n_algorithm/09_golang_data_structure/03_struct_structure/struct.md)
-- [10 copy_on_write 写入时复制](chapter17_dataStructure_n_algorithm/10_copy_on-write/copy_on_write.md)
+- [10 copy_on_write 写入时复制-->golang官方库btree](chapter17_dataStructure_n_algorithm/10_copy_on-write/copy_on_write.md)
   - [10.1 使用 RWMutex 缺点](chapter17_dataStructure_n_algorithm/10_copy_on-write/01_rwmutex/main.go)
   - [10.2 使用 copy_on_write 优化](chapter17_dataStructure_n_algorithm/10_copy_on-write/02_copy_on_write/main.go)
 ## 第十八章 错误跟踪 error 和 panic
