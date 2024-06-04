@@ -2,14 +2,16 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Goland随机数](#goland%E9%9A%8F%E6%9C%BA%E6%95%B0)
-  - [math/rand伪随机](#mathrand%E4%BC%AA%E9%9A%8F%E6%9C%BA)
+- [Goland 随机数](#goland-%E9%9A%8F%E6%9C%BA%E6%95%B0)
+  - [math/rand 伪随机](#mathrand-%E4%BC%AA%E9%9A%8F%E6%9C%BA)
     - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
   - [crypto/rand真随机](#cryptorand%E7%9C%9F%E9%9A%8F%E6%9C%BA)
+  - [第三方实现](#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%AE%9E%E7%8E%B0)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Goland随机数
+# Goland 随机数
 
 随机数分为真随机和伪随机，
 
@@ -18,7 +20,7 @@
 - 而伪随机数一般是通过软件算法产生，看上去是随机的，但是无论是什么算法函数，都会有输入和输出，如果你能得到其输入，自然也可以预测其输出。
 
 
-## math/rand伪随机
+## math/rand 伪随机
 官方注释
 ```go
 // Package rand implements pseudo-random number generators.
@@ -43,6 +45,23 @@
 最后，对于安全十分敏感的工作，推荐使用crypto/rand包。（注：因为这个包可以产生真随机数）
 
 ### 源码分析
+
+结构体
+```go
+// /go1.20/src/math/rand/rand.go
+type Rand struct {
+	src Source
+	s64 Source64 // non-nil if src is source64
+
+    // readVal包含用于字节的63位整数的remainer，在最近的读取调用期间生成。
+    //  它被保存，以便下一个读调用可以从上一个读调用结束的地方开始。
+	readVal int64
+    //  readPos表示仍然有效的readVal的低位字节数。 
+	readPos int8
+}
+```
+
+
 ```go
 // Int returns a non-negative pseudo-random int from the default Source.
 func Int() int { return globalRand.Int() }
@@ -82,8 +101,6 @@ rand.Seed(time.Now().UnixNano())
 ```
 分析
 ```go
-
-
 func (rng *rngSource) Seed(seed int64) {
 	rng.tap = 0
 	rng.feed = rngLen - rngTap
@@ -132,7 +149,7 @@ func seedrand(x int32) int32 {
 }
 ```
 
-我们在使用不管调用 Intn(), Int31n() 等其他函数, 最终调用到就是这个函数Uint64().
+我们在使用不管调用 Intn(), Int31n(), Int63(), Int63n() 等其他函数, 最终调用到就是这个函数 rngSource.Uint64().
 ```go
 // Uint64 returns a non-negative pseudo-random 64-bit integer as an uint64.
 func (rng *rngSource) Uint64() uint64 {
@@ -164,11 +181,18 @@ func (r *lockedSource) Uint64() (n uint64) {
 }
 ```
 
-
 如果你真的要追求极致性能的话，你可能需要自己New一个rand，因为默认的Source为了实现并发安全使用了一个全局的排它锁，必然会带来性能损耗，
 如果确实特别在意这点性能消耗的话，可以通过定义一个你的包共享的或者结构体实例共享的 Rand 实例来优化锁的性能消耗（最小化锁的粒度，不跟其他包/代码竞争这个锁）
 
-Note: 但是请注意这个rand并不是并发安全的，如果在并发环境下使用，需要自行加锁！
+应该知道使用时需要避开的坑。
+
+（1）相同种子，每次运行的结果是一样的。 因为随机数是从 rng.vec 数组中取出来的，这个数组是根据种子生成的，相同的种子生成的 rng.vec 数组是相同的。
+
+（2）不同种子，每次运行的结果可能一样。 因为根据种子生成 rng.vec 数组时会有一个取模的操作，模后的结果可能相同，导致 rng.vec 数组相同。
+
+（3）rand.New 初始化出来的 rand 不是并发安全的。 因为每次利用 rng.feed, rng.tap 从 rng.vec 中取到随机值后会将随机值重新放入 rng.vec。如果想并发安全，可以使用全局的随机数发生器 rand.globalRand。
+
+（4）不同种子，随机序列发生碰撞的概率高于单个碰撞概率的乘积。 这
 
 
 ## crypto/rand真随机
@@ -191,3 +215,15 @@ func Read(b []byte) (n int, err error) {
 }
 ```
 在Linux平台下，当使用 getrandom() syscall，在int32位的机器上面上每次最多可以获取2^25-1个字节的数据。
+
+
+## 第三方实现
+- github.com/joway/fastrand
+
+
+
+
+
+## 参考
+
+- 优化go生成随机数:https://juejin.cn/post/7071979385787514911

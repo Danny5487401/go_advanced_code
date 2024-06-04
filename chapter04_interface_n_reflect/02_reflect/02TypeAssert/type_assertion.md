@@ -3,11 +3,13 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [go 类型转换](#go-%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2)
-  - [一. 断言类型的语法](#%E4%B8%80-%E6%96%AD%E8%A8%80%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%AF%AD%E6%B3%95)
+  - [1 Type Assertion（断言）](#1-type-assertion%E6%96%AD%E8%A8%80)
     - [注意](#%E6%B3%A8%E6%84%8F)
-    - [另外一种方式：switch 断言方式](#%E5%8F%A6%E5%A4%96%E4%B8%80%E7%A7%8D%E6%96%B9%E5%BC%8Fswitch-%E6%96%AD%E8%A8%80%E6%96%B9%E5%BC%8F)
-  - [三. 反射reflect类型断言](#%E4%B8%89-%E5%8F%8D%E5%B0%84reflect%E7%B1%BB%E5%9E%8B%E6%96%AD%E8%A8%80)
-  - [四. 性能比较](#%E5%9B%9B-%E6%80%A7%E8%83%BD%E6%AF%94%E8%BE%83)
+  - [2 强制类型转换](#2-%E5%BC%BA%E5%88%B6%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2)
+    - [应用：接口类型检测](#%E5%BA%94%E7%94%A8%E6%8E%A5%E5%8F%A3%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%B5%8B)
+  - [3 显式转换](#3-%E6%98%BE%E5%BC%8F%E8%BD%AC%E6%8D%A2)
+  - [4 隐式类型转换](#4-%E9%9A%90%E5%BC%8F%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2)
+  - [性能比较](#%E6%80%A7%E8%83%BD%E6%AF%94%E8%BE%83)
   - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -18,7 +20,64 @@ go 存在 4 种类型转换分别为：断言、强制、显式、隐式。
 
 通常说的类型转换是指断言，强制在日常不会使用到、显示是基本的类型转换、隐式使用到但是不会注意到。断言、强制、显式三类在 go 语法描述中均有说明，隐式是在日常使用过程中总结出来。
 
-1. 强制类型转换
+
+
+## 1 Type Assertion（断言）
+断言通过判断变量是否可以转换成某一个类型
+
+```go
+var s = x.(T)
+
+```
+x.(T)，这里x表示一个接口的类型，T表示一个类型（也可为接口类型）。
+
+
+
+类型断言分三种情况：
+
+- 1 如果 x 不是 nil，且 x 可以转换成 T 类型，就会断言成功，返回 T 类型的变量 s。可以通过 s, ok := x.(T) 判断 ok 避免 panic
+
+- 2，如果断言的类型T是一个具体类型，类型断言x.(T)就检查x的动态类型是否和T的类型相同。
+
+  1. 如果这个检查成功了，类型断言的结果是一个类型为T的对象，该对象的值为接口变量x的动态值。换句话说，具体类型的类型断言从它的操作对象中获得具体的值。
+  2. 如果检查失败，接下来这个操作会抛出panic，除非用两个变量来接收检查结果，如：f, ok := w.(*os.File)
+
+- 3，如果断言的类型T是一个接口类型，类型断言x.(T)检查x的动态类型是否满足T接口。
+
+  1. 如果这个检查成功，则检查结果的接口值的动态类型和动态值不变，但是该接口值的类型被转换为接口类型T。换句话说，对一个接口类型的类型断言改变了类型的表述方式，改变了可以获取的方法集合（通常更大），但是它保护了接口值内部的动态类型和值的部分。
+  2. 如果检查失败，接下来这个操作会抛出panic，除非用两个变量来接收检查结果，如：f, ok := w.(io.ReadWriter)
+
+### 注意
+
+如果断言的操作对象x是一个nil接口值，那么不论被断言的类型T是什么这个类型断言都会失败。
+我们几乎不需要对一个更少限制性的接口类型（更少的方法集合）做断言，因为它表现的就像赋值操作一样，除了对于nil接口值的情况。
+
+表达式是t,ok:=i.(T)，这个表达式也是可以断言一个接口对象（i）里不是nil，并且接口对象（i）存储的值的类型是 T，如果断言成功，就会返回其类型给t，并且此时 ok 的值 为true，表示断言成功。
+如果接口值的类型，并不是我们所断言的 T，就会断言失败，但和第一种表达式不同的是这个不会触发 panic，而是将 ok 的值设为false，表示断言失败，此时t为T的零值。所以推荐使用这种方式，可以保证代码的健壮性
+
+
+switch 断言方式
+```go
+switch i := x.(type) {
+case nil:
+    printString("x is nil")                // type of i is type of x (interface{})
+case int:
+    printInt(i)                            // type of i is int
+case float64:
+    printFloat64(i)                        // type of i is float64
+case func(int) float64:
+    printFunction(i)                       // type of i is func(int) float64
+case bool, string:
+    printString("type is bool or string")  // type of i is type of x (interface{})
+default:
+    printString("don't know the type")     // type of i is type of x (interface{})
+}
+```
+
+
+## 2 强制类型转换
+强制类型转换通过修改变量类型. 该方法不常见，主要用于 unsafe 包和接口类型检测，需要懂得 go 变量的知识。
+
 ```go
 var f float64
 bits = *(*uint64)(unsafe.Pointer(&f))
@@ -28,15 +87,22 @@ bits = *(*uint64)(ptr(&f))
 
 var p ptr = nil
 ```
+float64 就强制转换成 uint64 类型，float 的地址就是一个值但是类型是 float64，然后创建了一个 uint64 类型变量，地址值也是 float64 的地址值，两个变量值相同类型不同，强制转换了类型。
+
+
 unsafe 强制转换是指针的底层操作了，用 c 的朋友就很熟悉这样的指针类型转换，利用内存对齐才能保证转换可靠，例如 int 和 uint 存在符号位差别，利用 unsafe 转换后值可能不同，但是在内存存储二进制一模一样。
 
-应用：接口类型检测
+
+
+### 应用：接口类型检测
 ```go
 var _ Context = (*ContextBase)(nil)
 ```
 nil 的类型是 nil 地址值为 0，利用强制类型转换成了 * ContextBase，返回的变量就是类型为 * ContextBase 地址值为 0，然后 Context=xx 赋值如果 xx 实现了 Context 接口就没事，如果没有实现在编译时期就会报错，实现编译期间检测接口是否实现
 
-2. 显式转换
+
+
+## 3 显式转换
 一个显式转换的表达式 T (x) ，其中 T 是一种类型并且 x 是可转换为类型的表达式 T，例如：uint(666)。
 ```go
 int64(222)
@@ -54,7 +120,8 @@ A(2)
 - x 的类型是整数或 [] byte 或 [] rune，并且 T 是字符串类型。
 - x 的类型是字符串，T 类型是 [] byte 或 [] rune。
 
-3. 隐式类型转换
+
+## 4 隐式类型转换
 
 隐式类型转换日常使用并不会感觉到，但是运行中确实出现了类型转换
 
@@ -81,81 +148,35 @@ func NewHandler() Handler {
 }
 ```
 
-4. 这里主要介绍类型断言
 
-## 一. 断言类型的语法
-断言通过判断变量是否可以转换成某一个类型
 ```go
-var s = x.(T)
-```
-x.(T)，这里x表示一个接口的类型，T表示一个类型（也可为接口类型）。
+// 两者类型不同验证代码
+package main
 
-- 如果 x 不是 nil，且 x 可以转换成 T 类型，就会断言成功，返回 T 类型的变量 s。
-- 如果 T 不是接口类型，则要求 x 的类型就是 T
-- 如果 T 是一个接口，要求 x 实现了 T 接口
+import (
+	"fmt"
+	"reflect"
+)
 
+type Handler func()
 
-类型断言分两种情况：
-
-- 第一种，如果断言的类型T是一个具体类型，类型断言x.(T)就检查x的动态类型是否和T的类型相同。
-
-  1. 如果这个检查成功了，类型断言的结果是一个类型为T的对象，该对象的值为接口变量x的动态值。换句话说，具体类型的类型断言从它的操作对象中获得具体的值。
-  2. 如果检查失败，接下来这个操作会抛出panic，除非用两个变量来接收检查结果，如：f, ok := w.(*os.File)
-
-- 第二种，如果断言的类型T是一个接口类型，类型断言x.(T)检查x的动态类型是否满足T接口。
-
-  1. 如果这个检查成功，则检查结果的接口值的动态类型和动态值不变，但是该接口值的类型被转换为接口类型T。换句话说，对一个接口类型的类型断言改变了类型的表述方式，改变了可以获取的方法集合（通常更大），但是它保护了接口值内部的动态类型和值的部分。
-  2. 如果检查失败，接下来这个操作会抛出panic，除非用两个变量来接收检查结果，如：f, ok := w.(io.ReadWriter)
-
-### 注意
-
-如果断言的操作对象x是一个nil接口值，那么不论被断言的类型T是什么这个类型断言都会失败。
-我们几乎不需要对一个更少限制性的接口类型（更少的方法集合）做断言，因为它表现的就像赋值操作一样，除了对于nil接口值的情况。
-
-表达式是t,ok:=i.(T)，这个表达式也是可以断言一个接口对象（i）里不是nil，并且接口对象（i）存储的值的类型是 T，如果断言成功，就会返回其类型给t，并且此时 ok 的值 为true，表示断言成功。
-如果接口值的类型，并不是我们所断言的 T，就会断言失败，但和第一种表达式不同的是这个不会触发 panic，而是将 ok 的值设为false，表示断言失败，此时t为T的零值。所以推荐使用这种方式，可以保证代码的健壮性
-
-
-### 另外一种方式：switch 断言方式
-```go
-switch i := x.(type) {
-case nil:
-    printString("x is nil")                // type of i is type of x (interface{})
-case int:
-    printInt(i)                            // type of i is int
-case float64:
-    printFloat64(i)                        // type of i is float64
-case func(int) float64:
-    printFunction(i)                       // type of i is func(int) float64
-case bool, string:
-    printString("type is bool or string")  // type of i is type of x (interface{})
-default:
-    printString("don't know the type")     // type of i is type of x (interface{})
+func a() Handler {
+	return func() {}
 }
+
+func main() {
+	var i interface{} = main
+	_, ok := i.(func())
+	fmt.Println(ok)
+	_, ok = i.(Handler)
+	fmt.Println(ok)
+	fmt.Println(reflect.TypeOf(main) == reflect.TypeOf((*Handler)(nil)).Elem())
+}
+
 ```
 
 
-## 三. 反射reflect类型断言
-
-从reflect.Value中获取接口interface的信息
-```go
-realValue := value.Interface().(已知的类型)
-```
-可以理解为“强制转换”，但是需要注意的时候，转换的时候，如果转换的类型不完全符合，则直接panic
-
-
-Golang 对类型要求非常严格，类型一定要完全符合,如下两个，一个是*float64，一个是float64，如果弄混，则会panic
-
-1. 从 Value 到实例
-    该方法最通用，用来将 Value 转换为空接口，该空接口内部存放具体类型实例
-    可以使用接口类型查询去还原为具体的类型
-```go
-//func (v Value) Interface() （i interface{})
-```
-
-
-## 四. 性能比较
-
+## 性能比较
 
 ```go
 var dst int64
@@ -281,5 +302,5 @@ PASS
 * 直接进行方法调用要比非接口类型进行类型断言要高效很多
 
 ## 参考资料
-1. [asong关于interface的类型断言是如何实现](https://segmentfault.com/a/1190000039894161)
-2. [go 四种类型转换](https://learnku.com/articles/42797)
+- [asong关于interface的类型断言是如何实现:涉及汇编](https://segmentfault.com/a/1190000039894161)
+- [go 四种类型转换](https://learnku.com/articles/42797)

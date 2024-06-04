@@ -1,10 +1,11 @@
 package _2_miniredis
 
 import (
-	"github.com/alicebob/miniredis/v2"
-	"github.com/go-redis/redis/v8"
 	"testing"
 	"time"
+
+	"github.com/alicebob/miniredis/v2"
+	"github.com/go-redis/redis/v8"
 )
 
 func TestDoSomethingWithRedis(t *testing.T) {

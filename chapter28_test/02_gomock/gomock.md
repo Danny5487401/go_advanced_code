@@ -2,12 +2,12 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [gomock](#gomock)
+- [github.com/uber-go/mock](#githubcomuber-gomock)
   - [原理](#%E5%8E%9F%E7%90%86)
   - [使用](#%E4%BD%BF%E7%94%A8)
     - [返回值](#%E8%BF%94%E5%9B%9E%E5%80%BC)
-    - [1. 反射模式](#1-%E5%8F%8D%E5%B0%84%E6%A8%A1%E5%BC%8F)
-    - [2. 源码模式](#2-%E6%BA%90%E7%A0%81%E6%A8%A1%E5%BC%8F)
+    - [1. reflect  反射模式：通过反射生成 mock 实现，我们需要传入 import 路径，以及用逗号分隔的一系列接口](#1-reflect--%E5%8F%8D%E5%B0%84%E6%A8%A1%E5%BC%8F%E9%80%9A%E8%BF%87%E5%8F%8D%E5%B0%84%E7%94%9F%E6%88%90-mock-%E5%AE%9E%E7%8E%B0%E6%88%91%E4%BB%AC%E9%9C%80%E8%A6%81%E4%BC%A0%E5%85%A5-import-%E8%B7%AF%E5%BE%84%E4%BB%A5%E5%8F%8A%E7%94%A8%E9%80%97%E5%8F%B7%E5%88%86%E9%9A%94%E7%9A%84%E4%B8%80%E7%B3%BB%E5%88%97%E6%8E%A5%E5%8F%A3)
+    - [2.  source 源码模式： 根据接口定义文件来生成 mock 实现](#2--source-%E6%BA%90%E7%A0%81%E6%A8%A1%E5%BC%8F-%E6%A0%B9%E6%8D%AE%E6%8E%A5%E5%8F%A3%E5%AE%9A%E4%B9%89%E6%96%87%E4%BB%B6%E6%9D%A5%E7%94%9F%E6%88%90-mock-%E5%AE%9E%E7%8E%B0)
   - [缺点](#%E7%BC%BA%E7%82%B9)
   - [gomock 源代码解析](#gomock-%E6%BA%90%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90)
     - [1 查看生成的代码](#1-%E6%9F%A5%E7%9C%8B%E7%94%9F%E6%88%90%E7%9A%84%E4%BB%A3%E7%A0%81)
@@ -20,13 +20,14 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# gomock
+#  github.com/uber-go/mock
 
-gomock 是官方提供的mock框架，用于解决单元测试中遇到的外部依赖问题，并且还有mockgen工具用来辅助生成相关的mock代码。
+gomock 是官方推荐的mock框架，用于解决单元测试中遇到的外部依赖问题，并且还有mockgen工具用来辅助生成相关的mock代码。
 
 ## 原理
 
-针对 interface 生成对应的Mock代码文件，其中包含了一个实现该接口的结构，并提供了操作该结构行为的方法。使用该结构代替真实的依赖，可以控制下游按我们想要的方式进行某些操作和返回结果，以此达到解除外部依赖的目的。
+针对 interface 生成对应的Mock代码文件，其中包含了一个实现该接口的结构，并提供了操作该结构行为的方法。
+使用该结构代替真实的依赖，可以控制下游按我们想要的方式进行某些操作和返回结果，以此达到解除外部依赖的目的。
 
 
 ## 使用
@@ -36,6 +37,9 @@ gomock 有两种模式，反射模式和源码模式，都是通过接口生成�
 * -package：用于生成的模拟类源代码的包名。如果不设置此项包名默认在原包名前添加mock_前缀。
 * -destination：生成的源代码写入的文件。如果不设置此项，代码将打印到标准输出。
 * -aux_files：需要参考以解决的附加文件列表，例如在不同文件中定义的嵌入式接口。指定的值应为foo=bar/baz.go形式的以逗号分隔的元素列表，其中bar/baz.go是源文件，foo是-source文件使用的文件的包名。
+
+
+
 
 
 ### 返回值
@@ -48,14 +52,14 @@ gomock 中跟返回值相关的用法有以下几个：
 - DoAndReturn(func)：执行并返回指定值
 
 
-### 1. 反射模式
+### 1. reflect  反射模式：通过反射生成 mock 实现，我们需要传入 import 路径，以及用逗号分隔的一系列接口
 
 通过构建一个程序用反射理解接口生成一个mock类文件，它通过两个非标志参数生效：导入路径和用逗号分隔的符号列表（多个interface）
 ```shell
 mockgen -destination mock_sql_driver.go database/sql/driver Conn,Driver
 ```
 
-### 2. 源码模式
+### 2.  source 源码模式： 根据接口定义文件来生成 mock 实现
 ```shell
 mockgen -source=foo.go [other options]
 ```

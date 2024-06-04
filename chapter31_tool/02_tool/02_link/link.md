@@ -9,6 +9,7 @@
 
 # link
 
+go tool link：用于将编译后的目标文件链接为可执行文件
 
 ## 选项
 ```shell

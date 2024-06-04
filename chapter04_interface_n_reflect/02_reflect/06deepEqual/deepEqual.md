@@ -252,4 +252,4 @@ func deepValueEqual(v1, v2 Value, visited map[visit]bool) bool {
 
 
 ## 参考资料
-1 [深入理解Go之==](https://darjun.github.io/2019/08/20/golang-equal/)
+- [深入理解Go之==](https://darjun.github.io/2019/08/20/golang-equal/)

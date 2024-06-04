@@ -2,14 +2,25 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [miniredis : mock掉redis的一个利器](#miniredis--mock%E6%8E%89redis%E7%9A%84%E4%B8%80%E4%B8%AA%E5%88%A9%E5%99%A8)
+- [miniredis: 纯Go实现的Redis测试服务器](#miniredis-%E7%BA%AFgo%E5%AE%9E%E7%8E%B0%E7%9A%84redis%E6%B5%8B%E8%AF%95%E6%9C%8D%E5%8A%A1%E5%99%A8)
+  - [特点](#%E7%89%B9%E7%82%B9)
   - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
     - [启动服务](#%E5%90%AF%E5%8A%A8%E6%9C%8D%E5%8A%A1)
     - [设置值](#%E8%AE%BE%E7%BD%AE%E5%80%BC)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# miniredis : mock掉redis的一个利器
+# miniredis: 纯Go实现的Redis测试服务器
+
+Miniredis是一个专为Go语言单元测试设计的纯Go实现的轻量级Redis模拟服务器。在开发过程中，有时我们希望在不进行完整的集成测试的情况下测试与Redis相关的代码，这就是Miniredis的作用。
+它提供了一个真实的TCP接口，使你能快速地在内存中搭建一个Redis替代品，方便你在测试时直接查询和操作数据。
+
+
+## 特点
+
+Miniredis实现了Redis命令的大部分功能，包括连接管理、键值操作、事务处理、字符串、哈希表、列表、发布订阅、集合、有序集合、脚本、时间戳等。此外，
+它还支持了部分Redis 7.2.0的新特性，如RESP3协议。通过引入这个库，你可以轻松地在你的测试代码中模拟复杂的Redis交互场景，无需依赖外部Redis实例
+
 
 
 ## 源码分析

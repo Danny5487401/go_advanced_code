@@ -1,6 +1,6 @@
 module github.com/Danny5487401/go_advanced_code
 
-go 1.20
+go 1.21
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
@@ -8,8 +8,10 @@ require (
 	github.com/NebulousLabs/fastrand v0.0.0-20181203155948-6fb6489aac4e
 	github.com/OneOfOne/xxhash v1.2.8
 	github.com/agiledragon/gomonkey/v2 v2.8.0
+	github.com/ahmetb/go-linq/v3 v3.2.0
 	github.com/alicebob/miniredis/v2 v2.32.1
 	github.com/davecgh/go-spew v1.1.1
+	github.com/derekparker/trie/v3 v3.0.0-20230929203338-510368877dd1
 	github.com/dlsniper/debugger v0.6.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-redis/redis/v8 v8.11.5

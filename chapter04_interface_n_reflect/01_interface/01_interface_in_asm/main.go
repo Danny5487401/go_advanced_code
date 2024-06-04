@@ -8,8 +8,8 @@ func main() {
 	x := 200
 
 	// 1. 不带方法 eface
-	var any interface{} = x
-	fmt.Println(any) //200
+	var anyInfo interface{} = x
+	fmt.Println(anyInfo) //200
 
 	// 2. 带方法的interface iface
 	g := Gopher{"Go", 1}

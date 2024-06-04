@@ -6,10 +6,11 @@
   - [一. 背景](#%E4%B8%80-%E8%83%8C%E6%99%AF)
     - [为什么要用反射?](#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8%E5%8F%8D%E5%B0%84)
     - [不建议使用反射的原因：](#%E4%B8%8D%E5%BB%BA%E8%AE%AE%E4%BD%BF%E7%94%A8%E5%8F%8D%E5%B0%84%E7%9A%84%E5%8E%9F%E5%9B%A0)
-  - [二. 用到反射的包：](#%E4%BA%8C-%E7%94%A8%E5%88%B0%E5%8F%8D%E5%B0%84%E7%9A%84%E5%8C%85)
-    - [举例](#%E4%B8%BE%E4%BE%8B)
+  - [二. 用到反射的包](#%E4%BA%8C-%E7%94%A8%E5%88%B0%E5%8F%8D%E5%B0%84%E7%9A%84%E5%8C%85)
   - [三. 源码分析](#%E4%B8%89-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
-    - [数据结构介绍](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D)
+    - [两种类型：Type 和 Value](#%E4%B8%A4%E7%A7%8D%E7%B1%BB%E5%9E%8Btype-%E5%92%8C-value)
+      - [1. reflect.Type 是以一个接口的形式存在的](#1-reflecttype-%E6%98%AF%E4%BB%A5%E4%B8%80%E4%B8%AA%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%BD%A2%E5%BC%8F%E5%AD%98%E5%9C%A8%E7%9A%84)
+      - [2. reflect.Value 是以一个结构体的形式存在](#2-reflectvalue-%E6%98%AF%E4%BB%A5%E4%B8%80%E4%B8%AA%E7%BB%93%E6%9E%84%E4%BD%93%E7%9A%84%E5%BD%A2%E5%BC%8F%E5%AD%98%E5%9C%A8)
     - [反射的基本函数](#%E5%8F%8D%E5%B0%84%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%87%BD%E6%95%B0)
       - [1. TypeOf函数](#1-typeof%E5%87%BD%E6%95%B0)
       - [2. ValueOf函数](#2-valueof%E5%87%BD%E6%95%B0)
@@ -47,9 +48,10 @@ Go语言的类型:
     因此，一个 reader变量如果它的concrete type也实现了write方法的话，它也可以被类型断言为writer
 
 在反射的概念中， 编译时就知道变量类型的是静态类型；运行时才知道一个变量类型的叫做动态类型。
-1. 静态类型
+
+1. 静态类型（即 static type），就是变量声明的时候的类型
 ```go
-//静态类型就是变量声明时的赋予的类型。比如：
+// 静态类型就是变量声明时的赋予的类型。比如：
 type MyInt int // int 就是静态类型
 
 type A struct{
@@ -58,7 +60,7 @@ type A struct{
 var i *int  // *int就是静态类型
 ```
 
-2. 动态类型
+2. 动态类型（即 concrete type，也叫具体类型）是 程序运行时系统才能看见的类型
 ```go
 //动态类型：运行时给这个变量赋值时，这个值的类型(如果值为nil的时候没有动态类型)。
 //一个变量的动态类型在运行时可能改变，这主要依赖于它的赋值（前提是这个变量是接口类型）
@@ -72,130 +74,37 @@ Noted:
 Go语言的反射就是建立在类型之上的，Golang的指定类型的变量的类型是静态的（也就是指定int、string这些的变量，它的type是static type），
 在创建变量的时候就已经确定，反射主要与Golang的interface类型相关（它的type是concrete type），只有interface类型才有反射一说
 
-在Golang的实现中，每个interface变量都有一个对应pair，pair中记录了实际变量的值和类型:(value, type)
-	value是实际变量值，type是实际变量的类型。一个interface{}类型的变量包含了2个指针，
+在Golang的实现中，每个interface变量都有一个对应pair，pair中记录了实际变量的值和类型:(value, type)，value是实际变量值，type是实际变量的类型。一个interface{}类型的变量包含了2个指针，
 1. 一个指针指向值的类型【对应concrete type】，
 2. 另外一个指针指向实际的值【对应value】。
 
-## 二. 用到反射的包：
+## 二. 用到反射的包
 - 官方包：sort swapper,sql convertValue,Json 反序列化
 - 第三方包： proto reflect,sqlx scanAll
 
-### 举例
-```go
-var r io.Reader
-```
-1.首先声明 r 的类型是 io.Reader，注意，这是 r 的静态类型，此时它的动态类型为 nil，并且它的动态值也是 nil。
-```go
-tty, err := os.OpenFile("chapter04_reflect/danny_reflect.txt", os.O_RDWR, 0)
-if err != nil {
-    fmt.Println("出现错误", err.Error())
-}
-fmt.Printf("tty是%+v\n", tty) // tty是&{file:0xc000058180}
-r = tty
-```
-![](.reflect_images/r_equal_to_tty.png)
-2.r=tty 这一语句，将 r 的动态类型变成 *os.File，动态值则变成非空，表示打开的文件对象。这时，r 可以用 <value,type>对来表示为： <tty, *os.File>。
-
-此时虽然 fun 所指向的函数只有一个 Read 函数，其实 *os.File 还包含 Write 函数，也就是说 *os.File .
-
-3.其实还实现了 io.Writer 接口。因此下面的断言语句可以执行：
-```go
-var w io.Writer
-w = r.(io.Writer)
-```
-之所以用断言，而不能直接赋值，是因为 r 的静态类型是 io.Reader，并没有实现 io.Writer 接口。断言能否成功，看 r 的动态类型是否符合要求
-![](.reflect_images/w_assert.png)
-w 也可以表示成 <tty, *os.File>，仅管它和 r 一样，但是 w 可调用的函数取决于它的静态类型 io.Writer，也就是说它只能有这样的调用形式： w.Write() 。
-
-4.赋值
-```go
-//不带函数的interface
-var empty interface{}
-empty = tty
-fmt.Printf("%T", empty) // *os.File
-```
-![](.reflect_images/empty_equal_to_tty.png)
-由于 empty 是一个空接口，因此所有的类型都实现了它，w 可以直接赋给它，不需要执行断言操作
 
 ## 三. 源码分析
-![](chapter04_interface_n_reflect/02_reflect/.reflect_images/reflect_files.png)
-reflect包下内容可以大体分为三部分：测试文件、编译文件、反射核心代码，这里主要围绕核心代码展开。
+![](.reflect_images/reflect_files.png)
 
-go 中的 interface 分类两种，eface 和 iface。可具体上一节参看 [interface详解](chapter04_interface_n_reflect/01_interface/interface.md)
+reflect包下内容可以大体分为三部分：测试文件、编译文件、反射核心代码.
+
+
+go 中的 interface 分类两种，eface 和 iface。
 
 简单介绍 
 - eface: go 中所有的类型的数据都可以转成 eface ，对应 reflect 中的 emptyInterface
 - iface: 主要用来表示实现了 interface 的数据，对应 reflect 中的 nonEmptyInterface
 
 
-### 数据结构介绍
-![](chapter04_interface_n_reflect/02_reflect/.reflect_images/type_n_rtype.png)
-```go
-type Type interface {
-    common() *rtype  // common 返回是rtype
-    uncommon() *uncommonType // uncommon 返回是 uncommonType
-}
-```
+### 两种类型：Type 和 Value
+![](.reflect_images/type_n_rtype.png)
 
-
-在reflect/type.go源文件中，定义了两个数据结构uncommonType和method，用于存储和解析数据类型的方法信息。
-
-```go
-// /Users/python/go/go1.18/src/reflect/type.go
-type uncommonType struct {
-    pkgPath nameOff  // 包路径名称偏移量 
-    mcount  uint16   // 方法的数量 
-    xcount  uint16   // 公共导出方法的数量 
-    moff    uint32   // [mcount]method 相对本对象起始地址的偏移量 
-    _       uint32   // unused 
-}
-```
-
-reflect.uncommonType结构体用于描述一个数据类型的包名和方法信息。
-
-```go
-// 非接口类型的方法 
-type method struct { 
-    name nameOff // 方法名称偏移量 
-    mtyp typeOff // 方法类型偏移量 
-    ifn  textOff // 通过接口调用时的地址偏移量
-    tfn  textOff // 直接类型调用时的地址偏移量 
-}
-```
-
-reflect.method结构体用于描述一个方法，它是一个压缩格式的结构，每个字段的值都是一个相对偏移量。
-
-```go
-type nameOff int32 // offset to a name : 是相对程序 .rodata 节起始地址的偏移量
-type typeOff int32 // offset to an *rtype : 相对程序 .rodata 节起始地址的偏移量
-type textOff int32 // offset from top of text section : 是相对程序 .text 节起始地址的偏移量。
-
-func (t *rtype) nameOff(off nameOff) name {
-	return name{(*byte)(resolveNameOff(unsafe.Pointer(t), int32(off)))}
-}
-
-func (t *rtype) typeOff(off typeOff) *rtype {
-	return (*rtype)(resolveTypeOff(unsafe.Pointer(t), int32(off)))
-}
-
-func (t *rtype) textOff(off textOff) unsafe.Pointer {
-	return resolveTextOff(unsafe.Pointer(t), int32(off))
-}
-```
-也就是说，假设 t 是 _type 的话，只要调用 resolveTypeOff(t, t.ptrToThis) 就可以返回 t 的一份拷贝了
-
-
-
-### 反射的基本函数
-reflect 包里定义了一个接口和一个结构体，即 reflect.Type 和 reflect.Value，它们提供很多函数来获取存储在接口里的类型信息。
-
-![](chapter04_interface_n_reflect/02_reflect/.reflect_images/reflect_all_struct.png) 
-
-- reflect.Type 主要提供关于类型相关的信息，所以它和 _type 关联比较紧密； 
+- reflect.Type 主要提供关于类型相关的信息，所以它和 _type 关联比较紧密；
 - reflect.Value 则结合 _type 和 data 两者，因此程序员可以获取甚至改变类型的值
 
-1. reflect.Type 是以一个接口的形式存在的
+
+
+#### 1. reflect.Type 是以一个接口的形式存在的
 
 ```go
 type Type interface {
@@ -375,6 +284,58 @@ type Type interface {
 	uncommon() *uncommonType
 }
 ```
+
+定义了两个数据结构uncommonType和rtype，用于存储和解析数据类型的方法信息。
+
+1 uncommonType
+```go
+// /Users/python/go/go1.18/src/reflect/type.go
+
+// reflect.uncommonType结构体用于描述一个数据类型的包名和方法信息。
+type uncommonType struct {
+    pkgPath nameOff  // 包路径名称偏移量 
+    mcount  uint16   // 方法的数量 
+    xcount  uint16   // 公共导出方法的数量 
+    moff    uint32   // [mcount]method 相对本对象起始地址的偏移量 
+    _       uint32   // unused 
+}
+```
+
+
+
+```go
+// 非接口类型的方法 
+// reflect.method结构体用于描述一个方法，它是一个压缩格式的结构，每个字段的值都是一个相对偏移量。
+type method struct { 
+    name nameOff // 方法名称偏移量 
+    mtyp typeOff // 方法类型偏移量 
+    ifn  textOff // 通过接口调用时的地址偏移量
+    tfn  textOff // 直接类型调用时的地址偏移量 
+}
+
+type nameOff int32 // offset to a name : 是相对程序 .rodata 节起始地址的偏移量
+type typeOff int32 // offset to an *rtype : 相对程序 .rodata 节起始地址的偏移量
+type textOff int32 // offset from top of text section : 是相对程序 .text 节起始地址的偏移量。
+
+func (t *rtype) nameOff(off nameOff) name {
+	return name{(*byte)(resolveNameOff(unsafe.Pointer(t), int32(off)))}
+}
+
+func (t *rtype) typeOff(off typeOff) *rtype {
+	return (*rtype)(resolveTypeOff(unsafe.Pointer(t), int32(off)))
+}
+
+func (t *rtype) textOff(off textOff) unsafe.Pointer {
+	return resolveTextOff(unsafe.Pointer(t), int32(off))
+}
+```
+也就是说，假设 t 是 _type 的话，只要调用 resolveTypeOff(t, t.ptrToThis) 就可以返回 t 的一份拷贝了
+
+
+
+
+2 rtype
+
 Go是静态语言，每个变量都有自己的归属的类型，当变量被在堆上分配时，堆上的内存对象也就有了自己归属的类型。Go编译器在编译阶段就为Go应用中的每种类型建立了对应的类型信息，
 这些信息体现在runtime._rtype结构体中，Go reflect包的rtype结构体等价于runtime._rtype：
 
@@ -430,6 +391,19 @@ const (
 	UnsafePointer
 )
 ```
+要注意的是，Kind 和 Type 是有区别的，Kind 表示更基础，范围更广的分类。 有一个例子来表示， iPhone （接口变量）的 Type 是手机，Kind 是电子产品。
+
+```go
+// 这两个数组类型的类型分别是[10]string和[8]int，但它们在反射世界的reflect.Type的Kind信息却都为Array。
+var arr1 [10]string
+var arr2 [8]int
+
+
+// 两个指针类型的类型分别是*float64和*MyFoo，但它们在反射世界的reflect.Type的Kind信息却都为Pointer。
+var p1 *float64
+var p2 *MyFoo
+```
+
 
 下面是各种不同类型对应的不同结构体
 ```go
@@ -501,7 +475,7 @@ func (t *rtype) String() string {
 }
 ```
 
-2. reflect.Value 是以一个结构体的形式存在
+#### 2. reflect.Value 是以一个结构体的形式存在
 接口变量，实际上都是由一 pair 对（type 和 data）组合而成，pair 对中记录着实际变量的值和类型。也就是说在真实世界里，type 和 value 是合并在一起组成 接口变量的。
 而在反射的世界里，type 和 data 却是分开的，他们分别由 reflect.Type 和 reflect.Value 来表现
 
@@ -562,6 +536,10 @@ const (
 ```
 
 
+### 反射的基本函数
+reflect 包里定义了一个接口和一个结构体，即 reflect.Type 和 reflect.Value，它们提供很多函数来获取存储在接口里的类型信息。
+
+![](./.reflect_images/reflect_all_struct.png)
 
 
 #### 1. TypeOf函数
@@ -737,5 +715,5 @@ call 方法接着会做一些可变参数的判断以及组合传入的参数值
 
 
 ## 参考资料
-1. [Go反射源码解读](https://zhuanlan.zhihu.com/p/408731140)
+1. [Go 反射源码解读](https://zhuanlan.zhihu.com/p/408731140)
 

@@ -138,11 +138,11 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 ## 第四章 interface 和反射 
 - [1 interface 分类：eface 和 iface, 及两者之间关系转换](chapter04_interface_n_reflect/01_interface/interface.md)
     - [1.1 汇编分析不含方法eface和带方法iface](chapter04_interface_n_reflect/01_interface/01_interface_in_asm/main.go)
-    - [1.2 接口值的零值是指动态类型和动态值都为 nil](chapter04_interface_n_reflect/01_interface/02_interface_compare_with_nil/main.go)
-    - [1.3 打印出接口的动态类型和值](chapter04_interface_n_reflect/01_interface/03_print_dynamic_value_n_type/main.go)
+    - [1.2 接口值 iface == nil 是指动态类型 iface.tab._type 和动态值 iface.data 都为 nil ](chapter04_interface_n_reflect/01_interface/02_interface_compare_with_nil/main.go)
+    - [1.3 模拟打印出接口 eface 的动态类型 itab 和 data 值](chapter04_interface_n_reflect/01_interface/03_print_dynamic_value_n_type/main.go)
 - [2 反射](chapter04_interface_n_reflect/02_reflect/reflect.md)
     - [2.0 常见需求: 不能预先确定参数类型，需要动态的执行不同参数类型行为](chapter04_interface_n_reflect/02_reflect/00_kind_route/kind_route_test.go)
-    - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01three_laws/threeLaw.md)
+    - [2.1 反射三大定律](chapter04_interface_n_reflect/02_reflect/01_three_laws/threeLaw.md)
     - [2.2 四种类型转换:断言、强制、显式、隐式](chapter04_interface_n_reflect/02_reflect/02TypeAssert/type_assertion.md)
         - [2.2.1 断言的类型T是一个**具体类型** 或则 **接口类型**](chapter04_interface_n_reflect/02_reflect/02TypeAssert/01_eface_n_iface_type_assert/main.go)
         - [2.2.2 类型断言性能分析](chapter04_interface_n_reflect/02_reflect/02TypeAssert/02_type_assert_performance/typeAssert_test.go)
@@ -152,21 +152,20 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
             - 直接使用类型转换
             - 非空接口类型判断一个类型是否实现了该接口 12个方法
             - 直接调用方法
-    - [2.3 获取结构体字段及获取方法名字](chapter04_interface_n_reflect/02_reflect/03StructField_n_method/main.go)
-    - [2.4 通过 reflect.Value 修改值，调用结构体方法，调用普通函数](chapter04_interface_n_reflect/02_reflect/04reflectValue/main.go)
-    - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05PerformanceInprove/main.go)
+    - [2.3 动态创建类型](chapter04_interface_n_reflect/02_reflect/03_dynamic_make/main.go)
+    - [2.4 通过 reflect 基本函数修改值，调用结构体方法，调用普通函数](chapter04_interface_n_reflect/02_reflect/04_reflect_method/main.go)
+    - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05_performance_inprove/main.go)
     - [2.6 通过reflect.DeepEqual进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
         - 底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
         - 一个nil值的map和非nil值但是空的map*是否“深度”相等
         - 带有环的数据对比*是否“深度”相等
     - [2.7 reflect.implements 判断 struct 是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
-    - [2.8 reflect.MakeFunc 构建函数](chapter04_interface_n_reflect/02_reflect/08_make_func/make_func.md)
-      - [2.8.1 构建逆序打印切片函数](chapter04_interface_n_reflect/02_reflect/08_make_func/01_invertInts/invertslice.go)
-      - [2.8.2 构建求和函数分别用于字符串和数字](chapter04_interface_n_reflect/02_reflect/08_make_func/02_sum/reflect_sum.go)
-    - [2.9 go-cmp-->reflect.DeepEqual 的替代品]()
-      - [2.9.1 结构体内嵌指针：与 == 对比进行相等判断](chapter04_interface_n_reflect/02_reflect/09_go-cmp/01_compare_with_equal)
-      - [2.9.2 IgnoreUnexported 忽略未导出字段,AllowUnexported 指定某些类型的未导出字段需要比较](chapter04_interface_n_reflect/02_reflect/09_go-cmp/02_ignoreUnexported/main.go)
-      - [2.9.3 切片变量值为 nil 对比长度为 0 的切片](chapter04_interface_n_reflect/02_reflect/09_go-cmp/03_nil_and_empty_slice/main.go)
+    - [2.8 go-cmp-->reflect.DeepEqual 的替代品](chapter04_interface_n_reflect/02_reflect/08_go-cmp/go-cmp.md)
+      - [2.8.1 结构体内嵌指针：与 == 对比进行相等判断](chapter04_interface_n_reflect/02_reflect/08_go-cmp/01_compare_with_equal/main.go)
+      - [2.8.2 IgnoreUnexported 忽略未导出字段,AllowUnexported 指定某些类型的未导出字段需要比较](chapter04_interface_n_reflect/02_reflect/08_go-cmp/02_ignoreUnexported/main.go)
+      - [2.8.3 切片变量值为 nil 对比长度为 0 的切片](chapter04_interface_n_reflect/02_reflect/08_go-cmp/03_nil_and_empty_slice/main.go)
+      - [2.8.4 切片 及 map 相等判断](chapter04_interface_n_reflect/02_reflect/08_go-cmp/04_slice_equal/main.go)
+      - [2.8.5 diff 打印结构体成员区别](chapter04_interface_n_reflect/02_reflect/08_go-cmp/05_diff/main.go)
 ---
 
 ## 第五章 切片和数组
@@ -446,7 +445,9 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - 不同结构体切片根据反射reflect实现自定义排序 
     - map根据key实现排序
     - sort.Search 根据排序切片找索引
-
+- 5 container
+  - 5.1 heap 最小堆
+  - 5.2 list 双向链表 
 - [6 certificate 证书-->openssl 使用](chapter17_dataStructure_n_algorithm/06_certificate/certificate.md)
   - [6.1 pem(Privacy Enhanced Mail Certificate保密增强邮件协议](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/pem.md)
     - [6.1.1 生成公私钥的 .pem 文件(公钥使用RSA算法)](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/01_pem_generate/main.go)
@@ -539,14 +540,18 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [4 PromQL](chapter27_prometheus/alert_manager.md)
 
 ## [第二十八章 如何进行测试](chapter28_test/test.md)
-- [1 gomonkey打桩测试(暂不支持arm)](chapter28_test/01_gomonkey/gomonkey.md)
+- 1 testing 
+  - 1.1 sub 测试并发
+  - 1.2 testing.M 将测试交给TestMain调度
 - [2 go-mock接口测试](chapter28_test/02_gomock/gomock.md)
 - 3 web 测试
-  - [01 使用标准包 httptest 进行 server handler 测试](chapter28_test/03_httptest/01_httptest/httptest.md)
-  - [02 gock 模拟HTTP流量](chapter28_test/03_httptest/02_gock/gock.md) 
+    - [3.1 使用标准包 httptest 进行 server handler 测试](chapter28_test/03_httptest/01_httptest/httptest.md)
+    - [3.2 gock 模拟HTTP流量](chapter28_test/03_httptest/02_gock/gock.md) 
 - 4 数据库测试
-  - [01 sqlmock](chapter28_test/04_database/01_go-sqlmock/app_test.go)
-  - [02 miniredis](chapter28_test/04_database/02_miniredis/do_test.go)
+    - [4.1 sqlmock](chapter28_test/04_database/01_go-sqlmock/go-sqlmock.md)
+    - [4.2 miniredis](chapter28_test/04_database/02_miniredis/miniredis.md)
+- 5 ginkgo-->k8s用
+- [6 gomonkey打桩测试(暂不支持arm)](chapter28_test/01_gomonkey/gomonkey.md)
 
 ## 第二十九章 module包管理
 - [1 go-module 实践篇](chapter29_module/01_use/module_operation.md)

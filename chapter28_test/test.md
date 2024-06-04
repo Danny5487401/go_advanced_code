@@ -5,14 +5,13 @@
 - [Golang Testing](#golang-testing)
   - [背景](#%E8%83%8C%E6%99%AF)
   - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
-    - [BDD - Behavior-Driven Development 行为驱动开发](#bdd---behavior-driven-development-%E8%A1%8C%E4%B8%BA%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91)
-    - [Test-Driven Development (TDD) 测试驱动开发，侧重于系统的实现](#test-driven-development-tdd-%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E4%BE%A7%E9%87%8D%E4%BA%8E%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%AE%9E%E7%8E%B0)
+    - [TestDouble 简单理解就是测试替身](#testdouble-%E7%AE%80%E5%8D%95%E7%90%86%E8%A7%A3%E5%B0%B1%E6%98%AF%E6%B5%8B%E8%AF%95%E6%9B%BF%E8%BA%AB)
     - [Unit Test 单元测试](#unit-test-%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
   - [覆盖 cover 测试](#%E8%A6%86%E7%9B%96-cover-%E6%B5%8B%E8%AF%95)
   - [go test 命令行参数](#go-test-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0)
     - [1 常规语法](#1-%E5%B8%B8%E8%A7%84%E8%AF%AD%E6%B3%95)
     - [2 执行特定的测试用例](#2-%E6%89%A7%E8%A1%8C%E7%89%B9%E5%AE%9A%E7%9A%84%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B)
-    - [3 执行覆盖测试Permalink](#3-%E6%89%A7%E8%A1%8C%E8%A6%86%E7%9B%96%E6%B5%8B%E8%AF%95permalink)
+    - [3 执行覆盖测试](#3-%E6%89%A7%E8%A1%8C%E8%A6%86%E7%9B%96%E6%B5%8B%E8%AF%95)
     - [4 在测试时检测数据竞争问题](#4-%E5%9C%A8%E6%B5%8B%E8%AF%95%E6%97%B6%E6%A3%80%E6%B5%8B%E6%95%B0%E6%8D%AE%E7%AB%9E%E4%BA%89%E9%97%AE%E9%A2%98)
   - [参考](#%E5%8F%82%E8%80%83)
 
@@ -33,10 +32,26 @@
 
 
 ## 基本概念
+| 术语 | 解释 |
+|--|--|
+| SUT（System Under Test） | 被测系统 |
+| DOC（depended-on component） | 第三方依赖组件 |
+| BDD - Behavior-Driven Development） | 行为驱动开发 |
+| Test-Driven Development (TDD) | 测试驱动开发，侧重于系统的实现|
 
-### BDD - Behavior-Driven Development 行为驱动开发
 
-### Test-Driven Development (TDD) 测试驱动开发，侧重于系统的实现
+### TestDouble 简单理解就是测试替身
+
+TestDouble 简单理解就是测试替身，在多数情况下，我们的系统能够正常运行，不仅仅依托系统本身，还需要依赖一些外部服务，比如其他系统提供的 http、rpc 服务，系统自身以来的像 redis 缓存服务或者 mysql 这类数据库服务。
+在微服务场景下，业务按照业务领域将一个系统拆分为多个系统，系统之间的交互不仅仅是简单的 A->B，可能是 A ->B -> C ->D，对于编写单元测试的开发者来说，当我需要编写系统A 的测试用例时，不可能去构建完整的调用链路，
+那么在测试工程中，通常会以 “测试替身” 来解决外部依赖所带来的测试复杂性问题
+
+测试替身主要包括以下几种类型
+- Dummy Object：虚拟对象，本质上不会对测试产生任何影响，实际上只作为类似参数填充类角色存在
+- Test Stub：SUT 内部打的一个桩，可以按照我们的要求返回特定的内容给 SUT，Test Stub 的交互完全在 SUT 内部
+- Test Spy：专门负责将 SUT 内部的间接输出(indirect outputs)传到外部。它的特点是将内部的间接输出返回给测试案例，由测试案例进行验证，Test Spy 只负责获取内部情报，并把情报发出去，不负责验证情报的正确性。
+- Mock Object：Mock Object 还负责对情报(indirect outputs)进行验证，总部(外部的测试案例)信任 Mock Object 的验证结果。
+- Fake Object：并不关注 SUT 内部的间接输入(indirect inputs)或间接输出(indirect outputs)，它仅仅是用来替代一个实际的对象，并且拥有几乎和实际对象一样的功能，保证 SUT 能够正常工作
 
 
 ### Unit Test 单元测试
@@ -51,13 +66,15 @@
 - 执行过程中可以使用 t.Log(...) 等方式输出日志文本。类似地 t.Fatal 也会输出日志文件，以报错的形式
 
 
+
 ## 覆盖 cover 测试
 覆盖测试是单元测试的一种，我们期待的是对代码的测试覆盖率越高越好。
 
-
 ## go test 命令行参数
+
+1 go help test 命令
 ```shell
-➜  ✗ go help test                                                                             
+✗ go help test                                                                             
 usage: go test [build/test flags] [packages] [build/test flags & test binary flags]
 
 'Go test' automates testing the packages named by the import paths.
@@ -180,9 +197,28 @@ For more about specifying packages, see 'go help packages'.
 See also: go build, go vet.
 ```
 
+
+2 go help testflag
+```shell
+✗ go help testflag
+The 'go test' command takes both flags that apply to 'go test' itself
+and flags that apply to the resulting test binary.
+
+Several of the flags control profiling and write an execution profile
+suitable for "go tool pprof"; run "go tool pprof -h" for more
+information. The --alloc_space, --alloc_objects, and --show_bytes
+options of pprof control how the information is presented.
+
+The following flags are recognized by the 'go test' command and
+control the execution of any test:
+
+```
+
+go test运行时，跟据是否指定package分为两种模式，即本地目录模式和包列表模式。
+
 ### 1 常规语法
 ```shell
- 在当前项目当前包文件夹下执行全部测试用例，但不递归子目录
+# 在当前项目当前包文件夹下执行全部测试用例，但不递归子目录
 go test .
 # 在当前项目当前文件夹下执行全部测试用例并显示测试过程中的日志内容，不递归子目录
 go test -v .
@@ -199,7 +235,7 @@ go test -v ./...
 go test -v . -test.run '^TestOne$'
 ```
 
-### 3 执行覆盖测试Permalink
+### 3 执行覆盖测试
 ```shell
 # 以下两句连用以生成覆盖测试报告 cover.html
 go test -v . -coverprofile=coverage.txt -covermode=atomic
@@ -218,4 +254,8 @@ go test -v -race .
 
 
 ## 参考
+
+- 深入探討 Test Double、Dummy、Fake、Stub 、Mock 與 Spy: https://old-oomusou.goodjack.tw/jasmine/jasmine-test-double/
+
+
 

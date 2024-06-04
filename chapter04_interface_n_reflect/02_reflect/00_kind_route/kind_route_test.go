@@ -79,6 +79,7 @@ func TestCollectUserInfo(t *testing.T) {
 	//住址: 北京市朝阳区
 	//电话: 7654321
 
+	// Map
 	CollectUserInfo(map[int]*User{
 		1: {
 			Name:    "张三",
@@ -103,4 +104,15 @@ func TestCollectUserInfo(t *testing.T) {
 	//年龄: 30
 	//住址: 北京市朝阳区
 	//电话: 7654321
+}
+
+func TestKind(t *testing.T) {
+	array()
+	slice()
+	structInfo()
+	channelInfo()
+	mapInfo()
+	pointerInfo()
+	interfaceInfo()
+	funcInfo()
 }

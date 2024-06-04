@@ -343,11 +343,11 @@ GOOS=linux GOARCH=amd64 go tool compile -S -N -l hello.go>hello.s  // 生成obj�
 
 
  
-3. 先go build然后在go tool objdump 对二进制文件进行反汇编   
+3. 先go build然后在 go tool objdump 对二进制文件进行反汇编   
 ```shell
 go build -gcflags "-N -l" main.go
-go tool objdump <binary>    
-go tool objdump -s <method name> <binary> # 反汇编指定函数 go tool objdump -s "main." main
+go tool objdump <binary> #  打印所有汇编代码    
+go tool objdump -s <method name> <binary> # 反汇编指定函数 go tool objdump -s "main.(main|add)" main
 ```
 
 在使用这些命令时，加上对应的 flag，否则某些逻辑会被编译器优化掉，而看不到对应完整的汇编代码

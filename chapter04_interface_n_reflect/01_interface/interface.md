@@ -7,6 +7,7 @@
   - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
     - [1. runtime.eface 表示不含方法的interface{}类型](#1-runtimeeface-%E8%A1%A8%E7%A4%BA%E4%B8%8D%E5%90%AB%E6%96%B9%E6%B3%95%E7%9A%84interface%E7%B1%BB%E5%9E%8B)
     - [2. runtime.iface 表示包含方法的接口](#2-runtimeiface-%E8%A1%A8%E7%A4%BA%E5%8C%85%E5%90%AB%E6%96%B9%E6%B3%95%E7%9A%84%E6%8E%A5%E5%8F%A3)
+    - [举例](#%E4%B8%BE%E4%BE%8B)
     - [eface 和 iface 的转换](#eface-%E5%92%8C-iface-%E7%9A%84%E8%BD%AC%E6%8D%A2)
   - [接口类型和 nil 作比较](#%E6%8E%A5%E5%8F%A3%E7%B1%BB%E5%9E%8B%E5%92%8C-nil-%E4%BD%9C%E6%AF%94%E8%BE%83)
 
@@ -26,14 +27,24 @@
 
 ## 源码分析
 
-interface的定义在 1.15.3 源码包runtime中,interface的定义分为两种，
-- 不带方法的runtime.eface
-- 带方法的runtime.iface
+interface的定义分为两种，
+- 不带方法的 runtime.eface 
+```go
+var i interface{}
+```
+
+- 带方法的 runtime.iface
+```go
+type Phone interface {
+    call()
+}
+```
 
 尽管空接口理论上可以重用 iface 数据结构(因为 iface 可以算是 eface 的一个超集)，runtime 还是选择对这两种 interface 进行区分，
 主要有两个理由: 为了节省空间，以及代码清晰
 
 ### 1. runtime.eface 表示不含方法的interface{}类型
+
 ![](.interface_images/eface.png)
 
 ![](.interface_images/eface2.png)
@@ -41,7 +52,7 @@ interface的定义在 1.15.3 源码包runtime中,interface的定义分为两种�
 eface 主要包括类型信息和值的指针，非常好理解。其中 data 指针指向的内存包含了类型和值的信息，也就是说 data 指针指向了 eface 本身
 
 ```go
-// /Users/python/go/go1.18/src/runtime/runtime2.go
+// /go1.18/src/runtime/runtime2.go
 type eface struct {
     _type *_type  // 表示空接口所承载的具体的实体类型
     data  unsafe.Pointer  // 指向的值
@@ -118,8 +129,8 @@ type structtype struct {
 ```
 这些数据类型的结构体定义，是反射实现的基础。
 
-
 ### 2. runtime.iface 表示包含方法的接口
+
 ![](.interface_images/iface.png)
 ```go
 type iface struct {
@@ -139,14 +150,14 @@ itab 是这样定义的 (src/runtime/runtime2.go),itab 是 interface 的核心:
 // /Users/python/go/go1.18/src/runtime/runtime2.go
 type itab struct {
     inter *interfacetype // 接口静态类型, 接口的抽象表示，也就是静态的接口，不是实际的 struct
-    _type *_type // 实际类型
+    _type *_type // 接口实际指向值的类型信息
     hash  uint32 // copy of _type.hash. Used for type switches. 和 _type 中的 hash 一样，用来类型断言
     _     [4]byte
-    fun   [1]uintptr // variable sized. fun[0]==0 means _type does not implement inter. 接口实现的函数，跟接口类型保持一致
+    fun   [1]uintptr // 接口方法实现列表，即函数地址列表，按字典序排序
        
 }
 ```
-itab包含的是  
+itab 包含的是  
 - 接口类型interfacetype,这只是一个包装了 _type 和额外的与 interface 相关的信息的字段
 - _type这个类型是 runtime 对任意 Go 语言类型的内部表示._type 类型描述了一个“类型”的每一个方面: 类型名字，特性(e.g. 大小，对齐方式...)，某种程度上类型的行为(e.g. 比较，哈希...) 也包含在内了。
 - 实现接口的方法fun,fun是可变大小,go在编译期间就会对接口实现校验检查,并将对应的方法存储fun。
@@ -167,14 +178,57 @@ type nameOff int32
 type typeOff int32
 
 type imethod struct {
-    name nameOff
-    ityp typeOff
+    name nameOff // 方法名
+    ityp typeOff // 描述方法参数返回值等细节
 }
 ```
 interfacetype 只是对于 _type 的一种包装，在其顶部空间还包装了额外的 interface 相关的元信息。 
 在最近的实现中，这部分元信息一般是由一些指向相应名字的 offset 的列表和 interface 所暴露的方法的类型所组成([]imethod)。
 
 
+
+### 举例
+
+```go
+// 1. 首先声明 r 的类型是 io.Reader，注意，这是 r 的静态类型，此时它的动态类型为 nil，并且它的动态值也是 nil。
+var r io.Reader
+
+tty, err := os.OpenFile("chapter04_reflect/danny_reflect.txt", os.O_RDWR, 0)
+if err != nil {
+    fmt.Println("出现错误", err.Error())
+}
+fmt.Printf("tty是%+v\n", tty) // tty是&{file:0xc000058180}
+
+// 2.r=tty 这一语句，将 r 的动态类型变成 *os.File，动态值则变成非空，表示打开的文件对象。这时，r 可以用 <value,type>对来表示为： <tty, *os.File>。
+// 此时虽然 fun 所指向的函数只有一个 Read 函数，其实 *os.File 还包含 Write 函数，也就是说 *os.File
+r = tty
+
+// 3.其实还实现了 io.Writer 接口。因此下面的断言语句可以执行：
+var w io.Writer
+w = r.(io.Writer)
+
+// 4.赋值
+//不带函数的interface
+var empty interface{}
+empty = tty
+fmt.Printf("%T", empty) // *os.File
+```
+
+![](.interface_images/interface_phrase1.png)
+语句1: 由于 io.Reader 接口包含 Read 方法，所以 io.Reader 是 iface，此时 reader 对象的静态类型是 io.Reader，暂无动态类型
+
+![](.interface_images/r_equal_to_tty.png)
+语句2: 此时reader 对象的静态类型还是 io.Reader，而动态类型变成了 *os.File。
+
+
+
+语句3: 之所以用断言，而不能直接赋值，是因为 r 的静态类型是 io.Reader，并没有实现 io.Writer 接口。断言能否成功，看 r 的动态类型是否符合要求
+![](.interface_images/w_assert.png)
+w 也可以表示成 <tty, *os.File>，仅管它和 r 一样，但是 w 可调用的函数取决于它的静态类型 io.Writer，也就是说它只能有这样的调用形式： w.Write() 。
+
+
+![](.interface_images/empty_equal_to_tty.png)
+语句4: 由于 empty 是一个空接口，因此所有的类型都实现了它，w 可以直接赋给它，不需要执行断言操作
 
 
 ### eface 和 iface 的转换

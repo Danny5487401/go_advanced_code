@@ -2,35 +2,50 @@ package main
 
 import (
 	"fmt"
+	"sync"
 
 	"math/rand"
 	"time"
 )
 
 func main() {
-	// 下面这些高阶函数都是使用的全局源
-	fmt.Printf("%v\n", rand.Int63())             // 产生一个0到2的63次方之间的正整数,类型是int64
-	fmt.Printf("每次相同的结果：%v\n", rand.Int63n(100)) // 产生一个0到n之间的正整数,n不能大于2的63次方，类型是int64
-	fmt.Printf("%v\n", rand.Int31())             // 这个和前面的区别就产生的是int32类型的整数
-	fmt.Printf("%v\n", rand.Int31n(100))         // 同上
 
-	// 这个比较有意思了，它至少产生一个32位的正整数，因为int类型在64位机器上等于int64，在32位机器上就是int32
-	fmt.Printf("%v\n", rand.Int())
-	fmt.Printf("%v\n", rand.Intn(100)) // 同上
-
-	fmt.Printf("%v\n", rand.Float32()) // 产生一个0到1.0的浮点数，float32类型
-	fmt.Printf("%v\n", rand.Float64()) // 产生一个0到1.0的浮点数，float64类型
+	// 生成相同的结果
+	sameSourceRand()
 
 	// 生成不同的结果
 	newSourceRand()
 
+	var wg sync.WaitGroup
+	for i := 0; i < 5; i++ {
+		wg.Add(1)
+		go func() {
+			time.Sleep(time.Nanosecond * 10)
+			fmt.Println(rrRand.Perm(10))
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+
+}
+
+var (
+	// 自定义生成Rand结构体，设置随机数种子
+	rrRand = rand.New(rand.NewSource(time.Now().Unix()))
+)
+
+func sameSourceRand() {
+	// 相同种子，每次运行的结果都是一样的
+	for i := 0; i < 5; i++ {
+		rand.Seed(time.Now().Unix())
+		fmt.Printf("%v: 每次相同的结果：%v\n", time.Now().Unix(), rand.Intn(10))
+	}
 }
 
 func newSourceRand() {
-	//相同种子，每次运行的结果都是一样的
-	rand.Seed(time.Now().UnixNano())
-	for i := 0; i < 10; i++ {
-		fmt.Printf("current:%d\n", time.Now().Unix())
-		fmt.Printf("每次不同的结果：%v\n", rand.Intn(2))
+	// 相同种子，每次运行的结果都是一样的
+	rand.Seed(time.Now().Unix())
+	for i := 0; i < 5; i++ {
+		fmt.Printf("%v: 每次不同的结果：%v\n", time.Now().Unix(), rand.Intn(10))
 	}
 }

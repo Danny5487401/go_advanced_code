@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -27,7 +27,7 @@ func UpperCaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpperCaseHandle1(w http.ResponseWriter, r *http.Request) {
-	body, _ := ioutil.ReadAll(r.Body)
+	body, _ := io.ReadAll(r.Body)
 	fmt.Println(string(body))
 
 	str := string(body)

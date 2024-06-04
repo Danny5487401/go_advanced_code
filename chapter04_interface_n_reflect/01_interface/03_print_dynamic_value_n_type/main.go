@@ -5,7 +5,7 @@ import (
 	"unsafe"
 )
 
-type iface struct {
+type eface struct {
 	itab, data uintptr
 }
 
@@ -17,9 +17,9 @@ func main() {
 	x := 5
 	var c interface{} = (*int)(&x)
 
-	ia := *(*iface)(unsafe.Pointer(&a))
-	ib := *(*iface)(unsafe.Pointer(&b))
-	ic := *(*iface)(unsafe.Pointer(&c))
+	ia := *(*eface)(unsafe.Pointer(&a))
+	ib := *(*eface)(unsafe.Pointer(&b))
+	ic := *(*eface)(unsafe.Pointer(&c))
 
 	fmt.Println(ia, ib, ic)
 

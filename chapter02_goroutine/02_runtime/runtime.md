@@ -5,6 +5,7 @@
 - [runtime](#runtime)
   - [一. runtime 核心功能包括以下内容:](#%E4%B8%80-runtime-%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%E5%8C%85%E6%8B%AC%E4%BB%A5%E4%B8%8B%E5%86%85%E5%AE%B9)
   - [二. 特点：](#%E4%BA%8C-%E7%89%B9%E7%82%B9)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -18,8 +19,8 @@
 6. 操作系统及CPU相关的操作的封装(信号处理, 系统调用, 寄存器操作, 原子操作等), CGO;
 
 ## 二. 特点：
-1.与Java, Python不同, Go并没有虚拟机的概念, Runtime也直接被编译 成native code.
-2.go对系统调用的指令进行了封装, 可不依赖于glibc
+1. 与Java, Python不同, Go并没有虚拟机的概念, Runtime也直接被编译 成native code.
+2. go对系统调用的指令进行了封装, 可不依赖于glibc
 3. 用户代码与Runtime代码在执行的时候并没有明显的界限, 都是函数调用
 4. 一些go的关键字被编译器编译成runtime包下的函数.
 ```css
@@ -30,4 +31,8 @@ make->makeslice,makechan,makemap,makemap_small
 -> 代表chanrecv1
 
 ```
+
+
+## 参考
+- [go 夜读关于 golang runtime 完整版](https://github.com/yifhao/share/blob/master/gopher%20meetup-%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAGolang%20Runtime-yifhao-%E5%AE%8C%E6%95%B4%E7%89%88.pdf)
 
