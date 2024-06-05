@@ -509,8 +509,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [5 推荐第三方 sprig 模版函数](chapter22_template/05_sprig_func/sprig.md)
 
 ## 第二十三章 调试内部对象
-- [1 fmt打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)
-- [2 go-spew优化调试](chapter23_debug_program/02_go_spew/main.go)
+- [1 fmt 打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)
+- [2 go-spew 优化调试](chapter23_debug_program/02_go_spew/go_spew.md)
 
 
 ## [第二十四章 命令行参数解析](chapter24_flag/flag.md)

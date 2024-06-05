@@ -26,6 +26,7 @@ func main() {
 	c.next = &Circular{2, c}
 
 	fmt.Printf("%+v\n----------------分割线-------------------\n", c)
+
 }
 
 type Circular struct {
