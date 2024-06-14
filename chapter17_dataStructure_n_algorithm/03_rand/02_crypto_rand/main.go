@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	// 读取32个字节的数据，然后以base64编码的形式打印出来
+	// 需求：读取32个字节的数据，然后以base64编码的形式打印出来
 	b := make([]byte, 32)
 	_, err := rand.Read(b)
 	if err != nil {
@@ -17,20 +17,20 @@ func main() {
 	}
 	fmt.Printf("%s\n", base64.StdEncoding.EncodeToString(b))
 
-	// 你想要的是一个[0,n)的整数
+	// 需求：你想要的是一个[0,n)的整数
 	n, err := rand.Int(rand.Reader, big.NewInt(100))
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("%d\n", n)
 
-	// 想要生成区间[-m, n]的安全随机数
-	fmt.Println(RangeRand(-1, 2))
+	// 需求：想要生成区间[-m, n]的安全随机数
+	fmt.Println(rangeRand(-1, 2))
 }
 
 // 指定区间的随机数
 // 生成区间[-m, n]的安全随机数
-func RangeRand(min, max int64) int64 {
+func rangeRand(min, max int64) int64 {
 	if min > max {
 		panic("the min is greater than max!")
 	}

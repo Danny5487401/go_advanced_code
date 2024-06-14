@@ -196,7 +196,8 @@ func (r *lockedSource) Uint64() (n uint64) {
 
 
 ## crypto/rand真随机
-官方注释
+
+rand.Reader： 一个全局、共享的加密安全的伪随机数生成器
 ```go
 // Reader is a global, shared instance of a cryptographically
 // secure random number generator.
@@ -214,7 +215,117 @@ func Read(b []byte) (n int, err error) {
 	return io.ReadFull(Reader, b)
 }
 ```
-在Linux平台下，当使用 getrandom() syscall，在int32位的机器上面上每次最多可以获取2^25-1个字节的数据。
+使用系统底层提供的随机数生成器产生加密安全的随机数。这意味着通过rand.Reader生成的随机数在理论上是无法预测的，非常适合用于加密、安全认证等领域。
+- 在Linux平台下，使用 getrandom(2) ，在int32位的机器上面上每次最多可以获取2^25-1个字节的数据。
+- 在Windows系统中，rand.Reader使用CryptGenRandom函数，这是Windows为开发者提供的用来生成随机数的API。
+
+
+Linux提供了两种主要的随机数生成设备文件：/dev/random和/dev/urandom。/dev/random是一个阻塞型的随机数生成器。/dev/urandom是一个非阻塞型的随机数生成器.
+/dev/random 和 /dev/urandom 都使用熵池来生成随机数，但它们的行为方式有所不同。/dev/random 会在熵池中的熵低于一定值时阻塞等待熵的增加，而 /dev/urandom 不会阻塞等待熵，而是使用伪随机数生成器来生成随机数。
+```shell
+# 这将生成10个随机字节并将它们转换为Base64编码，以便更容易阅读和使用。
+$ head -c 10 /dev/random | base64
+$ head -c 10 /dev/urandom | base64
+```
+
+```go
+// go1.21.5/src/crypto/rand/rand_unix.go
+
+const urandomDevice = "/dev/urandom"
+
+func init() {
+	if boring.Enabled {
+		Reader = boring.RandReader
+		return
+	}
+	Reader = &reader{}
+}
+
+
+// altGetRandom if non-nil specifies an OS-specific function to get
+// urandom-style randomness.
+var altGetRandom func([]byte) (err error)
+
+func warnBlocked() {
+	println("crypto/rand: blocked for 60 seconds waiting to read random data from the kernel")
+}
+
+func (r *reader) Read(b []byte) (n int, err error) {
+	boring.Unreachable()
+	if r.used.CompareAndSwap(0, 1) {
+		// First use of randomness. Start timer to warn about
+		// being blocked on entropy not being available.
+		t := time.AfterFunc(time.Minute, warnBlocked)
+		defer t.Stop()
+	}
+	// 如果linux,这里指支持 getrandom(2)  
+	if altGetRandom != nil && altGetRandom(b) == nil {
+		return len(b), nil
+	}
+	if r.used.Load() != 2 {
+		r.mu.Lock()
+		if r.used.Load() != 2 {
+			f, err := os.Open(urandomDevice)
+			if err != nil {
+				r.mu.Unlock()
+				return 0, err
+			}
+			r.f = hideAgainReader{f}
+			r.used.Store(2)
+		}
+		r.mu.Unlock()
+	}
+	return io.ReadFull(r.f, b)
+}
+```
+
+
+```go
+//go:build dragonfly || freebsd || linux || netbsd || solaris
+
+package rand
+
+import (
+	"internal/syscall/unix"
+	"runtime"
+	"syscall"
+)
+
+func init() {
+	var maxGetRandomRead int
+	switch runtime.GOOS {
+	case "linux", "android":
+		// Per the manpage:
+		//     When reading from the urandom source, a maximum of 33554431 bytes
+		//     is returned by a single call to getrandom() on systems where int
+		//     has a size of 32 bits.
+		maxGetRandomRead = (1 << 25) - 1
+	case "dragonfly", "freebsd", "illumos", "netbsd", "solaris":
+		maxGetRandomRead = 1 << 8
+	default:
+		panic("no maximum specified for GetRandom")
+	}
+	altGetRandom = batched(getRandom, maxGetRandomRead)
+}
+
+// If the kernel is too old to support the getrandom syscall(),
+// unix.GetRandom will immediately return ENOSYS and we will then fall back to
+// reading from /dev/urandom in rand_unix.go. unix.GetRandom caches the ENOSYS
+// result so we only suffer the syscall overhead once in this case.
+// If the kernel supports the getrandom() syscall, unix.GetRandom will block
+// until the kernel has sufficient randomness (as we don't use GRND_NONBLOCK).
+// In this case, unix.GetRandom will not return an error.
+func getRandom(p []byte) error {
+	n, err := unix.GetRandom(p, 0)
+	if err != nil {
+		return err
+	}
+	if n != len(p) {
+		return syscall.EIO
+	}
+	return nil
+}
+```
 
 
 ## 第三方实现
@@ -226,4 +337,5 @@ func Read(b []byte) (n int, err error) {
 
 ## 参考
 
-- 优化go生成随机数:https://juejin.cn/post/7071979385787514911
+- [优化go生成随机数](https://juejin.cn/post/7071979385787514911)
+- [关于 /dev/urandom 的流言终结](https://juejin.cn/post/6844903838256726023) 

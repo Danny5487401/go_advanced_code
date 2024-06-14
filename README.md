@@ -445,9 +445,9 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - 不同结构体切片根据反射reflect实现自定义排序 
     - map根据key实现排序
     - sort.Search 根据排序切片找索引
-- 5 container
-  - 5.1 heap 最小堆
-  - 5.2 list 双向链表 
+- [5 container](chapter17_dataStructure_n_algorithm/05_container/container.md)
+  - [5.1 heap 最小堆](chapter17_dataStructure_n_algorithm/05_container/01_heap/heap.md)
+  - [5.2 list 双向链表](chapter17_dataStructure_n_algorithm/05_container/02_list/list.md) 
 - [6 certificate 证书-->openssl 使用](chapter17_dataStructure_n_algorithm/06_certificate/certificate.md)
   - [6.1 pem(Privacy Enhanced Mail Certificate保密增强邮件协议](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/pem.md)
     - [6.1.1 生成公私钥的 .pem 文件(公钥使用RSA算法)](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/01_pem_generate/main.go)
