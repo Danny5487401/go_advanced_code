@@ -57,8 +57,8 @@ func getStructFuncAndCall() {
 	// 先看看没有参数的调用方法
 	methodValue1 := getValue.MethodByName("PrintInfo")
 	fmt.Printf("Kind : %s, Type : %s\n", methodValue1.Kind(), methodValue1.Type()) // Kind : func, Type : func()
-	methodValue1.Call(nil)                                                         //没有参数，直接写nil
-	args1 := make([]reflect.Value, 0)                                              //或者创建一个空的切片也可以
+	methodValue1.Call(nil)                                                         // 没有参数，直接写nil
+	args1 := make([]reflect.Value, 0)                                              // 或者创建一个空的切片也可以
 	methodValue1.Call(args1)
 
 	// 有参数的方法调用
@@ -81,7 +81,7 @@ func getStructFuncAndCall() {
 	}
 }
 
-//通过反射，调用普通函数
+// 通过反射，调用普通函数
 func getFuncTypeAndCallByParams() {
 	value := reflect.ValueOf(fun1)
 	fmt.Printf("Kind : %s , Type : %s\n", value.Kind(), value.Type()) //Kind : func , Type : func()

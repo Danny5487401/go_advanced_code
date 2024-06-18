@@ -155,17 +155,18 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - [2.3 动态创建类型](chapter04_interface_n_reflect/02_reflect/03_dynamic_make/main.go)
     - [2.4 通过 reflect 基本函数修改值，调用结构体方法，调用普通函数](chapter04_interface_n_reflect/02_reflect/04_reflect_method/main.go)
     - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05_performance_inprove/main.go)
-    - [2.6 通过reflect.DeepEqual进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06deepEqual/deepEqual.md)
+    - [2.6 通过reflect.DeepEqual进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06_deepEqual/deepEqual.md)
         - 底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
         - 一个nil值的map和非nil值但是空的map*是否“深度”相等
         - 带有环的数据对比*是否“深度”相等
     - [2.7 reflect.implements 判断 struct 是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
     - [2.8 go-cmp-->reflect.DeepEqual 的替代品](chapter04_interface_n_reflect/02_reflect/08_go-cmp/go-cmp.md)
-      - [2.8.1 结构体内嵌指针：与 == 对比进行相等判断](chapter04_interface_n_reflect/02_reflect/08_go-cmp/01_compare_with_equal/main.go)
+      - [2.8.1 结构体内嵌指针：与 == 对比进行相等判断](chapter04_interface_n_reflect/02_reflect/08_go-cmp/01_struct_compare_with_pointer/main.go)
       - [2.8.2 IgnoreUnexported 忽略未导出字段,AllowUnexported 指定某些类型的未导出字段需要比较](chapter04_interface_n_reflect/02_reflect/08_go-cmp/02_ignoreUnexported/main.go)
-      - [2.8.3 切片变量值为 nil 对比长度为 0 的切片](chapter04_interface_n_reflect/02_reflect/08_go-cmp/03_nil_and_empty_slice/main.go)
-      - [2.8.4 切片 及 map 相等判断](chapter04_interface_n_reflect/02_reflect/08_go-cmp/04_slice_equal/main.go)
+      - [2.8.3 切片变量值为 nil 与 长度为 0 的切片相等判断，map 实现元素对比 ](chapter04_interface_n_reflect/02_reflect/08_go-cmp/03_nil_and_empty_slice_or_map/main.go)
+      - [2.8.4 切片 及 map 相等判断](chapter04_interface_n_reflect/02_reflect/08_go-cmp/04_slice_and_map_equal/main.go)
       - [2.8.5 diff 打印结构体成员区别](chapter04_interface_n_reflect/02_reflect/08_go-cmp/05_diff/main.go)
+      - [2.8.6 自定义Equal方法](chapter04_interface_n_reflect/02_reflect/08_go-cmp/06_custom_equal/main.go)
 ---
 
 ## 第五章 切片和数组

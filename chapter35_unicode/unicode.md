@@ -2,7 +2,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [unicode](#unicode)
+- [unicode 全称为 Unicode标准（The Unicode Standard）](#unicode-%E5%85%A8%E7%A7%B0%E4%B8%BA-unicode%E6%A0%87%E5%87%86the-unicode-standard)
   - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
   - [UTF-8 的例子](#utf-8-%E7%9A%84%E4%BE%8B%E5%AD%90)
   - [一个string类型的值在底层是怎样被表达的？](#%E4%B8%80%E4%B8%AAstring%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%80%BC%E5%9C%A8%E5%BA%95%E5%B1%82%E6%98%AF%E6%80%8E%E6%A0%B7%E8%A2%AB%E8%A1%A8%E8%BE%BE%E7%9A%84)
@@ -12,7 +12,7 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# unicode
+# unicode 全称为 Unicode标准（The Unicode Standard）
 
 中国常用的编码是 GBK 以及 GB2312。
 
@@ -23,6 +23,7 @@ Unicode 编码规范提供了三种不同的编码格式，即：UTF-8、UTF-16 
 在这几种编码格式的名称中，“-”右边的整数的含义是，以多少个比特位作为一个编码单元。
 以 UTF-8 为例，它会以 8 个比特，也就是一个字节，作为一个编码单元。并且，它与标准的 ASCII 编码是完全兼容的。也就是说，在[0x00, 0x7F]的范围内，这两种编码表示的字符都是相同的。
 这也是 UTF-8 编码格式的一个巨大优势。UTF-8 是一种可变宽的编码方案。换句话说，它会用一个或多个字节的二进制数来表示某个字符，最多使用四个字节。
+
 比如，对于一个英文字符，它仅用一个字节的二进制数就可以表示，而对于一个中文字符，它需要使用三个字节才能够表示。不论怎样，一个受支持的字符总是可以由 UTF-8 编码为一个字节序列。以下会简称后者为 UTF-8 编码值
 
 
