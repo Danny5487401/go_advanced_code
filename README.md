@@ -595,8 +595,10 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 
 ## [第三十二章 Generic 泛型](chapter32_generic/generic.md)
 - [1 泛型在算法上的基本使用](chapter32_generic/01_basic_algorithm_application/main.go)
-- [2 interface新含义: 类型约束（constraint）](chapter32_generic/02_typeParam_n_typeArgument/main.go)
+- [2 ~int 底层类型及 Go1.18 接口分为两种类型: 基本接口(Basic interface) 和 一般接口(General interface)](chapter32_generic/02_typeParam_n_typeArgument/main.go)
 - [3 泛型性能测试](chapter32_generic/03_performance/generic_test.go)
+- [4 comparable 要求结构体中每个成员变量都是可比较](chapter32_generic/04_comparable/main.go)
+- [5 泛型工具库-->samber/lo](chapter32_generic/05_samber_lo/samber_lo.md)
 
 ## [第三十三章 makefile 使用](chapter33_makefile/Makefile_info.md)
 - [1 Makefile常用函数列表](chapter33_makefile/makefile_func.md)

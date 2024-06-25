@@ -4,6 +4,7 @@
 
 - [reflect.DeepEqual函数：判断两个值是否一致](#reflectdeepequal%E5%87%BD%E6%95%B0%E5%88%A4%E6%96%AD%E4%B8%A4%E4%B8%AA%E5%80%BC%E6%98%AF%E5%90%A6%E4%B8%80%E8%87%B4)
   - [背景](#%E8%83%8C%E6%99%AF)
+  - [可比较运算符](#%E5%8F%AF%E6%AF%94%E8%BE%83%E8%BF%90%E7%AE%97%E7%AC%A6)
   - [使用](#%E4%BD%BF%E7%94%A8)
   - [源码](#%E6%BA%90%E7%A0%81)
   - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
@@ -25,6 +26,12 @@ golang 中的数据类型可以分为以下 4 大类：
 - 接口类型：如error
 
 == 操作最重要的一个前提是：两个操作数类型必须相同！类型必须相同！类型必须相同！
+
+![](.deepEqual_images/==operator_in_go.png)
+
+== 详情可参考：https://go.dev/ref/spec#Comparison_operators
+
+
 
 对于 array、slice、map、struct 等类型，想要比较两个值是否相等，不能使用==，处理起来十分麻烦，在对效率没有太大要求的情况下，reflect包中的DeepEqual函数完美的解决了比较问题
 
@@ -70,6 +77,16 @@ golang 中的数据类型可以分为以下 4 大类：
 同样，对于指向相同 slice， map 的两个变量也是“深度”相等的，不关心 slice， map 具体的内容。
 
 对于“有环”的类型，比如循环链表，比较两者是否“深度”相等的过程中，需要对已比较的内容作一个标记，一旦发现两个指针之前比较过，立即停止比较，并判定二者是深度相等的。这样做的原因是，及时停止比较，避免陷入无限循环。
+
+## 可比较运算符
+
+比较运算符分为两大类：
+
+1. 相等运算符 == 和 != 适用于可比较类型（comparable types）。
+
+2.  有序类型的操作符 <、<=、> 和 >= 适用于有序类型（ordered types）。
+
+
 
 ## 使用
 ```go
@@ -253,3 +270,4 @@ func deepValueEqual(v1, v2 Value, visited map[visit]bool) bool {
 
 ## 参考资料
 - [深入理解Go之==](https://darjun.github.io/2019/08/20/golang-equal/)
+- 类型 == 判断：https://go.dev/ref/spec#Comparison_operators
