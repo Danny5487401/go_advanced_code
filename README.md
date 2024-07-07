@@ -116,9 +116,10 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - [1.2 父子通信](chapter03_channel/01_channel_use/02ParentChildrenCommunication/main.go)
     - [1.3 死锁：range未关闭的channel](chapter03_channel/01_channel_use/03deadlock/main.go)
     - [1.4 优雅关闭 channel 与粗暴关闭 channel](chapter03_channel/01_channel_use/04channelClose/ChanClose.md)
-      - [1.4.1 1 个 sender，N 个 receiver: 发送者通过关闭数据通道说 「不要再发送了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
-      - [1.4.3 N 个 sender，1 个 receiver: 接收者通过关闭一个信号通道说 「请不要再发送数据了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
-      - [1.4.4 N 个 sender，M 个 receiver: 任意一个通过通知一个主持人去关闭一个信号通道说「让我们结束这场游戏吧」 ](chapter03_channel/01_channel_use/04channelClose/case4_nsender_nreceiver/nsender_nreceiver.go)
+      - [1.4.1 SPMC(Single-Producer Multi-Consumer 1 个 sender，N 个 receiver): 发送者通过关闭数据通道说 「不要再发送了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
+      - 1.4.2 SPSC(Single-Producer Single-Consumer 1 个 sender，1 个 receiver):发送者通过关闭数据通道说 「不要再发送了」
+      - [1.4.3 MPSC(Multi-Producer Single-Consumer N 个 sender，1 个 receiver): 接收者通过关闭一个信号通道说 「请不要再发送数据了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
+      - [1.4.4 MPMC(Multi-Producer Multi-Consumer N 个 sender，M 个 receiver): 任意一个通过通知一个主持人去关闭一个信号通道说「让我们结束这场游戏吧」 ](chapter03_channel/01_channel_use/04channelClose/case4_nsender_nreceiver/nsender_nreceiver.go)
     - [1.5 通道遍历range](chapter03_channel/01_channel_use/05ChannelRange/main.go)
     - [1.6 有缓冲channel增强并发](chapter03_channel/01_channel_use/06bufferChan/main.go)
     - [1.7 双向通道](chapter03_channel/01_channel_use/07two-wayChan/main.go)
@@ -589,7 +590,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
   - [2.1 tool compile 编译](chapter31_tool/02_tool/01_compile/compile.md)
   - [2.2 tool link 链接](chapter31_tool/02_tool/02_link/link.md)
   - [2.3 generate 批量执行任何命令](chapter31_tool/02_tool/03_generate/genarate.md)
-- 3 delve 调试
+- [3 Golang程序调试工具: delve-->调试器分类及实现](chapter31_tool/03_delve/delve.md)
 - [4 ast 抽象语法树](chapter31_tool/04_ast/ast.md)
 
 
