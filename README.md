@@ -55,7 +55,7 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 # *目录*
-Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运行,*推荐 GoVersion: 1.20(涉及泛型及新版本特性)*
+Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运行,*推荐 GoVersion: 1.21*
 
 
 ## 必备知识:
@@ -592,6 +592,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
   - [2.3 generate 批量执行任何命令](chapter31_tool/02_tool/03_generate/genarate.md)
 - [3 Golang程序调试工具: delve-->调试器分类及实现](chapter31_tool/03_delve/delve.md)
 - [4 ast 抽象语法树](chapter31_tool/04_ast/ast.md)
+- [5 go1.21 toolchain 规则](chapter31_tool/05_toolchain_in_go1.21/toolchain.md)
 
 
 ## [第三十二章 Generic 泛型](chapter32_generic/generic.md)
