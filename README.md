@@ -568,8 +568,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 
 ## 第三十章 内存管理
 - 1 Linux内存及Go内存结构管理
-  - [1.1 Linux内存管理](chapter30_memory_management/01_memory/linux_mem.md)
-  - [1.2 Go内存结构管理](chapter30_memory_management/01_memory/go_mem.md)
+  - [1.1 Linux 内存管理](chapter30_memory_management/01_memory/linux_mem.md)
+  - [1.2 Go 内存结构管理](chapter30_memory_management/01_memory/go_mem.md)
 - [2 GC垃圾回收机制](chapter30_memory_management/02_GC/gc.md)
   - [2.1 下次GC的时机](chapter30_memory_management/02_GC/01_next_gc_stage/main.go)
   - [2.2 删除Map元素时通过 runtime.MemStats 查看GC回收流程](chapter30_memory_management/02_GC/02_map_GC/main.go)

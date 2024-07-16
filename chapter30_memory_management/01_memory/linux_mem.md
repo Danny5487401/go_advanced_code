@@ -2,21 +2,32 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Linux 的虚拟内存管理](#linux-%E7%9A%84%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86)
+- [Linux 内存管理](#linux-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86)
   - [物理和虚拟内存](#%E7%89%A9%E7%90%86%E5%92%8C%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98)
   - [Linux 虚拟地址空间分布:用户空间与内核空间](#linux-%E8%99%9A%E6%8B%9F%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4%E5%88%86%E5%B8%83%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4%E4%B8%8E%E5%86%85%E6%A0%B8%E7%A9%BA%E9%97%B4)
     - [64位系统结果怎样呢？ 64 位系统是否拥有 2^64 的地址空间吗？](#64%E4%BD%8D%E7%B3%BB%E7%BB%9F%E7%BB%93%E6%9E%9C%E6%80%8E%E6%A0%B7%E5%91%A2-64-%E4%BD%8D%E7%B3%BB%E7%BB%9F%E6%98%AF%E5%90%A6%E6%8B%A5%E6%9C%89-2%5E64-%E7%9A%84%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4%E5%90%97)
   - [进程地址空间](#%E8%BF%9B%E7%A8%8B%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4)
   - [库函数 malloc/free](#%E5%BA%93%E5%87%BD%E6%95%B0-mallocfree)
     - [发成缺页中断后，执行了那些操作？](#%E5%8F%91%E6%88%90%E7%BC%BA%E9%A1%B5%E4%B8%AD%E6%96%AD%E5%90%8E%E6%89%A7%E8%A1%8C%E4%BA%86%E9%82%A3%E4%BA%9B%E6%93%8D%E4%BD%9C)
-  - [分配算法TCMalloc](#%E5%88%86%E9%85%8D%E7%AE%97%E6%B3%95tcmalloc)
+  - [内存分配器](#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%99%A8)
+    - [ptmalloc](#ptmalloc)
+    - [TCMalloc：Thread-Caching Malloc-->Golang 借鉴](#tcmallocthread-caching-malloc--golang-%E5%80%9F%E9%89%B4)
+      - [小对象分配](#%E5%B0%8F%E5%AF%B9%E8%B1%A1%E5%88%86%E9%85%8D)
+      - [中对象分配](#%E4%B8%AD%E5%AF%B9%E8%B1%A1%E5%88%86%E9%85%8D)
+      - [大对象分配](#%E5%A4%A7%E5%AF%B9%E8%B1%A1%E5%88%86%E9%85%8D)
+    - [Jemalloc](#jemalloc)
   - [Go程序查看对应内存](#go%E7%A8%8B%E5%BA%8F%E6%9F%A5%E7%9C%8B%E5%AF%B9%E5%BA%94%E5%86%85%E5%AD%98)
   - [查看进程](#%E6%9F%A5%E7%9C%8B%E8%BF%9B%E7%A8%8B)
   - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Linux 的虚拟内存管理
+# Linux 内存管理
+
+![](.linux_mem_images/memory_management.png)
+
+内存管理不外乎三个层面，用户程序层，C运行时库层，内核层
+
 
 1. 每个进程都有独立的虚拟地址空间，进程访问的虚拟地址并不是真正的物理地址；
 2. 虚拟地址可通过每个进程上的页表(在每个进程的内核虚拟地址空间)与物理地址进行映射，获得真正物理地址；
@@ -55,8 +66,12 @@ TLB 其实就是 MMU 中页表的高速缓存。由于进程的虚拟地址空�
 5. 对于一些内存管理单元，还可能出现页表入口不足的情况，在这种情况下，操作系统必须为新的映射释放一个表入口。
 
 ## Linux 虚拟地址空间分布:用户空间与内核空间
-![](../.asset/img/.go_mem_images/user_kernel.png)
-![](../.asset/img/.go_mem_images/linux_process_memory.png)
+
+Linux 内核 2.6.7 以前的默认进程内存布局形式
+![](.linux_mem_images/linux_before_2.6.7.png)
+
+Linux 内核 2.6.7 以后默认进程内存布局形式
+![](.linux_mem_images/linux_after_2.6.7.png)
 
 现在操作系统都是采用虚拟存储器，那么对 32 位操作系统而言，它的寻址空间（虚拟存储空间）为 4G（2 的 32 次方）。
 操作系统的核心是内核，独立于普通的应用程序，可以访问受保护的内存空间，也有访问底层硬件设备的所有权限。
@@ -76,7 +91,7 @@ Linux 使用虚拟地址空间，大大增加了进程的寻址空间，由高�
   然而，也有一些处理器（例如B5000）栈是向上生长的，还有一些架构（例如System Z）允许自定义栈的生长方向，甚至还有一些处理器（例如SPARC）是循环栈的处理方式.
   一般为 8M ，可通过 ulimit –s 查看.
   
-- 文件映射区域: 如动态库、共享内存等映射物理空间的内存，一般是 mmap 函数所分配的虚拟地址空间
+- memory mapping region:mmap 映射区, 如动态库、共享内存等映射物理空间的内存，一般是 mmap 函数所分配的虚拟地址空间
 
 - Heap：堆空间，堆是用于存放进程运行中被动态分配的内存段，它的大小并不固定，可动态扩张或缩减；
   malloc/new 大部分都来源于此。其中堆顶的位置可通过函数 brk 和 sbrk 进行动态调整。
@@ -95,7 +110,7 @@ Linux 使用虚拟地址空间，大大增加了进程的寻址空间，由高�
 地址空间大小不是2^32，也不是2^64，而一般是2^48。因为并不需要 2^64 这么大的寻址空间，过大空间只会导致资源的浪费。
 64位Linux一般使用48位来表示虚拟地址空间，40位表示物理地址，这可通过 cat /proc/cpuinfo 来查看信息
 ```shell
-[root@k8s-master01 ~]# cat /proc/cpuinfo
+$ # cat /proc/cpuinfo
 processor       : 0
 vendor_id       : GenuineIntel
 cpu family      : 6
@@ -204,15 +219,20 @@ munmap函数成功返回0.失败返回-1并设置errno
 
 ```  
   
-- brk/sbrk - 更改/获取数据分段大小 ,brk 是将数据段（.data）的最高地址指针 _edata 往高地址推。
-  > brk() sets the end of the data segment to the value specified by
-  addr, when that value is reasonable, the system has enough memory,
-  and the process does not exceed its maximum data size (see
-  setrlimit(2)).
+- brk/sbrk:对 heap 的操作，操作系统提供了 brk()函数，C 运行时库提供了 sbrk()函数;  更改/获取数据分段大小,brk 是将数据段（.data）的最高地址指针 _edata 往高地址推。
 
-  > sbrk() increments the program's data space by increment bytes.
-  Calling sbrk() with an increment of 0 can be used to find the current
-  location of the program break.
+```shell
+➜  ~ man brk
+
+DESCRIPTION
+       brk()  and sbrk() change the location of the program break, which defines the end of the process's data segment (i.e., the program break is the first location after the end of the uninitialized data segment).  Increasing the
+       program break has the effect of allocating memory to the process; decreasing the break deallocates memory.
+
+       brk() sets the end of the data segment to the value specified by addr, when that value is reasonable, the system has enough memory, and the process does not exceed its maximum data size (see setrlimit(2)).
+
+       sbrk() increments the program's data space by increment bytes.  Calling sbrk() with an increment of 0 can be used to find the current location of the program break.
+       
+```
 
 
 - madvise - 建议内核，在从 addr 指定的地址开始，长度等于 len 参数值的范围内，该区域的用户虚拟内存应遵循特定的使用模式。
@@ -266,20 +286,71 @@ malloc() 是 C 标准库提供的内存分配函数，对应到系统调用上�
 3. 填充物理页内容（读取磁盘，或者直接置0，或者啥也不干）
 4. 建立映射关系（虚拟地址到物理地址
 
-## 分配算法TCMalloc
-![](../.asset/img/.go_mem_images/TCMalloc_strategy.png)
+## 内存分配器
 
-由于 Go 语言不使用 malloc 来获取内存，而是直接操作系统申请（通过 mmap），它必须自己实现内存分配和释放（就像 malloc 一样）。
-Go 语言的内存分配器最初基于 TCMalloc：Thread-Caching Malloc, 但是现在已经有了很大的不同。
+内存管理的目的是实现了malloc()，free()以及一组其它的函数，以提供动态内存管理的支持。分配器处在用户程序和内核之间，它响应用户的分配请求，向操作系统申请内存，然后将其返回给用户程序.
 
-Golang运行时的内存分配算法主要源自 Google 为 C 语言开发的 TCMalloc算法，全称 Thread-CachingMalloc,即线程缓存的malloc.
-核心思想就是把内存分为多级管理，从而降低锁的粒度。
+业界常见的库包括：ptmalloc(glibc标配)、tcmalloc(google)、jemalloc(facebook)
 
-它将可用的堆内存采用二级分配的方式进行管理：每个线程都会自行维护一个独立的内存池，进行内存分配时优先从该内存池中分配，
-当内存池不足时才会向全局内存池申请，以避免不同线程对全局内存池的频繁竞争
+###  ptmalloc
 
+Linux 中 malloc 的早期版本是由 Doug Lea 实现的，它有一个重要问题就是在并行处理时 多个线程共享进程的内存空间，各线程可能并发请求内存，在这种情况下应该如何保证分配 和回收的正确和高效。
+Wolfram Gloger 在 Doug Lea 的基础上改进使得 Glibc 的 malloc 可以支 持多线程——ptmalloc，在 glibc-2.3.x.中已经集成了 ptmalloc2，这就是我们平时使用的 malloc， 目前 ptmalloc 的最新版本 ptmalloc3。ptmalloc2 的性能略微比 ptmalloc3 要高一点点。
+
+
+
+### TCMalloc：Thread-Caching Malloc-->Golang 借鉴
+
+![](.linux_mem_images/TCMalloc_strategy.png)
 TCMalloc是gperftools的一部分，除TCMalloc外，gperftools还包括heap-checker、heap-profiler和cpu-profiler。
 
+核心思想就是把内存分为多级管理，从而降低锁的粒度。它将可用的堆内存采用二级分配的方式进行管理：每个线程都会自行维护一个独立的内存池，进行内存分配时优先从该内存池中分配，
+当内存池不足时才会向全局内存池申请，以避免不同线程对全局内存池的频繁竞争
+
+按照所分配内存的大小，TCMalloc将内存分配分为三类：
+
+- 小对象分配，(0, 256KB]
+- 中对象分配，(256KB, 1MB]
+- 大对象分配，(1MB, +∞)
+
+
+Go 语言的内存分配器最初基于 TCMalloc：Thread-Caching Malloc, 但是现在已经有了很大的不同。
+
+这个差异来源于 Go 语言被设计为没有显式的内存分配与释放， 完全依靠编译器与运行时的配合来自动处理，因此也就造就了内存分配器、垃圾回收器两大组件.
+
+
+
+#### 小对象分配
+
+![](.linux_mem_images/tcmalloc_small_obj.png)
+
+对于每个线程，TCMalloc都为其保存了一份单独的缓存，称之为ThreadCache，这也是TCMalloc名字的由来（Thread-Caching Malloc）。
+每个ThreadCache中对于每个size class都有一个单独的FreeList，缓存了n个还未被应用程序使用的空闲对象。
+小对象的分配直接从ThreadCache的FreeList中返回一个空闲对象，相应的，小对象的回收也是将其重新放回ThreadCache中对应的FreeList中。
+由于每线程一个ThreadCache，因此从ThreadCache中取用或回收内存是不需要加锁的，速度很快。为了方便统计数据，各线程的ThreadCache连接成一个双向链表.
+
+
+####  中对象分配
+
+超过256KB但不超过1MB（128个page）的内存分配被认为是中对象分配.
+
+![](.linux_mem_images/tcmalloc_medium_obj.png)
+
+
+#### 大对象分配
+
+大对象分配用到的span都是超过128个page的span，其缓存方式不是链表，而是一个按span大小排序的有序set（std::set），以便按大小进行搜索.
+
+### Jemalloc
+
+jemalloc是facebook推出的，目前在firefox、facebook服务器、android 5.0 等服务中大量使用。
+jemalloc最大的优势还是其强大的多核/多线程分配能力. 以现代计算机硬件架构来说, 最大的瓶颈已经不再是内存容量或cpu速度, 而是多核/多线程下的lock contention(锁竞争). 因为无论CPU核心数量如何多, 通常情况下内存只有一份. 
+可以说, 如果内存足够大, CPU的核心数量越多, 程序线程数越多, jemalloc的分配速度越快。
+
+```shell
+$ redis-server --version
+Redis server v=5.0.5 sha=00000000:0 malloc=jemalloc-5.1.0 bits=64 build=ffb3605971384e64
+```
 
 
 ## Go程序查看对应内存
@@ -330,6 +401,7 @@ MiB Swap:      0.0 total,      0.0 free,      0.0 used.    887.4 avail Mem
 
 
 ## 参考链接
-1. [Linux内存分配小结--malloc、brk、mmap](https://blog.csdn.net/gfgdsg/article/details/42709943?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3.pc_relevant_default&utm_relevant_index=6)
-2. [TCMalloc 相关的信息可以看这里](http://goog-perftools.sourceforge.net/doc/tcmalloc.html)
-
+1. [Linux内存分配小结--malloc、brk、mmap](https://blog.csdn.net/gfgdsg/article/details/42709943)
+2. [TCMalloc : Thread-Caching Malloc](http://goog-perftools.sourceforge.net/doc/tcmalloc.html)
+3. [ptmalloc、tcmalloc与jemalloc对比分析](https://cloud.tencent.com/developer/article/2390348)
+4. [Linux内存管理（一）：综述](https://blog.csdn.net/MOU_IT/article/details/115273132?spm=1001.2014.3001.5502)

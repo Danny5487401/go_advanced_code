@@ -40,7 +40,6 @@ require (
 	github.com/unrolled/render v1.6.1
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasthttp v1.38.0
-	github.com/zeromicro/go-zero v1.6.4
 	go.uber.org/automaxprocs v1.5.3
 	go.uber.org/goleak v1.2.1
 	golang.org/x/crypto v0.22.0

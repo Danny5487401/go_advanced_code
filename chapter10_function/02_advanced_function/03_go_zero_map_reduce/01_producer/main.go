@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/Danny5487401/go_advanced_code/chapter10_function/02_advanced_function/03_go_zero_map_reduce/go-zero-folk/mr"
 	"sync"
 
 	"github.com/Danny5487401/go_advanced_code/chapter10_function/02_advanced_function/03_go_zero_map_reduce/product_srv"
 	"github.com/Danny5487401/go_advanced_code/chapter10_function/02_advanced_function/03_go_zero_map_reduce/user_srv"
-
-	"github.com/zeromicro/go-zero/core/mr"
 )
 
 func main() {
