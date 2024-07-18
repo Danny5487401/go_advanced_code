@@ -2,23 +2,48 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [CSP(Communicating Sequential Process )](#cspcommunicating-sequential-process-)
-  - [并发编程模型](#%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B)
+- [消息传递(Message Passing)的并发模型](#%E6%B6%88%E6%81%AF%E4%BC%A0%E9%80%92message-passing%E7%9A%84%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B)
+  - [Actor模型](#actor%E6%A8%A1%E5%9E%8B)
+  - [CSP(Communicating Sequential Process) 顺序通信过程](#cspcommunicating-sequential-process-%E9%A1%BA%E5%BA%8F%E9%80%9A%E4%BF%A1%E8%BF%87%E7%A8%8B)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# CSP(Communicating Sequential Process )
-中文可以叫做通信顺序进程，是一种并发编程模型，是一个很强大的并发数据模型.
+# 消息传递(Message Passing)的并发模型
 
-有2个支持高并发的模型：CSP和Actor。鉴于Occam和Erlang都选用了CSP(来自Go FAQ)，并且效果不错，Go也选了CSP，但与前两者不同的是，Go把channel作为头等公民。
+基于消息传递(Message Passing)的并发模型有两种：Actor模型和CSP模型. 基于消息的并发模型本质上就是：不通过共享内存进行通信;而是通过通信进行共享内存
+![](.CSP_images/actor_model.png)
+- Actor 模型被用来解决分布式程序的问题而设计，因此它非常适合跨多台机器扩展
+![](.CSP_images/csp_model.png)
+- CSP 模型 是依赖于一个通道channel完成两个通信实体之间协调的并发模型
+
+
+
+一些编程语言，以及它们相应的并发机制:
+
+- Actors Model — Erlang, Scala, Rust
+- CSP — Go-lang
+- 多线程 — Java, C#, C++
+
+
+## Actor模型
+
+在Actor模型中，主角是Actor，类似一种worker，Actor彼此之间直接发送消息，不需要经过什么中介，消息是异步发送和处理的
+
+
+## CSP(Communicating Sequential Process) 顺序通信过程
 
 CSP 也是一门自定义的编程语言，作者定义了输入输出语句，用于 processes 间的通信（communication）。
 processes 被认为是需要输入驱动，并且产生输出，供其他 processes 消费，processes 可以是进程、线程、甚至是代码块。
-输入命令是：!，用来向 processes 写入；输出是：?，用来从 processes 读出。
 
-## 并发编程模型
+输入命令是：!，用来向 processes 写入；
+输出是：?，用来从 processes 读出。
 
-大多数的编程语言的并发编程模型是基于线程和内存同步访问控制，Go 的并发编程的模型则用 goroutine 和 channel 来替代。
+鉴于Occam和Erlang都选用了CSP(来自Go FAQ)，并且效果不错，Go也选了CSP，但与前两者不同的是，Go把channel作为头等公民。
+
+
+Go语言的CSP模型是由协程Goroutine与通道Channel实现：
+
 goroutine来自协程的概念，让一组可复用的函数运行在一组线程之上，即使有协程阻塞，该线程的其他协程也可以被runtime调度，转移到其他可运行的线程上。
 最关键的是，程序员看不到这些底层的细节，这就降低了编程的难度，提供了更容易的并发。
 
@@ -34,3 +59,8 @@ Go语言的CSP模型是由协程Goroutine与通道Channel实现:
    Goroutine 用于执行并发任务，channel 用于 goroutine 之间的同步、通信。
    Channel 分为两种：带缓冲、不带缓冲。对不带缓冲的 channel 进行的操作实际上可以看作 “同步模式”，带缓冲的则称为 “异步模式”
 
+
+## 参考
+
+
+- [CSP VS ACTOR模型以及GOLANG实现](https://www.freesion.com/article/9011316606/)

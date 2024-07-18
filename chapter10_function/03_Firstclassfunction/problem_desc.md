@@ -3,7 +3,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [问题描述](#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0)
-  - [需求：](#%E9%9C%80%E6%B1%82)
+  - [需求](#%E9%9C%80%E6%B1%82)
   - [实现](#%E5%AE%9E%E7%8E%B0)
     - [1. 通过内存进行交流](#1-%E9%80%9A%E8%BF%87%E5%86%85%E5%AD%98%E8%BF%9B%E8%A1%8C%E4%BA%A4%E6%B5%81)
     - [2. 通过交流分享内存](#2-%E9%80%9A%E8%BF%87%E4%BA%A4%E6%B5%81%E5%88%86%E4%BA%AB%E5%86%85%E5%AD%98)
@@ -19,7 +19,7 @@
 1. 一个节点即可以是服务器也可以是客户端，被称为Host，
 2. 和本节点连接的所有节点都被称为Peer。
 
-## 需求：
+## 需求 
 具体的场景是：Host需要保存所有建立连接的Peer，并对这些Peer进行维护：增加和删除Peer，并且提供Peer的查询和向所有Peer广播消息的接口
 
 ## 实现
@@ -31,11 +31,16 @@ Host有4个方法，分别是：
 3. GetPeer: 通过Peer.ID查询1个Peer。
 4. BroadcastMsg: 向所有Peer发送消息。
 
+> don't (let computations) communicate by sharing memory, (let them) share memory by communicating (through channels)
 
 ### 1. 通过内存进行交流
-使用锁共享数据
+
+When goroutines communicate by sharing memory, we use traditional concurrency synchronization techniques, such as mutex locks, to protect the shared memory to prevent data races.
+
+使用锁共享数据.
 
 ### 2. 通过交流分享内存
+
 ![](02_sharing_memory_by_communicating/sharing_memory_by_communicating.png)
 把数据流动画出来，并把要流动的数据标上，然后那些数据流动的线条，就是channel，线条上的数据就是channel要传递的数据，图中也把这些线条和数据标上了.
 

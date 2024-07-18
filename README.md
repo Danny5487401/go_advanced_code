@@ -111,30 +111,31 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 
 ## 第三章 通道Channel
 - [1 Channel内部结构及源码分析(含PPT分析)](chapter03_channel/01_channel_use/channel.md)
-    - [1.0 channel 初始化及引用传递](chapter03_channel/01_channel_use/00introdution/main.go)
-    - [1.1 无缓存通道](chapter03_channel/01_channel_use/01unbufferd_channel/main.go)
-    - [1.2 父子通信](chapter03_channel/01_channel_use/02ParentChildrenCommunication/main.go)
-    - [1.3 死锁：range未关闭的channel](chapter03_channel/01_channel_use/03deadlock/main.go)
-    - [1.4 优雅关闭 channel 与粗暴关闭 channel](chapter03_channel/01_channel_use/04channelClose/ChanClose.md)
-      - [1.4.1 SPMC(Single-Producer Multi-Consumer 1 个 sender，N 个 receiver): 发送者通过关闭数据通道说 「不要再发送了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
-      - 1.4.2 SPSC(Single-Producer Single-Consumer 1 个 sender，1 个 receiver):发送者通过关闭数据通道说 「不要再发送了」
-      - [1.4.3 MPSC(Multi-Producer Single-Consumer N 个 sender，1 个 receiver): 接收者通过关闭一个信号通道说 「请不要再发送数据了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
-      - [1.4.4 MPMC(Multi-Producer Multi-Consumer N 个 sender，M 个 receiver): 任意一个通过通知一个主持人去关闭一个信号通道说「让我们结束这场游戏吧」 ](chapter03_channel/01_channel_use/04channelClose/case4_nsender_nreceiver/nsender_nreceiver.go)
-    - [1.5 通道遍历range](chapter03_channel/01_channel_use/05ChannelRange/main.go)
-    - [1.6 有缓冲channel增强并发](chapter03_channel/01_channel_use/06bufferChan/main.go)
-    - [1.7 双向通道](chapter03_channel/01_channel_use/07two-wayChan/main.go)
-    - [1.8 单向通道](chapter03_channel/01_channel_use/08one-wayChan/main.go)
-    - [1.9 使用channel传递channel](chapter03_channel/01_channel_use/09ChanPassChan/main.go)
-    - [1.10 happened before](chapter03_channel/01_channel_use/10_happened_before/happened_before.md)
-    - [1.11 循环读取关闭的通道值是否阻塞](chapter03_channel/01_channel_use/11_read_closed_chan/readCloseChan.go)
-    - [1.12 select中实现channel优先级-->k8s中实现](chapter03_channel/01_channel_use/12_priority_channel/priority_chan.md)
-    - [1.13 使用RingBuffer实现无限容量的channel](chapter03_channel/01_channel_use/13_unbounded_chan/unbounder_chan.md)
+    - [1.1 channel 初始化及引用传递](chapter03_channel/01_channel_use/00introdution/main.go)
+      - [1.1.1 无缓存 channel](chapter03_channel/01_channel_use/01_initialize/01_unbuffered_channel/main.go)
+      - [1.1.2 有缓冲 channel](chapter03_channel/01_channel_use/01_initialize/02_bufferChan/main.go)
+      - [1.1.3 chanx: 使用 RingBuffer 实现无限缓存 channel](chapter03_channel/01_channel_use/01_initialize/03_unbounded_chan/unbounder_chan.md)
+    - [1.2 使用 channel 实现 goroutine 父子通信](chapter03_channel/01_channel_use/02_parent_children_communication/main.go)
+    - [1.3 死锁：range 未关闭的 channel](chapter03_channel/01_channel_use/03deadlock/main.go)
+    - [1.4 通道遍历:for range 语法 ](chapter03_channel/01_channel_use/05ChannelRange/main.go)
+    - [1.5 优雅关闭 channel 与粗暴关闭 channel](chapter03_channel/01_channel_use/04channelClose/ChanClose.md)
+      - [1.5.1 SPMC(Single-Producer Multi-Consumer 1 个 sender，N 个 receiver): 发送者通过关闭数据通道说 「不要再发送了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
+      - 1.5.2 SPSC(Single-Producer Single-Consumer 1 个 sender，1 个 receiver):发送者通过关闭数据通道说 「不要再发送了」
+      - [1.5.3 MPSC(Multi-Producer Single-Consumer N 个 sender，1 个 receiver): 接收者通过关闭一个信号通道说 「请不要再发送数据了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
+      - [1.5.4 MPMC(Multi-Producer Multi-Consumer N 个 sender，M 个 receiver): 任意一个通过通知一个主持人去关闭一个信号通道说「让我们结束这场游戏吧」 ](chapter03_channel/01_channel_use/04channelClose/case4_nsender_nreceiver/nsender_nreceiver.go)
+    - [1.6 单向与双向通道](chapter03_channel/01_channel_use/06_single-directional_and_bi-directional_chan/main.go)
+    - [1.7 读取 nil channel 实现阻塞](chapter03_channel/01_channel_use/07_read_nil_channel/main.go)
+    - [1.8 使用 channel 传递 channel](chapter03_channel/01_channel_use/08_chan_pass_chan/main.go)
+    - [1.9 循环读取关闭的通道值是否阻塞](chapter03_channel/01_channel_use/09_read_closed_chan/readCloseChan.go)
+    - [1.10 select 实现 channel 优先级-->k8s中Node 的更新操作优先于 Pod 的更新](chapter03_channel/01_channel_use/10_priority_channel/priority_chan.md)
 - [2 channel应用:TimerChan模块源码分析及使用陷阱](chapter03_channel/02_TimerChan/timer.md)
     - [2.1 reset重新等待被触发](chapter03_channel/02_TimerChan/01_TimerReset/timer_reset.md)
     - [2.2 timerStop使用](chapter03_channel/02_TimerChan/02_TimerStop/timer_stop.md)
     - [2.3 TimerAfter给数据库操作增加超时](chapter03_channel/02_TimerChan/03_TimeAfter/main.go)
-- [3 Select多路复用](chapter03_channel/03_select/03Select_DataStructure/select.md)
-- [4 CSP理论中的Process/Channel](chapter03_channel/04_CSP/CSP.md)
+- [3 Select 多路复用](chapter03_channel/03_select/select.md)
+  - [3.1 配合 default 实现不阻塞发送](chapter03_channel/03_select/01_default_unblock/main.go)
+  - [3.2 多 case 随机选择](chapter03_channel/03_select/02_random_select/main.go)
+- [4 基于消息传递并发模型：Actor模型和CSP模型-->Golang 在 CSP 模型中应用](chapter03_channel/04_CSP/CSP.md)
 ---
 
 ## 第四章 interface 和反射 
@@ -311,11 +312,11 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - [2.4 RXGo基于pipelines实现ReactiveX 编程模型](chapter10_function/02_advanced_function/04_rxgo/rxgo.md)
         - [2.4.1 map,reduce 使用](chapter10_function/02_advanced_function/04_rxgo/main.go)
 - 3 一等公民案例
-    - [网络管理中问题需求](chapter10_function/03_Firstclassfunction/problem_desc.md)
+    - [网络管理中需求](chapter10_function/03_Firstclassfunction/problem_desc.md)
     - 网络管理中三种处理对比
         - [3.1 通过同享内存通信](chapter10_function/03_Firstclassfunction/01_communicate_by_sharing_memory/main.go)
-        - 3.2 通过通信(具体数据)共享内存
-        - 3.3 通过通信(函数)共享内存
+        - [3.2 通过通信(具体数据)共享内存](chapter10_function/03_Firstclassfunction/02_sharing_memory_by_communicating/main.go)
+        - [3.3 通过通信(函数)共享内存](chapter10_function/03_Firstclassfunction/03_send_func_to_channel/main.go)
 ---
 
 ## 第十一章 汇编理解go语言底层源码(AMD芯片运行代码)
@@ -580,6 +581,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
     - [3.1 argument content escapes(fmt参数内容逃逸)](chapter30_memory_management/03_escape_to_heap/01_fmt_interface.go)
     - [3.2 局部变量指针返回时被外部引用](chapter30_memory_management/03_escape_to_heap/02_params_ptr_return.go)
     - [3.3 接口类型](chapter30_memory_management/03_escape_to_heap/03_interface_method.go)
+- [4 内存模型:happened before](chapter30_memory_management/05_happened_before/happened_before.md)
     
 ## [第三十一章 go开发套件](chapter31_tool/go_toolsets.md)
 - [1 build == compile编译 + link链接，附Go包导入路径讲解](chapter31_tool/01_build/build.md)

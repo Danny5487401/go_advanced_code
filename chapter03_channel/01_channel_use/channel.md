@@ -2,12 +2,12 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [channel通道](#channel%E9%80%9A%E9%81%93)
+- [channel 通道](#channel-%E9%80%9A%E9%81%93)
   - [使用场景](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
   - [使用对应调用的底层函数](#%E4%BD%BF%E7%94%A8%E5%AF%B9%E5%BA%94%E8%B0%83%E7%94%A8%E7%9A%84%E5%BA%95%E5%B1%82%E5%87%BD%E6%95%B0)
-  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
-    - [数据结构](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
-    - [一. 创建过程](#%E4%B8%80-%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B)
+  - [主要场景](#%E4%B8%BB%E8%A6%81%E5%9C%BA%E6%99%AF)
+  - [数据结构](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
+  - [一. 创建过程](#%E4%B8%80-%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B)
   - [二. 写数据--分为阻塞写和非阻塞写](#%E4%BA%8C-%E5%86%99%E6%95%B0%E6%8D%AE--%E5%88%86%E4%B8%BA%E9%98%BB%E5%A1%9E%E5%86%99%E5%92%8C%E9%9D%9E%E9%98%BB%E5%A1%9E%E5%86%99)
     - [使用写法](#%E4%BD%BF%E7%94%A8%E5%86%99%E6%B3%95)
     - [对应源码](#%E5%AF%B9%E5%BA%94%E6%BA%90%E7%A0%81)
@@ -15,14 +15,16 @@
     - [使用](#%E4%BD%BF%E7%94%A8)
     - [源码](#%E6%BA%90%E7%A0%81)
   - [四. 关闭channel](#%E5%9B%9B-%E5%85%B3%E9%97%ADchannel)
-    - [关闭原则：](#%E5%85%B3%E9%97%AD%E5%8E%9F%E5%88%99)
-    - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-1)
+    - [关闭原则](#%E5%85%B3%E9%97%AD%E5%8E%9F%E5%88%99)
+    - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
   - [总结一下操作 channel 的结果](#%E6%80%BB%E7%BB%93%E4%B8%80%E4%B8%8B%E6%93%8D%E4%BD%9C-channel-%E7%9A%84%E7%BB%93%E6%9E%9C)
   - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# channel通道
+# channel 通道
+
+Channel(一般简写为 chan) 管道提供了一种机制，它在两个并发执行的协程之间进行同步，并通过传递与该管道元素类型相符的值来进行通信。
 
 ## 使用场景
 把channel用在数据流动的地方
@@ -45,8 +47,7 @@ go tool compile -N -l -S chan.go
 ```
 ![](.img/chan_runtime_func.png)
 
-## 源码分析
-
+## 主要场景
 
 1. channel的创建  
    ![](.img/make_chan.jpg)
@@ -57,31 +58,32 @@ go tool compile -N -l -S chan.go
 2. 各种场景的发送和接收
    ![](.img/blocked_into_sudog.jpg)
 
-3. goroutine的调度
-4. goroutine的阻塞和唤醒
-5. channel和goroutine在select操作下
 
-### 数据结构
+
+## 数据结构
 创建一个容量为 6 的，元素为 int 型的 channel 数据结构
 ```go
 make(chan int,6)
 ```
 ![](.img/makeChan.png)
+
 图为一个长度为6，类型为int, 两个接收者，三个发送者的channel，当前接收者准备读数据的位置为0，发送者发送数据位置为4.
 - 一般情况下recvq和sendq至少有一个为空。
 - 只有一个例外，那就是同一个goroutine使用select语句向channel一边写数据，一边读数据
 
 ![](.img/channel_design.png)  
+
 ![](.img/channelStructure.png)
 
-1. buf是有缓冲的channel所特有的结构，用来存储缓存数据。是个循环链表，上图为了简单画成数组
+主要子段:
+1. buf是有缓冲的channel所特有的结构，用来存储缓存数据。是个循环链表，上图为了简单画成数组,实际是环。
 2. sendx和recvx用于记录buf这个循环链表中的~发送或者接收的~index
-3. lock是个互斥锁。
+3. lock是个互斥锁，avoid data races
 4. recvq和sendq分别是接收(<-channel)或者发送(channel <- xxx)的goroutine抽象出来的结构体(sudog)的队列。是个双向链表
 
 
-源码在： /runtime/chan.go 结构体是 hchan
 ```go
+// /go1.21.5/src/runtime/chan.go
 type hchan struct {
 	qcount   uint           //  队列中元素个数
 	dataqsiz uint           // 队列长度，eg make(chan int64, 5), dataqsiz为5
@@ -146,10 +148,9 @@ type sudog struct {
 ```
 
 
-### 一. 创建过程
+## 一. 创建过程
 创建channel的过程实际上是初始化hchan结构。其中类型信息和缓冲区长度由make语句传入，buf的大小则与元素大小和缓冲区长度共同决定
 
-源码：runtime/chan.go
 ```go
 const (
 	maxAlign  = 8 
@@ -629,7 +630,6 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool) (selected, received bool)
 ```
 
 当channel缓存满了之后会发生什么?
-Go调度原理web连接：https://i6448038.github.io/2017/12/04/golang-concurrency-principle/  Go的CSP并发模型--->Go线程实现模型MPG
 
 如果有等待发送的队列，说明 channel 已经满了，要么是非缓冲型的 channel，要么是缓冲型的 channel，但 buf 满了。
 
@@ -714,7 +714,7 @@ close 逻辑比较简单，对于一个 channel，recvq 和 sendq 中分别保�
 close 函数先上一把大锁，接着把所有挂在这个 channel 上的 sender 和 receiver 全都连成一个 sudog 链表，再解锁。
 最后，再将所有的 sudog 全都唤醒。
 
-### 关闭原则：
+### 关闭原则
 
 一般原则上使用通道是 不允许接收方关闭通道 和 不能关闭一个有多个并发发送者的通道。
 换而言之， 你只能在发送方的 goroutine 中关闭只有该发送方的通道
@@ -815,8 +815,14 @@ func closechan(c *hchan) {
   如果 channel 关闭，received 为 false，否则为 true。这我们分析的这种情况下，received 返回 false。
 
 ## 总结一下操作 channel 的结果
+
+channels will be classified into three categories:
+- nil channels.
+- non-nil but closed channels.
+- not-closed non-nil channels.
+
 ![](.img/channel_operation_guild.png)
 
 ## 参考资料
-1. [源码分析PPT](https://speakerdeck.com/kavya719/understanding-channels)
+1. [2017 understanding-channels 源码分析 PPT](https://speakerdeck.com/kavya719/understanding-channels)
 2. [go 夜读 channel & select 源码分析](https://talkgo.org/t/topic/75)

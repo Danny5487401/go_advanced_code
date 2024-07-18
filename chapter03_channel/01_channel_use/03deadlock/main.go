@@ -23,16 +23,17 @@ func main() {
 
 	for data := range sChan {
 		// 接受数据
-		go func(data int) {
-			fmt.Println(data)
-		}(data)
+		fmt.Println(data)
+
 	}
 }
 
 /*
+10
 fatal error: all goroutines are asleep - deadlock!
 
-goroutine 1 [chan send]:
+goroutine 1 [chan receive]:
 main.main()
-	E:/github.com/Danny5487401/go_advanced_code/chapter03_channel/01_basicUse/03deadlock/main_test.go:5 +0x57
+        /Users/python/Downloads/git_download/go_advanced_code/chapter03_channel/01_channel_use/03deadlock/main.go:24 +0x15c
+
 */

@@ -2,15 +2,20 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [select中实现channel优先级](#select%E4%B8%AD%E5%AE%9E%E7%8E%B0channel%E4%BC%98%E5%85%88%E7%BA%A7)
+- [select中 实现 channel优先级](#select%E4%B8%AD-%E5%AE%9E%E7%8E%B0-channel%E4%BC%98%E5%85%88%E7%BA%A7)
   - [需求背景](#%E9%9C%80%E6%B1%82%E8%83%8C%E6%99%AF)
+  - [第三方实现](#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%AE%9E%E7%8E%B0)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# select中实现channel优先级
+# select中 实现 channel优先级
+
 ## 需求背景
+
 需求：我们有一个函数会持续不间断地从ch1和ch2中分别接收任务1和任务2，
 
+
+## 第三方实现
 ```go
 // kubernetes/pkg/controller/nodelifecycle/scheduler/taint_manager.go 
 func (tc *NoExecuteTaintManager) worker(worker int, done func(), stopCh <-chan struct{}) {

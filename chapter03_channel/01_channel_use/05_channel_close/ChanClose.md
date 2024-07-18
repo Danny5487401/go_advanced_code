@@ -8,6 +8,7 @@
     - [优雅的关闭](#%E4%BC%98%E9%9B%85%E7%9A%84%E5%85%B3%E9%97%AD)
   - [场景：](#%E5%9C%BA%E6%99%AF)
   - [原理](#%E5%8E%9F%E7%90%86)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -141,3 +142,7 @@ func (mc *MyChannel) IsClosed() bool {
 ## 原理
 
 所有读ch的协程都会收到close(ch)的信号
+
+
+## 参考
+- [How to Gracefully Close Channels](https://go101.org/article/channel-closing.html)

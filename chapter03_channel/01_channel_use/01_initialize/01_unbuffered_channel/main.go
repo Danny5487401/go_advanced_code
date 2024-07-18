@@ -9,7 +9,7 @@ func main() {
 	ch1 := make(chan bool) //0xc0000a4000,是引用类型的数据
 
 	go func() {
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * 1)
 		// 循环结束后，向通道中写数据，表示要结束了。。
 		fmt.Println("发送结束信号。。")
 		ch1 <- true
