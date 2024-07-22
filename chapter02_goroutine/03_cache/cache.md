@@ -3,14 +3,17 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [缓存](#%E7%BC%93%E5%AD%98)
-  - [cache局部性原理](#cache%E5%B1%80%E9%83%A8%E6%80%A7%E5%8E%9F%E7%90%86)
-  - [缓存行](#%E7%BC%93%E5%AD%98%E8%A1%8C)
-  - [cache伪共享](#cache%E4%BC%AA%E5%85%B1%E4%BA%AB)
+  - [cache 局部性原理](#cache-%E5%B1%80%E9%83%A8%E6%80%A7%E5%8E%9F%E7%90%86)
+  - [缓存行（cache line）](#%E7%BC%93%E5%AD%98%E8%A1%8Ccache-line)
+  - [cache 伪共享（false sharing）](#cache-%E4%BC%AA%E5%85%B1%E4%BA%ABfalse-sharing)
+    - [解决  伪共享 问题](#%E8%A7%A3%E5%86%B3--%E4%BC%AA%E5%85%B1%E4%BA%AB-%E9%97%AE%E9%A2%98)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # 缓存
 ![](.cache_images/cache.png)
+
 ![](.cache_images/cpu_n_memory.png)
 
 图中是一个存储结构示意图，cpu和主存直接使用的是L3的结构。金字塔越上面，相互之间的访问速度越快但是数据量越小，越往下访问速度越慢但数据量越大。
@@ -18,7 +21,7 @@
 在单核CPU结构中，为了缓解CPU指令流水中cycle冲突，L1分成了指令（L1P）和数据（L1D）两部分，而L2则是指令和数据共存。
 多核CPU增设了L3三级缓存，L1和L2是CPU核自己使用，但是L3缓存是多核共享的
 
-## cache局部性原理
+## cache 局部性原理
 
 局部性分为时间局部性和空间局部性
 
@@ -27,7 +30,10 @@
 - 空间局部性是指，当前访问的的地址附近的地址，之后可能会被访问到。
 
 根据局部性原理，我们把容易访问到的数据缓存在cache中，这样可以提高数据访问速度和效率
-## 缓存行
+
+## 缓存行（cache line）
+
+CPU 缓存中的最小单位是缓存行（cache line）（如今，CPU 中常见的缓存行大小为 64 字节）。因此，当 CPU 从内存读取一个变量时，它会同时读取该变量附近的所有变量。
 
 缓存系统中是以缓存行（cache line）为单位存储的。缓存行通常是 64 字节（译注：本文基于 64 字节，其他长度的如 32 字节等不适本文讨论的重点），
 并且它有效地引用主内存中的一块地址。
@@ -59,7 +65,7 @@ Int64, 等于long, 占8个字节. -9223372036854775808 9223372036854775807
 
 ```
 
-## cache伪共享
+## cache 伪共享（false sharing）
 ![](.cache_images/false_sharing.png)
 
 
@@ -89,3 +95,14 @@ Int64, 等于long, 占8个字节. -9223372036854775808 9223372036854775807
 
 为了让可伸缩性与线程数呈线性关系，就必须确保不会有两个线程往同一个变量或缓存行中写。
 两个线程写同一个变量可以在代码中发现。为了确定互相独立的变量是否共享了同一个缓存行，就需要了解内存布局，或找个工具告诉我们。Intel VTune就是这样一个分析工具。
+
+
+### 解决  伪共享 问题
+
+缓存填充（cache padding）：在变量之间填充一些无意义的变量。这将迫使一个变量单独占用一个核心的缓存行，所以当其他核心更新缓存变量时，不会使该核心从内存中重新加载变量.
+
+
+
+## 参考
+
+- [What’s false sharing and how to solve it (using Golang as example)](https://medium.com/@genchilu/whats-false-sharing-and-how-to-solve-it-using-golang-as-example-ef978a305e10)

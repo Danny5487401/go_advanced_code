@@ -8,26 +8,26 @@ import (
 	"time"
 )
 
-// 100000goroutine
-func addConcurrent(bignum int) {
+// 100000 goroutine
+func addConcurrent(bigNum int) {
 	var c int32
 	atomic.StoreInt32(&c, 0)
 
 	start := time.Now()
 
-	for i := 0; i < bignum; i++ {
+	for i := 0; i < bigNum; i++ {
 		go atomic.AddInt32(&c, 1)
 	}
 	for {
-		if c == int32(bignum) {
+		if c == int32(bigNum) {
 			fmt.Println(time.Since(start))
 			break
 		}
 	}
 }
 
-// cpu数量的goroutine
-func addCPUNum(bignum int) {
+// cpu数量的 goroutine
+func addCPUNum(bigNum int) {
 	var c int32
 	wg := &sync.WaitGroup{}
 	core := runtime.NumCPU()
@@ -35,7 +35,7 @@ func addCPUNum(bignum int) {
 	wg.Add(core)
 	for i := 0; i < core; i++ {
 		go func(wg *sync.WaitGroup) {
-			for j := 0; j < bignum/core; j++ {
+			for j := 0; j < bigNum/core; j++ {
 				atomic.AddInt32(&c, 1)
 			}
 			wg.Done()
@@ -47,10 +47,10 @@ func addCPUNum(bignum int) {
 }
 
 // 1个goroutine
-func addOneThread(bignum int) {
+func addOneThread(bigNum int) {
 	var c int32
 	start := time.Now()
-	for i := 0; i < bignum; i++ {
+	for i := 0; i < bigNum; i++ {
 		atomic.AddInt32(&c, 1)
 	}
 	fmt.Println(time.Since(start))
@@ -60,15 +60,16 @@ func main() {
 
 	bigNum := 100000
 
-	addConcurrent(bigNum) //30.851988ms
+	addConcurrent(bigNum) // 30.851988ms
 	addCPUNum(bigNum)     // 1.472481ms
-	addOneThread(bigNum)  //558.033µs
+	addOneThread(bigNum)  // 558.033µs
 
 }
 
 /*
 分析
 	显然100000个goroutines处理这种cpu-bound的工作很不利，我之前go调度文章里讲过，线程上下文切换有延迟代价。
+
 	io-bound处理可以在io wait的时候去切换别的线程做其他事情，但是对于cpu-bound，它会一直处理work，线程切换会损害性能。
 
 	这里还有另外一个重要因素，那就是cache伪共享(false sharing)。每个core都会去共享变量c的相同cache行，频繁操作c会导致内存抖动(cache和主存直接的换页操作)。
