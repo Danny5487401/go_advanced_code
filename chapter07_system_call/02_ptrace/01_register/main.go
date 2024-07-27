@@ -1,3 +1,6 @@
+//go:build linux
+// +build linux
+
 package main
 
 import (
@@ -9,7 +12,7 @@ import (
 )
 
 func main() {
-	// 程序不支持运行在macOS和OS X上
+	// 程序不支持运行在 macOS 上
 	var r syscall.PtraceRegs
 	cmd := exec.Command(os.Args[1], os.Args[2:]...)
 	cmd.Stdout = os.Stdout

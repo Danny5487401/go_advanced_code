@@ -31,7 +31,7 @@ func (socket Socket) Write(bytes []byte) (int, error) {
 	return numBytesWritten, err
 }
 
-// 3.关闭 socket 可以调用 close()[9
+// 3.关闭 socket 可以调用 close()
 func (socket *Socket) Close() error {
 	return syscall.Close(socket.FileDescriptor)
 }
@@ -40,5 +40,3 @@ func (socket *Socket) Close() error {
 func (socket *Socket) String() string {
 	return strconv.Itoa(socket.FileDescriptor)
 }
-
-// 定义事件循环

@@ -6,7 +6,7 @@
   - [流程](#%E6%B5%81%E7%A8%8B)
   - [历史](#%E5%8E%86%E5%8F%B2)
   - [Go语言系统调用](#go%E8%AF%AD%E8%A8%80%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8)
-    - [案例分析fmt.Println("hello world")](#%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90fmtprintlnhello-world)
+    - [案例分析 fmt.Println("hello world")](#%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90-fmtprintlnhello-world)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -167,7 +167,7 @@ ok2:
 Syscall 和 RawSyscall 在源代码上的区别就是有没有调用 runtime 包提供的两个函数。这意味着前者在发生阻塞时可以通知运行时并继续运行其他协 程，而后者只会卡掉整个程序。
 我们在自己封装自定义调用时应当尽量使用 Syscall
 
-### 案例分析fmt.Println("hello world")
+### 案例分析 fmt.Println("hello world")
 ```go
 func Println(a ...interface{}) (n int, err error) {
 	return Fprintln(os.Stdout, a...)

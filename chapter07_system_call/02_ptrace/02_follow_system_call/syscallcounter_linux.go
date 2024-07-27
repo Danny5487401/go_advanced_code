@@ -6,9 +6,9 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/seccomp/libseccomp-golang" //  seccomp代表secure computing 用来限制进程可以使用的系统调用，它作用于进程里的线程(task)。
 	"text/tabwriter"
-	// "github.com/seccomp/libseccomp-golang" sudo apt install libseccomp-dev
-	"github.com/seccomp/libseccomp-golang"
 )
 
 type syscallCounter []int

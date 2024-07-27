@@ -212,10 +212,11 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 ---
 
 ## [第七章 系统调用](chapter07_system_call/Syscall.md)
-- [1 自定义kqueue服务器（涉及各种linux系统调用）-->使用 MacOs 环境](chapter07_system_call/01_kqueue_server/main.go)
-- [2 使用strace工具追踪系统调用-->使用 linux amd64 环境](chapter07_system_call/02_ptrace/ptrace.md)
+- [1 基于 kqueue event loop 的 TCP server（涉及各种linux系统调用](chapter07_system_call/01_kqueue_server/kqueue.md)
+- [2 使用 strace 工具追踪系统调用-->使用 linux amd64 环境](chapter07_system_call/02_ptrace/ptrace.md)
   - [2.1 syscall.PtraceGetRegs 获取所有寄存器的值](chapter07_system_call/02_ptrace/01_register/main.go)
-  - [2.2 查看 echo hello 的系统调用及次数](chapter07_system_call/02_ptrace/02_follow_system_call/strace.go)
+  - [2.2 使用 seccomp 查看 echo hello 的系统调用及次数](chapter07_system_call/02_ptrace/02_follow_system_call/main.go)
+- [3 exec 执行命令](chapter07_system_call/03_exec/exec.md)
 ---
 
 ## [第八章 defer函数及汇编语言理解](chapter08_defer/defer.md)

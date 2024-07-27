@@ -8,6 +8,7 @@ import (
 	"syscall"
 )
 
+// 定义事件循环
 type EventLoop struct {
 	KqueueFileDescriptor int
 	SocketFileDescriptor int
@@ -24,18 +25,19 @@ func NewEventLoop(s *socket.Socket) (*EventLoop, error) {
 
 	changeEvent := syscall.Kevent_t{
 		Ident:  uint64(s.FileDescriptor),           // Ident 的文件描述符：值是我们 socket 的文件描述
-		Filter: syscall.EVFILT_READ,                //处理事件的 Filter：设置为 EVFILT_READ，当和监听 socket 一起用时，它代表我们只关心传入连接的事件
+		Filter: syscall.EVFILT_READ,                // 处理事件的 Filter：设置为 EVFILT_READ，当和监听 socket 一起用时，它代表我们只关心传入连接的事件
 		Flags:  syscall.EV_ADD | syscall.EV_ENABLE, // 我们想要添加（EV_ADD）事件到 kqueue，比如说订阅事件，同时要启用（EV_ENABLE）它.
 		Fflags: 0,
 		Data:   0,
 		Udata:  nil,
 	}
 
+	//返回已经就绪的事件数量
 	changeEventRegistered, err := syscall.Kevent(
-		kQueue,
-		[]syscall.Kevent_t{changeEvent},
-		nil,
-		nil,
+		kQueue,                          // Kqueue返回的唯一参数值，标记着一个内核队列
+		[]syscall.Kevent_t{changeEvent}, //需要对kqueue进行修改的事件集合，kqueue通过此参数完成对事件的修改
+		nil,                             // 返回的已经就绪的事件列表
+		nil,                             //超时控制，不指定事件表示一直等待事件发生，否则只等待一段时间
 	)
 	if err != nil || changeEventRegistered == -1 {
 		return nil,

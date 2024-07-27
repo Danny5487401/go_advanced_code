@@ -1,14 +1,15 @@
+//go:build freebsd
+
 package main
 
 import (
 	"bufio"
-
-	"github.com/Danny5487401/go_advanced_code/chapter07_system_call/01_kqueue_server/kqueue"
-	"github.com/Danny5487401/go_advanced_code/chapter07_system_call/01_kqueue_server/socket"
-
 	"log"
 	"os"
 	"strings"
+
+	"github.com/Danny5487401/go_advanced_code/chapter07_system_call/01_kqueue_server/kqueue"
+	"github.com/Danny5487401/go_advanced_code/chapter07_system_call/01_kqueue_server/socket"
 )
 
 func main() {
