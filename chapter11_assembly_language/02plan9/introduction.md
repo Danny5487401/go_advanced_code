@@ -91,8 +91,8 @@ SP寄存器 分为伪 SP 寄存器和硬件 SP 寄存器。
 - 伪SP：指向当前栈帧第一个局部变量的结束位置；symbol+offset(SP) 形式，则表示伪寄存器 SP （这个也简称为 BP）。
 - 硬件SP：函数栈真实栈顶地址,指向的是整个函数栈结束的位置。如果是 offset(SP) 则表示硬件寄存器 SP。
 
-    plan9 的这个 SP 寄存器指向当前栈帧的局部变量的开始位置，使用形如 symbol+offset(SP) 的方式，offset 的合法取值是 [-framesize, 0)，注意是个左闭右开的区间。
-    假如局部变量都是 8 字节，那么第一个局部变量就可以用 localvar0-8(SP) 来表示。
+plan9 的这个 SP 寄存器指向当前栈帧的局部变量的开始位置，使用形如 symbol+offset(SP) 的方式，offset 的合法取值是 [-framesize, 0)，注意是个左闭右开的区间。
+假如局部变量都是 8 字节，那么第一个局部变量就可以用 localvar0-8(SP) 来表示。
 
 ![](.introduction_images/caller_n_callee.png)
 
@@ -130,7 +130,7 @@ TEXT ·add(SB), $0-24
 ```
 
 2. 使用伪SP寄存器
-![](software_sp.png)
+![](.introduction_images/software_sp.png)
 ```shell
 // func_amd64.s
 TEXT ·add(SB), $16-24
@@ -202,8 +202,9 @@ BP：基准指针寄存器，维护当前栈帧的基准地址，以便用来索
 
 ### 3 FP->Frame pointer: arguments and locals.
 
+> "All user-defined symbols are written as offsets to the pseudo-register FP(arguments and locals)"
+
 官方文档虽然将伪寄存器 FP 称之为 frame pointer，实际上它根本不是 frame pointer，按照传统的 x86 的习惯来讲，frame pointer 是指向整个 stack frame 底部的 BP 寄存器。
-> 尽管官方文档说 "All user-defined symbols are written as offsets to the pseudo-register FP(arguments and locals)"
 
 实际这个原则只是在手写的代码场景下才是有效的。
 与大多数最近的编译器做法一样，Go 工具链总是在其生成的代码中，使用相对栈指针(stack-pointer)的偏移量来引用参数和局部变量。
@@ -220,9 +221,6 @@ arg1+8(FP)
 - 使用 FP 不加 symbol 时，无法通过编译，在汇编层面来讲，symbol 并没有什么用，加 symbol 主要是为了提升代码可读性.
 - 0(FP)表示function的第一个参数
 - 8(FP)表示第二个参数(64位系统上)后台加上偏移量就可以访问更多的参数。
-
-
-
 
 
 

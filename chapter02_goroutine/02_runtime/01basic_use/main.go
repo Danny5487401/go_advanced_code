@@ -10,7 +10,7 @@ import (
 
 func main() {
 	//1. 获取GOROOT环境变量：
-	fmt.Println("GOROOT-->", runtime.GOROOT()) //E:\go
+	fmt.Println("GOROOT-->", runtime.GOROOT()) // GOROOT--> /Users/python/go/go1.21.5
 
 	//2. 获取操作系统
 	fmt.Println("os/platform 目标操作系统-->", runtime.GOOS) // GOOS--> darwin，windows
@@ -55,7 +55,9 @@ func main() {
 	time.Sleep(time.Second)
 	buf := make([]byte, 10000)
 	runtime.Stack(buf, true)
+	fmt.Println("----------")
 	fmt.Println(string(buf))
+	fmt.Println("----------")
 
 	// 9.runtime.Caller函数可以获取当前函数的调用者列表
 	// 获取当前函数或者上层函数的标识号、文件名、调用方法在当前文件中的行号
