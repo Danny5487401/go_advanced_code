@@ -8,6 +8,7 @@
   - [range对应的walkrange源码](#range%E5%AF%B9%E5%BA%94%E7%9A%84walkrange%E6%BA%90%E7%A0%81)
     - [walkrange函数中当数组切片的情况下](#walkrange%E5%87%BD%E6%95%B0%E4%B8%AD%E5%BD%93%E6%95%B0%E7%BB%84%E5%88%87%E7%89%87%E7%9A%84%E6%83%85%E5%86%B5%E4%B8%8B)
     - [walkrange函数中当节点是map的情况下](#walkrange%E5%87%BD%E6%95%B0%E4%B8%AD%E5%BD%93%E8%8A%82%E7%82%B9%E6%98%AFmap%E7%9A%84%E6%83%85%E5%86%B5%E4%B8%8B)
+  - [Golang1.21 for 语义的变更](#golang121-for-%E8%AF%AD%E4%B9%89%E7%9A%84%E5%8F%98%E6%9B%B4)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -128,10 +129,11 @@ func main() {
  }
 
 ```
-    循环 index 和 value 在每次循环体中都会被重用，而不是新声明。
-    for-range 循环里的短声明index,value :=相当于第一次是 := ，后面都是 =，所以变量地址是不变的，就相当于全局变量了。
-    
-    每次遍历会把被循环元素当前 key 和值赋给这两个全局变量，但是注意变量还是那个变量，地址不变，所以如果用的是地址的或者当前上下文环境值的话最后打印出来都是同一个值。
+循环 index 和 value 在每次循环体中都会被重用，而不是新声明。
+for-range 循环里的短声明index,value :=相当于第一次是 := ，后面都是 =，所以变量地址是不变的，就相当于全局变量了。
+
+每次遍历会把被循环元素当前 key 和值赋给这两个全局变量，但是注意变量还是那个变量，地址不变，所以如果用的是地址的或者当前上下文环境值的话最后打印出来都是同一个值。
+
 ```go
 /*
 结果
@@ -215,4 +217,8 @@ func main() {
 		}
 ```
 
+
+## Golang1.21 for 语义的变更
+
+而1.21也是决定了重新定义循环的语义，让其是每次迭代。在1.21当中我们只需要在运行时额外加一个 GOEXPERIMENT=loopvar构建程序.
 

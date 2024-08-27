@@ -7,16 +7,6 @@ import (
 
 func main() {
 
-	// 一. 错误生成大量timer：造成内存泄漏
-	var queue = make(chan string)
-	// 错误前
-	//useWrongTimeAfter(queue)
-	// 修改后
-	useRightNewTimer(queue)
-	time.Sleep(time.Second * 10)
-	close(queue)
-
-	// 二.reset陷阱：reset相关测试
 	// 第1个测试：Reset返回值和什么有关？
 	test1()
 
@@ -125,44 +115,5 @@ func test3() {
 		fmt.Println("通道中的时间是重新设置sm前的时间，即第一次超时的时间，所以第二次Reset失败了")
 	} else {
 		fmt.Println("通道中的时间是重新设置sm后的时间，Reset成功了")
-	}
-}
-
-// 在3分钟内容易重复创建对象，底层并没有删除对象，造成内存泄漏
-func useWrongTimeAfter(queue <-chan string) {
-	Running := true
-	for Running {
-		select {
-		case _, ok := <-queue:
-			if !ok {
-				return
-			}
-
-		case <-time.After(3 * time.Second):
-			// 超时退出
-			return
-		}
-	}
-}
-
-// 正确的方式:重复利用对象
-func useRightNewTimer(in <-chan string) {
-	idleDuration := 3 * time.Second
-	idleDelay := time.NewTimer(idleDuration)
-	defer idleDelay.Stop()
-	Running := true
-	for Running {
-		idleDelay.Reset(idleDuration)
-
-		select {
-		case _, ok := <-in:
-			if !ok {
-				return
-			}
-
-		case <-idleDelay.C:
-			// handle `s`
-			return
-		}
 	}
 }

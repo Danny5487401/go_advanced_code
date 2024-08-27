@@ -5,6 +5,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -20,6 +21,7 @@ func main() {
 			for {
 				select {
 				case <-ctx.Done():
+					fmt.Println("done")
 					return //  return结束该goroutine，防止泄露
 				case dst <- n:
 					n++
@@ -30,7 +32,6 @@ func main() {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel() // 当我们取完需要的整数后调用cancel
 
 	for n := range gen(ctx) {
 		fmt.Println(n)
@@ -38,4 +39,6 @@ func main() {
 			break
 		}
 	}
+	cancel() // 当我们取完需要的整数后调用cancel
+	time.Sleep(time.Second)
 }

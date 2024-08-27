@@ -3,7 +3,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Time](#time)
-  - [三个比较常用的数据结](#%E4%B8%89%E4%B8%AA%E6%AF%94%E8%BE%83%E5%B8%B8%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93)
+  - [三个比较常用的数据结构](#%E4%B8%89%E4%B8%AA%E6%AF%94%E8%BE%83%E5%B8%B8%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
   - [两个重要概念:单调时间和壁挂时间](#%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E6%A6%82%E5%BF%B5%E5%8D%95%E8%B0%83%E6%97%B6%E9%97%B4%E5%92%8C%E5%A3%81%E6%8C%82%E6%97%B6%E9%97%B4)
     - [应用](#%E5%BA%94%E7%94%A8)
     - [wall time 相关函数](#wall-time-%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0)
@@ -13,12 +13,13 @@
     - [Time时注意事项](#time%E6%97%B6%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9)
   - [time源码结构](#time%E6%BA%90%E7%A0%81%E7%BB%93%E6%9E%84)
     - [时间比较](#%E6%97%B6%E9%97%B4%E6%AF%94%E8%BE%83)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Time
 
-## 三个比较常用的数据结
+## 三个比较常用的数据结构
 
 - time.Time
 - time.Duration
@@ -32,8 +33,7 @@
   是单调时间,实际它指的是系统启动以后流逝的时间,这是由变量jiffies记录系统每次启动时jiffies初始化为0，
   每来一个timer interrupt，jiffies加1，也就是说它代表系统启动后流逝的tick数。jiffies一定是单调递增的，因为时间不够逆
 
-CLOCK_MONOTONIC是monotonic time;
-CLOCK_REALTIME是wall time。
+
 
 ### 应用
 在操作系统中如果需要 显示 时间的时候，会使用 wall time ，而需要 测量 时间的时候，会使用 monotonic time 
@@ -50,6 +50,9 @@ time.Now().Before(deadline)
 
 ### CLOCK_MONOTONIC 和 CLOCK_REALTIME
 
+CLOCK_MONOTONIC 是monotonic time;
+
+CLOCK_REALTIME 是wall time。
 
 ### monotonic time Vs. wall time
 wall time不一定单调递增的。wall time是指现实中的实际时间，如果系统要与网络中某个节点时间同步、或者由系统管理员觉得这个wall time与现实时间不一致，
@@ -258,7 +261,7 @@ func Now() Time {
 }
 ```
 
-walltime是如何计算的: AMD64的Linux这里
+walltime 是如何计算的: AMD64的Linux这里
 ```assembly
 // func walltime1() (sec int64, nsec int32)
 // non-zero frame-size means bp is saved and restored
@@ -378,3 +381,7 @@ func (l *Location) get() *Location {
 }
 ```
 该initLocal()函数查找的内容$TZ以找到要使用的时区。
+
+
+
+## 参考

@@ -8,7 +8,7 @@
   - [遵循规则](#%E9%81%B5%E5%BE%AA%E8%A7%84%E5%88%99)
   - [Context 源码分析](#context-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
     - [1. Context接口](#1-context%E6%8E%A5%E5%8F%A3)
-    - [2. canceler接口](#2-canceler%E6%8E%A5%E5%8F%A3)
+    - [2. canceler 接口](#2-canceler-%E6%8E%A5%E5%8F%A3)
     - [实现的类型：](#%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%B1%BB%E5%9E%8B)
       - [1. emptyCtx：即空context，也是所有子context的祖先](#1-emptyctx%E5%8D%B3%E7%A9%BAcontext%E4%B9%9F%E6%98%AF%E6%89%80%E6%9C%89%E5%AD%90context%E7%9A%84%E7%A5%96%E5%85%88)
       - [2. cancelCtx](#2-cancelctx)
@@ -103,7 +103,7 @@ func (deadlineExceededError) Temporary() bool { return true }
 4. Value方法会从Context中返回键对应的值，对于同一个上下文来说，多次调用Value 并传入相同的Key会返回相同的结果，该方法仅用于传递跨API和进程间跟请求域的数据
 
 
-### 2. canceler接口
+### 2. canceler 接口
 ```go
 
 type canceler interface {
@@ -125,6 +125,9 @@ caller 不应该去关心、干涉 callee 的情况，决定如何以及何时 r
 
 “取消”某个函数时，和它相关联的其他函数也应该“取消”。因此， Done() 方法返回一个只读的 channel，所有相关函数监听此 channel。
 一旦 channel 关闭，通过 channel 的“广播机制”，所有监听者都能收到。
+
+
+
 
 
 ### 实现的类型：

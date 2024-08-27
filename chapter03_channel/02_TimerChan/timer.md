@@ -3,10 +3,10 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Timer定时器源码分析](#timer%E5%AE%9A%E6%97%B6%E5%99%A8%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [全局的 timer 堆经历过三个阶段的重要升级](#%E5%85%A8%E5%B1%80%E7%9A%84-timer-%E5%A0%86%E7%BB%8F%E5%8E%86%E8%BF%87%E4%B8%89%E4%B8%AA%E9%98%B6%E6%AE%B5%E7%9A%84%E9%87%8D%E8%A6%81%E5%8D%87%E7%BA%A7)
   - [timer的使用](#timer%E7%9A%84%E4%BD%BF%E7%94%A8)
     - [初始化结构体](#%E5%88%9D%E5%A7%8B%E5%8C%96%E7%BB%93%E6%9E%84%E4%BD%93)
-    - [runtime.addtimer](#runtimeaddtimer)
-    - [runtime.wakeNetPoller](#runtimewakenetpoller)
+    - [删除定时器](#%E5%88%A0%E9%99%A4%E5%AE%9A%E6%97%B6%E5%99%A8)
   - [四叉堆原理](#%E5%9B%9B%E5%8F%89%E5%A0%86%E5%8E%9F%E7%90%86)
     - [timer 是如何被调度的](#timer-%E6%98%AF%E5%A6%82%E4%BD%95%E8%A2%AB%E8%B0%83%E5%BA%A6%E7%9A%84)
     - [timer 是如何加入到 timer 堆上的？](#timer-%E6%98%AF%E5%A6%82%E4%BD%95%E5%8A%A0%E5%85%A5%E5%88%B0-timer-%E5%A0%86%E4%B8%8A%E7%9A%84)
@@ -17,6 +17,7 @@
   - [Timer 使用中的坑](#timer-%E4%BD%BF%E7%94%A8%E4%B8%AD%E7%9A%84%E5%9D%91)
     - [1 错误创建很多 timer，导致资源浪费](#1-%E9%94%99%E8%AF%AF%E5%88%9B%E5%BB%BA%E5%BE%88%E5%A4%9A-timer%E5%AF%BC%E8%87%B4%E8%B5%84%E6%BA%90%E6%B5%AA%E8%B4%B9)
     - [2 程序阻塞，造成内存或者 goroutine 泄露](#2-%E7%A8%8B%E5%BA%8F%E9%98%BB%E5%A1%9E%E9%80%A0%E6%88%90%E5%86%85%E5%AD%98%E6%88%96%E8%80%85-goroutine-%E6%B3%84%E9%9C%B2)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -24,7 +25,9 @@
 
 我们不管用 NewTimer, timer.After，还是 timer.AfterFun 来初始化一个 timer, 这个 timer 最终都会加入到一个全局 timer 堆中， 由 Go runtime 统一管理。
 
-全局的 timer 堆也经历过三个阶段的重要升级。
+对于 Golang 使用四叉堆（Quaternary Heap），而非使用经典的二叉堆（Binary Heap）来维护 Timer,是因为四叉堆的插入与提取最小值操作性能都优于二叉堆。
+
+## 全局的 timer 堆经历过三个阶段的重要升级
 
 
 - Go 1.9 版本之前，所有的计时器由全局唯一的四叉堆维护，协程间竞争激烈。
@@ -71,7 +74,7 @@ timerproc 在 sleep 的时候会调用 notetsleepg ，继而引发entersyscallbl
 ![](.timer_images/timer_1.14.png)
 ```go
 type p struct {
-    ... 
+    // ... 
     // 互斥锁
     timersLock mutex
     // 存储计时器的最小四叉堆
@@ -82,10 +85,10 @@ type p struct {
     adjustTimers uint32
     // 处于 timerDeleted 状态的计时器数量
     deletedTimers uint32
-    ...
+    // ...
 }
 ```
-timer 不再使用 timerproc 异步任务来调度，而是改用调度循环或系统监控调度的时候进行触发执行，减少了线程之间上下文切换带来的性能损失，并且通过使用 netpoll 阻塞唤醒机制可以让 timer 更加及时的得到执行。c
+timer 不再使用 timerproc 异步任务来调度，而是改用调度循环或系统监控调度的时候进行触发执行，减少了线程之间上下文切换带来的性能损失，并且通过使用 netpoll 阻塞唤醒机制可以让 timer 更加及时的得到执行。
 
 
 ## timer的使用
@@ -95,6 +98,7 @@ time.Timer计时器必须通过time.NewTimer、time.AfterFunc或者 time.After �
 ### 初始化结构体
 
 ```go
+// /go1.21.5/src/time/sleep.go
 type Timer struct {
     C <-chan Time
     r runtimeTimer
@@ -117,19 +121,33 @@ func NewTimer(d Duration) *Timer {
 }
 
 func startTimer(*runtimeTimer)
+
+// 代码同步来自go1.21.5/src/runtime/time.go
+// Interface to timers implemented in package runtime.
+// Must be in sync with ../runtime/time.go:/^type timer
+type runtimeTimer struct {
+    // ... 
+}
 ```
+
+
 NewTimer方法主要是初始化一个Timer，然后调用startTimer方法，并返回Timer。startTimer方法的真正逻辑并不在time包里面,
 实际上调用的是runtime.time.startTimer方法。也就是说time.Timer只是对runtime包中timer的一层wrap。这层自身实现的最核心功能是将底层的超时回调转换为发送channel消息。
 ```go
+// go1.21.5/src/runtime/time.go
+
+//go:linkname startTimer time.startTimer
 func startTimer(t *timer) {
-    ...
-    addtimer(t)
+	if raceenabled {
+		racerelease(unsafe.Pointer(t))
+	}
+	addtimer(t)
 }
 ```
 startTimer方法会将传入的runtimeTimer转为timer，然后调用addtimer方法。
 ```go
 type timer struct {
-    // 对应处理器P的指针
+    // pp 代表的是该 timer 在四叉堆时所在的对应 P。而 P 则是 Golang 调度器 G-M-P 模型中的核心部分，也就是书中前文的 runtime.p
     pp puintptr 
     // 定时器被唤醒的时间
     when   int64
@@ -146,6 +164,7 @@ type timer struct {
     status uint32
 }
 ```
+
 状态
 ```go
 const (
@@ -177,12 +196,12 @@ const (
     // 被修改到了更晚的时间
     timerModifiedLater
 
-  // 已经被修改，并且正在被移动
+    // 已经被修改，并且正在被移动
     timerMoving
 )
 ```
 
-### runtime.addtimer
+runtime.addtimer
 ```go
 func addtimer(t *timer) {
     // 定时器被唤醒的时间的时间不能为负数
@@ -215,7 +234,6 @@ func addtimer(t *timer) {
 
 
 runtime.cleantimers
-
 ```go
 func cleantimers(pp *p) {
     gp := getg()
@@ -275,12 +293,12 @@ cleantimers 函数中使用了一个无限循环来获取头节点。
 如果头节点的状态是 timerModifiedEarlier 或 timerModifiedLater ，表示头节点的触发的时间被修改到了更早或更晚的时间，那么就先重 timer队列中删除再重新添加。
 
 runtime.doaddtimer
-
 ```go
 func doaddtimer(pp *p, t *timer) { 
     // Timers 依赖于 netpoller
-    // 所以如果 netpoller 没有启动，需要启动一下
+    
     if netpollInited == 0 {
+        // 所以如果 netpoller 没有启动，需要启动一下. netpollGernicInit 的 network poller 初始化逻辑涉及到对应操作系统平台的异步 IO 方案的初始化
         netpollGenericInit()
     }
     // 校验是否早已在 timer 列表中
@@ -304,11 +322,11 @@ func doaddtimer(pp *p, t *timer) {
 doaddtimer 函数实际上很简单，主要是将 timer 与 P 设置关联关系，并将 timer 加入到 P 的 timer 列表中，并维护 timer 列表最小堆的顺序。
 
 
-### runtime.wakeNetPoller
+runtime.wakeNetPoller 涉及到调度器（sched）与网络轮询器 network poller 的机制
 ```go
 func wakeNetPoller(when int64) {
-    if atomic.Load64(&sched.lastpoll) == 0 {  
-        pollerPollUntil := int64(atomic.Load64(&sched.pollUntil))
+    if atomic.Load64(&sched.lastpoll) == 0 {   // 为 0 则代表目前正在轮询
+        pollerPollUntil := int64(atomic.Load64(&sched.pollUntil)) // sched.pollUntil 的值，这个字段表示这次轮询会持续的时间
         // 如果计时器的触发时间小于netpoller的下一次轮询时间
         if pollerPollUntil == 0 || pollerPollUntil > when {
             // 向netpollBreakWr里面写入数据，立即中断netpoll
@@ -341,6 +359,84 @@ func netpollBreak() {
 wakeNetPoller 主要是将 timer 下次调度的时间和 netpoller 的下一次轮询时间相比，如果小于的话，调用 netpollBreak 向 netpollBreakWr 里面写入数据，立即中断netpoll。
 
 
+### 删除定时器
+
+```go
+// /Users/python/go/go1.21.5/src/runtime/time.go
+//go:linkname stopTimer time.stopTimer
+func stopTimer(t *timer) bool {
+	return deltimer(t)
+}
+
+```
+
+
+```go
+// 之所以 deltimer 只是设置该 timer 的状态，而不是直接将它从对应所属 runtime.p 的 timers 中删除。
+// 是因为这个函数是可能被不是这个 timer 所在的 P 调用的，因此，当前 P 只会调用 deltimer 修改这个timer 的状态，真正的删除会让这个 timer 所属的 P 自己统一去做
+func deltimer(t *timer) bool {
+	for {
+		switch s := t.status.Load(); s {
+		case timerWaiting, timerModifiedLater:
+			// Prevent preemption while the timer is in timerModifying.
+			// This could lead to a self-deadlock. See #38070.
+			// 会通过当前的 g 获取对应的 m （代表目前 goroutine 运行对应的线程
+			mp := acquirem()
+			if t.status.CompareAndSwap(s, timerModifying) {
+				// Must fetch t.pp before changing status,
+				// as cleantimers in another goroutine
+				// can clear t.pp of a timerDeleted timer.
+				tpp := t.pp.ptr()
+				if !t.status.CompareAndSwap(timerModifying, timerDeleted) {
+					badTimer()
+				}
+				releasem(mp)
+				tpp.deletedTimers.Add(1)
+				// Timer was not yet run.
+				return true
+			} else {
+				releasem(mp)
+			}
+		case timerModifiedEarlier:
+			// Prevent preemption while the timer is in timerModifying.
+			// This could lead to a self-deadlock. See #38070.
+			mp := acquirem()
+			if t.status.CompareAndSwap(s, timerModifying) {
+				// Must fetch t.pp before setting status
+				// to timerDeleted.
+				tpp := t.pp.ptr()
+				if !t.status.CompareAndSwap(timerModifying, timerDeleted) {
+					badTimer()
+				}
+				releasem(mp)
+				tpp.deletedTimers.Add(1)
+				// Timer was not yet run.
+				return true
+			} else {
+				releasem(mp)
+			}
+		case timerDeleted, timerRemoving, timerRemoved:
+			// Timer was already run.
+			return false
+		case timerRunning, timerMoving:
+			// The timer is being run or moved, by a different P.
+			// Wait for it to complete.
+			osyield()
+		case timerNoStatus:
+			// Removing timer that was never added or
+			// has already been run. Also see issue 21874.
+			return false
+		case timerModifying:
+			// Simultaneous calls to deltimer and modtimer.
+			// Wait for the other call to complete.
+			osyield()
+		default:
+			badTimer()
+		}
+	}
+}
+```
+
 
 ## 四叉堆原理
 四叉堆其实就是四叉树，Go timer 是如何维护四叉堆的呢？
@@ -355,6 +451,81 @@ wakeNetPoller 主要是将 timer 下次调度的时间和 netpoller 的下一次
 2. 把 timer 从堆中删除
 ![](.timer_images/del_timer.gif)
 删除节点20，用子节点48替代，比较兄弟节点，与最小节点10交换位置
+
+```go
+// dodeltimer0 removes timer 0 from the current P's heap.
+// We are locked on the P when this is called.
+// It reports whether it saw no problems due to races.
+// The caller must have locked the timers for pp.
+func dodeltimer0(pp *p) {
+	if t := pp.timers[0]; t.pp.ptr() != pp {
+		throw("dodeltimer0: wrong P")
+	} else {
+		t.pp = 0
+	}
+	last := len(pp.timers) - 1
+	if last > 0 {
+		pp.timers[0] = pp.timers[last]
+	}
+	pp.timers[last] = nil
+	pp.timers = pp.timers[:last]
+	if last > 0 {
+		siftdownTimer(pp.timers, 0)
+	}
+	updateTimer0When(pp)
+	atomic.Xadd(&pp.numTimers, -1)
+}
+```
+
+dodeltimer0 就是把 timers[0] 从整个堆中删除，这里可以看到整个函数本质上就是一个维护四叉堆的删除操作：将堆中末尾的元素放到队首（覆盖），同时然后从队首开始进行堆的下推操作（sift-down），以完成整个堆的排序。
+
+```go
+// siftdownTimer puts the timer at position i in the right place
+// in the heap by moving it down toward the bottom of the heap.
+func siftdownTimer(t []*timer, i int) {
+	n := len(t)
+	if i >= n {
+		badTimer()
+	}
+	when := t[i].when
+	if when <= 0 {
+		badTimer()
+	}
+	tmp := t[i]
+	for {
+		c := i*4 + 1 // left child
+		c3 := c + 2  // mid child
+		if c >= n {
+			break
+		}
+		w := t[c].when
+		if c+1 < n && t[c+1].when < w {
+			w = t[c+1].when
+			c++
+		}
+		if c3 < n {
+			w3 := t[c3].when
+			if c3+1 < n && t[c3+1].when < w3 {
+				w3 = t[c3+1].when
+				c3++
+			}
+			if w3 < w {
+				w = w3
+				c = c3
+			}
+		}
+		if w >= when {
+			break
+		}
+		t[i] = t[c]
+		i = c
+	}
+	if tmp != t[i] {
+		t[i] = tmp
+	}
+}
+```
+
 
 ### timer 是如何被调度的
 ![](.timer_images/timer_schedule.png)
@@ -487,6 +658,8 @@ runOneTimer 会根据 period 是否大于0判断该 timer 是否需要反复执�
 一次性 timer 的话会执行 dodeltimer0 删除该 timer ，最后运行 timer 中的函数；
 
 
+
+
 ### timer 的触发
 
 下面这里是我觉得比较有意思的地方，timer 的触发有两种：
@@ -499,8 +672,8 @@ runOneTimer 会根据 period 是否大于0判断该 timer 是否需要反复执�
 整个调度循环会有三个地方去检查是否有可执行的 timer：
 
 1. 调用 runtime.schedule 执行调度时；
-2. 调用runtime.findrunnable获取可执行函数时；
-3. 调用runtime.findrunnable执行抢占时；
+2. 调用 runtime.findrunnable 获取可执行函数时；
+3. 调用 runtime.findrunnable 执行抢占时；
 
 #### 系统监控触发
 系统监控其实就是 Go 语言的守护进程，它们能够在后台监控系统的运行状态，在出现意外情况时及时响应。它会每隔一段时间检查 Go 语言运行时状态，确保没有异常发生。
@@ -601,3 +774,10 @@ func main() {
     println("done")
 }
 ```
+
+
+## 参考
+
+- [Go 源码 15.7 中定时器实现原理及源码解析](https://www.luozhiyun.com/archives/458)
+- [1.16 定时器源码分析](https://grzhan.tech/2024/05/26/GoTimerNotes/)
+- [为什么Golang的Timer实现使用四叉堆而不是二叉堆](https://grzhan.tech/2024/05/10/QuaHeapBench/)

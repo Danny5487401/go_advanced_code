@@ -6,15 +6,17 @@ import (
 )
 
 func main() {
-	Goroutine2()
+	Goroutine1()
+	//Goroutine2()
 	//Goroutine3()
+	//Goroutine4()
 }
 
 func Goroutine1() {
 	var m = []int{1, 2, 3}
-	for i, v := range m {
+	for index, value := range m {
 		go func() {
-			fmt.Println(i, v)
+			fmt.Printf("%v:%v \n", index, value)
 		}()
 	}
 	time.Sleep(time.Second * 3)
@@ -47,7 +49,7 @@ func Goroutine2() {
 	这里只是为了讲明白环境上下文，其实我们平时不会这么用的，协程本来就是为了提升并发特性的，如果每次都 sleep 那还有什么意义呐
 */
 
-//正确方式
+// 正确方式
 func Goroutine3() {
 
 	var m = []int{1, 2, 3}
@@ -76,6 +78,3 @@ func Goroutine4() {
 	time.Sleep(time.Second * 3)
 
 }
-
-//Note:小菜刀在线上遇到该bug时，虽然已经知道通过入参的方式进行修改，但当时没有过多思考，以为问题是出在了for...range的值拷贝上面。
-//通过后续和同事的讨论与自己多次不同尝试之后，才意识到原来是goroutine的启动时间在捣鬼
