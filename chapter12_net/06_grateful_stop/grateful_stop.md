@@ -26,6 +26,7 @@
     - [SIGPIPE](#sigpipe)
     - [连接的状态](#%E8%BF%9E%E6%8E%A5%E7%9A%84%E7%8A%B6%E6%80%81)
     - [源码分析:http 中提供了 server.ShutDown()](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90http-%E4%B8%AD%E6%8F%90%E4%BE%9B%E4%BA%86-servershutdown)
+  - [多线程下发送及接收信号的问题](#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8B%E5%8F%91%E9%80%81%E5%8F%8A%E6%8E%A5%E6%94%B6%E4%BF%A1%E5%8F%B7%E7%9A%84%E9%97%AE%E9%A2%98)
   - [第三方应用：go-zero流程](#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%94%E7%94%A8go-zero%E6%B5%81%E7%A8%8B)
   - [流程](#%E6%B5%81%E7%A8%8B)
     - [docker中流程](#docker%E4%B8%AD%E6%B5%81%E7%A8%8B)
@@ -75,7 +76,9 @@
 ![](.grateful_stop_images/signal_posix.png)
 
 在SUSv2和POSIX.1-2001标准中的信号列表:
+
 ![](.grateful_stop_images/sus_signal.png)
+
 解析:
 - 第1列为信号名；
 - 第2列为对应的信号值，需要注意的是，有些信号名对应着3个信号值，这是因为这些信号值与平台相关，将man手册中对3个信号值的说明摘出如下，the first one is usually valid for alpha and sparc, the middle one for i386, ppc and sh, and the last one for mips.
@@ -83,6 +86,49 @@
 - 第4列为对信号作用的注释性说明，浅显易懂，这里不再赘述。
 
 需要特别说明的是，SIGKILL和SIGSTOP这两个信号既不能被应用程序捕获，也不能被操作系统阻塞或忽略。
+
+```go
+var sigtable = [...]sigTabT{
+	/* 0 */ {0, "SIGNONE: no trap"},
+	/* 1 */ {_SigNotify + _SigKill, "SIGHUP: terminal line hangup"},
+	/* 2 */ {_SigNotify + _SigKill, "SIGINT: interrupt"},
+	/* 3 */ {_SigNotify + _SigThrow, "SIGQUIT: quit"},
+	/* 4 */ {_SigThrow + _SigUnblock, "SIGILL: illegal instruction"},
+	/* 5 */ {_SigThrow + _SigUnblock, "SIGTRAP: trace trap"},
+	/* 6 */ {_SigNotify + _SigThrow, "SIGABRT: abort"},
+	/* 7 */ {_SigPanic + _SigUnblock, "SIGBUS: bus error"},
+	/* 8 */ {_SigPanic + _SigUnblock, "SIGFPE: floating-point exception"},
+	/* 9 */ {0, "SIGKILL: kill"},
+	/* 10 */ {_SigNotify, "SIGUSR1: user-defined signal 1"},
+	/* 11 */ {_SigPanic + _SigUnblock, "SIGSEGV: segmentation violation"},
+	/* 12 */ {_SigNotify, "SIGUSR2: user-defined signal 2"},
+	/* 13 */ {_SigNotify, "SIGPIPE: write to broken pipe"},
+	/* 14 */ {_SigNotify, "SIGALRM: alarm clock"},
+	/* 15 */ {_SigNotify + _SigKill, "SIGTERM: termination"},
+	/* 16 */ {_SigThrow + _SigUnblock, "SIGSTKFLT: stack fault"},
+	/* 17 */ {_SigNotify + _SigUnblock + _SigIgn, "SIGCHLD: child status has changed"},
+	/* 18 */ {_SigNotify + _SigDefault + _SigIgn, "SIGCONT: continue"},
+	/* 19 */ {0, "SIGSTOP: stop, unblockable"},
+	/* 20 */ {_SigNotify + _SigDefault + _SigIgn, "SIGTSTP: keyboard stop"},
+	/* 21 */ {_SigNotify + _SigDefault + _SigIgn, "SIGTTIN: background read from tty"},
+	/* 22 */ {_SigNotify + _SigDefault + _SigIgn, "SIGTTOU: background write to tty"},
+	/* 23 */ {_SigNotify + _SigIgn, "SIGURG: urgent condition on socket"},
+	/* 24 */ {_SigNotify, "SIGXCPU: cpu limit exceeded"},
+	/* 25 */ {_SigNotify, "SIGXFSZ: file size limit exceeded"},
+	/* 26 */ {_SigNotify, "SIGVTALRM: virtual alarm clock"},
+	/* 27 */ {_SigNotify + _SigUnblock, "SIGPROF: profiling alarm clock"},
+	/* 28 */ {_SigNotify + _SigIgn, "SIGWINCH: window size change"},
+	/* 29 */ {_SigNotify, "SIGIO: i/o now possible"},
+	/* 30 */ {_SigNotify, "SIGPWR: power failure restart"},
+	/* 31 */ {_SigThrow, "SIGSYS: bad system call"},
+	/* 32 */ {_SigSetStack + _SigUnblock, "signal 32"}, /* SIGCANCEL; see issue 6997 */
+	/* 33 */ {_SigSetStack + _SigUnblock, "signal 33"}, /* SIGSETXID; see issues 3871, 9400, 12498 */
+	/* 34 */ {_SigSetStack + _SigUnblock, "signal 34"}, /* musl SIGSYNCCALL; see issue 39343 */
+	/* 35 */ {_SigNotify, "signal 35"},
+    // ... 
+}
+```
+
 
 #### SIGHUP，hong up  挂断
 本信号在用户终端连接(正常或非正常)结束时发出, 通常是在终端的控制进程结束时, 通知同一session内的各个作业, 这时它们与控制终端不再关联。
@@ -623,6 +669,36 @@ func (srv *Server) Serve(l net.Listener) error {
   }
 }
 ```
+
+
+## 多线程下发送及接收信号的问题
+![](.grateful_stop_images/tgkill.png) 
+默认情况下只有主线程才可处理signal，就算指定子线程发送signal，也是主线程接收处理信号。
+
+那么Golang如何做到给指定子线程发signal且处理的？如何指定给某个线程发送signal？ 在glibc下可以使用pthread_kill来给线程发signal，它底层调用的是SYS_tgkill系统调用。
+
+```go
+// signalM sends a signal to mp.
+func signalM(mp *m, sig int) {
+	tgkill(getpid(), int(mp.procid), sig)
+}
+
+func tgkill(tgid, tid, sig int)
+```
+
+```asm
+// go1.21.5/src/runtime/sys_linux_amd64.s
+TEXT ·tgkill(SB),NOSPLIT,$0
+	MOVQ	tgid+0(FP), DI
+	MOVQ	tid+8(FP), SI
+	MOVQ	sig+16(FP), DX
+	MOVL	$SYS_tgkill, AX
+	SYSCALL
+	RE
+```
+
+
+
 ## 第三方应用：go-zero流程
 gracefulStop 的流程如下
 

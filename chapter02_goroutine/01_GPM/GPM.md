@@ -17,11 +17,16 @@
         - [特点](#%E7%89%B9%E7%82%B9)
   - [四. 调度](#%E5%9B%9B-%E8%B0%83%E5%BA%A6)
     - [调度器思想](#%E8%B0%83%E5%BA%A6%E5%99%A8%E6%80%9D%E6%83%B3)
-    - [有关P和M的个数问题](#%E6%9C%89%E5%85%B3p%E5%92%8Cm%E7%9A%84%E4%B8%AA%E6%95%B0%E9%97%AE%E9%A2%98)
+    - [有关 P 和 M 的个数问题](#%E6%9C%89%E5%85%B3-p-%E5%92%8C-m-%E7%9A%84%E4%B8%AA%E6%95%B0%E9%97%AE%E9%A2%98)
     - [goroutine切换](#goroutine%E5%88%87%E6%8D%A2)
     - [Go语言基于信号抢占式调度](#go%E8%AF%AD%E8%A8%80%E5%9F%BA%E4%BA%8E%E4%BF%A1%E5%8F%B7%E6%8A%A2%E5%8D%A0%E5%BC%8F%E8%B0%83%E5%BA%A6)
+      - [注册 sigPreempt:_SIGURG信号](#%E6%B3%A8%E5%86%8C-sigpreempt_sigurg%E4%BF%A1%E5%8F%B7)
+      - [收到sigurg信号后进行抢占](#%E6%94%B6%E5%88%B0sigurg%E4%BF%A1%E5%8F%B7%E5%90%8E%E8%BF%9B%E8%A1%8C%E6%8A%A2%E5%8D%A0)
+      - [发送SIGURG信号](#%E5%8F%91%E9%80%81sigurg%E4%BF%A1%E5%8F%B7)
   - [五. Go启动时的特殊协程](#%E4%BA%94-go%E5%90%AF%E5%8A%A8%E6%97%B6%E7%9A%84%E7%89%B9%E6%AE%8A%E5%8D%8F%E7%A8%8B)
-    - [sysmon协程](#sysmon%E5%8D%8F%E7%A8%8B)
+    - [sysmon 协程](#sysmon-%E5%8D%8F%E7%A8%8B)
+      - [网络轮询器监控](#%E7%BD%91%E7%BB%9C%E8%BD%AE%E8%AF%A2%E5%99%A8%E7%9B%91%E6%8E%A7)
+      - [垃圾回收](#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6)
     - [管理员-g0](#%E7%AE%A1%E7%90%86%E5%91%98-g0)
     - [调度场景过程](#%E8%B0%83%E5%BA%A6%E5%9C%BA%E6%99%AF%E8%BF%87%E7%A8%8B)
       - [场景1](#%E5%9C%BA%E6%99%AF1)
@@ -36,11 +41,12 @@
       - [场景10](#%E5%9C%BA%E6%99%AF10)
       - [场景11](#%E5%9C%BA%E6%99%AF11)
       - [场景12](#%E5%9C%BA%E6%99%AF12)
-  - [八. G_M_P 源码分析](#%E5%85%AB-g_m_p-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [六. G_M_P 源码分析](#%E5%85%AD-g_m_p-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
     - [G](#g)
     - [M 代表一个进程中的工作线程](#m-%E4%BB%A3%E8%A1%A8%E4%B8%80%E4%B8%AA%E8%BF%9B%E7%A8%8B%E4%B8%AD%E7%9A%84%E5%B7%A5%E4%BD%9C%E7%BA%BF%E7%A8%8B)
     - [P 资源的管理者](#p-%E8%B5%84%E6%BA%90%E7%9A%84%E7%AE%A1%E7%90%86%E8%80%85)
     - [schedt 全局调度器](#schedt-%E5%85%A8%E5%B1%80%E8%B0%83%E5%BA%A6%E5%99%A8)
+  - [唤醒底层实现之gopark和goready](#%E5%94%A4%E9%86%92%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0%E4%B9%8Bgopark%E5%92%8Cgoready)
   - [参考链接](#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -173,13 +179,26 @@ Goroutine调度器和OS调度器是通过M结合起来的，每个M都代表了1
 
 2. 全局G队列：在新的调度器中依然有全局G队列，但功能已经被弱化了，当M执行work stealing从其他P偷不到G时，它可以从全局G队列获取G。
 
-### 有关P和M的个数问题
-1、P的数量：
+### 有关 P 和 M 的个数问题
+1、P 的数量：
 
 由启动时环境变量$GOMAXPROCS或者是由runtime的方法GOMAXPROCS()决定。这意味着在程序执行的任意时刻都只有$GOMAXPROCS个goroutine在同时运行。
+
 2、M的数量:
 
-- go语言本身的限制：go程序启动时，会设置M的最大数量，默认10000.但是内核很难支持这么多的线程数，所以这个限制可以忽略。
+- go语言本身的限制：go程序启动时，会设置M的最大数量，默认10000.但是内核很难支持这么多的线程数，所以这个限制可以忽略。 
+```go
+func schedinit() {
+    sched.maxmcount = 10000
+    procs := ncpu
+	
+	// 该启动的P数量，默认为cpu core数
+    procs := ncpu
+    if n, ok := atoi32(gogetenv("GOMAXPROCS")); ok && n > 0 {
+        procs = n
+    }
+}
+```
 - runtime/debug中的SetMaxThreads函数，设置M的最大数量
 - 一个M阻塞了，会创建新的M
 
@@ -201,18 +220,314 @@ goroutine的切换一般会在以下几种情况下发生：
 
 在 Go 的 1.14 版本之前抢占试调度都是基于协作的，需要自己主动的让出执行，但是这样是无法处理一些无法被抢占的边缘情况。
 例如：for 循环或者垃圾回收长时间占用线程，这些问题中的一部分直到 1.14 才被基于信号的抢占式调度解决。
+原理是这样的，首先注册绑定 SIGURG 信号及处理方法runtime.doSigPreempt，sysmon会间隔性检测超时的p，然后发送信号，m收到信号后休眠执行的goroutine并且进行重新调度。
+
+
+#### 注册 sigPreempt:_SIGURG信号
+```go
+// go1.21.5/src/runtime/proc.go
+func mstartm0() {
+    // ...
+	initsig(false) // 初始化信号
+}
+```
+```go
+// go1.21.5/src/runtime/signal_unix.go
+
+const sigPreempt = _SIGURG
+
+//go:nosplit
+//go:nowritebarrierrec
+func initsig(preinit bool) {
+    // ...
+
+	for i := uint32(0); i < _NSIG; i++ {
+		t := &sigtable[i]  
+		// ...
+		handlingSig[i] = 1
+		setsig(i, abi.FuncPCABIInternal(sighandler)) // 注册信号对应的回调方法
+	}
+}
+
+//go:nowritebarrierrec
+func sighandler(sig uint32, info *siginfo, ctxt unsafe.Pointer, gp *g) {
+
+	gsignal := getg()
+	mp := gsignal.m
+	c := &sigctxt{info, ctxt}
+
+    // ..
+
+	if sig == sigPreempt && debug.asyncpreemptoff == 0 && !delayedSignal { // 如果是抢占信号
+		// Might be a preemption signal.
+		doSigPreempt(gp, c)
+
+	}
+
+    // ...
+}
+
+// 执行抢占
+func doSigPreempt(gp *g, ctxt *sigctxt) {
+	// Check if this G wants to be preempted and is safe to
+	// preempt.
+	if wantAsyncPreempt(gp) {
+		if ok, newpc := isAsyncSafePoint(gp, ctxt.sigpc(), ctxt.sigsp(), ctxt.siglr()); ok {
+			// Adjust the PC and inject a call to asyncPreempt.
+			ctxt.pushCall(abi.FuncPCABI0(asyncPreempt), newpc)
+		}
+	}
+
+	// Acknowledge the preemption.
+	gp.m.preemptGen.Add(1)
+	gp.m.signalPending.Store(0)
+
+    // ..
+}
+```
+
+#### 收到sigurg信号后进行抢占
+```go
+func asyncPreempt()
+
+//go:nosplit
+func asyncPreempt2() {
+	gp := getg()
+	gp.asyncSafePoint = true
+	if gp.preemptStop {
+		mcall(preemptPark)
+	} else {
+		mcall(gopreempt_m)
+	}
+	gp.asyncSafePoint = false
+}
+```
+preemptPark方法会解绑mg的关系，封存当前协程，继而重新调度runtime.schedule()获取可执行的协程，至于被抢占的协程后面会去重启。
+```go
+func preemptPark(gp *g) {
+    // ...
+	status := readgstatus(gp)
+	// ...
+	casGToPreemptScan(gp, _Grunning, _Gscan|_Gpreempted)
+	dropg()
+	casfrom_Gscanstatus(gp, _Gscan|_Gpreempted, _Gpreempted)
+	schedule()
+}
+```
+
+
+goschedImpl 把当前协程的状态从_Grunning正在执行改成 _Grunnable可执行，使用globrunqput方法把抢占的协程放到全局队列里，根据pmg的协程调度设计，globalrunq要后于本地runq被调度
+```go
+func gopreempt_m(gp *g) {
+	if traceEnabled() {
+		traceGoPreempt()
+	}
+	goschedImpl(gp)
+}
+
+func goschedImpl(gp *g) {
+	status := readgstatus(gp)
+	if status&^_Gscan != _Grunning {
+		dumpgstatus(gp)
+		throw("bad g status")
+	}
+	casgstatus(gp, _Grunning, _Grunnable)
+	dropg()
+	lock(&sched.lock)
+	globrunqput(gp)
+	unlock(&sched.lock)
+
+	schedule()
+}
+```
+
+#### 发送SIGURG信号
+
+```go
+func preemptM(mp *m) {
+	// On Darwin, don't try to preempt threads during exec.
+	// Issue #41702.
+	if GOOS == "darwin" || GOOS == "ios" {
+		execLock.rlock()
+	}
+
+	if mp.signalPending.CompareAndSwap(0, 1) {
+		if GOOS == "darwin" || GOOS == "ios" {
+			pendingPreemptSignals.Add(1)
+		}
+
+		// If multiple threads are preempting the same M, it may send many
+		// signals to the same M such that it hardly make progress, causing
+		// live-lock problem. Apparently this could happen on darwin. See
+		// issue #37741.
+		// Only send a signal if there isn't already one pending.
+		signalM(mp, sigPreempt)
+	}
+
+	if GOOS == "darwin" || GOOS == "ios" {
+		execLock.runlock()
+	}
+}
+```
+
 
 ## 五. Go启动时的特殊协程
 
 调度器的生命周期  
 ![](.GPM_images/scheduler_lifecycle.png)
 
-### sysmon协程
+### sysmon 协程
+Go Runtime 在启动程序的时候，会创建一个独立的 M 作为监控线程，称为 sysmon，它是一个系统级的 daemon 线程。
+
 P的数量影响了同时运行go代码的协程数. 如果P被占用很久, 就会影响调度. sysmon协程的一个功能就是进行抢占.
 
-sysmon协程是在go runtime初始化之后, 执行用户编写的代码之前, 由runtime启动的不与任何P绑定, 直接由一个M执行的协程. 类似于 linux中的执行一些系统任务的内核线程.
 
-可认为是10ms执行一次. (初始运行间隔为20us, sysmon运行1ms后逐渐翻倍, 最终每10ms运行一次. 如果有发生过抢占成功, 则又恢复成 初始20us的运行间隔, 如此循环)
+这个sysmon 独立于 GPM 之外，也就是说不需要P就可以运行，因此官方工具 go tool trace 是无法追踪分析到此线程
+
+可认为是10ms执行一次. (初始运行间隔为20us, sysmon运行1ms后逐渐翻倍, 最终每10ms运行一次. 如果有发生过抢占成功, 则又恢复成初始20us的运行间隔, 如此循环)
+
+```go
+func sysmon() {
+    // ...
+	for {
+		// 时间设置
+		if idle == 0 { // start with 20us sleep...
+			delay = 20
+		} else if idle > 50 { // start doubling the sleep after 1ms...
+			delay *= 2
+		}
+		if delay > 10*1000 { // up to 10ms
+			delay = 10 * 1000
+		}
+		usleep(delay)
+		
+		now := nanotime()
+		if debug.schedtrace <= 0 && (sched.gcwaiting.Load() || sched.npidle.Load() == gomaxprocs) {
+			lock(&sched.lock)
+			if sched.gcwaiting.Load() || sched.npidle.Load() == gomaxprocs {
+				syscallWake := false
+				next := timeSleepUntil()
+				if next > now {
+					sched.sysmonwait.Store(true)
+					unlock(&sched.lock)
+					// Make wake-up period small enough
+					// for the sampling to be correct.
+					sleep := forcegcperiod / 2
+					if next-now < sleep {
+						sleep = next - now
+					}
+					shouldRelax := sleep >= osRelaxMinNS
+					if shouldRelax {
+						osRelax(true)
+					}
+					syscallWake = notetsleep(&sched.sysmonnote, sleep)
+					if shouldRelax {
+						osRelax(false)
+					}
+					lock(&sched.lock)
+					sched.sysmonwait.Store(false)
+					noteclear(&sched.sysmonnote)
+				}
+				if syscallWake {
+					idle = 0
+					delay = 20
+				}
+			}
+			unlock(&sched.lock)
+		}
+
+		lock(&sched.sysmonlock)
+		// Update now in case we blocked on sysmonnote or spent a long time
+		// blocked on schedlock or sysmonlock above.
+		now = nanotime()
+
+		// trigger libc interceptors if needed
+		if *cgo_yield != nil {
+			asmcgocall(*cgo_yield, nil)
+		}
+		// poll network if not polled for more than 10ms
+		lastpoll := sched.lastpoll.Load()
+		if netpollinited() && lastpoll != 0 && lastpoll+10*1000*1000 < now {
+			// 网络轮询器监控
+			
+			sched.lastpoll.CompareAndSwap(lastpoll, now)
+			list := netpoll(0) // non-blocking - returns list of goroutines
+			if !list.empty() {
+				// Need to decrement number of idle locked M's
+				// (pretending that one more is running) before injectglist.
+				// Otherwise it can lead to the following situation:
+				// injectglist grabs all P's but before it starts M's to run the P's,
+				// another M returns from syscall, finishes running its G,
+				// observes that there is no work to do and no other running M's
+				// and reports deadlock.
+				incidlelocked(-1)
+				injectglist(&list)
+				incidlelocked(1)
+			}
+		}
+        // ..
+		if scavenger.sysmonWake.Load() != 0 {
+			// Kick the scavenger awake if someone requested it.
+			scavenger.wake()
+		}
+		// 系统调用和抢占长时间运行的 G
+		if retake(now) != 0 {
+			idle = 0
+		} else {
+			idle++
+		}
+		// 检查是否需要垃圾回收
+		if t := (gcTrigger{kind: gcTriggerTime, now: now}); t.test() && forcegc.idle.Load() {
+			lock(&forcegc.lock)
+			forcegc.idle.Store(false)
+			var list gList
+			list.push(forcegc.g)
+			injectglist(&list)
+			unlock(&forcegc.lock)
+		}
+		if debug.schedtrace > 0 && lasttrace+int64(debug.schedtrace)*1000000 <= now {
+			lasttrace = now
+			schedtrace(debug.scheddetail > 0)
+		}
+		unlock(&sched.sysmonlock)
+	}
+}
+```
+
+
+#### 网络轮询器监控
+
+从 runtime 的实现源码中可以看到, sysmon 监控线程会每隔 20us~10ms 轮询一次检查当前网络轮询器中的所有 G 距离上次 runtime.netpoll 被调用是否超过了10ms，如果当前G执行时间太长了，则通过 injectglist() 将其放入 全局运行队列 ，等待下一次的继续执行。
+
+
+
+#### 垃圾回收
+如果垃圾回收器超过两分钟没有执行的话，sysmon 监控线程也会强制进行GC
+
+```go
+// var forcegcperiod int64 = 2 * 60 * 1e9
+
+func (t gcTrigger) test() bool {
+	if !memstats.enablegc || panicking.Load() != 0 || gcphase != _GCoff {
+		return false
+	}
+	switch t.kind {
+	case gcTriggerHeap:
+        // ..
+	case gcTriggerTime:
+		if gcController.gcPercent.Load() < 0 {
+			return false
+		}
+		lastgc := int64(atomic.Load64(&memstats.last_gc_nanotime))
+		return lastgc != 0 && t.now-lastgc > forcegcperiod
+	case gcTriggerCycle:
+		// ..
+	}
+	return true
+}
+
+```
+
 
 ### 管理员-g0
 
@@ -334,7 +649,7 @@ g8创建了g9，假如g8进行了非阻塞系统调用（CGO会是这种方式�
 
 Go调度在go1.12实现了抢占，应该更精确的称为请求式抢占，那是因为go调度器的抢占和OS的线程抢占比起来很柔和，不暴力，不会说线程时间片到了，或者更高优先级的任务到了，执行抢占调度。go的抢占调度柔和到只给goroutine发送1个抢占请求，至于goroutine何时停下来，那就管不到了。抢占请求需要满足2个条件中的1个：1）G进行系统调用超过20us，2）G运行超过10ms。调度器在启动的时候会启动一个单独的线程sysmon，它负责所有的监控工作，其中1项就是抢占，发现满足抢占条件的G时，就发出抢占请
 
-## 八. G_M_P 源码分析
+## 六. G_M_P 源码分析
 ![](.GPM_images/full_GPM_process.png)
 
 源码部分主要涉及三个文件：
@@ -863,10 +1178,235 @@ type schedt struct {
 }
 ```
 
+
+## 唤醒底层实现之gopark和goready
+```go
+// go1.21.5/src/runtime/proc.go
+func gopark(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer, reason waitReason, traceReason traceBlockReason, traceskip int) {
+	if reason != waitReasonSleep {
+		checkTimeouts() // timeouts may expire while two goroutines keep the scheduler busy
+	}
+    // 获取当前的m
+	mp := acquirem()
+	// 当前的g
+	gp := mp.curg
+    // 获取当前g的状态
+	status := readgstatus(gp)
+	if status != _Grunning && status != _Gscanrunning {
+		throw("gopark: bad g status")
+	}
+	mp.waitlock = lock
+	mp.waitunlockf = unlockf
+	gp.waitreason = reason
+	mp.waitTraceBlockReason = traceReason
+	mp.waitTraceSkip = traceskip
+    // 释放m
+	releasem(mp)
+	// can't do anything that might move the G between Ms here.
+	// 切换到g0栈操作
+	mcall(park_m)
+}
+```
+
+
+mcall是汇编实现，大概逻辑就是首先把上下文保存在g->sched中，然后切换到g0栈去调用传进来的函数，这里是park_m
+```asm
+// runtime/asm_amd64.s
+TEXT runtime·mcall<ABIInternal>(SB), NOSPLIT, $0-8
+	MOVQ	AX, DX	// DX = fn
+
+	// Save state in g->sched. The caller's SP and PC are restored by gogo to
+	// resume execution in the caller's frame (implicit return). The caller's BP
+	// is also restored to support frame pointer unwinding.
+	MOVQ	SP, BX	// hide (SP) reads from vet
+	MOVQ	8(BX), BX	// caller's PC
+	MOVQ	BX, (g_sched+gobuf_pc)(R14)
+	LEAQ	fn+0(FP), BX	// caller's SP
+	MOVQ	BX, (g_sched+gobuf_sp)(R14)
+	// Get the caller's frame pointer by dereferencing BP. Storing BP as it is
+	// can cause a frame pointer cycle, see CL 476235.
+	MOVQ	(BP), BX // caller's BP
+	MOVQ	BX, (g_sched+gobuf_bp)(R14)
+
+	// switch to m->g0 & its stack, call fn
+	MOVQ	g_m(R14), BX
+	MOVQ	m_g0(BX), SI	// SI = g.m.g0
+	CMPQ	SI, R14	// if g == m->g0 call badmcall
+	JNE	goodm
+	JMP	runtime·badmcall(SB)
+goodm:
+	MOVQ	R14, AX		// AX (and arg 0) = g
+	MOVQ	SI, R14		// g = g.m.g0
+	get_tls(CX)		// Set G in TLS
+	MOVQ	R14, g(CX)
+	MOVQ	(g_sched+gobuf_sp)(R14), SP	// sp = g0.sched.sp
+	PUSHQ	AX	// open up space for fn's arg spill slot
+	MOVQ	0(DX), R12
+	CALL	R12		// fn(g)
+	POPQ	AX
+	JMP	runtime·badmcall2(SB)
+	RET
+
+```
+
+```go
+// park continuation on g0.
+func park_m(gp *g) {
+	_g_ := getg()
+
+	if trace.enabled {
+		traceGoPark(_g_.m.waittraceev, _g_.m.waittraceskip)
+	}
+ 
+    // 这个是将当前的g状态切换为等待
+	casgstatus(gp, _Grunning, _Gwaiting)
+ 
+    // 将当前的goroutine和当前的M进行解绑
+	dropg()
+  
+    // 调用传入的回调函数
+	if fn := _g_.m.waitunlockf; fn != nil {
+	    // 判断是否需要等待
+		ok := fn(gp, _g_.m.waitlock)
+		// 重置
+		_g_.m.waitunlockf = nil
+		_g_.m.waitlock = nil
+		// 如果不需要等待
+		if !ok {
+			if trace.enabled {
+				traceGoUnpark(gp, 2)
+			}
+			// 重新切换状态 切换为运行
+			casgstatus(gp, _Gwaiting, _Grunnable)
+			// 将当前的go重新恢复运行
+			execute(gp, true) // Schedule it back, never returns.
+		}
+	}
+	// 如果需要等待 那么重新找一个goroutine
+	schedule()
+}
+```
+
+runtime.park_m 会将当前 Goroutine 的状态从 _Grunning 切换至 _Gwaiting，调用 runtime.dropg 移除线程和 Goroutine 之间的关联
+
+
+```go
+// Schedules gp to run on the current M.
+// If inheritTime is true, gp inherits the remaining time in the
+// current time slice. Otherwise, it starts a new time slice.
+// Never returns.
+//
+// Write barriers are allowed because this is called immediately after
+// acquiring a P in several places.
+//
+//go:yeswritebarrierrec
+func execute(gp *g, inheritTime bool) {
+    // 获取当前g
+	_g_ := getg()
+
+	if goroutineProfile.active {
+		// Make sure that gp has had its stack written out to the goroutine
+		// profile, exactly as it was when the goroutine profiler first stopped
+		// the world.
+		tryRecordGoroutineProfile(gp, osyield)
+	}
+
+	// Assign gp.m before entering _Grunning so running Gs have an
+	// M.
+	// 设置状态
+	_g_.m.curg = gp
+	gp.m = _g_.m
+  
+    // 切换可运行到运行中
+	casgstatus(gp, _Grunnable, _Grunning)
+	gp.waitsince = 0
+	gp.preempt = false
+	gp.stackguard0 = gp.stack.lo + _StackGuard
+	if !inheritTime {
+		_g_.m.p.ptr().schedtick++
+	}
+
+	// Check whether the profiler needs to be turned on or off.
+	hz := sched.profilehz
+	if _g_.m.profilehz != hz {
+		setThreadCPUProfiler(hz)
+	}
+
+	if trace.enabled {
+		// GoSysExit has to happen when we have a P, but before GoStart.
+		// So we emit it here.
+		if gp.syscallsp != 0 && gp.sysblocktraced {
+			traceGoSysExit(gp.sysexitticks)
+		}
+		traceGoStart()
+	}
+    // 调用gogo函数 恢复g的上下文
+	gogo(&gp.sched)
+}
+
+```
+
+```asm
+// func gogo(buf *gobuf)
+// restore state from Gobuf; longjmp
+TEXT runtime·gogo(SB), NOSPLIT, $0-8
+	MOVQ	buf+0(FP), BX		// gobuf
+	MOVQ	gobuf_g(BX), DX
+	MOVQ	0(DX), CX		// make sure g != nil
+	JMP	gogo<>(SB)
+
+TEXT gogo<>(SB), NOSPLIT, $0
+	get_tls(CX)
+	MOVQ	DX, g(CX)
+	MOVQ	DX, R14		// set the g register
+	MOVQ	gobuf_sp(BX), SP	// restore SP
+	MOVQ	gobuf_ret(BX), AX
+	MOVQ	gobuf_ctxt(BX), DX
+	MOVQ	gobuf_bp(BX), BP
+	MOVQ	$0, gobuf_sp(BX)	// clear to help garbage collector
+	MOVQ	$0, gobuf_ret(BX)
+	MOVQ	$0, gobuf_ctxt(BX)
+	MOVQ	$0, gobuf_bp(BX)
+	MOVQ	gobuf_pc(BX), BX
+	JMP	BX
+```
+
+
+
+```go
+func goready(gp *g, traceskip int) {
+	systemstack(func() {
+		ready(gp, traceskip, true)
+	})
+}
+```
+
+```go
+func ready(gp *g, traceskip int, next bool) {
+    // .. 
+
+	status := readgstatus(gp)
+
+	// 标记G为grunnable状态
+	mp := acquirem() // disable preemption because it can be holding p in a local var
+	casgstatus(gp, _Gwaiting, _Grunnable)
+
+    // 放入runq中等待调度循环消费
+	runqput(mp.p.ptr(), gp, next)
+
+    // 唤醒一个闲置的P来执行G
+	wakep()
+	releasem(mp)
+}
+
+```
+
+
 ## 参考链接
 
 - [从源码 15.7 剖析Go语言基于信号抢占式调度](https://www.luozhiyun.com/archives/485)
 - [Go调度器系列（2）宏观看调度器](https://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/)
 - [Go调度器系列（3）图解调度原理](https://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/)
 - [GO GMP协程调度实现原理 5w字长文史上最全](https://www.cnblogs.com/dojo-lzz/p/16342622.html)
+- [从源码角度看 Golang 的调度.md](https://github.com/0voice/Introduction-to-Golang/blob/main/%E6%96%87%E7%AB%A0/%E4%BB%8E%E6%BA%90%E7%A0%81%E8%A7%92%E5%BA%A6%E7%9C%8B%20Golang%20%E7%9A%84%E8%B0%83%E5%BA%A6.md)
 

@@ -23,7 +23,7 @@
   - [Go 的 GC](#go-%E7%9A%84-gc)
     - [原因](#%E5%8E%9F%E5%9B%A0)
     - [三色标记法的流程如下](#%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0%E6%B3%95%E7%9A%84%E6%B5%81%E7%A8%8B%E5%A6%82%E4%B8%8B)
-    - [GC时为什么要暂停用户线程？](#gc%E6%97%B6%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9A%82%E5%81%9C%E7%94%A8%E6%88%B7%E7%BA%BF%E7%A8%8B)
+    - [GC 时为什么要暂停用户线程？](#gc-%E6%97%B6%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9A%82%E5%81%9C%E7%94%A8%E6%88%B7%E7%BA%BF%E7%A8%8B)
       - [可能存在的问题](#%E5%8F%AF%E8%83%BD%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98)
     - [如何解决上述**漏标**问题](#%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E4%B8%8A%E8%BF%B0%E6%BC%8F%E6%A0%87%E9%97%AE%E9%A2%98)
       - [内存屏障](#%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C)
@@ -32,6 +32,7 @@
         - [Yuasa 删除写屏障--满足弱三色：指针修改时，修改前指向的对象要标灰](#yuasa-%E5%88%A0%E9%99%A4%E5%86%99%E5%B1%8F%E9%9A%9C--%E6%BB%A1%E8%B6%B3%E5%BC%B1%E4%B8%89%E8%89%B2%E6%8C%87%E9%92%88%E4%BF%AE%E6%94%B9%E6%97%B6%E4%BF%AE%E6%94%B9%E5%89%8D%E6%8C%87%E5%90%91%E7%9A%84%E5%AF%B9%E8%B1%A1%E8%A6%81%E6%A0%87%E7%81%B0)
         - [Hybrid write barrier 混合写屏障](#hybrid-write-barrier-%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C)
   - [GC 触发条件](#gc-%E8%A7%A6%E5%8F%91%E6%9D%A1%E4%BB%B6)
+    - [堆内存大小触发 GC 的情况](#%E5%A0%86%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F%E8%A7%A6%E5%8F%91-gc-%E7%9A%84%E6%83%85%E5%86%B5)
   - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -209,7 +210,7 @@ Go 团队更关注于如何更好地让 GC 与用户代码并发执行（使用�
 三色标记法相对于普通标记清扫，减少了 STW 时间. 这主要得益于标记过程是 "on-the-fly" 的，在标记过程中是不需要 STW 的，它与程序是并发执行的，这就大大缩短了 STW 的时间.
 
 
-### GC时为什么要暂停用户线程？
+### GC 时为什么要暂停用户线程？
 - 首先，如果不暂停用户线程，就意味着期间会不断有垃圾产生，永远也清理不干净。
 - 其次，用户线程的运行必然会导致对象的引用关系发生改变，这就会导致两种情况：漏标和错标。
 
@@ -332,20 +333,243 @@ writePointer(slot, ptr):
 
 
 ## GC 触发条件
+![](.gc_images/gc_trigger.png)
+```go
+// go1.21.5/src/runtime/mgc.go
+type gcTriggerKind int
 
-1. 主动触发，通过调用 runtime.GC() 来触发 GC，此调用阻塞式地等待当前 GC 运行完毕。
+const (
+	// gcTriggerHeap indicates that a cycle should be started when
+	// the heap size reaches the trigger heap size computed by the
+	// controller.
+	gcTriggerHeap gcTriggerKind = iota
+
+	// gcTriggerTime indicates that a cycle should be started when
+	// it's been more than forcegcperiod nanoseconds since the
+	// previous GC cycle.
+	gcTriggerTime
+
+	// gcTriggerCycle indicates that a cycle should be started if
+	// we have not yet started cycle number gcTrigger.n (relative
+	// to work.cycles).
+	gcTriggerCycle
+)
+
+```
+
+1. 主动触发gcTriggerCycle: 如果当前没有开启垃圾收集，则启动GC；主要是调用函数 [runtime.GC()]
 
 2. 被动触发，分为两种方式：
 
-    * 使用系统 sysmon 监控，当超过两分钟没有产生任何 GC 时，强制触发 GC。
+    * 使用系统 sysmon 监控，gcTriggerTime 自从上次GC后间隔时间达到了[runtime.forcegcperiod 默认为2分钟]
     
-    * 使用步调（Pacing）算法，其核心思想是控制内存增长的比例
+    * 使用步调（Pacing）算法，其核心思想是控制内存增长的比例, gcTriggerHeap 当前分配的内存达到一定阈值时触发，这个阈值在每次GC过后都会根据堆内存的增长情况和CPU占用率来调整；
 
 
+
+```go
+func (t gcTrigger) test() bool {
+	if !memstats.enablegc || panicking.Load() != 0 || gcphase != _GCoff {
+		return false
+	}
+	switch t.kind {
+	case gcTriggerHeap:
+		trigger, _ := gcController.trigger()
+		return gcController.heapLive.Load() >= trigger
+	case gcTriggerTime:
+		if gcController.gcPercent.Load() < 0 {
+			return false
+		}
+		lastgc := int64(atomic.Load64(&memstats.last_gc_nanotime))
+		return lastgc != 0 && t.now-lastgc > forcegcperiod
+	case gcTriggerCycle:
+		// t.n > work.cycles, but accounting for wraparound.
+		return int32(t.n-work.cycles.Load()) > 0
+	}
+	return true
+}
+```
+
+
+### 堆内存大小触发 GC 的情况
+
+
+```go
+// 控制器计算的触发堆大小
+func (c *gcControllerState) trigger() (uint64, uint64) {
+	goal, minTrigger := c.heapGoalInternal()
+	
+
+	if c.heapMarked >= goal {
+		// The goal should never be smaller than heapMarked, but let's be
+		// defensive about it. The only reasonable trigger here is one that
+		// causes a continuous GC cycle at heapMarked, but respect the goal
+		// if it came out as smaller than that.
+		return goal, goal
+	}
+
+	// Below this point, c.heapMarked < goal.
+
+	// heapMarked is our absolute minimum, and it's possible the trigger
+	// bound we get from heapGoalinternal is less than that.
+	if minTrigger < c.heapMarked {
+		minTrigger = c.heapMarked
+	}
+
+	triggerLowerBound := uint64(((goal-c.heapMarked)/triggerRatioDen)*minTriggerRatioNum) + c.heapMarked
+	if minTrigger < triggerLowerBound {
+		minTrigger = triggerLowerBound
+	}
+	
+	maxTrigger := uint64(((goal-c.heapMarked)/triggerRatioDen)*maxTriggerRatioNum) + c.heapMarked
+	if goal > defaultHeapMinimum && goal-defaultHeapMinimum > maxTrigger {
+		maxTrigger = goal - defaultHeapMinimum
+	}
+	if maxTrigger < minTrigger {
+		maxTrigger = minTrigger
+	}
+
+	// Compute the trigger from our bounds and the runway stored by commit.
+	var trigger uint64
+	runway := c.runway.Load()
+	if runway > goal {
+		trigger = minTrigger
+	} else {
+		trigger = goal - runway
+	}
+	if trigger < minTrigger {
+		trigger = minTrigger
+	}
+	if trigger > maxTrigger {
+		trigger = maxTrigger
+	}
+	if trigger > goal {
+		print("trigger=", trigger, " heapGoal=", goal, "\n")
+		print("minTrigger=", minTrigger, " maxTrigger=", maxTrigger, "\n")
+		throw("produced a trigger greater than the heap goal")
+	}
+	return trigger, goal
+}
+```
+获取 goal： HeapGoal 的时候使用了两种方式，一种是通过 GOGC 值计算，另一种是通过 memoryLimit 值计算(优化来自 https://github.com/golang/go/issues/48409 )，然后取它们两个中小的值作为 HeapGoal。
+```go
+func (c *gcControllerState) heapGoalInternal() (goal, minTrigger uint64) {
+	// GOGC 值计算结果
+	goal = c.gcPercentHeapGoal.Load()
+
+	// 取它们 GOGC 和 memoryLimi t两个中小的值作为 HeapGoal
+	if newGoal := c.memoryLimitHeapGoal(); newGoal < goal {
+		goal = newGoal
+	} else {
+		// We're not limited by the memory limit goal, so perform a series of
+		// adjustments that might move the goal forward in a variety of circumstances.
+
+		sweepDistTrigger := c.sweepDistMinTrigger.Load()
+		if sweepDistTrigger > goal {
+			// Set the goal to maintain a minimum sweep distance since
+			// the last call to commit. Note that we never want to do this
+			// if we're in the memory limit regime, because it could push
+			// the goal up.
+			goal = sweepDistTrigger
+		}
+		// Since we ignore the sweep distance trigger in the memory
+		// limit regime, we need to ensure we don't propagate it to
+		// the trigger, because it could cause a violation of the
+		// invariant that the trigger < goal.
+		minTrigger = sweepDistTrigger
+
+		// Ensure that the heap goal is at least a little larger than
+		// the point at which we triggered. This may not be the case if GC
+		// start is delayed or if the allocation that pushed gcController.heapLive
+		// over trigger is large or if the trigger is really close to
+		// GOGC. Assist is proportional to this distance, so enforce a
+		// minimum distance, even if it means going over the GOGC goal
+		// by a tiny bit.
+		//
+		// Ignore this if we're in the memory limit regime: we'd prefer to
+		// have the GC respond hard about how close we are to the goal than to
+		// push the goal back in such a manner that it could cause us to exceed
+		// the memory limit.
+		const minRunway = 64 << 10
+		if c.triggered != ^uint64(0) && goal < c.triggered+minRunway {
+			goal = c.triggered + minRunway
+		}
+	}
+	return
+}
+```
+
+
+第一个：gcPercentHeapGoal 通过 GOGC 值计算公式如下
+```go
+func (c *gcControllerState) commit(isSweepDone bool) {
+	// ...
+	gcPercentHeapGoal := ^uint64(0)
+	if gcPercent := c.gcPercent.Load(); gcPercent >= 0 {
+		// HeapGoal = 存活堆大小 + （存活堆大小+栈大小+全局变量大小）* GOGC/100
+		gcPercentHeapGoal = c.heapMarked + (c.heapMarked+c.lastStackScan.Load()+c.globalsScan.Load())*uint64(gcPercent)/100
+	}
+	// Apply the minimum heap size here. It's defined in terms of gcPercent
+	// and is only updated by functions that call commit.
+	if gcPercentHeapGoal < c.heapMinimum {
+		gcPercentHeapGoal = c.heapMinimum
+	}
+	c.gcPercentHeapGoal.Store(gcPercentHeapGoal)
+}
+```
+
+gcPercent 默认 100, 通过 GOGC env 获取
+```go
+func readGOGC() int32 {
+	p := gogetenv("GOGC")
+	if p == "off" {
+		return -1
+	}
+	if n, ok := atoi32(p); ok {
+		return n
+	}
+	return 100
+}
+```
+
+第二个：memoryLimit
+```go
+func (c *gcControllerState) memoryLimitHeapGoal() uint64 {
+	// Start by pulling out some values we'll need. Be careful about overflow.
+	var heapFree, heapAlloc, mappedReady uint64
+    // ...
+
+	memoryLimit := uint64(c.memoryLimit.Load())
+
+	// Compute term 1.
+	nonHeapMemory := mappedReady - heapFree - heapAlloc
+
+	// Compute term 2.
+	var overage uint64
+	if mappedReady > memoryLimit {
+		overage = mappedReady - memoryLimit
+	}
+
+	if nonHeapMemory+overage >= memoryLimit {
+		// We're at a point where non-heap memory exceeds the memory limit on its own.
+		// There's honestly not much we can do here but just trigger GCs continuously
+		// and let the CPU limiter reign that in. Something has to give at this point.
+		// Set it to heapMarked, the lowest possible goal.
+		return c.heapMarked
+	}
+
+	// Compute the goal.
+	goal := memoryLimit - (nonHeapMemory + overage)
+
+    // ..
+	return goal
+}
+```
 
 
 ## 参考资料
 1. [Go中内存分配源码实现](https://www.luozhiyun.com/archives/434) 
-2. [Go语言设计](https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-garbage-collector/)
+2. [Go语言设计:垃圾收集器](https://draveness.me/golang/docs/part3-runtime/ch07-memory/golang-garbage-collector/)
 3. [BFS (Breadth First Search 广度优先遍历）-->树的层次遍历](https://github.com/Danny5487401/algorithm-in-go-and-c/blob/master/01_dataStructure/04_graph/graph.md)
 4. [Go 官方gc-guide](https://tip.golang.org/doc/gc-guide)
+5. [Golang什么时候会触发GC](https://blog.haohtml.com/archives/23911)
