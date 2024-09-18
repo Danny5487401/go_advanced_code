@@ -349,9 +349,9 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [http的三个版本知识介绍](chapter12_net/http.md)
 
 - 1 http 服务端高级封装演变: ServeHTTP 是 HTTP 服务器响应客户端的请求接口
-  - [1.1 高级封装：使用DefaultServeMux](chapter12_net/01_http_server/01_use_DefaultServeMux/main.go)
-  - [1.2 中级封装：使用内置serveMux生成函数](chapter12_net/01_http_server/02_use_http_NewServeMux/main.go)
-  - [1.3 原始封装：自定义实现serveMux](chapter12_net/01_http_server/03_use_cutomized_mux/main.go)
+  - [1.1 高级封装：使用 DefaultServeMux](chapter12_net/01_http_server/01_use_DefaultServeMux/main.go)
+  - [1.2 中级封装：使用内置 serveMux 生成函数](chapter12_net/01_http_server/02_use_http_NewServeMux/main.go)
+  - [1.3 原始封装：自定义实现 serveMux](chapter12_net/01_http_server/03_use_cutomized_mux/main.go)
 - 2 http 客户端高级封装演变
   - [request 源码](chapter12_net/02_http_client/http_request.md)
   - [response 源码](chapter12_net/02_http_client/http_response.md)
@@ -384,6 +384,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [12 http2 使用](chapter12_net/12_http2/http2.md)
   - [let's encrypt 免费证书 开发server](chapter12_net/12_http2/01_server/server.go)
 - [13 flusher 实现 stream 流式返回](chapter12_net/13_flusher/flusher.md)
+- [14 ReverseProxy 反向代理](chapter12_net/14_reverse_proxy/reverse_proxy.md)
 
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
@@ -597,7 +598,6 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [3 Golang程序调试工具: delve-->调试器分类及实现](chapter31_tool/03_delve/delve.md)
 - [4 ast 抽象语法树](chapter31_tool/04_ast/ast.md)
 - [5 go1.21 toolchain 规则](chapter31_tool/05_toolchain_in_go1.21/toolchain.md)
-
 
 ## [第三十二章 Generic 泛型](chapter32_generic/generic.md)
 - [1 泛型在算法上的基本使用](chapter32_generic/01_basic_algorithm_application/main.go)

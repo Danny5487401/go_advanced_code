@@ -3,7 +3,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [fasthttp](#fasthttp)
-  - [对比net/http](#%E5%AF%B9%E6%AF%94nethttp)
+  - [对比 net/http](#%E5%AF%B9%E6%AF%94-nethttp)
   - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
     - [初始化](#%E5%88%9D%E5%A7%8B%E5%8C%96)
     - [具体获取过程: 工作协程的复用](#%E5%85%B7%E4%BD%93%E8%8E%B7%E5%8F%96%E8%BF%87%E7%A8%8B-%E5%B7%A5%E4%BD%9C%E5%8D%8F%E7%A8%8B%E7%9A%84%E5%A4%8D%E7%94%A8)
@@ -16,7 +16,7 @@
 # fasthttp
 高性能主要源自于“复用”，通过服务协程和内存变量的复用，节省了大量资源分配的成本。
 
-## 对比net/http
+## 对比 net/http
 net/http流程
 ![](.fasthttp_images/net_http.png)
 1. 注册处理器到一个 hash 表中，可以通过键值路由匹配；
