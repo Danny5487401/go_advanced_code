@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go_advenced_code/chapter12_net/04Tcp_Sticky_Problem/02_solution/proto"
+	"github.com/Danny5487401/go_advanced_code/chapter12_net/04_tcp_sticky_problem/02_solution/proto"
 	"net"
 )
 
@@ -13,7 +13,7 @@ func main() {
 		return
 	}
 	defer conn.Close()
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 3; i++ {
 		msg := `Hello, Hello. How are you?`
 		data, err := proto.Encode(msg)
 		if err != nil {

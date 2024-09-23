@@ -3,9 +3,10 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"go_advenced_code/chapter12_net/04Tcp_Sticky_Problem/02_solution/proto"
 	"io"
 	"net"
+
+	"github.com/Danny5487401/go_advanced_code/chapter12_net/04_tcp_sticky_problem/02_solution/proto"
 )
 
 func process(conn net.Conn) {
@@ -41,3 +42,11 @@ func main() {
 		go process(conn)
 	}
 }
+
+/*
+
+收到client发来的数据： Hello, Hello. How are you?
+收到client发来的数据： Hello, Hello. How are you?
+收到client发来的数据： Hello, Hello. How are you?
+
+*/

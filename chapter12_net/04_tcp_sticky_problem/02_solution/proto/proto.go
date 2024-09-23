@@ -16,13 +16,13 @@ func Encode(message string) ([]byte, error) {
 	pkg := new(bytes.Buffer)
 
 	// 写入消息头  4个字节
-	err := binary.Write(pkg, binary.LittleEndian, length)
+	err := binary.Write(pkg, binary.BigEndian, length)
 	if err != nil {
 		return nil, err
 	}
 
 	// 写入消息实体
-	err = binary.Write(pkg, binary.LittleEndian, []byte(message))
+	err = binary.Write(pkg, binary.BigEndian, []byte(message))
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func Decode(reader *bufio.Reader) (string, error) {
 
 	lengthBuff := bytes.NewBuffer(lengthByte)
 	var length int32
-	err := binary.Read(lengthBuff, binary.LittleEndian, &length)
+	err := binary.Read(lengthBuff, binary.BigEndian, &length)
 	if err != nil {
 		return "", err
 	}

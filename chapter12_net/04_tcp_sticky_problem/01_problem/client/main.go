@@ -12,7 +12,7 @@ func main() {
 		return
 	}
 	defer conn.Close()
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 3; i++ {
 		msg := `Hello, Hello. How are you?`
 		conn.Write([]byte(msg))
 	}
