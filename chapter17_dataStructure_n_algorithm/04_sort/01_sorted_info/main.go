@@ -11,15 +11,15 @@ func main() {
 	// 1。不同结构体切片排序.根据相同字段排序
 	type fruitList []interface{}
 	list := fruitList{
-		Fruit{"p苹果", 2, 3.3},
-		Fruit{"x香蕉", 8, 4.55},
-		Fruit{"j橘子", 5, 2.5},
-		Fruit{"c橙子", 3, 6.05},
+		Fruit{"苹果 p", 2, 3.3},
+		Fruit{"香蕉 x", 8, 4.55},
+		Fruit{"橘子 j", 5, 2.5},
+		Fruit{"橙子 c", 3, 6.05},
 		User{1, "alice", true, 18},
 	}
 
-	sortByReflect.SortBodyByInt(list, "Name", "ASC")
-	fmt.Println(list)
+	sortByReflect.SortBodyByIntOrString(list, "Name", "ASC")
+	fmt.Println(list) // [{1 alice true 18} {橘子 j 5 2.5} {橙子 c 3 6.05} {苹果 p 2 3.3} {香蕉 x 8 4.55}]
 
 	// 2. 相同结构体切片排序
 	users := []User{
@@ -32,7 +32,7 @@ func main() {
 		// age从小到大
 		return users[i].Age < users[j].Age
 	})
-	fmt.Println(users)
+	fmt.Println(users) // [{3 carl true 12} {4 john true 16} {1 alice true 18} {2 bob false 29}]
 
 	// 3.对字典的键名升序排序
 	m := map[string]interface{}{"id": 1, "name": "admin", "pid": 0, "age": 18}
@@ -54,27 +54,7 @@ func main() {
 	intList := sort.IntSlice(arr)
 	sort.Sort(intList)
 	// intList := sort.IntSlice(arr), sort.Sort(intList) 等价于 sort.Ints(arr)
-	fmt.Println(intList)
-
-	// 5. 查找数据
-	arr1 := []int{2, 1, 6, 5, 3}
-	// 错误使用直接使用，应该先排序
-	sort.Ints(arr1)
-	fmt.Println(arr1)
-	foundPosition := sort.SearchInts(arr1, 6)
-	unfoundPosition := sort.SearchInts(arr1, 4)
-	fmt.Println("找到元素索引位置是", foundPosition)
-	fmt.Println("找不到元素索引位置是", unfoundPosition)
-
-	// 6. sort.Search用于从一个已经排序的数组中找到某个值所对应的索引
-	arrInts := []int{13, 35, 56, 79}
-	findPos := sort.Search(len(arrInts), func(i int) bool {
-		// 注意不是 arrInts[i] == 35
-		return arrInts[i] >= 35
-	})
-	// 等价与下面sort.SearchInts
-	// findPos := sort.SearchInts(arrInts,35)
-	fmt.Println(findPos)
+	fmt.Println(intList) // [1 2 3 5 6]
 
 }
 

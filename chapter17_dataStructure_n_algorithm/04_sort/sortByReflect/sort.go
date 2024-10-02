@@ -27,8 +27,8 @@ func (acw bodyWrapper) Less(i, j int) bool {
 	return acw.by(acw.Body[i], acw.Body[j])
 }
 
-// 按照int排序
-func SortBodyByInt(bodys []interface{}, field string, sortBy string) {
+// 按照 field 子段类型排序
+func SortBodyByIntOrString(bodys []interface{}, field string, sortBy string) {
 	sort.Sort(bodyWrapper{bodys, func(p, q interface{}) bool {
 		i := reflect.ValueOf(p).FieldByName(field)
 		j := reflect.ValueOf(q).FieldByName(field)

@@ -449,10 +449,12 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
   - [3.2 crypto_rand使用](chapter17_dataStructure_n_algorithm/03_rand/02_crypto_rand/main.go)
   - [3.3 fastrand 优化使用](chapter17_dataStructure_n_algorithm/03_rand/03_fastrand/main.go)
 - [4 排序算法分类及图解(sort包源码分析)](chapter17_dataStructure_n_algorithm/04_sort/sort.md)
-  - [4.1 sort包使用](chapter17_dataStructure_n_algorithm/04_sort/01_sorted_info/main.go)
-    - 不同结构体切片根据反射reflect实现自定义排序 
-    - map根据key实现排序
-    - sort.Search 根据排序切片找索引
+  - [4.1 sort 排序](chapter17_dataStructure_n_algorithm/04_sort/01_sorted_info/main.go)
+    - 不同结构体切片根据反射reflect实现自定义排序: sort.Sort 接口实现
+    - 相同结构体切片排序: sort.Slice
+    - map根据key实现排序: sort.Strings
+    - int 类型切片排序: sort.IntSlice
+  - [4.2 sort.Search 二分查找: 根据排序切片找索引](chapter17_dataStructure_n_algorithm/04_sort/02_search/main.go)
 - [5 container](chapter17_dataStructure_n_algorithm/05_container/container.md)
   - [5.1 heap 最小堆](chapter17_dataStructure_n_algorithm/05_container/01_heap/heap.md)
   - [5.2 list 双向链表](chapter17_dataStructure_n_algorithm/05_container/02_list/list.md) 
