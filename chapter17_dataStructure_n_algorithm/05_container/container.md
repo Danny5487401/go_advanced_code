@@ -9,7 +9,7 @@
 
 # container 
 
-
+container为容器数据类型：该包包含了三个数据结构：
 - container/list 双向链表；
 - container/ring 循环链表；
 - container/heap 堆

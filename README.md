@@ -55,7 +55,7 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 # *目录*
-Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运行,*推荐 GoVersion: 1.21*
+Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,*推荐 GoVersion: 1.21+*
 
 
 ## 必备知识:
@@ -458,6 +458,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
 - [5 container](chapter17_dataStructure_n_algorithm/05_container/container.md)
   - [5.1 heap 最小堆](chapter17_dataStructure_n_algorithm/05_container/01_heap/heap.md)
   - [5.2 list 双向链表](chapter17_dataStructure_n_algorithm/05_container/02_list/list.md) 
+  - [5.3 ring 环形链表](chapter17_dataStructure_n_algorithm/05_container/03_ring/ring.md) 
 - [6 certificate 证书-->openssl 使用](chapter17_dataStructure_n_algorithm/06_certificate/certificate.md)
   - [6.1 pem(Privacy Enhanced Mail Certificate保密增强邮件协议](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/pem.md)
     - [6.1.1 生成公私钥的 .pem 文件(公钥使用RSA算法)](chapter17_dataStructure_n_algorithm/06_certificate/01_pem/01_pem_generate/main.go)
@@ -474,9 +475,9 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 2022.2.1 版本以上运
         - [9.1.4 简单实现 hashMap](chapter17_dataStructure_n_algorithm/09_golang_data_structure/01_map_structure/04_self_HashMap/self_hash_map.md)
     - [9.2 String 底层结构,字符集和字符编码,性能分析及内存泄漏分析](chapter17_dataStructure_n_algorithm/09_golang_data_structure/02_string_structure/str.md)
     - [9.3 Struct 底层结构,内存布局,空结构体内存对齐](chapter17_dataStructure_n_algorithm/09_golang_data_structure/03_struct_structure/struct.md)
-- [10 copy_on_write 写入时复制-->golang官方库btree](chapter17_dataStructure_n_algorithm/10_copy_on-write/copy_on_write.md)
-  - [10.1 使用 RWMutex 缺点](chapter17_dataStructure_n_algorithm/10_copy_on-write/01_rwmutex/main.go)
-  - [10.2 使用 copy_on_write 优化](chapter17_dataStructure_n_algorithm/10_copy_on-write/02_copy_on_write/main.go)
+- [10 copy_on_write 写入时复制-->golang官方库btree](chapter17_dataStructure_n_algorithm/10_copy_on_write/copy_on_write.md)
+  - [10.1 使用 RWMutex 缺点](chapter17_dataStructure_n_algorithm/10_copy_on_write/01_rwmutex/main.go)
+  - [10.2 使用 copy_on_write 优化](chapter17_dataStructure_n_algorithm/10_copy_on_write/02_copy_on_write/main.go)
 ## 第十八章 错误跟踪 error 和 panic
 - [0 错误(err)和异常（exception）区别及处理方式](chapter18_error_n_panic/00_diff_between_err_n_exception/main.go)
 - [1 自定义错误类型打印错误栈](chapter18_error_n_panic/01_customized_error/customized_error.go)
