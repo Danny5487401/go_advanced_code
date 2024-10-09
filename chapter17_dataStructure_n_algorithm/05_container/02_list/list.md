@@ -3,8 +3,10 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [container/list](#containerlist)
+  - [List的典型应用场景](#list%E7%9A%84%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF)
   - [源码](#%E6%BA%90%E7%A0%81)
     - [基础链表操作](#%E5%9F%BA%E7%A1%80%E9%93%BE%E8%A1%A8%E6%93%8D%E4%BD%9C)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -13,8 +15,9 @@
 container/list 封装了双向链表 doubly linked list 的实现
 
 
-
-
+## List的典型应用场景
+- 时间轮的任务链表定义
+- Cache中实现LRU机制的链式结构
 
 ## 源码
 
@@ -22,7 +25,6 @@ container/list 封装了双向链表 doubly linked list 的实现
 
 ```go
 // go1.20/src/container/list/list.go
-// Element is an element of a linked list.
 type Element struct {
     // To simplify the implementation, internally a list l is implemented
     // as a ring, such that &l.root is both the next element of the last
@@ -36,11 +38,8 @@ type Element struct {
 }
 
 ```
-> // To simplify the implementation, internally a list l is implemented
-// as a ring, such that &l.root is both the next element of the last
-// list element (l.Back()) and the previous element of the first list
-// element (l.Front()).
-> 
+> To simplify the implementation, internally a list l is implemented as a ring, such that &l.root is both the next element of the last
+list element (l.Back()) and the previous element of the first list element (l.Front()).
 > container/list 中的 List 本质是个环形结构（ring），包含的 root 节点，既是双向链表中最后一个元素的 next，也是第一个元素的 prev。
 
 ![](.list_images/sentinel.png) 
@@ -165,3 +164,4 @@ func (l *List) remove(e *Element) {
 }
 ```
 
+## 参考

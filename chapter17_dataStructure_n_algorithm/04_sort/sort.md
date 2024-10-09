@@ -4,9 +4,15 @@
 
 - [排序算法分类](#%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E5%88%86%E7%B1%BB)
   - [1. 冒泡排序](#1-%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F)
-  - [2. 快速排序](#2-%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F)
-    - [3. 插入排序 (Insertion Sort)](#3-%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F-insertion-sort)
-  - [sort包分析](#sort%E5%8C%85%E5%88%86%E6%9E%90)
+  - [2. 快速排序（quickSort）](#2-%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8Fquicksort)
+  - [3. 插入排序 (Insertion Sort)](#3-%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F-insertion-sort)
+  - [4. 希尔排序，也称递减增量排序算法，实质是插入排序的优化（分组插入排序）](#4-%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F%E4%B9%9F%E7%A7%B0%E9%80%92%E5%87%8F%E5%A2%9E%E9%87%8F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E5%AE%9E%E8%B4%A8%E6%98%AF%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F%E7%9A%84%E4%BC%98%E5%8C%96%E5%88%86%E7%BB%84%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F)
+  - [5. 堆排序（heapSort）](#5-%E5%A0%86%E6%8E%92%E5%BA%8Fheapsort)
+  - [6. 归并排序（SymMerge）](#6-%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8Fsymmerge)
+  - [sort 使用](#sort-%E4%BD%BF%E7%94%A8)
+  - [sort 包分析](#sort-%E5%8C%85%E5%88%86%E6%9E%90)
+    - [不稳定排序](#%E4%B8%8D%E7%A8%B3%E5%AE%9A%E6%8E%92%E5%BA%8F)
+    - [稳定排序](#%E7%A8%B3%E5%AE%9A%E6%8E%92%E5%BA%8F)
     - [sort.Search](#sortsearch)
   - [参考](#%E5%8F%82%E8%80%83)
 
@@ -66,7 +72,7 @@
 3. 针对所有的元素重复以上的步骤，除了最后一个。
 4. 持续每次对越来越少的元素重复上面的步骤，直到没有任何一对数字需要比较
 
-## 2. 快速排序
+## 2. 快速排序（quickSort）
 ![](.sort_images/quick_sort.gif)
 
 通过一趟排序将待排记录分隔成独立的两部分，其中一部分的关键字比另一部分的关键字小
@@ -78,30 +84,250 @@
 3. 递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序；
 
 
-### 3. 插入排序 (Insertion Sort)
+
+## 3. 插入排序 (Insertion Sort)
 
 ![insertion_sort.gif](.sort_images%2Finsertion_sort.gif)
 
 对于未排序数据，在已排序序列中从后向前扫描，找到相应位置并插入。
 
-## sort包分析
+尽管其平均时间复杂度高达 O(n^2)，但是在 array 长度较短(这个值一般是 16 ~ 32)的情况下，在实际应用中拥有良好的性能表现。
+
+## 4. 希尔排序，也称递减增量排序算法，实质是插入排序的优化（分组插入排序）
+
+对于大规模的数组，插入排序很慢，因为它只能交换相邻的元素位置，每次只能将未排序序列数量减少 1。希尔排序的出现就是为了解决插入排序的这种局限性，通过交换不相邻的元素位置，使每次可以将未排序序列的减少数量变多
+
+
+## 5. 堆排序（heapSort）
+![heap_sort.gif](.sort_images/heap_sort.gif)
+
+
+
+## 6. 归并排序（SymMerge）
+原理： 将数组分成两个子数组， 分别进行排序，然后再将它们归并起来（自上而下）
+
+具体算法描述：先考虑合并两个有序数组，基本思路是比较两个数组的最前面的数，谁小就先取谁，取了后相应的指针就往后移一位。然后再比较，直至一个数组为空，最后把另一个数组的剩余部分复制过来即可
+
+归并算法是分治法 的一个典型应用， 所以它有两种实现方法：
+![sys_merge_sort.gif](.sort_images/sys_merge_sort.gif)
+- 自上而下的递归： 每次将数组对半分成两个子数组再归并（分治）
+- 自下而上的迭代：先归并子数组，然后成对归并得到的子数组
+
+## sort 使用
+
+sort 包本身完成了 int float64 和 string 类型的数据排序， 使用起来也很简单
+
 ```go
-// go1.18/src/sort/slice.go
+// go1.21.5/src/sort/sort.go
+// Convenience wrappers for common cases
+
+// Ints sorts a slice of ints in increasing order.
+//
+// Note: consider using the newer slices.Sort function, which runs faster.
+func Ints(x []int) { Sort(IntSlice(x)) }
+
+// Float64s sorts a slice of float64s in increasing order.
+// Not-a-number (NaN) values are ordered before other values.
+//
+// Note: consider using the newer slices.Sort function, which runs faster.
+func Float64s(x []float64) { Sort(Float64Slice(x)) }
+
+// Strings sorts a slice of strings in increasing order.
+//
+// Note: consider using the newer slices.Sort function, which runs faster.
+func Strings(x []string) { Sort(StringSlice(x)) }
+```
+分别维护了一个 IntSlice 、 Float64Slice 和 StringSlice 的结构
+
+搜索
+```go
+// /go1.21.5/src/sort/search.go
+
+// Convenience wrappers for common cases.
+
+// SearchInts searches for x in a sorted slice of ints and returns the index
+// as specified by Search. The return value is the index to insert x if x is
+// not present (it could be len(a)).
+// The slice must be sorted in ascending order.
+func SearchInts(a []int, x int) int {
+	return Search(len(a), func(i int) bool { return a[i] >= x })
+}
+
+// SearchFloat64s searches for x in a sorted slice of float64s and returns the index
+// as specified by Search. The return value is the index to insert x if x is not
+// present (it could be len(a)).
+// The slice must be sorted in ascending order.
+func SearchFloat64s(a []float64, x float64) int {
+	return Search(len(a), func(i int) bool { return a[i] >= x })
+}
+
+// SearchStrings searches for x in a sorted slice of strings and returns the index
+// as specified by Search. The return value is the index to insert x if x is not
+// present (it could be len(a)).
+// The slice must be sorted in ascending order.
+func SearchStrings(a []string, x string) int {
+	return Search(len(a), func(i int) bool { return a[i] >= x })
+}
+
+```
+
+
+## sort 包分析
+
+切片排序
+
+```go
+// go1.21.5/src/sort/slice.go
+
+// The sort is not guaranteed to be stable: equal elements
+// may be reversed from their original order.
+// For a stable sort, use SliceStable.
 func Slice(x any, less func(i, j int) bool) {
-	rv := reflectValueOf(x)
-	swap := reflectSwapper(x)
+	rv := reflectlite.ValueOf(x)
+	swap := reflectlite.Swapper(x)
 	length := rv.Len()
-	quickSort_func(lessSwap{less, swap}, 0, length, maxDepth(length))
+	limit := bits.Len(uint(length))
+	pdqsort_func(lessSwap{less, swap}, 0, length, limit)
+}
+
+func SliceStable(x any, less func(i, j int) bool) {
+	rv := reflectlite.ValueOf(x)
+	swap := reflectlite.Swapper(x)
+	stable_func(lessSwap{less, swap}, rv.Len())
+}
+
+```
+
+> 稳定排序：假定在待排序的序列中存在多个具有相同值的元素，若经过排序，这些元素的相对次序保持不变，
+> 即在原序列中，若r[i]=r[j]且r[i]在r[j]之前，在排序后的序列中，若r[i]仍在r[j]之前，则称这种排序算法是稳定的(stable)；否则称为不稳定的。
+
+- Sort 不稳定排序 
+- Stable 是稳定排序: 相同元素会保证原始顺序
+
+### 不稳定排序
+pdqsort (pattern-defating quicksort) 是 Rust、C++ Boost 中默认的 unstable 排序算法，其实质为一种混合排序算法，
+会在不同情况下切换到不同的排序机制，是 C++ 标准库算法 introsort 的一种改进。可以认为是 unstable 混合排序算法的较新成果
+
+其理想情况下的时间复杂度为 O(n)，最坏情况下的时间复杂度为 O(n* logn)，不需要额外的空间
+
+```go
+// pdqsort_func sorts data[a:b].
+// The algorithm based on pattern-defeating quicksort(pdqsort), but without the optimizations from BlockQuicksort.
+// pdqsort paper: https://arxiv.org/pdf/2106.05123.pdf
+// C++ implementation: https://github.com/orlp/pdqsort
+// Rust implementation: https://docs.rs/pdqsort/latest/pdqsort/
+// limit is the number of allowed bad (very unbalanced) pivots before falling back to heapsort.
+func pdqsort_func(data lessSwap, a, b, limit int) {
+	const maxInsertion = 12
+
+	var (
+		wasBalanced    = true // whether the last partitioning was reasonably balanced
+		wasPartitioned = true // whether the slice was already partitioned
+	)
+
+	for {
+		length := b - a
+
+		if length <= maxInsertion {
+			// 长度<=12,选择插入排序
+			insertionSort_func(data, a, b)
+			return
+		}
+
+		// Fall back to heapsort if too many bad choices were made.
+		if limit == 0 {
+			// 堆排序
+			heapSort_func(data, a, b)
+			return
+		}
+
+		// If the last partitioning was imbalanced, we need to breaking patterns.
+		if !wasBalanced {
+			breakPatterns_func(data, a, b)
+			limit--
+		}
+
+		pivot, hint := choosePivot_func(data, a, b)
+		if hint == decreasingHint {
+			reverseRange_func(data, a, b)
+			// The chosen pivot was pivot-a elements after the start of the array.
+			// After reversing it is pivot-a elements before the end of the array.
+			// The idea came from Rust's implementation.
+			pivot = (b - 1) - (pivot - a)
+			hint = increasingHint
+		}
+
+		// The slice is likely already sorted.
+		if wasBalanced && wasPartitioned && hint == increasingHint {
+			if partialInsertionSort_func(data, a, b) {
+				return
+			}
+		}
+
+		// Probably the slice contains many duplicate elements, partition the slice into
+		// elements equal to and elements greater than the pivot.
+		if a > 0 && !data.Less(a-1, pivot) {
+			mid := partitionEqual_func(data, a, b, pivot)
+			a = mid
+			continue
+		}
+
+		mid, alreadyPartitioned := partition_func(data, a, b, pivot)
+		wasPartitioned = alreadyPartitioned
+
+		leftLen, rightLen := mid-a, b-mid
+		balanceThreshold := length / 8
+		if leftLen < rightLen {
+			wasBalanced = leftLen >= balanceThreshold
+			pdqsort_func(data, a, mid, limit)
+			a = mid + 1
+		} else {
+			wasBalanced = rightLen >= balanceThreshold
+			pdqsort_func(data, mid+1, b, limit)
+			b = mid
+		}
+	}
 }
 ```
-go1.18: 名义上叫快速排序（quicksort），但其实质是混合排序算法（hybrid sorting algorithm），它们虽然在大部分情况下会使用快速排序算法，但是也会在不同情况下切换到其他排序算法。
+
+### 稳定排序
+
+```go
+func stable_func(data lessSwap, n int) {
+	blockSize := 20 // must be > 0
+	a, b := 0, blockSize
+	for b <= n {
+		insertionSort_func(data, a, b)
+		a = b
+		b += blockSize
+	}
+	insertionSort_func(data, a, n)
+
+	for blockSize < n {
+		a, b = 0, 2*blockSize
+		for b <= n {
+			symMerge_func(data, a, a+blockSize, b)
+			a = b
+			b += 2 * blockSize
+		}
+		if m := a + blockSize; m < n {
+			symMerge_func(data, a, m, n)
+		}
+		blockSize *= 2
+	}
+}
+```
+
 
 Golang中 sort包内部实现了四种基本的排序算法
 
 1. 插入排序 insertionSort: 对于未排序数据，在已排序序列由后向前扫描，找到相应位置并插入。
+
 ```go
-// 插入排序
-func insertionSort(data Interface, a, b int) {
+// go1.21.5/src/sort/zsortfunc.go
+
+// insertionSort_func sorts data[a:b] using insertion sort.
+func insertionSort_func(data lessSwap, a, b int) {
 	for i := a + 1; i < b; i++ {
 		for j := i; j > a && data.Less(j, j-1); j-- {
 			data.Swap(j, j-1)
@@ -240,6 +466,9 @@ type Interface interface{
 
 Note：Go的sort包已经为基本数据类型都实现了sort功能，其函数名的最后一个字母是s，表示sort之意。比如：Ints, Float64s, Strings，等等。
 
+
+
+
 ### sort.Search
 该函数使用二分查找的方法，会从[0, n)中取出一个值index，index为[0, n)中最小的使函数f(index)为True的值，并且f(index+1)也为True
 
@@ -269,4 +498,5 @@ func Search(n int, f func(int) bool) int {
 
 ## 参考
 
-- 使用 pdqsort 提案:https://github.com/golang/go/issues/50154
+- [常见排序算法总结和 Go 标准库排序源码分析](https://segmentfault.com/a/1190000039668324)
+- [使用 pdqsort 提案](https://github.com/golang/go/issues/50154)

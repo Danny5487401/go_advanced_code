@@ -3,6 +3,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [container/heap](#containerheap)
+  - [heap 的应用](#heap-%E7%9A%84%E5%BA%94%E7%94%A8)
   - [完全二叉树的存储方式](#%E5%AE%8C%E5%85%A8%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F)
   - [最大堆图解操作](#%E6%9C%80%E5%A4%A7%E5%A0%86%E5%9B%BE%E8%A7%A3%E6%93%8D%E4%BD%9C)
   - [container/heap 包](#containerheap-%E5%8C%85)
@@ -28,6 +29,10 @@
 删除之后，数据集就不能算作一个堆了，因为最顶层的元素没有了，数据集不符合完全二叉树的定义。这时，我们需要将堆的数据进行重新排列，也就是重新“堆化”。
 同样的，在堆中新添加一个元素也需要重新做“堆化”的操作，来将数据集恢复到满足堆定义的状态。
 
+## heap 的应用
+- 定时器
+- 优先级队列：比如kubernetes中的实现，FIFO-PriorityQueue
+- heap排序
 
 ## 完全二叉树的存储方式
 
