@@ -116,7 +116,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
       - [1.1.2 有缓冲 channel](chapter03_channel/01_channel_use/01_initialize/02_bufferChan/main.go)
       - [1.1.3 chanx: 使用 RingBuffer 实现无限缓存 channel](chapter03_channel/01_channel_use/01_initialize/03_unbounded_chan/unbounder_chan.md)
     - [1.2 使用 channel 实现 goroutine 父子通信](chapter03_channel/01_channel_use/02_parent_children_communication/main.go)
-    - [1.3 死锁：range 未关闭的 channel](chapter03_channel/01_channel_use/03deadlock/main.go)
+    - [1.3 死锁：range 未关闭的 channel](chapter03_channel/01_channel_use/03_deadlock/main.go)
     - [1.4 通道遍历:for range 语法 ](chapter03_channel/01_channel_use/05ChannelRange/main.go)
     - [1.5 优雅关闭 channel 与粗暴关闭 channel](chapter03_channel/01_channel_use/04channelClose/ChanClose.md)
       - [1.5.1 SPMC(Single-Producer Multi-Consumer 1 个 sender，N 个 receiver): 发送者通过关闭数据通道说 「不要再发送了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
@@ -612,7 +612,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 
 ## [第三十三章 makefile 使用](chapter33_makefile/Makefile_info.md)
 - [1 Makefile常用函数列表](chapter33_makefile/makefile_func.md)
-- [2 golang makefile 最佳实践](chapter33_makefile/iam_makefile_structure.png)
+- [2 golang makefile 最佳实践](chapter33_makefile/go_makefile.md)
 
 ## [第三十四章 regexp 正则表达式 Regular Expression](chapter34_regexp/regexp.md)
 - [1 基本正则表达式使用](chapter34_regexp/01_basic_grammar/main.go)

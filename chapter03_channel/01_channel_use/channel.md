@@ -83,7 +83,7 @@ make(chan int,6)
 
 
 ```go
-// /go1.21.5/src/runtime/chan.go
+// go1.21.5/src/runtime/chan.go
 type hchan struct {
 	qcount   uint           //  队列中元素个数
 	dataqsiz uint           // 队列长度，eg make(chan int64, 5), dataqsiz为5
@@ -445,7 +445,7 @@ default:
 注意：非阻塞读必须带上default
 
 2. 方式二：带 “ok”的读
-接收操作有两种写法，
+接收操作有两种写法
 ```go
 // 一种带 “ok”，反应 channel 是否关闭；
 // 一种不带 “ok”，这种写法，当接收到相应类型的零值时无法知道是真实的发送者发送过来的值，还是 channel 被关闭后，返回给接收者的默认类型的零值
@@ -463,7 +463,7 @@ fmt.Println(v, ok) // 0, false
 
 ### 源码
 ```go
-//应源码里的这四个函数
+// 对应源码里的这四个函数
 // 1. select非阻塞读不带ok返回
 func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected bool) {
 	selected, _ = chanrecv(c, elem, false)
@@ -490,7 +490,8 @@ func chanrecv2(c *hchan, elem unsafe.Pointer) (received bool) {
 
 最终都指向了chanrecv函数，如果有接收值，val := <-c，会把接收值放到elem的地址中，如果忽略接收值直接写<-c，这时elem为nil
 ```go
-// 位于 src/runtime/chan.go
+// src/runtime/chan.go
+
 // chanrecv 函数接收 channel c 的元素并将其写入 ep 所指向的内存地址。
 // 如果 ep 是 nil，说明忽略了接收值。
 // 如果 block == false，即非阻塞型接收，在没有数据可接收的情况下，返回 (false, false)
