@@ -9,6 +9,7 @@
   - [栈结构](#%E6%A0%88%E7%BB%93%E6%9E%84)
   - [Goroutine 栈操作](#goroutine-%E6%A0%88%E6%93%8D%E4%BD%9C)
   - [G 的创建](#g-%E7%9A%84%E5%88%9B%E5%BB%BA)
+  - [G 的销毁](#g-%E7%9A%84%E9%94%80%E6%AF%81)
   - [栈的初始化](#%E6%A0%88%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96)
   - [案例](#%E6%A1%88%E4%BE%8B)
 
@@ -211,13 +212,14 @@ func newproc(siz int32, fn *funcval) {
     // 切换到 G0 进行创建
     systemstack(func() {
         newg := newproc1(fn, argp, siz, gp, pc)
-        ...
+        //...
     })
 }
 ```
 newproc 方法会切换到 G0 上调用 newproc1 函数进行 G 的创建。
 ```go
-const _StackMin = 2048
+//分配 2K 大小的栈内存
+const _StackMin = 2048 
 func newproc1(fn *funcval, argp unsafe.Pointer, narg int32, callergp *g, callerpc uintptr) *g {
     _g_ := getg()
     ...
@@ -262,6 +264,56 @@ func malg(stacksize int32) *g {
 
 分配完毕之后会设置 stackguard0 为 stack.lo + _StackGuard，作为判断是否需要进行栈扩容使用
 
+## G 的销毁
+
+G 在退出时会执行goexit函数，状态从_Grunning变为_Gdead，G 对象并不会直接释放，而是通过gfput函数放入关联 P 的本地空闲列表，或者全局空闲列表，以便复用。
+
+```go
+// go1.21.5/src/runtime/proc.go
+func gfput(pp *p, gp *g) {
+	// G 状态检查
+	if readgstatus(gp) != _Gdead {
+		throw("gfput: bad status (not Gdead)")
+	}
+    //  G 的栈内存检查，如果不是标准栈大小，释放栈空间
+	stksize := gp.stack.hi - gp.stack.lo
+
+	if stksize != uintptr(startingStackSize) {
+		// non-standard stack size - free it.
+		stackfree(gp.stack)
+		gp.stack.lo = 0
+		gp.stack.hi = 0
+		gp.stackguard0 = 0
+	}
+
+	// // 放入 p.gFree 列表, 如果列表中g个数超过64，仅会在P本地列表保存32个，超过的部分放到全局空闲G列表sched.gFree
+	pp.gFree.push(gp)
+	pp.gFree.n++
+	if pp.gFree.n >= 64 {
+		var (
+			inc      int32
+			stackQ   gQueue
+			noStackQ gQueue
+		)
+		for pp.gFree.n >= 32 {
+			gp := pp.gFree.pop()
+			pp.gFree.n--
+			if gp.stack.lo == 0 {
+				noStackQ.push(gp)
+			} else {
+				stackQ.push(gp)
+			}
+			inc++
+		}
+		lock(&sched.gFree.lock)
+		sched.gFree.noStack.pushAll(noStackQ)
+		sched.gFree.stack.pushAll(stackQ)
+		sched.gFree.n += inc
+		unlock(&sched.gFree.lock)
+	}
+}
+
+```
 
 ## 栈的初始化
 ```go

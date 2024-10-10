@@ -3,17 +3,13 @@ package main
 import "fmt"
 
 func main() {
-	length := 10
-	slice := make([]int, 0, length)
-	for i := 1; i <= length; i++ {
-		// 1. 构建数据
-		slice = append(slice, i)
-	}
+	// 1. 构建数据
+	sliceInfo := []int{1, 2, 3}
 
 	sChan := make(chan int, 5)
 
 	go func() {
-		for _, v := range slice {
+		for _, v := range sliceInfo {
 			// 2. 发送数据
 			sChan <- v
 		}
@@ -22,14 +18,14 @@ func main() {
 	}()
 
 	for data := range sChan {
-		// 接受数据
+		// 3. 接受数据
 		fmt.Println(data)
 
 	}
 }
 
 /*
-10
+3
 fatal error: all goroutines are asleep - deadlock!
 
 goroutine 1 [chan receive]:
