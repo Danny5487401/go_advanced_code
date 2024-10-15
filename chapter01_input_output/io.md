@@ -2,12 +2,12 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Linux的文件系统](#linux%E7%9A%84%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F)
+- [Linux 的文件系统](#linux-%E7%9A%84%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F)
   - [文件系统的特点](#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%89%B9%E7%82%B9)
   - [I/O输入输出分类](#io%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E5%88%86%E7%B1%BB)
   - [文件的I/O操作](#%E6%96%87%E4%BB%B6%E7%9A%84io%E6%93%8D%E4%BD%9C)
   - [整个 Unix 体系结构](#%E6%95%B4%E4%B8%AA-unix-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84)
-  - [fd文件描述符](#fd%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6)
+  - [fd 文件描述符](#fd-%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6)
   - [标准库中对IO封装](#%E6%A0%87%E5%87%86%E5%BA%93%E4%B8%AD%E5%AF%B9io%E5%B0%81%E8%A3%85)
     - [IO 接口描述（语义）](#io-%E6%8E%A5%E5%8F%A3%E6%8F%8F%E8%BF%B0%E8%AF%AD%E4%B9%89)
     - [分类](#%E5%88%86%E7%B1%BB)
@@ -16,10 +16,11 @@
     - [进程 I/O 观测](#%E8%BF%9B%E7%A8%8B-io-%E8%A7%82%E6%B5%8B)
   - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
     - [数据结构](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Linux的文件系统
+# Linux 的文件系统
 
 ![](.io_images/linux_file_system.png)
 
@@ -121,20 +122,32 @@ ssize_t __generic_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 * 当然，我们右上角还看到一个缺口，应用程序除了可以使用公共函数库，其实是可以直接调用系统调用的，但是由此带来的复杂性又应用自己承担。这种需求也是很常见的，
 标准库封装了通用的东西，同样割舍了很多系统调用的功能，这种情况下，只能通过系统调用来获取;
   
-## fd文件描述符
-文件描述符File descriptor是一个非负整数，本质上是一个索引值（这句话非常重要）。
+## fd 文件描述符
+文件描述符 File descriptor 是一个非负整数，本质上是一个索引值（这句话非常重要）。
+事实上，内核会为每个进程维护一个打开文件的列表，该列表称为文件表（file table）。而文件表通过文件描述符fd进行索引，从而组成了一个进程的文件描述符表
 
-什么时候拿到的 fd ？
+（1）文件描述符其实质是一个数字，这个数字在一个进程中表示一个特定的含义，当我们open打开一个文件时，操作系统在内存中构建了一些数据结构来表示这个动态文件，然后返回给应用程序一个数字作为文件描述符（file description），这个数字就和我们内存中维护这个动态文件的这些数据结构挂钩绑定上了，以后我们应用程序如果要操作这一个动态文件，只需要用这个文件描述符进行区分。
 
-当打开一个文件时，内核向进程返回一个文件描述符（ open 系统调用得到 ），后续 read、write 这个文件时，则只需要用这个文件描述符来标识该文件，将其作为参数传入 read、write 。
-fd 的值范围是什么？
+（2）文件描述符就是用来区分一个程序打开的多个文件。
+
+（3）文件描述符的作用域就是当前进程，出了当前进程这个文件描述符就没有意义了。
+
+（4）文件描述符fd的合法范围是0开始，到上限值减1。默认情况下上限值是1024，可以配置最大为1048576。
+
+（5）open返回的fd必须记录好，以后向这个文件的所有操作都要靠这个fd去对应这个文件，最后关闭文件时也需要fd去指定关闭这个文件。如果在我们关闭文件前fd丢了，那么这个文件就没法关闭了也没法读写了。
 
 在 POSIX 语义中，0，1，2 这三个 fd 值已经被赋予特殊含义，分别是标准输入（ STDIN_FILENO ），标准输出（ STDOUT_FILENO ），标准错误（ STDERR_FILENO ）。
-ulimit 命令查看当前系统的配置文件描述符
+
+当我们运行一个程序得到一个进程时，内部就默认已经打开了3个文件，对应的fd就是0、1、2
+
+
 
 ```shell
-ulimit -n
-#我的mac os系统上进程默认最多打开 256 文件
+# ulimit 命令查看当前系统的配置文件描述符
+# 我的mac os系统上进程默认最多打开 256 文件
+✗ ulimit -n
+12544
+
 ```
 ## 标准库中对IO封装
 ![](.io_images/io_all_realized.png)
@@ -290,20 +303,18 @@ Current DISK READ:       0.00 B/s | Current DISK WRITE:      61.76 K/s
 
 
 
-
-
 ## 源码分析
 
 ### 数据结构
 ```go
-// /Users/python/go/go1.16/src/os/types.go
+// /go1.16/src/os/types.go
 // File represents an open file descriptor.
 type File struct {
     *file // os specific
 }
 ```
 ```go
-// /Users/python/go/go1.16/src/os/file_unix.go
+// go1.16/src/os/file_unix.go
 type file struct {
 	pfd         poll.FD  // 文件描述符
 	name        string
@@ -345,3 +356,8 @@ type FD struct {
 	isFile bool
 }
 ```
+
+## 参考
+
+- [存储系列之总结：存储分层](https://www.cnblogs.com/orange-CC/p/12689583.html)
+- [Linux内核之 文件I/O](https://www.cnblogs.com/orange-CC/p/13528963.html)

@@ -12,7 +12,10 @@
 在汇编里所谓的变量，一般是存储在 .rodata 或者 .data 段中的只读值。对应到应用层的话，就是已初始化过的全局的 const、var、static 变量/常量。
 
 ## 变量声明
-格式：
+
+Go汇编中使用 DATA 和 GLOBL 来定义一个变量(常量)。
+
+DATA 用来指定对应内存中的值；
 ```cgo
 DATA    symbol+offset(SB)/width, value
 // 在Go汇编语言中，内存是通过SB伪寄存器定位。SB是Static base pointer的缩写，意为静态内存的开始地址。
@@ -33,18 +36,20 @@ GLOBL ·symbol(SB), width
 ```cgo
 // 使用 DATA 结合 GLOBL 来定义一个变量
 // GLOBL 必须跟在 DATA 指令之后:
+
+// const age int32 = 8 // 8 为4个字节
 DATA ·age+0(SB)/4, $8  
 GLOBL ·age(SB), RODATA, $4
 
-
+// const pi float64 = 3.1415926
 DATA ·pi+0(SB)/8, $3.1415926 
 GLOBL ·pi(SB), RODATA, $8
 
-
+// var year int32 = 2020
 DATA ·year+0(SB)/4, $2020 
 GLOBL ·year(SB), RODATA, $4
 
-
+// const hello string = "hello my world"
 DATA ·hello+0(SB)/8, $"hello my" 
 DATA ·hello+8(SB)/8, $"   world" 
 GLOBL ·hello(SB), RODATA, $16 

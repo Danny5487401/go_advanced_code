@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
-	"unsafe"
 )
 
 func main() {
@@ -13,37 +11,27 @@ func main() {
 	s[1] = 20
 	s[2] = 30
 
-	fmt.Println("--------main start--------------")
-	fmt.Println(s)
-	fmt.Println(unsafe.Pointer(&s))
-	sptr := (*reflect.SliceHeader)(unsafe.Pointer(&s))
-	fmt.Println(unsafe.Pointer(sptr.Data))
+	fmt.Printf("%p,%+v\n", s, s)
 
 	changeSlice(s)
 
-	fmt.Println("--------main after --------------")
-	fmt.Println(s)
-
-
+	fmt.Printf("%p,%+v\n", s, s)
 
 }
 
 func changeSlice(s []int) {
-	fmt.Println("--------changeSlice--------------")
-	fmt.Println(s)
-	fmt.Println(unsafe.Pointer(&s))
-	sptr := (*reflect.SliceHeader)(unsafe.Pointer(&s))
-	fmt.Println(unsafe.Pointer(sptr.Data))
-
 	for i := 0; i < 10; i++ {
 		s = append(s, i)
 	}
 
-	fmt.Println(s)
-	fmt.Println(unsafe.Pointer(&s))
-	sptr1 := (*reflect.SliceHeader)(unsafe.Pointer(&s))
-	fmt.Println(unsafe.Pointer(sptr1.Data))
+	fmt.Printf("%p,%+v\n", s, s)
 
 }
 
 // 运行结果
+/*
+0x1400005c070,[10 20 30]
+0x1400005c070,[10 20 30 0 1 2 3 4 5 6 7 8 9]
+0x1400005c070,[10 20 30]
+
+*/

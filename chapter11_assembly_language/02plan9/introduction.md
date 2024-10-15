@@ -6,11 +6,11 @@
   - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
   - [1. 通用寄存器](#1-%E9%80%9A%E7%94%A8%E5%AF%84%E5%AD%98%E5%99%A8)
   - [2. 伪寄存器](#2-%E4%BC%AA%E5%AF%84%E5%AD%98%E5%99%A8)
-    - [1 SB-> Static base pointer: global symbols.](#1-sb--static-base-pointer-global-symbols)
-    - [2 SP->Stack pointer(栈指针):](#2-sp-stack-pointer%E6%A0%88%E6%8C%87%E9%92%88)
+    - [1 SB-> Static base pointer: global symbols](#1-sb--static-base-pointer-global-symbols)
+    - [2 SP->Stack pointer(栈指针):top of stack](#2-sp-stack-pointer%E6%A0%88%E6%8C%87%E9%92%88top-of-stack)
       - [伪寄存器的内存模型：真假 SP/FP/BP关系](#%E4%BC%AA%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E7%9C%9F%E5%81%87-spfpbp%E5%85%B3%E7%B3%BB)
     - [3 FP->Frame pointer: arguments and locals.](#3-fp-frame-pointer-arguments-and-locals)
-    - [4 PC-> Program counter: jumps and branches.](#4-pc--program-counter-jumps-and-branches)
+    - [4 PC-> Program counter: jumps and branches](#4-pc--program-counter-jumps-and-branches)
   - [3. 内联](#3-%E5%86%85%E8%81%94)
   - [4. 常见指令](#4-%E5%B8%B8%E8%A7%81%E6%8C%87%E4%BB%A4)
   - [汇编操作](#%E6%B1%87%E7%BC%96%E6%93%8D%E4%BD%9C)
@@ -26,6 +26,10 @@ Go 编译器会输出一种抽象可移植的汇编代码，这种汇编并不�
 
 Go 汇编使用的是caller-save模式，被调用函数的入参参数、返回值都由调用者维护、准备。
 因此，当需要调用一个函数时，需要先将这些工作准备好，才调用下一个函数，另外这些都需要进行内存对齐，对齐的大小是 sizeof(uintptr)。
+
+Go 语言汇编使用的是 GAS 汇编语法（Gnu ASsembler），与传统的汇编语言存在一些差异。
+
+![](.introduction_images/plan_9_and_AT&T.png)
 
 ## 基本概念
 
@@ -74,16 +78,16 @@ MOVQ $0x10, AX ===== mov rax, 0x10
 ## 2. 伪寄存器
 Go 的汇编还引入了 4 个伪寄存器:用来维护上下文、特殊标识等作用
 
-### 1 SB-> Static base pointer: global symbols. 
+### 1 SB-> Static base pointer: global symbols
 理解为原始内存,是一个虚拟寄存器，保存了静态基地址(static-base) 指针，即我们程序地址空间的开始地址；
 
-    全局静态基指针，一般用来声明函数或全局变量，foo(SB)可以用来定义全局的function和数据，foo<>(SB)表示foo只在当前文件可见，跟C中的static效果类似。
-    如果在另外文件中引用该变量的话，会报 relocation target not found 的错误。
-    此外可以在引用上加偏移量，如foo+4(SB)表示foo+4bytes的地址.
-    NOSPLIT：向编译器表明不应该插入 stack-split 的用来检查栈需要扩张的前导指令；
+全局静态基指针，一般用来声明函数或全局变量，foo(SB)可以用来定义全局的function和数据，foo<>(SB)表示foo只在当前文件可见，跟C中的static效果类似。
+如果在另外文件中引用该变量的话，会报 relocation target not found 的错误。
+此外可以在引用上加偏移量，如foo+4(SB)表示foo+4bytes的地址.
+NOSPLIT：向编译器表明不应该插入 stack-split 的用来检查栈需要扩张的前导指令；
 
 
-### 2 SP->Stack pointer(栈指针): 
+### 2 SP->Stack pointer(栈指针):top of stack
 
 
 SP寄存器 分为伪 SP 寄存器和硬件 SP 寄存器。
@@ -116,9 +120,9 @@ func main() {
 }
 ```
 
-1. 使用硬BP寄存器
+1. 使用硬SP寄存器
 ![](.introduction_images/sp_same_location.png)
-```shell
+```cgo
 // func_amd64.s
 TEXT ·add(SB), $0-24
     MOVQ 8(SP), AX
@@ -131,7 +135,7 @@ TEXT ·add(SB), $0-24
 
 2. 使用伪SP寄存器
 ![](.introduction_images/software_sp.png)
-```shell
+```cgo
 // func_amd64.s
 TEXT ·add(SB), $16-24
     MOVQ a+16(SP), AX
@@ -148,13 +152,12 @@ func add(a, b int) int
 // 函数实现   
 // 该实现一般写在 与声明同名的 _{Arch}.s 文件中，例如：add_amd64.s
 TEXT pkgname·add(SB), NOSPLIT, $0-16
-    MOVQ a+0(FP), AX
-    MOVQ a+8(FP), BX
-    ADDQ AX, BX
-    MOVQ BX, ret+16(FP)
+    MOVQ a+0(FP), AX  // 参数 a
+    MOVQ b+8(FP), BX  // 参数 b
+    ADDQ AX, BX   //  BX += AX
+    MOVQ BX, ret+16(FP) // 返回值赋值
     RET
 ```
-
 
 
 
@@ -213,7 +216,7 @@ BP：基准指针寄存器，维护当前栈帧的基准地址，以便用来索
 作用：伪 FP 寄存器对应的是 caller 函数的帧指针，一般用来访问 callee 函数的入参参数和返回值.当前的 callee 函数是 add，在 add 的代码中引用 FP，该 FP 指向的位置不在 callee 的 stack frame 之内，而是在 caller 的 stack frame 上。
 
 例如
-```shell
+```cgo
 arg0+0(FP)
 arg1+8(FP)
 ```
@@ -224,7 +227,7 @@ arg1+8(FP)
 
 
 
-### 4 PC-> Program counter: jumps and branches.
+### 4 PC-> Program counter: jumps and branches
 
 实际上就是在体系结构的知识中常见的PC寄存器，在x86平台下对应ip寄存器，amd64上则是rip。
 
@@ -237,7 +240,22 @@ go编译器会智能判断对代码进行优化和使用汇编
 go build -gcflags="-N -l -S" file来获得汇编代码。
 
 ## 4. 常见指令
-数据宽度-Bit、Byte、Word、Dword、Qword
+
+掌握下面常见的指令就可以
+| 指令 | 指令种类 | 用途 |示例|
+| :--: | :--: | :--: |:--: |
+| MOVQ | 传送 | 数据传送|MOVQ $48, AX // 把 48 传送到 AX |
+| LEAQ | ^ | 地址传送 |LEAQ AX, BX // 把 AX 有效地址传送到 BX |
+| PUSHQ | ^ | 栈压入 |PUSHQ AX // 将 AX 内容送入栈顶位置 |
+| POPQ | ^ | 栈弹出 |POPQ AX // 弹出栈顶数据后修改栈顶指针 |
+| ADDQ | 运算 | 相加并赋值	 |ADDQ BX, AX // 等价于 AX+=BX |
+| SUBQ | ^ | 相减并赋值	 |SUBQ BX, AX // 等价于 AX-=BX |
+| CMPQ | ^ | 比较大小	 |CMPQ SI CX // 比较 SI 和 CX 的大小 |
+| CALL | 转移 | 调用函数	 |CALL runtime.printnl(SB) // 发起调用 |
+| JMP| ^| 无条件转移指令	 |JMP 0x0185 //无条件转至 0x0185 地址处 |
+| JLS(Jump Less or Same) | ^ | 条件转移指令 |JLS 0x0185 //左边小于右边，则跳到 0x0185|
+| JZ(jump when has zero flag ) | ^ | 条件跳转指令	 |DECQ CX ;  JZ  done     // CX--, 判断为零则跳转 |
+
 
 1. 栈扩大、缩小：栈的增长和收缩是通过在栈指针寄存器 SP 上分别执行减法和加法指令来实现的,plan9 中，Go 编译器不会生成任何 PUSH/POP 族的指令，而是采用sub 跟add SP。  
 ```cgo
@@ -252,10 +270,20 @@ MOVW $0x10, BX   // 2 bytes
 MOVD $1, DX      // 4 bytes
 MOVQ $-10, AX     // 8 bytes
 ```
+数据宽度-Bit、Byte、Word、Dword、Qword
 - byte，即8位
 - word，即16位
 - double word
 - quadra word
+
+Go 汇编会在指令后加上 B , W , L 或 Q , 分别表示操作数的大小为1个，2个，4个或8个字节。
+```cgo
+MOVB $1, DI      // 1 byte
+MOVW $0x10, BX   // 2 bytes
+MOVL $1, DX      // 4 bytes
+MOVQ $-10, AX    // 8 bytes  
+```
+
 
 
 搬运的长度是由 MOV 的后缀决定的，这一点与 intel 汇编稍有不同，看看类似的 X64 汇编:
@@ -301,10 +329,9 @@ JNZ target // 如果 zero flag (ZF标志寄存器)被 set 过，则跳转
 
 
 
-
 5. 地址运算LEA(Load Effective Address),amd64 平台地址都是 8 个字节，所以直接就用 LEAQ   
 
-```assembly
+```cgo
 LEAQ (BX)(AX*8), CX    // => CX = BX + (AX * 8) 
 
 // 上面代码中的 8 代表 scale, scale 只能是 0、2、4、8 ,如果写成其它值:
@@ -357,5 +384,7 @@ go tool objdump -s <method name> <binary> # 反汇编指定函数 go tool objdum
 
 
 ## 参考资料
-1. [曹大汇编](https://go.xargin.com/docs/assembly/assembly/#%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4)
+1. [Go语言高级编程--汇编语言](https://chai2010.cn/advanced-go-programming-book/ch3-asm/readme.html)
+2. [Go 语言进阶秘籍--Plan9 汇编](https://mp.weixin.qq.com/s/YtTY23cWaE3M5ygAurj1Ig)
+3. [plan9 assembly 完全解析](https://github.com/cch123/golang-notes/blob/master/assembly.md)
 

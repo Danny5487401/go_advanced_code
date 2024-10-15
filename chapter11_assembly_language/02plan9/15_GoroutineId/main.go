@@ -25,7 +25,7 @@ func main() {
 	go func() {
 		// 汇编获取goroutineId
 		GId = GId_Package.GetGoroutineId()
-		fmt.Println("GoroutineId是", GetGoid(), GId)
+		fmt.Println("GoroutineId 是", GetGoid(), GId)
 		wg.Done()
 	}()
 	wg.Wait()

@@ -1,5 +1,6 @@
 package func_package
 
+// .s 和 .go 文件的全局变量互通
 var a = 999
 
 func Get() int // 获取a的值

@@ -15,6 +15,10 @@
       - [GM 模型](#gm-%E6%A8%A1%E5%9E%8B)
       - [GPM 模型](#gpm-%E6%A8%A1%E5%9E%8B)
         - [特点](#%E7%89%B9%E7%82%B9)
+      - [goroutine 和 thread的联系](#goroutine-%E5%92%8C-thread%E7%9A%84%E8%81%94%E7%B3%BB)
+        - [内存占用](#%E5%86%85%E5%AD%98%E5%8D%A0%E7%94%A8)
+        - [创建和销毁](#%E5%88%9B%E5%BB%BA%E5%92%8C%E9%94%80%E6%AF%81)
+        - [切换成本](#%E5%88%87%E6%8D%A2%E6%88%90%E6%9C%AC)
   - [四. 调度](#%E5%9B%9B-%E8%B0%83%E5%BA%A6)
     - [调度器思想](#%E8%B0%83%E5%BA%A6%E5%99%A8%E6%80%9D%E6%83%B3)
     - [有关 P 和 M 的个数问题](#%E6%9C%89%E5%85%B3-p-%E5%92%8C-m-%E7%9A%84%E4%B8%AA%E6%95%B0%E9%97%AE%E9%A2%98)
@@ -23,7 +27,7 @@
       - [注册 sigPreempt:_SIGURG信号](#%E6%B3%A8%E5%86%8C-sigpreempt_sigurg%E4%BF%A1%E5%8F%B7)
       - [收到sigurg信号后进行抢占](#%E6%94%B6%E5%88%B0sigurg%E4%BF%A1%E5%8F%B7%E5%90%8E%E8%BF%9B%E8%A1%8C%E6%8A%A2%E5%8D%A0)
       - [发送SIGURG信号](#%E5%8F%91%E9%80%81sigurg%E4%BF%A1%E5%8F%B7)
-  - [五. Go启动时的特殊协程](#%E4%BA%94-go%E5%90%AF%E5%8A%A8%E6%97%B6%E7%9A%84%E7%89%B9%E6%AE%8A%E5%8D%8F%E7%A8%8B)
+  - [五. Go 启动时的特殊协程](#%E4%BA%94-go-%E5%90%AF%E5%8A%A8%E6%97%B6%E7%9A%84%E7%89%B9%E6%AE%8A%E5%8D%8F%E7%A8%8B)
     - [sysmon 协程](#sysmon-%E5%8D%8F%E7%A8%8B)
       - [网络轮询器监控](#%E7%BD%91%E7%BB%9C%E8%BD%AE%E8%AF%A2%E5%99%A8%E7%9B%91%E6%8E%A7)
       - [垃圾回收](#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6)
@@ -42,8 +46,13 @@
       - [场景11](#%E5%9C%BA%E6%99%AF11)
       - [场景12](#%E5%9C%BA%E6%99%AF12)
   - [六. G_M_P 源码分析](#%E5%85%AD-g_m_p-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
-    - [G](#g)
+    - [G ( Go 协程)](#g--go-%E5%8D%8F%E7%A8%8B)
+      - [G 的创建](#g-%E7%9A%84%E5%88%9B%E5%BB%BA)
+      - [G 的运行](#g-%E7%9A%84%E8%BF%90%E8%A1%8C)
     - [M 代表一个进程中的工作线程](#m-%E4%BB%A3%E8%A1%A8%E4%B8%80%E4%B8%AA%E8%BF%9B%E7%A8%8B%E4%B8%AD%E7%9A%84%E5%B7%A5%E4%BD%9C%E7%BA%BF%E7%A8%8B)
+      - [M 的创建](#m-%E7%9A%84%E5%88%9B%E5%BB%BA)
+      - [M 的销毁](#m-%E7%9A%84%E9%94%80%E6%AF%81)
+      - [M 的运行](#m-%E7%9A%84%E8%BF%90%E8%A1%8C)
     - [P 资源的管理者](#p-%E8%B5%84%E6%BA%90%E7%9A%84%E7%AE%A1%E7%90%86%E8%80%85)
     - [schedt 全局调度器](#schedt-%E5%85%A8%E5%B1%80%E8%B0%83%E5%BA%A6%E5%99%A8)
   - [唤醒底层实现之gopark和goready](#%E5%94%A4%E9%86%92%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0%E4%B9%8Bgopark%E5%92%8Cgoready)
@@ -149,6 +158,36 @@ M 虽然需要跟 P 绑定执行，但数量上并不与 P 相等。这是因为
 当M因为系统调用阻塞或cgo运行一段时间后, sysmon协程会将P与M分离. 由其他的M来结合P进行调度.
 
 
+#### goroutine 和 thread的联系
+说到goroutine，不得不提 thread，因为他们很像，但又不同。
+
+这篇文章给了很好的启发，从内存占用，创建和销毁，以及切换时间三个角度来认识两者的不同。
+
+##### 内存占用
+
+创建一个 goroutine 栈内存消耗只有 2KB。实际运行时，可以根据需要在堆内存空间扩缩容。
+
+创建一个 thread 需要消耗 1MB 的栈内存，而且还需要一个称为“guard page"的区域，用于和其他 thread 的栈空间进行隔离。
+
+对于一个用 Go 构建的 HTTP Server 来说，对到来的每个请求，创建一个 goroutine 来处理事非常轻松的事情。但对于一个使用线程作为并发原语的语言构建的服务，每个请求对应一个线程实在是太浪费了，很快就会出现 OOM 错误（OutOfMermonyError）。
+
+##### 创建和销毁
+
+Thread 创建和销毁都有巨大的消耗，因为它直接跟操作系统打交道，是内核级。一般常见的做法是维护一个线程池。
+
+然而，goroutine 是由 runtime 负责，创建和销毁非常容易，消耗特别小，是用户级。
+
+##### 切换成本
+
+Thread 是抢占式调度，在线程切换的时候，调度器必须保存/恢复所有的寄存器
+
+> 16 general purpose registers, PC (Program Counter), SP (Stack Pointer), segment registers, 16 XMM registers, FP coprocessor state, 16 AVX registers, all MSRs etc.
+
+而 goroutine 是协作式调度（cooperatively），当切换发生时，只需要保存/恢复3个寄存器。
+
+> Program Counter, Stack Pointer and DX.
+
+
 ## 四. 调度
 ![](.GPM_images/scheduler_components.png)
 
@@ -163,13 +202,17 @@ Goroutine调度器和OS调度器是通过M结合起来的，每个M都代表了1
 
 
 ### 调度器思想
+- 目标1：尽可能地不要让 CPU 闲着
+- 目标2：尽可能地运行更多的 G （代码）
+- 目标3：尽量最小化 Go 协程切换所带来的开销
+
 ![](.GPM_images/scheduler_idea.png)
 
 调度器的有两大思想：
 
 1. 复用线程：协程本身就是运行在一组线程之上，不需要频繁的创建、销毁线程，而是对线程的复用。在调度器中复用线程还有2个体现：
-- 1 work stealing，当本线程无可运行的G时，尝试从其他线程绑定的P偷取G，而不是销毁线程。
-- 2 hand off，当本线程因为G进行系统调用阻塞时，线程释放绑定的P，把P转移给其他空闲的线程执行。
+- 1 work stealing mechanism(偷窃机制): 当本线程无可运行的G时，尝试从其他线程绑定的P偷取G，而不是销毁线程。
+- 2 hand over mechanism(交接机制):当本线程因为G进行系统调用阻塞时，线程释放绑定的P，把P转移给其他空闲的线程执行。
 
 2. 利用并行：GOMAXPROCS设置P的数量，当GOMAXPROCS大于1时，就最多有GOMAXPROCS个线程处于运行状态，这些线程可能分布在多个CPU核上同时运行，使得并发利用并行。另外，GOMAXPROCS也限制了并发的程度，比如GOMAXPROCS = 核数/2，则最多利用了一半的CPU核进行并行。
 
@@ -194,6 +237,7 @@ func schedinit() {
 	
 	// 该启动的P数量，默认为cpu core数
     procs := ncpu
+	// 如果存在环境变量GOMAXPROCS，取环境变量的值，创建指定个数的 P
     if n, ok := atoi32(gogetenv("GOMAXPROCS")); ok && n > 0 {
         procs = n
     }
@@ -371,7 +415,7 @@ func preemptM(mp *m) {
 ```
 
 
-## 五. Go启动时的特殊协程
+## 五. Go 启动时的特殊协程
 
 调度器的生命周期  
 ![](.GPM_images/scheduler_lifecycle.png)
@@ -531,12 +575,22 @@ func (t gcTrigger) test() bool {
 
 ### 管理员-g0
 
-go程序中，每个M都会绑定一个叫g0的初代goroutine，它在M的创建的时候创建，g0的主要工作就是goroutine的调度、垃圾回收等。
-g0和我们常规的goroutine的任务不同，g0的栈是在主线程栈上分配的，并且它的栈空间有64k，m0是runtime创建第一个线程，然后m0关联一个本地的p，
-就可以运行g0了。在g0的栈上不断的调度goroutine来执行，当有新的goroutine关联p准备运行发现没有m的时候，就会去创建一个m，m再关联一个g0，
-g0再去调度.
+go程序中，每个 M 都会绑定一个叫g0的初代goroutine，它在M的创建的时候创建，g0的主要工作就是goroutine的调度(在用户的 g 和 g0之间进行切换)、垃圾回收等。
+
+g0 和我们常规的 goroutine 的任务不同，g0的栈是在主线程栈上分配的，并且它的栈空间有64k，m0是runtime创建第一个线程，然后m0关联一个本地的p，就可以运行g0了。
+
+在g0的栈上不断的调度goroutine来执行，当有新的goroutine关联p准备运行发现没有m的时候，就会去创建一个m，m再关联一个g0， g0再去调度.
+
+但实际上，整个 runtime 中有两种 g0。一种是上面说的每个 M 上的 g0，还有一种是 m0 的 g0。m0, g0 都是以全局变量的方式存在。
 
 ### 调度场景过程
+M 的职责就是找到一个可运行的 G，然后执行它。从大方向来讲，主要有三个过程：
+
+- 先从本队队列中找
+- 定期从全局队列中找
+- 最后去别的 P 上偷
+
+
 #### 场景1
 
 p1拥有g1，m1获取p1后开始运行g1，g1使用go func()创建了g2，为了局部性g2优先加入到p1的本地队列
@@ -657,7 +711,7 @@ Go调度在go1.12实现了抢占，应该更精确的称为请求式抢占，那
 2. runtime/runtime2.go 这里主要是运行时中一些重要数据结构的定义，比如g、m、p以及涉及到接口、defer、panic、map、slice等核心类型
 3. runtime/proc.go 一些核心方法的实现，涉及gmp调度等核心代码在这里
 
-### G
+### G ( Go 协程)
 - 当 goroutine 被调离 CPU 时，调度器负责把 CPU 寄存器的值保存在 g 对象的成员变量之中。
 - 当 goroutine 被调度起来运行时，调度器又负责把 g 对象的成员变量所保存的寄存器值恢复到 CPU 的寄存器。
 
@@ -858,6 +912,17 @@ type gobuf struct {
 }
 ```
 
+#### G 的创建
+
+G 的创建一般有两种。第一种就是 Go 程序启动时，主线程会创建第一个 goroutune 来执行 main 函数。其次是，我们在代码中使用 go 关键字创建新的goroutine
+
+#### G 的运行
+G 的执行需要 M，而 M 的运行需要绑定 P，所以理论上同一时间处于运行状态的 G 数量等于 P 的数量。
+
+G 的状态保存在其gobuf字段上，所以 G 可以跨 M 进行调度。
+
+M 找到可运行的 G 后，会通过汇编函数gogo从g0栈切换到用户 G 的栈运行。
+
 ### M 代表一个进程中的工作线程
 当 M 没有工作可做的时候，在它休眠前，会“自旋”地来找工作：检查全局队列，查看 network poller，试图执行 gc 任务，或者“偷”工作.
 
@@ -977,13 +1042,54 @@ type m struct {
 }
 ```
 
-M的状态并没有向P和G那样有多个状态常量，它只有自旋和非自旋两种状态
+几个比较重要的字段，包括：
+
+- 用于执行调度的g0
+- 用于信号处理的gsignal
+- 线程本地存储tls
+- 当前正在运行的curg
+- 执行 Goroutine 时需要的本地资源p（如果没有执行，则为nil）
+- 执行系统调用前上一次绑定的oldp【结束系统调用的时候，优化恢复上一次绑定的p】
+  ![](.GPM_images/m_status.png)
+- 表示自身状态的spinning,M的状态并没有像P和G那样有多个状态常量，M 有三种状态：运行，自旋、休眠(有些文章，将 M 的状态分为自旋和非自旋，主要从m.spinning来考虑。)
+
+#### M 的创建
+有两种场景需要创建 M：
+
+- Go 程序启动时会创建主线程，主线程的第一个 M，即M0
+- 当有新 G 创建，或者有可运行的 G，且还有空闲的 P，那么会调用 starm函数。startm函数会从 全局空闲M 队列取一个 M，和空闲的 P 绑定，执行G，如果没有空闲的M，就会通过newm创建一个
+
+
+#### M 的销毁
+M 不会被销毁，但当 M 找不到工作或者找不到空闲的 P 时，会通过stopm进入休眠状态。那么，什么情况下会进入休眠状态呢？
+
+有两种情况：
+
+第一种：没有工作可做。
+
+当 M 绑定的 P 没有可运行的 G 且 无法从其他 P 和 全局可运行 G 列表找到可运行的G 时，M 会尝试进入自旋状态。注意，进入自旋状态的M数量有限制，处于自旋状态的M数量最多为非空闲P的数量一半。
+
+如果 M 在自旋状态没有找到可运行的 G 或者 未能进入自旋状态，就会直接进入休眠状态。【详见下面 M 如何工作部分。】
+
+第二种：没有空闲的P。
+
+当 M 执行的 G，进入系统调用，M 会主动与绑定的 P 解绑，当 G 退出系统调用时，M 会找一个空闲的 P 进行绑定，进而继续执行 G，但是如果找不到空闲的 P，此时 M 也会调用stopm进入休眠。
+
+stopm函数会将休眠的 M 放入全局的空闲队列（sched.midle），等待其他工作线程唤醒 M 时，从列表中取。
+
+
+#### M 的运行
+M 需要与 P 绑定才能运行，且 M 与 P 有亲和性。
+
+当 M 执行的 G 进入系统调用，M 与 P 会进行解绑，M 会将当前的 P 记录到 m.oldp 中；当 G 退出系统调用时，M 会尝试优先绑定 m.oldp 中的 P
+
 
 ### P 资源的管理者
 ![](.GPM_images/P_struct.png)
 
 P的状态
 ![](.GPM_images/p_status_process.png)
+![](.GPM_images/p_status_process2.png)
 ```go
 const ( 
     // 表示P没有运行用户代码或者调度器 
@@ -1409,4 +1515,5 @@ func ready(gp *g, traceskip int, next bool) {
 - [Go调度器系列（3）图解调度原理](https://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/)
 - [GO GMP协程调度实现原理 5w字长文史上最全](https://www.cnblogs.com/dojo-lzz/p/16342622.html)
 - [从源码角度看 Golang 的调度.md](https://github.com/0voice/Introduction-to-Golang/blob/main/%E6%96%87%E7%AB%A0/%E4%BB%8E%E6%BA%90%E7%A0%81%E8%A7%92%E5%BA%A6%E7%9C%8B%20Golang%20%E7%9A%84%E8%B0%83%E5%BA%A6.md)
+- [深入理解Go调度器：M 如何找工作（三）](https://www.subond.com/post/2023-08-07_gmp_m/)
 

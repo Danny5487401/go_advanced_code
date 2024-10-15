@@ -116,7 +116,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
       - [1.1.2 有缓冲 channel](chapter03_channel/01_channel_use/01_initialize/02_bufferChan/main.go)
       - [1.1.3 chanx: 使用 RingBuffer 实现无限缓存 channel](chapter03_channel/01_channel_use/01_initialize/03_unbounded_chan/unbounder_chan.md)
     - [1.2 使用 channel 实现 goroutine 父子通信](chapter03_channel/01_channel_use/02_parent_children_communication/main.go)
-    - [1.3 死锁：range 未关闭的 channel](chapter03_channel/01_channel_use/03deadlock/main.go)
+    - [1.3 死锁：range 未关闭的 channel](chapter03_channel/01_channel_use/03_deadlock/main.go)
     - [1.4 通道遍历:for range 语法 ](chapter03_channel/01_channel_use/05ChannelRange/main.go)
     - [1.5 优雅关闭 channel 与粗暴关闭 channel](chapter03_channel/01_channel_use/04channelClose/ChanClose.md)
       - [1.5.1 SPMC(Single-Producer Multi-Consumer 1 个 sender，N 个 receiver): 发送者通过关闭数据通道说 「不要再发送了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
@@ -176,8 +176,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - 1 参数传递
   - [1,1 值传递-->数组拷贝，数组作为函数参数传递](chapter05_slice_n_array/01_pass_as_param/01passByValue_array/main.go)
   - [1.2 引用传递-->数组指针，切片和指针切片传递](chapter05_slice_n_array/01_pass_as_param/02passByReference/main.go)
-  - [1.3 切片和数组作为参数传递性能对比及注意项](chapter05_slice_n_array/01_pass_as_param/03_Array_n_slice_pass_performance/main_test.go)
-- 2 切片传递的疑惑
+  - [1.3 切片和数组作为参数传递性能对比及注意项](chapter05_slice_n_array/01_pass_as_param/03_array_n_slice_pass_performance/main_test.go)
+- [2 切片传递的疑惑](chapter05_slice_n_array/02_slice_pass/slice_n_array_pass.md)
   - [2.1 没有足够容量时函数中切片传递的疑惑](chapter05_slice_n_array/02_slice_pass/01_slice_pass_confusition_without_enough_cap/main.go)
   - [2.2 没有足够容量切片传递疑惑揭秘：底层扩容指向的数据变化](chapter05_slice_n_array/02_slice_pass/02_slice_pass_reality_without_enough_cap/main.go)
   - [2.3 有足够容量时函数中切片传递的疑惑](chapter05_slice_n_array/02_slice_pass/03_slice_pass_confusition_fix_with_enough_cap)
@@ -192,7 +192,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - [6 扩容策略](chapter05_slice_n_array/06GrowSlice/grow_size_policy.md)
 - [7 不同类型的切片间互转](chapter05_slice_n_array/07_transfer_slice_in_different_type/main.go)
 - [8 切片复制方式对比: copy和=复制](chapter05_slice_n_array/08_reslice_n_copy/slice_copy.md)
-- [8 append 切片常用考题](chapter05_slice_n_array/09_append/main.go)
+- [9 append 切片常用考题](chapter05_slice_n_array/09_append/main.go)
+- [10 并发访问 slice 如何做到优雅和安全](chapter05_slice_n_array/10_concurrency_slice/slice_concurrency.md)
 ---
 
 ## 第六章 指针
@@ -203,7 +204,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
     - [2.3 指针获取Map的元素数量](chapter06_pointer/02unsafe/03_map_count/main.go)
     - [2.4 使用指针来访问数组里的所有元素](chapter06_pointer/02unsafe/04_array_filed/array_field.go)
 - [3 获取并修改结构体私有变量值](chapter06_pointer/03PointerSetPrivateValue/main.go)
-- [4 切片与字符串零拷贝互转(指针和反射方式)](chapter06_pointer/04SliceToString/sliceToString.go)
+- [4 []byte 切片 与 string 字符串实现零拷贝互转(指针和反射方式)](chapter06_pointer/04SliceToString/sliceToString.go)
 - [5 结构体的内存对齐规则](chapter06_pointer/05_struct_align/struct_align.md)
     - [5.1 结构体排序优化内存占用](chapter06_pointer/05_struct_align/01_struct_mem/align.go)
     - [5.2 空 struct{} 结构体使用](chapter06_pointer/05_struct_align/02_empty_struct/empty_struct.go)
@@ -330,8 +331,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
     - [2.5  float32，float64类型](chapter11_assembly_language/02plan9/05_pkg_float/main.go)
     - [2.6  slice切片([]byte)](chapter11_assembly_language/02plan9/06_pkg_slice/main.go)
     - [2.7  引用类型map和channel](chapter11_assembly_language/02plan9/07_pkg_channel_n_map/main.go)
-    - [2.8  asm 实现 Go 函数申明](chapter11_assembly_language/02plan9/08_pkg_func/main.go)
-      - [Go源码中stack操作](chapter11_assembly_language/02plan9/08_pkg_func/func.md)
+    - [2.8  Go 函数申明](chapter11_assembly_language/02plan9/08_pkg_func/func.md)
     - [2.9  局部变量](chapter11_assembly_language/02plan9/09_local_param/local_params.md)
     - [2.10 流程控制](chapter11_assembly_language/02plan9/10_control_process/main.go)
     - [2.11 伪寄存器 SP 、伪寄存器 FP 和硬件寄存器 SP关系](chapter11_assembly_language/02plan9/11_FalseSP_fp_SoftwareSP_relation/main.go)
@@ -612,7 +612,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 
 ## [第三十三章 makefile 使用](chapter33_makefile/Makefile_info.md)
 - [1 Makefile常用函数列表](chapter33_makefile/makefile_func.md)
-- [2 golang makefile 最佳实践](chapter33_makefile/iam_makefile_structure.png)
+- [2 golang makefile 最佳实践](chapter33_makefile/go_makefile.md)
 
 ## [第三十四章 regexp 正则表达式 Regular Expression](chapter34_regexp/regexp.md)
 - [1 基本正则表达式使用](chapter34_regexp/01_basic_grammar/main.go)

@@ -22,11 +22,11 @@
 
 1. 没有足够容量
 
-[没有足够容量时函数中切片传递的疑惑1](chapter05_slice_n_array/02_slice_pass/01_slice_pass_confusition_without_enough_cap/main.go)
+[没有足够容量时函数中切片传递的疑惑1](./01_slice_pass_confusition_without_enough_cap/main.go)
 
 ![](.img/slice_pass.png)
 
-[揭秘代码](chapter05_slice_n_array/02_slice_pass/02_slice_pass_reality_without_enough_cap/main.go)
+[揭秘代码](./02_slice_pass_reality_without_enough_cap/main.go)
 
 2. 有足够容量
 
