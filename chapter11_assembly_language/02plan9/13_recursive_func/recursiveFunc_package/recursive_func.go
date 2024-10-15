@@ -6,7 +6,11 @@ func Sum(n int) int
 // sum = 1+2+...+n
 // sum(100) = 5050
 func sum(n int) int {
-	if n > 0 { return n+sum(n-1) } else { return 0 }
+	if n > 0 {
+		return n+sum(n-1)
+	} else {
+		return 0
+	}
 }
 汇编思维
 	func sum(n int) (result int) {

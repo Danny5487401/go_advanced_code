@@ -68,28 +68,76 @@ func getproccount() int32 {
 
 调度器初始化
 ```go
-// The bootstrap sequence is:
-//
-//	call osinit
-//	call schedinit
-//	make & queue new G
-//	call runtime·mstart
-//
-// The new G calls runtime·main.
+// go1.21.5/src/runtime/proc.go
 func schedinit() {
-    procs := ncpu
-	
+    // 前面是一些锁的初始化，可以忽略
+    // ..
+
+	// raceinit must be the first call to race detector.
+	// In particular, it must be done before mallocinit below calls racemapshadow.
+	gp := getg() // 从线程本地存储中获取当前正在运行的 g
+	if raceenabled {
+		gp.racectx, raceprocctx0 = raceinit()
+	}
+    // 设置最多启动 10000 个操作系统线程，即 10000 个 M
+	sched.maxmcount = 10000
+
+	// The world starts stopped.
+	worldStopped()
+
+	moduledataverify()
+	stackinit()
+	mallocinit()
+	godebug := getGodebugEarly()
+	initPageTrace(godebug) // must run after mallocinit but before anything allocates
+	cpuinit(godebug)       // must run before alginit
+	alginit()              // maps, hash, fastrand must not be used before this call
+	fastrandinit()         // must run before mcommoninit
+	mcommoninit(gp.m, -1)
+	modulesinit()   // provides activeModules
+	typelinksinit() // uses maps, activeModules
+	itabsinit()     // uses activeModules
+	stkobjinit()    // must run before GC starts
+
+	sigsave(&gp.m.sigmask)
+	initSigmask = gp.m.sigmask
+
+	goargs()
+	goenvs()
+	secure()
+	parsedebugvars()
+	gcinit()
+
+	// if disableMemoryProfiling is set, update MemProfileRate to 0 to turn off memprofile.
+	// Note: parsedebugvars may update MemProfileRate, but when disableMemoryProfiling is
+	// set to true by the linker, it means that nothing is consuming the profile, it is
+	// safe to set MemProfileRate to 0.
+	if disableMemoryProfiling {
+		MemProfileRate = 0
+	}
+
+	lock(&sched.lock)
+	sched.lastpoll.Store(nanotime())
+	procs := ncpu
 	if n, ok := atoi32(gogetenv("GOMAXPROCS")); ok && n > 0 {
 		procs = n
 	}
+	//  procresize 函数具体创建 P
 	if procresize(procs) != nil {
 		throw("unknown runnable goroutine during bootstrap")
 	}
+	unlock(&sched.lock)
+
+	// World is effectively started now, as P's can run.
+	worldStarted()
+
+    // ..
 }
 ```
 
 创建的 P 
 ```go
+// 具体创建 P
 func procresize(nprocs int32) *p {
 	assertLockHeld(&sched.lock)
 	assertWorldStopped()

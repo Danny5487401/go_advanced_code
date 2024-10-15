@@ -237,6 +237,7 @@ func schedinit() {
 	
 	// 该启动的P数量，默认为cpu core数
     procs := ncpu
+	// 如果存在环境变量GOMAXPROCS，取环境变量的值，创建指定个数的 P
     if n, ok := atoi32(gogetenv("GOMAXPROCS")); ok && n > 0 {
         procs = n
     }

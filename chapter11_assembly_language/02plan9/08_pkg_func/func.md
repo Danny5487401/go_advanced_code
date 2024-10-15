@@ -4,7 +4,7 @@
 
 - [高级汇编语言--以stack操作为例](#%E9%AB%98%E7%BA%A7%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80--%E4%BB%A5stack%E6%93%8D%E4%BD%9C%E4%B8%BA%E4%BE%8B)
   - [函数声明](#%E5%87%BD%E6%95%B0%E5%A3%B0%E6%98%8E)
-  - [GO版本变化： 函数调用时，传递参数做了修改](#go%E7%89%88%E6%9C%AC%E5%8F%98%E5%8C%96-%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E6%97%B6%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0%E5%81%9A%E4%BA%86%E4%BF%AE%E6%94%B9)
+  - [GO版本变化: 函数调用时，传递参数做了修改](#go%E7%89%88%E6%9C%AC%E5%8F%98%E5%8C%96-%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E6%97%B6%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0%E5%81%9A%E4%BA%86%E4%BF%AE%E6%94%B9)
   - [栈](#%E6%A0%88)
   - [栈结构](#%E6%A0%88%E7%BB%93%E6%9E%84)
   - [Goroutine 栈操作](#goroutine-%E6%A0%88%E6%93%8D%E4%BD%9C)
@@ -21,27 +21,26 @@ Go汇编语言其实是一种高级的汇编语言。在这里高级一词并没
 Go汇编语言中一个指令在最终的目标代码中可能会被编译为其它等价的机器指令。Go汇编实现的函数或调用函数的指令在最终代码中也会被插入额外的指令。
 要彻底理解Go汇编语言就需要彻底了解汇编器到底插入了哪些指令。
 
-##  函数声明
+## 函数声明
 
 ![](.func_images/function_in_plan9.png)
 ```css
-pkgname 包名可以不写，一般都是不写的，可以参考 go 的源码， 另外 add 前的 · 不是 .
 
-代码存储在TEXT段中
-                           argsize参数及返回值大小,例如入参是 3 个 int64 类型，返回值是 1 个 int64 类型，那么返回值就是 sizeof(int64) * 4,不过真实世界永远没有我们假设的这么美好，函数参数往往混合了多种类型，还需要考虑内存对齐问题。
-                                 |
- TEXT pkgname·add(SB),NOSPLIT,$0-16    -->$framesize-argsize   
+代码存储在TEXT段中                 argsize参数及返回值大小,例如入参是 3 个 int64 类型，返回值是 1 个 int64 类型，那么返回值就是 sizeof(int64) * 4,不过真实世界永远没有我们假设的这么美好，函数参数往往混合了多种类型，还需要考虑内存对齐问题。
+   |                              |
+ TEXT pkgname·add(SB),NOSPLIT,$16-24    -->$framesize-argsize   
          |     |               |
         包名  函数名    framesize栈帧大小(局部变量+如果有对其它函数调用时的话，调用时需要将 callee 的参数、返回值考虑在内。虽然 return address(rip)的值也是存储在 caller 的 stack frame 上的，但是这个过程是由 CALL 指令和 RET 指令完成 PC 寄存器的保存和恢复的，在手写汇编时，同样也是不需要考虑这个 PC 寄存器在栈上所需占用的 8 个字节的)
 ```
 - 为什么要叫 TEXT ？如果对程序数据在文件中和内存中的分段稍有了解的同学应该知道，我们的代码在二进制文件中，是存储在 .text 段中的，这里也就是一种约定俗成的起名方式。实际上在 plan9 中 TEXT 是一个指令，用来定义一个函数。除了 TEXT 之外还有前面变量声明说到的 DATA/GLOBL
 
-- 定义中的 pkgname 部分是可以省略的，非想写也可以写上。不过写上 pkgname 的话，在重命名 package 之后还需要改代码，所以推荐最好还是不要写
+- 定义中的 pkgname 部分是可以省略的，非想写也可以写上。不过写上 pkgname 的话，在重命名 package 之后还需要改代码，所以推荐最好还是不要写. 另外 add 前的符号是 · 不是 .
 
 - 中点 · 比较特殊，是一个 unicode 的中点，该点在 mac 下的输入方法是 option+shift+9。在程序被链接之后，所有的中点 · 都会被替换为句号 . ，比如你的方法是 runtime·main，在编译之后的程序里的符号则是 runtime.main。
 - framesize:
     - 原则上来说，调用函数时只要不把局部变量覆盖掉就可以了。稍微多分配几个字节的 framesize 也不会死。
     - 在确保逻辑没有问题的前提下，你愿意覆盖局部变量也没有问题。只要保证进入和退出汇编函数时的 caller 和 callee 能正确拿到返回值就可以
+    - $16-24: 16表示函数栈帧大小，24表示入参和返回大小
 
 以上使用的 RODATA，NOSPLIT flag，还有其他的值，可以参考：https://golang.org/doc/asm#directives
 ```shell
@@ -73,10 +72,7 @@ NEEDCTXT = 64
 ```
 
 
-
-
-
-## GO版本变化： 函数调用时，传递参数做了修改
+## GO版本变化: 函数调用时，传递参数做了修改
 - go1.17之前，函数参数是通过栈空间来传递的
 - go1.17时做出了改变，在一些平台上（AMD64）可以像C,C++那样使用寄存器传递参数和函数返回值
 
@@ -94,6 +90,8 @@ NEEDCTXT = 64
 
 调用栈call stack，简称栈，是一种栈数据结构，用于存储有关计算机程序的活动 subroutines 信息。在计算机编程中，subroutines 是执行特定任务的一系列程序指令，打包为一个单元。
 
+
+Go语言的函数调用使用的是caller-save模式：在caller调用callee的时候，caller需要将callee的参数、返回值在栈上准备好，然后才能执行CALL callee 指令，
 
 
 ## 栈结构
@@ -203,43 +201,152 @@ argN, ... arg3, arg2, arg1, arg0
 因为栈都是在 Goroutine 上的，所以先从 G 的创建开始看如何创建以及初始化栈空间的。
 
 G 的创建会调用 runtime·newproc进行创建：
+
 ```go
-func newproc(siz int32, fn *funcval) {
-    argp := add(unsafe.Pointer(&fn), sys.PtrSize)
-    gp := getg()
+// go1.21.5/src/runtime/proc.go
+
+func newproc(fn *funcval) {
+	gp := getg()
     // 获取 caller 的 PC 寄存器
-    pc := getcallerpc()
-    // 切换到 G0 进行创建
-    systemstack(func() {
-        newg := newproc1(fn, argp, siz, gp, pc)
-        //...
-    })
+    // getcallrpc 返回一个地址，也就是调用 newproc 时由 call 指令压栈的函数返回地址
+    // 对于初始化场景，pc 就是 CALL	runtime·newproc(SB) 指令后面的 POPQ AX 这指令的地址
+    // 这个地址现在存放的就是 &runtime.mainPC
+	pc := getcallerpc()
+	// 切换到 G0 进行创建
+	systemstack(func() {
+		// 创建一个新的 g
+		newg := newproc1(fn, gp, pc)
+
+		pp := getg().m.p.ptr()
+		runqput(pp, newg, true)
+
+		if mainStarted {
+			wakep()
+		}
+	})
 }
+
 ```
-newproc 方法会切换到 G0 上调用 newproc1 函数进行 G 的创建。
+newproc函数是对newproc1函数的一个包装，这里主要的工作有两个：
+
+- 获取 fn 函数的地址。
+- 使用systemstack函数切换到g0栈,调用 newproc1 函数进行 G 的创建。
+
+为什么需要传递 fn 函数地址给 newproc 当参数呢？
+
+原因在于 newproc 函数会创建一个新的 goroutine 来执行 fn 函数，而新建的 goroutine 与当前的 goroutine 会使用不同的栈，所以就需要在创建 goroutine 的时候把 fn 需要用的参数从当前 goroutine 的栈拷贝到新的 goroutine 的栈上之后才能够让其继续执行。
+
+
 ```go
-//分配 2K 大小的栈内存
-const _StackMin = 2048 
-func newproc1(fn *funcval, argp unsafe.Pointer, narg int32, callergp *g, callerpc uintptr) *g {
-    _g_ := getg()
-    ...
-    _p_ := _g_.m.p.ptr()
-    // 从 P 的空闲链表中获取一个新的 G
-    newg := gfget(_p_)
-    // 获取不到则调用 malg 进行创建
-    if newg == nil {
-        newg = malg(_StackMin)
-        casgstatus(newg, _Gidle, _Gdead)
-        allgadd(newg) // publishes with a g->status of Gdead so GC scanner doesn't look at uninitialized stack.
-    }
-    ...
-    return newg
+func newproc1(fn *funcval, callergp *g, callerpc uintptr) *g {
+	// 判断 fn 是否有效，如果无效直接fatal
+	if fn == nil {
+		fatal("go of nil func value")
+	}
+    // acquirem 返回当前g所在的m
+	mp := acquirem() // disable preemption because we hold M and P in local vars.
+	pp := mp.p.ptr()
+	
+	// 从 p 的本地缓存队列中取没有使用的 g
+	newg := gfget(pp)
+	if newg == nil { // 初始化时肯定没有，所以返回nil
+		// 创建一个 g 结构体对象newg，在堆上为其分配 2KB 大小的内存
+        // malg 函数中会设置g的 stack 成员和两个 stackgard 成员
+		newg = malg(stackMin)
+		// 将 newg 设置为 _Gdead 状态，此时 newg 还没有被初始化
+		casgstatus(newg, _Gidle, _Gdead)
+		// 将 newg 放入全局 allgs 切片中 
+		allgadd(newg) // publishes with a g->status of Gdead so GC scanner doesn't look at uninitialized stack.
+	}
+    // ..
+    // /下面主要是调整 newg 的栈顶指针，并做一些必要的成员初始化
+	totalSize := uintptr(4*goarch.PtrSize + sys.MinFrameSize) // extra space in case of reads slightly beyond frame
+	totalSize = alignUp(totalSize, sys.StackAlign)
+	sp := newg.stack.hi - totalSize
+	spArg := sp
+	if usesLR {
+		// caller's LR
+		*(*uintptr)(unsafe.Pointer(sp)) = 0
+		prepGoExitFrame(sp)
+		spArg += sys.MinFrameSize
+	}
+    // 将 newg.sched 结构体成员清空
+	memclrNoHeapPointers(unsafe.Pointer(&newg.sched), unsafe.Sizeof(newg.sched))
+	// 设置 sched 成员，调度器需要依靠这些成员才能够将其调度器 CPU 上去执行
+	
+	newg.sched.sp = sp // 设置 newg 的栈顶指针 sp
+	newg.stktopsp = sp
+	// newg.sched.pc 表示当 newg 被调度执行时从这个地址开始执行指令
+    // 这里设置成了 go.exit 函数偏移1 （sys.PCQuantum为1），这是为什么呢
+    // 等看完 gostartcallfn 函数就明白了
+	newg.sched.pc = abi.FuncPCABI0(goexit) + sys.PCQuantum // +PCQuantum so that previous instruction is in same function
+	newg.sched.g = guintptr(unsafe.Pointer(newg))
+	gostartcallfn(&newg.sched, fn)
+	newg.parentGoid = callergp.goid
+	newg.gopc = callerpc
+	newg.ancestors = saveAncestors(callergp)
+	newg.startpc = fn.fn
+	if isSystemGoroutine(newg, false) {
+		sched.ngsys.Add(1)
+	} else {
+		// Only user goroutines inherit pprof labels.
+		if mp.curg != nil {
+			newg.labels = mp.curg.labels
+		}
+		if goroutineProfile.active {
+			// A concurrent goroutine profile is running. It should include
+			// exactly the set of goroutines that were alive when the goroutine
+			// profiler first stopped the world. That does not include newg, so
+			// mark it as not needing a profile before transitioning it from
+			// _Gdead.
+			newg.goroutineProfiled.Store(goroutineProfileSatisfied)
+		}
+	}
+	// Track initial transition?
+	newg.trackingSeq = uint8(fastrand())
+	if newg.trackingSeq%gTrackingPeriod == 0 {
+		newg.tracking = true
+	}
+	// 设置 newg 为 _Grunnable 状态，之后 newg 就可以运行了
+	casgstatus(newg, _Gdead, _Grunnable)
+	gcController.addScannableStack(pp, int64(newg.stack.hi-newg.stack.lo))
+
+	if pp.goidcache == pp.goidcacheend {
+		// Sched.goidgen is the last allocated id,
+		// this batch must be [sched.goidgen+1, sched.goidgen+GoidCacheBatch].
+		// At startup sched.goidgen=0, so main goroutine receives goid=1.
+		pp.goidcache = sched.goidgen.Add(_GoidCacheBatch)
+		pp.goidcache -= _GoidCacheBatch - 1
+		pp.goidcacheend = pp.goidcache + _GoidCacheBatch
+	}
+	newg.goid = pp.goidcache
+	pp.goidcache++
+	if raceenabled {
+		newg.racectx = racegostart(callerpc)
+		newg.raceignore = 0
+		if newg.labels != nil {
+			// See note in proflabel.go on labelSync's role in synchronizing
+			// with the reads in the signal handler.
+			racereleasemergeg(newg, unsafe.Pointer(&labelSync))
+		}
+	}
+	if traceEnabled() {
+		traceGoCreate(newg, newg.startpc)
+	}
+	releasem(mp)
+
+	return newg
 }
 ```
 
-newproc1 方法很长，里面主要是获取 G ，然后对获取到的 G 做一些初始化的工作。我们这里只看 malg 函数的调用。
+newproc1函数主要做了：
 
-在调用 malg 函数的时候会传入一个最小栈大小的值：_StackMin（2048）。
+- 尝试从 p 的本地缓存队列取空闲的 g，如果取不到，直接创建，并设置为_Gdead状态，并加入全局 g 列表
+- 整理 g 的 stack 成员和 stackgard 成员，也就是为栈空间做清理和准备工作
+- 初始化 g 的 sched 成员，为调度器调度 g 做好必要的设置
+- 将 g 设置为 _Grunnable状态，并返回 g, 等待调度器的调度
+
+- 在调用 malg 函数的时候会传入一个最小栈大小的值：_StackMin（2048）。
 ```go
 func malg(stacksize int32) *g {
     // 创建 G 结构体
