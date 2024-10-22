@@ -7,11 +7,29 @@ import (
 
 func main() {
 	// 基本api
-	basicOperation()
+	basicOperationBefore1_17()
+
+	apiFrom_1_17()
 
 }
 
-func basicOperation() {
+func apiFrom_1_17() {
+	a := [16]int{3: 3, 9: 9, 11: 11}
+	fmt.Println(a)
+	eleSize := int(unsafe.Sizeof(a[0]))
+	p9 := &a[9]
+	up9 := unsafe.Pointer(p9)
+	p3 := (*int)(unsafe.Add(up9, -6*eleSize))
+	fmt.Println(*p3) // 3
+	s := unsafe.Slice(p9, 5)[:3]
+	fmt.Println(s)              // [9 0 11]
+	fmt.Println(len(s), cap(s)) // 3 5
+
+	t := unsafe.Slice((*int)(nil), 0)
+	fmt.Println(t == nil) // true
+}
+
+func basicOperationBefore1_17() {
 	// sizeof 占用的字节数 Byte
 	fmt.Println(unsafe.Sizeof(true))       // 1
 	fmt.Println(unsafe.Sizeof(int8(0)))    // 1
@@ -25,7 +43,7 @@ func basicOperation() {
 	var sliceInfo = []int{1, 3, 4}
 	fmt.Println(unsafe.Sizeof(sliceInfo)) //24
 
-	// Offsetof
+	// Offsetof: 传递给Offsetof函数的实参必须为一个字段选择器形式value.field。 此选择器可以表示一个内嵌字段，但此选择器的路径中不能包含指针类型的隐式字段
 	user := User{Name: "Danny", Age: 23, gender: true}
 	userNamePointer := unsafe.Pointer(&user)
 
@@ -50,14 +68,15 @@ func basicOperation() {
 	var m map[string]string
 	var p *int32
 
-	fmt.Println(unsafe.Alignof(b))   //1
-	fmt.Println(unsafe.Alignof(i8))  //1
-	fmt.Println(unsafe.Alignof(i16)) //2
-	fmt.Println(unsafe.Alignof(i64)) //8
-	fmt.Println(unsafe.Alignof(f32)) //4
-	fmt.Println(unsafe.Alignof(s))   //8
-	fmt.Println(unsafe.Alignof(m))   //8
-	fmt.Println(unsafe.Alignof(p))   //8
+	fmt.Println(unsafe.Alignof(b))    //1
+	fmt.Println(unsafe.Alignof(i8))   //1
+	fmt.Println(unsafe.Alignof(i16))  //2
+	fmt.Println(unsafe.Alignof(i64))  //8
+	fmt.Println(unsafe.Alignof(f32))  //4
+	fmt.Println(unsafe.Alignof(s))    //8
+	fmt.Println(unsafe.Alignof(m))    //8
+	fmt.Println(unsafe.Alignof(p))    //8
+	fmt.Println(unsafe.Alignof(user)) //8
 
 }
 

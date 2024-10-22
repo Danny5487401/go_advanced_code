@@ -9,7 +9,7 @@ import (
 	"github.com/Danny5487401/go_advanced_code/chapter06_pointer/03PointerSetPrivateValue/p"
 )
 
-//unsafe.pointer用于访问操作结构体的私有变量
+// unsafe.pointer用于访问操作结构体的私有变量
 // 我是想通过unsafe包来实现对Version的成员i和j赋值，然后通过PutI()和PutJ()来打印观察输出结果。
 func main() {
 

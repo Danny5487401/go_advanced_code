@@ -199,7 +199,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 ## 第六章 指针
 - [1 指针类型转换及修改值](chapter06_pointer/01ptrOperation/main.go)
 - [2 指针分类及unsafe包使用](chapter06_pointer/02unsafe/unsafe.md)
-    - [2.1 sizeof获取类型其占用的字节数，unsafe.Offsetof修改结构体私有成员](chapter06_pointer/02unsafe/01_basic_api/unsafe.go)
+    - [2.1 sizeof 获取类型其占用的字节数, Offsetof 修改结构体私有成员, Alignof 内存中的地址对齐](chapter06_pointer/02unsafe/01_basic_api/unsafe.go)
     - [2.2 指针获取切片长度和容量](chapter06_pointer/02unsafe/02_slice_operaion/slice_len_n_cap.go)
     - [2.3 指针获取Map的元素数量](chapter06_pointer/02unsafe/03_map_count/main.go)
     - [2.4 使用指针来访问数组里的所有元素](chapter06_pointer/02unsafe/04_array_filed/array_field.go)

@@ -65,14 +65,39 @@ type Mutex struct {
     sema  uint32
 }
 ```
-信号量的PV操作在Go内部是通过下面这几个底层函数实现的
+信号量的 PV 操作在Go内部是通过下面这几个底层函数实现的
 ```go
 func runtime_Semacquire(s *uint32)
 func runtime_SemacquireMutex(s *uint32, lifo bool, skipframes int)
 func runtime_Semrelease(s *uint32, handoff bool, skipframes int)
 
 ```
-这几个函数就是信号量的PV操作，不过他们都是给Go内部使用的，如果想使用信号量，那就可以使用官方的扩展包golang.org/x/sync：Semaphore，这是一个带权重的信号量
+这几个函数就是信号量的PV操作，不过他们都是给Go内部使用的.
+通过 go:linkname 链接的对应实现的函数：
+```go
+// go1.21.5/src/runtime/sema.go
+
+//go:linkname poll_runtime_Semacquire internal/poll.runtime_Semacquire
+func poll_runtime_Semacquire(addr *uint32) {
+	semacquire1(addr, false, semaBlockProfile, 0, waitReasonSemacquire)
+}
+
+//go:linkname sync_runtime_Semrelease sync.runtime_Semrelease
+func sync_runtime_Semrelease(addr *uint32, handoff bool, skipframes int) {
+	semrelease1(addr, handoff, skipframes)
+}
+
+//go:linkname sync_runtime_SemacquireMutex sync.runtime_SemacquireMutex
+func sync_runtime_SemacquireMutex(addr *uint32, lifo bool, skipframes int) {
+	semacquire1(addr, lifo, semaBlockProfile|semaMutexProfile, skipframes, waitReasonSyncMutexLock)
+}
+
+```
+
+可以看到实际实现的函数为 semacquire1 与 semrelease1
+
+
+如果想使用信号量，那就可以使用官方的扩展包golang.org/x/sync：Semaphore，这是一个带权重的信号量
 
 扩展包源码：
 ```go

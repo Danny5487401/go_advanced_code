@@ -6,14 +6,18 @@
   - [分类](#%E5%88%86%E7%B1%BB)
   - [为什么有 unsafe](#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89-unsafe)
   - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
-    - [1. func Sizeof(x ArbitraryType) uintptr](#1-func-sizeofx-arbitrarytype-uintptr)
-    - [2. func Offsetof(x ArbitraryType) uintptr](#2-func-offsetofx-arbitrarytype-uintptr)
-    - [3. func Alignof(x ArbitraryType) uintptr](#3-func-alignofx-arbitrarytype-uintptr)
+    - [Go 1.17 之前](#go-117-%E4%B9%8B%E5%89%8D)
+      - [1. func Sizeof(x ArbitraryType) uintptr](#1-func-sizeofx-arbitrarytype-uintptr)
+      - [2. func Offsetof(x ArbitraryType) uintptr](#2-func-offsetofx-arbitrarytype-uintptr)
+      - [3. func Alignof(x ArbitraryType) uintptr](#3-func-alignofx-arbitrarytype-uintptr)
+    - [总结](#%E6%80%BB%E7%BB%93)
+    - [新变化](#%E6%96%B0%E5%8F%98%E5%8C%96)
   - [应用：](#%E5%BA%94%E7%94%A8)
     - [1. map 源码中的应用](#1-map-%E6%BA%90%E7%A0%81%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8)
       - [简单应用](#%E7%AE%80%E5%8D%95%E5%BA%94%E7%94%A8)
       - [复杂应用](#%E5%A4%8D%E6%9D%82%E5%BA%94%E7%94%A8)
     - [2. atomic.value中应用](#2-atomicvalue%E4%B8%AD%E5%BA%94%E7%94%A8)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -59,6 +63,7 @@ Note:uintptr 并没有指针的语义，意思就是 uintptr 所指向的对象�
 
 ## 源码分析
 
+### Go 1.17 之前
 unsafe包 两个类型，三个函数
 ```go
 type ArbitraryType int
@@ -68,7 +73,13 @@ type Pointer *ArbitraryType
 ArbitraryType是int的一个别名，在Go中对ArbitraryType赋予特殊的意义。代表一个任意Go表达式类型。实际上它类似于 C 语言里的 void*。
 Pointer是int指针类型的一个别名，在Go中可以把Pointer类型，理解成任何指针的父类型。
 
-### 1. func Sizeof(x ArbitraryType) uintptr
+在Go 1.17 之前，unsafe标准库包只提供了三个函数：
+- func Alignof(variable ArbitraryType) uintptr。 此函数用来取得一个值在内存中的地址对齐保证（address alignment guarantee）
+- func Offsetof(selector ArbitraryType) uintptr。 此函数用来取得一个结构体值的某个字段的地址相对于此结构体值的地址的偏移。
+- func Sizeof(variable ArbitraryType) uintptr。 此函数用来取得一个值的尺寸（亦即此值的类型的尺寸）
+
+
+#### 1. func Sizeof(x ArbitraryType) uintptr
 ```go
 // Sizeof takes an expression x of any type and returns the size in bytes
 // of a hypothetical variable v as if v was declared via var v = x.
@@ -96,13 +107,13 @@ printf("len_a=%d,len_arr=%d,len_str=%d\n",len_a,len_arr,len_str)
 ```
 返回类型 x 所占据的字节数，但不包含 x 所指向的内容的大小。例如，对于一个指针，函数返回的大小为 8 字节（64位机上）
 
-### 2. func Offsetof(x ArbitraryType) uintptr
+#### 2. func Offsetof(x ArbitraryType) uintptr
 ```go
 func Offsetof(x ArbitraryType) uintptr
 //unsafe.Offsetof： 返回结构体成员在内存中的位置离结构体起始处的字节数，所传参数必须是结构体的成员
 ```
 
-### 3. func Alignof(x ArbitraryType) uintptr
+#### 3. func Alignof(x ArbitraryType) uintptr
 ```go
 func Alignof(x ArbitraryType) uintptr
 //Alignof返回变量对齐字节数量m，Offsetof返回变量指定属性的偏移量，它分配到的内存地址能整除 m.
@@ -129,10 +140,23 @@ fmt.Println(unsafe.Alignof(b1.z)) // 1：表示此字段须按1的倍数对
 - 对于 array 类型的变量 x，unsafe.Alignof(x) 等于构成数组的元素类型的对齐倍数。
 
 
-总结：
+### 总结
+
 三个函数的参数均是ArbitraryType类型，就是接受任何类型的变量,返回的结果都是 uintptr 类型，这和 unsafe.Pointer 可以相互转换。
 
 三个函数都是在编译期间执行，它们的结果可以直接赋给 const型变量。另外，因为三个函数执行的结果和操作系统、编译器相关，所以是不可移植的
+
+### 新变化 
+Go 1.17引入了一个新类型和两个新函数。 此新类型为IntegerType。它的定义如下。 此类型不代表着一个具体类型，它只是表示任意整数类型
+
+Go 1.17引入的两个函数为：
+- func Add(ptr Pointer, len IntegerType) Pointer。 此函数在一个（非安全）指针表示的地址上添加一个偏移量，然后返回表示新地址的一个指针。 此函数以一种更正规的形式部分地覆盖了下面将要介绍的使用模式3中展示的合法用法。
+- func Slice(ptr *ArbitraryType, len IntegerType) []ArbitraryType。 此函数用来从一个任意（安全）指针派生出一个指定长度的切片
+
+Go 1.20进一步引入了三个函数：
+- func String(ptr *byte, len IntegerType) string。 此函数用来从一个任意（安全）byte指针派生出一个指定长度的字符串。
+- func StringData(str string) *byte。 此函数用来获取一个字符串底层字节序列中的第一个byte的指针。
+- func SliceData(slice []ArbitraryType) *ArbitraryType。 此函数用来获取一个切片底层元素序列中的第一个元素的指针
 
 
 ## 应用：
@@ -196,3 +220,7 @@ func (v *Value) Load() (x interface{}) {
     }
 }
 ```
+
+## 参考
+
+- [非类型安全指针](https://gfw.go101.org/article/unsafe.html)

@@ -40,8 +40,12 @@ func main() {
 	fmt.Println(str)            //输出 "hello"
 
 	// 转换方式二: 反射方式
-	fmt.Println("字符串转bytes", String2bytes("Danny"))
-	fmt.Println("bytes转字符串", Bytes2string([]byte{104, 101, 108, 108, 111}))
+	fmt.Println("字符串转bytes:", String2bytes("Danny"))
+	fmt.Println("bytes转字符串:", Bytes2string([]byte{104, 101, 108, 108, 111}))
+
+	// 转换方式三: 1.20
+	fmt.Println("v1_20 字符串转bytes:", String2ByteSlice("Danny"))
+	fmt.Println("v1_20 bytes转字符串: ", ByteSlice2String([]byte{104, 101, 108, 108, 111}))
 }
 
 func String2bytes(s string) []byte {
@@ -62,4 +66,18 @@ func Bytes2string(b []byte) string {
 	}
 	return *(*string)(unsafe.Pointer(&sh))
 
+}
+
+func String2ByteSlice(str string) []byte {
+	if str == "" {
+		return nil
+	}
+	return unsafe.Slice(unsafe.StringData(str), len(str))
+}
+
+func ByteSlice2String(bs []byte) string {
+	if len(bs) == 0 {
+		return ""
+	}
+	return unsafe.String(unsafe.SliceData(bs), len(bs))
 }
