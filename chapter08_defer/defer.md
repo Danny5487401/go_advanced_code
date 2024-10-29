@@ -9,6 +9,8 @@
   - [jmpdefer 函数](#jmpdefer-%E5%87%BD%E6%95%B0)
   - [汇编函数的声明](#%E6%B1%87%E7%BC%96%E5%87%BD%E6%95%B0%E7%9A%84%E5%A3%B0%E6%98%8E)
   - [实际上 gogo 函数的声明](#%E5%AE%9E%E9%99%85%E4%B8%8A-gogo-%E5%87%BD%E6%95%B0%E7%9A%84%E5%A3%B0%E6%98%8E)
+  - [相关版本优化](#%E7%9B%B8%E5%85%B3%E7%89%88%E6%9C%AC%E4%BC%98%E5%8C%96)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -376,7 +378,6 @@ TEXT runtime·jmpdefer(SB), NOSPLIT, $0-16
 ```
 
 
-
 ## 汇编函数的声明
 
 ```shell
@@ -409,3 +410,18 @@ defer构造
 在构造 _defer 结构体的时候，需要将当前函数的 SP、被 defered 的函数指针保存到 _defer 结构体中。
 并且会将被 defered 的函数所需要的参数 copy 到 _defer 结构体相邻的位置。最终在调用被 defered 的函数的时候，用的就是这时被 copy 的值，
 相当于使用了它的一个快照，如果此参数不是指针或引用类型的话，会产生一些意料之外的 bug
+
+
+## 相关版本优化
+
+Go 在 1.13 版本 与 1.14 版本对 defer 进行了两次优化
+
+Go 1.13 版本新加入 deferprocStack 实现了在栈上分配 defer，相比堆上分配，栈上分配在函数返回后 _defer 便得到释放，省去了内存分配时产生的性能开销，只需适当维护 _defer 的链表即可。按官方文档的说法，这样做提升了约 30% 左右的性能。
+
+值得注意的是，1.13 版本中并不是所有defer都能够在栈上分配。循环中的defer，无论是显示的for循环，还是goto形成的隐式循环，都只能使用堆上分配，即使循环一次也是只能使用堆上分配
+
+Go 1.14 版本加入了开发编码（open coded），该机制会defer调用直接插入函数返回之前，省去了运行时的 deferproc 或 deferprocStack 操作。，该优化可以将 defer 的调用开销从 1.13 版本的 ~35ns 降低至 ~6ns 左右
+
+## 参考
+
+- [深入 Go 语言 defer 实现原理-go的源码 1.15.7](https://www.luozhiyun.com/archives/523)

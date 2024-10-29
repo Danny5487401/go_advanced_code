@@ -119,10 +119,10 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
     - [1.3 死锁：range 未关闭的 channel](chapter03_channel/01_channel_use/03_deadlock/main.go)
     - [1.4 通道遍历:for range 语法 ](chapter03_channel/01_channel_use/05ChannelRange/main.go)
     - [1.5 优雅关闭 channel 与粗暴关闭 channel](chapter03_channel/01_channel_use/04channelClose/ChanClose.md)
-      - [1.5.1 SPMC(Single-Producer Multi-Consumer 1 个 sender，N 个 receiver): 发送者通过关闭数据通道说 「不要再发送了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
+      - [1.5.1 SPMC(Single-Producer Multi-Consumer 1 个 sender，N 个 receiver): 发送者通过关闭数据通道说 「不要再发送了」](chapter03_channel/01_channel_use/05_channel_close/case1_1sender_nreceiver/main.go)
       - 1.5.2 SPSC(Single-Producer Single-Consumer 1 个 sender，1 个 receiver):发送者通过关闭数据通道说 「不要再发送了」
-      - [1.5.3 MPSC(Multi-Producer Single-Consumer N 个 sender，1 个 receiver): 接收者通过关闭一个信号通道说 「请不要再发送数据了」](chapter03_channel/01_channel_use/04channelClose/case3_nsender_1receiver/nsender_1receiver.go)
-      - [1.5.4 MPMC(Multi-Producer Multi-Consumer N 个 sender，M 个 receiver): 任意一个通过通知一个主持人去关闭一个信号通道说「让我们结束这场游戏吧」 ](chapter03_channel/01_channel_use/04channelClose/case4_nsender_nreceiver/nsender_nreceiver.go)
+      - [1.5.3 MPSC(Multi-Producer Single-Consumer N 个 sender，1 个 receiver): 接收者通过关闭一个信号通道说 「请不要再发送数据了」](chapter03_channel/01_channel_use/05_channel_close/case3_nsender_1receiver/nsender_1receiver.go)
+      - [1.5.4 MPMC(Multi-Producer Multi-Consumer N 个 sender，M 个 receiver): 任意一个通过通知一个主持人去关闭一个信号通道说「让我们结束这场游戏吧」 ](chapter03_channel/01_channel_use/05_channel_close/case4_nsender_nreceiver/nsender_nreceiver.go)
     - [1.6 单向与双向通道](chapter03_channel/01_channel_use/06_single-directional_and_bi-directional_chan/main.go)
     - [1.7 读取 nil channel 实现阻塞](chapter03_channel/01_channel_use/07_read_nil_channel/main.go)
     - [1.8 使用 channel 传递 channel](chapter03_channel/01_channel_use/08_chan_pass_chan/main.go)
@@ -261,7 +261,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
     - [3.8  命令模式(Command Design Pattern)-->go-redis中实现](chapter09_design_pattern/03_motion/08_CommandMethod/command.md)
     - [3.9  备忘录模式(Memento Design Pattern)](chapter09_design_pattern/03_motion/09_memento/introduction.md)
     - [3.10 观察者模式(Observer Design Pattern)-->官方Signal包及etcd的watch机制](chapter09_design_pattern/03_motion/10_ObserverPattern/introduction.md)
-    - [3.11 中介者模式(Mediator Design Pattern)](chapter09_design_pattern/03_motion/11_mediator/inctroduction.md)
+    - [3.11 中介者模式(Mediator Design Pattern)](chapter09_design_pattern/03_motion/11_mediator/introduction.md)
 - [4 函数选项:成例模式-->在日志库zap中实现](chapter09_design_pattern/04_fuctional_option/option.md)
     - [4.1 未使用函数选项初始化结构体的现状](chapter09_design_pattern/04_fuctional_option/01_problem/ServerConfig.md)
     - [4.2 区分必填项和选项](chapter09_design_pattern/04_fuctional_option/02_method_splitConfig/SplitConfig.go)
@@ -491,6 +491,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - [7 错误链](chapter18_error_n_panic/07_chain_error/chain_err.md)
   - [7.1 errors.Unwrap 获取错误链中最后面的一个 root error](chapter18_error_n_panic/07_chain_error/01_root_error/main.go)
   - [7.2 errors.As函数 提取 error chain中特定类型的error](chapter18_error_n_panic/07_chain_error/02_error_as/main.go)  
+- [8 debug.SetCrashOutput -->go 1.23 允许设置未被捕获的错误、异常的日志写入](chapter18_error_n_panic/08_SetCrashOutput/main.go)
 ## 第十九章 nil预定义标识
 - 1 不同类型为nil时的地址和size大小
 - 2 不同类型与nil的比较

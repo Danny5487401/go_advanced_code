@@ -7,11 +7,12 @@ import (
 )
 
 // demo：制作一个读多写少的例子，分别开启 3 个 goroutine 进行读和写，输出最终的读写次数
-// 使用独写锁
+
+// 使用读写锁
 var (
 	count int
 	//读写锁
-	countGuard sync.RWMutex
+	countGuard sync.RWMutex // RWMutex 的零值是未加锁的状态
 )
 
 func read(mapA map[string]string) {
@@ -28,7 +29,7 @@ func write(mapA map[string]string) {
 		countGuard.Lock() //这里定义了一个写锁
 		mapA["name"] = "johny"
 		count += 1
-		time.Sleep(time.Millisecond * 3)
+		time.Sleep(time.Millisecond * 3) // 睡眠时间代表读多写少
 		countGuard.Unlock()
 	}
 }

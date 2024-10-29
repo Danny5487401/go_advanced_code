@@ -3,10 +3,11 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Generic泛型](#generic%E6%B3%9B%E5%9E%8B)
-  - [使用背景](#%E4%BD%BF%E7%94%A8%E8%83%8C%E6%99%AF)
-  - [Go泛型方案](#go%E6%B3%9B%E5%9E%8B%E6%96%B9%E6%A1%88)
-    - [1. 字典(dictionaries)：单份代码实例，以字典传递类型参数信息。](#1-%E5%AD%97%E5%85%B8dictionaries%E5%8D%95%E4%BB%BD%E4%BB%A3%E7%A0%81%E5%AE%9E%E4%BE%8B%E4%BB%A5%E5%AD%97%E5%85%B8%E4%BC%A0%E9%80%92%E7%B1%BB%E5%9E%8B%E5%8F%82%E6%95%B0%E4%BF%A1%E6%81%AF)
-    - [2. 模版(stenciling)：为每次调用生成代码实例，即便类型参数相同。](#2-%E6%A8%A1%E7%89%88stenciling%E4%B8%BA%E6%AF%8F%E6%AC%A1%E8%B0%83%E7%94%A8%E7%94%9F%E6%88%90%E4%BB%A3%E7%A0%81%E5%AE%9E%E4%BE%8B%E5%8D%B3%E4%BE%BF%E7%B1%BB%E5%9E%8B%E5%8F%82%E6%95%B0%E7%9B%B8%E5%90%8C)
+  - [演进过程](#%E6%BC%94%E8%BF%9B%E8%BF%87%E7%A8%8B)
+  - [泛型使用场景](#%E6%B3%9B%E5%9E%8B%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
+  - [Go 泛型方案](#go-%E6%B3%9B%E5%9E%8B%E6%96%B9%E6%A1%88)
+    - [1. 字典(dictionaries)：单份代码实例，以字典传递类型参数信息](#1-%E5%AD%97%E5%85%B8dictionaries%E5%8D%95%E4%BB%BD%E4%BB%A3%E7%A0%81%E5%AE%9E%E4%BE%8B%E4%BB%A5%E5%AD%97%E5%85%B8%E4%BC%A0%E9%80%92%E7%B1%BB%E5%9E%8B%E5%8F%82%E6%95%B0%E4%BF%A1%E6%81%AF)
+    - [2. 模版(stenciling)：为每次调用生成代码实例，即便类型参数相同](#2-%E6%A8%A1%E7%89%88stenciling%E4%B8%BA%E6%AF%8F%E6%AC%A1%E8%B0%83%E7%94%A8%E7%94%9F%E6%88%90%E4%BB%A3%E7%A0%81%E5%AE%9E%E4%BE%8B%E5%8D%B3%E4%BE%BF%E7%B1%BB%E5%9E%8B%E5%8F%82%E6%95%B0%E7%9B%B8%E5%90%8C)
     - [3. 混合方案（GC Shape Stenciling）](#3-%E6%B7%B7%E5%90%88%E6%96%B9%E6%A1%88gc-shape-stenciling)
   - [概念](#%E6%A6%82%E5%BF%B5)
     - [类型形参(Type Parameters)](#%E7%B1%BB%E5%9E%8B%E5%BD%A2%E5%8F%82type-parameters)
@@ -70,16 +71,23 @@ func SumIntsOrFloats[K comparable, V int64 | float64](m map[K]V) V {
 
 
 
-## 使用背景
+## 演进过程
 - Go官方团队在Go 1.18 Beta 1版本的标准库里因为泛型设计而引入了contraints包，Go官方团队的技术负责人Russ Cox在2022.01.25提议将constraints包从Go标准库里移除，放到x/exp项目下，
   该提议也同Go语言发明者Rob Pike, Robert Griesemer和Ian Lance Taylor做过讨论，得到了他们的同意。
 - golang.org/x下所有package的源码独立于Go源码的主干分支，也不在Go的二进制安装包里。如果需要使用golang.org/x下的package，可以使用go get来安装。
 - golang.org/x/exp下的所有package都属于实验性质或者被废弃的package，不建议使用。
 
+## 泛型使用场景
+在 Ian Lance Taylor 的 When To Use Generics 中列出了泛型的典型使用场景，归结为三种主要情况：
 
-## Go泛型方案
+- 使用内置的容器类型，如 slices、maps 和 channels
+- 实现通用的数据结构，如 linked list 或 tree
+- 编写一个函数，其实现对许多类型来说都是一样的，比如一个排序函数
 
-### 1. 字典(dictionaries)：单份代码实例，以字典传递类型参数信息。
+## Go 泛型方案
+Go 的泛型代码是在编译时生成的，而不是在运行时进行类型断言。这意味着泛型代码在编译时就能够获得类型信息，从而保证类型安全性。生成的代码针对具体的类型进行了优化，避免了运行时的性能开销。
+
+### 1. 字典(dictionaries)：单份代码实例，以字典传递类型参数信息
 在编译时生成一组实例化的字典，在实例化一个泛型函数的时候会使用字典进行蜡印(stencile).
 
 当为泛型函数生成代码的时候，会生成唯一的一块代码，并且会在参数列表中增加一个字典做参数，就像方法会把receiver当成一个参数传入。字典包含为类型参数实例化的类型信息。
@@ -90,7 +98,7 @@ func SumIntsOrFloats[K comparable, V int64 | float64](m map[K]V) V {
 
 当然这种方案还有依赖问题，比如字典递归的问题，更重要的是，它对性能可能有比较大的影响，比如一个实例化类型int, x=y可能通过寄存器复制就可以了，但是泛型必须通过memmove
 
-### 2. 模版(stenciling)：为每次调用生成代码实例，即便类型参数相同。
+### 2. 模版(stenciling)：为每次调用生成代码实例，即便类型参数相同
 同一个泛型函数，为每一个实例化的类型参数生成一套独立的代码，感觉和rust的泛型特化一样。
 
 ![](.generic_images/stencile.gif)
@@ -99,7 +107,7 @@ func SumIntsOrFloats[K comparable, V int64 | float64](m map[K]V) V {
 比如下面一个泛型方法:
 ```go
 func f[T1, T2 any](x int, y T1) T2 {
-    ...
+    //...
 }
 ```
 如果有两个不同的类型实例化的调用：
@@ -111,10 +119,10 @@ var b struct{f int} = f[complex128, struct{f int}](3, 1+1i)
 那么这个方案会生成两套代码：
 ```go
 func f1(x int, y int) float64 {
-    ... identical bodies ...
+    //... identical bodies ...
 }
 func f2(x int, y complex128) struct{f int} {
-    ... identical bodies ...
+    //... identical bodies ...
 }
 ```
 
@@ -139,8 +147,13 @@ type c = int
 ```
 任何指针类型，或具有相同底层类型(underlying type)的类型，属于同一GCShape组。
 
+这两种方法中哪一种最适合 Go?快速编译很重要，但运行时性能也很重要。为了满足这些要求，Go 团队决定在实现泛型时混合两种方法。
 
-对于实例类型的shape相同的情况，只生成一份代码，对于shape类型相同的类型，使用字典区分类型的不同行为。
+Go 使用单态化，但试图减少需要生成的函数副本的数量。它不是为每个类型创建一个副本，而是为内存中的每个布局生成一个副本：int、float64、Node 和其他所谓的 “值类型” 在内存中看起来都不一样，因此编译器将为所有这些类型生成不同的副本。
+
+与值类型相反，指针和接口在内存中总是有相同的布局。编译器将为指针和接口的调用生成同一个泛型函数的副本。就像虚函数表一样，泛型函数接收指针，因此需要一个表来动态地查找方法地址。在 Go 实现中的字典与虚拟方法表的性能特点相同。
+
+这种混合方法的好处是，你在使用值类型的调用中获得了 Monomorphization 的性能优势，而只在使用指针或接口的调用中付出了 Virtual Method Table 的成本
 
 ## 概念
 - 类型形参 (Type parameter)
@@ -496,3 +509,4 @@ type Slice[T Int | Uint | Float] []T  // 使用 '|' 将多个接口类型组合
 ## 参考资料
 - [鸟窝关于 Go 泛形实现](https://colobu.com/2021/08/30/how-is-go-generic-implemented/)
 - [Go泛型全面讲解](https://www.cnblogs.com/insipid/p/17772581.html)
+- [A Gentle Introduction to Generics in Go](https://dominikbraun.io/blog/a-gentle-introduction-to-generics-in-go/)

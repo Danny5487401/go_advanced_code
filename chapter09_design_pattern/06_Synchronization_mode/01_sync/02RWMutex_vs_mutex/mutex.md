@@ -20,7 +20,10 @@
       - [案例3 三个goroutine](#%E6%A1%88%E4%BE%8B3-%E4%B8%89%E4%B8%AAgoroutine)
       - [案例4 没有加锁，直接解锁问题-异常](#%E6%A1%88%E4%BE%8B4-%E6%B2%A1%E6%9C%89%E5%8A%A0%E9%94%81%E7%9B%B4%E6%8E%A5%E8%A7%A3%E9%94%81%E9%97%AE%E9%A2%98-%E5%BC%82%E5%B8%B8)
     - [RWMutex 读写锁](#rwmutex-%E8%AF%BB%E5%86%99%E9%94%81)
-      - [方法](#%E6%96%B9%E6%B3%95)
+      - [背景](#%E8%83%8C%E6%99%AF)
+      - [readers-writers 问题一般有三类](#readers-writers-%E9%97%AE%E9%A2%98%E4%B8%80%E8%88%AC%E6%9C%89%E4%B8%89%E7%B1%BB)
+      - [RWMutex 结构体](#rwmutex-%E7%BB%93%E6%9E%84%E4%BD%93)
+      - [5 个方法](#5-%E4%B8%AA%E6%96%B9%E6%B3%95)
       - [读和写锁关系](#%E8%AF%BB%E5%92%8C%E5%86%99%E9%94%81%E5%85%B3%E7%B3%BB)
       - [写锁饥饿问题](#%E5%86%99%E9%94%81%E9%A5%A5%E9%A5%BF%E9%97%AE%E9%A2%98)
       - [写锁计数](#%E5%86%99%E9%94%81%E8%AE%A1%E6%95%B0)
@@ -402,6 +405,28 @@ func (m *Mutex) unlockSlow(new int32) {
 ![](.mutex_images/unlock_again.png)
 
 ### RWMutex 读写锁
+标准库中的 RWMutex 是一个 reader/writer 互斥锁。RWMutex 在某一时刻只能由任意数量的 reader 持有，或者是只被单个的 writer 持有。
+
+#### 背景
+即 Mutex，我们使用它来保证读写共享资源的安全性。不管是读还是写，我们都通过 Mutex 来保证只有一个 goroutine 访问共享资源，这在某些情况下有点“浪费”。
+比如说，在写少读多的情况下，即使一段时间内没有写操作，大量并发的读访问也不得不在 Mutex 的保护下变成了串行访问，这个时候，使用 Mutex，对性能的影响就比较大。
+
+
+解决方式:区分读写操作
+
+如果某个读操作的 goroutine 持有了锁，在这种情况下，其它读操作的 goroutine 就不必一直傻傻地等待了，而是可以并发地访问共享变量，这样我们就可以将串行的读变成并行读，提高读操作的性能。
+当写操作的 goroutine 持有锁的时候，它就是一个排外锁，其它的写操作和读操作的 goroutine，需要阻塞等待持有这个锁的 goroutine 释放锁。
+
+
+#### readers-writers 问题一般有三类
+
+Read-preferring：读优先的设计可以提供很高的并发性，但是，在竞争激烈的情况下可能会导致写饥饿。这是因为，如果有大量的读，这种设计会导致只有所有的读都释放了锁之后，写才可能获取到锁。
+
+Write-preferring：写优先的设计意味着，如果已经有一个 writer 在等待请求锁的话，它会阻止新来的请求锁的 reader 获取到锁，所以优先保障 writer。当然，如果有一些 reader 已经请求了锁的话，新请求的 writer 也会等待已经存在的 reader 都释放锁之后才能获取。所以，写优先级设计中的优先权是针对新来的请求而言的。这种设计主要避免了 writer 的饥饿问题。
+
+不指定优先级：这种设计比较简单，不区分 reader 和 writer 优先级，某些场景下这种不指定优先级的设计反而更有效，因为第一类优先级会导致写饥饿，第二类优先级可能会导致读饥饿，这种不指定优先级的访问不再区分读写，大家都是同一个优先级，解决了饥饿的问题
+
+#### RWMutex 结构体 
 读写锁要根据进程进入临界区的具体行为（读，写）来决定锁的占用情况。这样锁的状态就有三种了：读模式加锁、写模式加锁、无锁。
 ```go
 
@@ -409,8 +434,8 @@ type RWMutex struct {
     w           Mutex  // held if there are pending writers
     writerSem   uint32 // 用于writer等待读完成排队的信号量
     readerSem   uint32 // 用于reader等待写完成排队的信号量
-    readerCount int32  // 读锁的计数器
-    readerWait  int32  // 获取写锁时需要等待的写者的数量，用于防止写者饿死
+    readerCount atomic.Int32   // 读锁的计数器
+    readerWait  atomic.Int32   // 获取写锁时需要等待的写者的数量，用于防止写者饿死
 }
 ```
 
@@ -423,11 +448,11 @@ type RWMutex struct {
 ```go
 const rwmutexMaxReaders = 1 << 30 // 支持最多2^30个读锁
 ```
-#### 方法
+#### 5 个方法
 
-写操作使用 sync.RWMutex.Lock 和 sync.RWMutex.Unlock 方法；
-
-读操作使用 sync.RWMutex.RLock 和 sync.RWMutex.RUnlock 方法；
+- Lock/Unlock：写操作时调用的方法。如果锁已经被 reader 或者 writer 持有，那么，Lock 方法会一直阻塞，直到能获取到锁；Unlock 则是配对的释放锁的方法。
+- RLock/RUnlock：读操作时调用的方法。如果锁已经被 writer 持有的话，RLock 方法会一直阻塞，直到能获取到锁，否则就直接返回；而 RUnlock 是 reader 释放锁的方法。
+- RLocker：这个方法的作用是为读操作返回一个 Locker 接口的对象。它的 Lock 方法会调用 RWMutex 的 RLock 方法，它的 Unlock 方法会调用 RWMutex 的 RUnlock 方法。
 
 #### 读和写锁关系
 调用 sync.RWMutex.Lock 尝试获取写锁时；
@@ -438,7 +463,10 @@ const rwmutexMaxReaders = 1 << 30 // 支持最多2^30个读锁
 
 #### 写锁饥饿问题
 因为读锁是共享的，所以如果当前已经有读锁，那后续goroutine继续加读锁正常情况下是可以加锁成功，
-但是如果一直有读锁进行加锁，那尝试加写锁的goroutine则可能会长期获取不到锁，这就是因为读锁而导致的写锁饥饿问题
+但是如果一直有读锁进行加锁，那尝试加写锁的goroutine则可能会长期获取不到锁，这就是因为读锁而导致的写锁饥饿问题.
+
+Go 标准库中的 RWMutex 设计是 Write-preferring 方案。一个正在阻塞的 Lock 调用会排除新的 reader 请求到锁。
+
 
 #### 写锁计数
 
@@ -468,89 +496,88 @@ func (rw *RWMutex) RLock() {
     }
 }
 ```
+```go
+// go1.21.5/src/sync/rwmutex.go
+func (rw *RWMutex) RLock() {
+    // 移除了 race 等无关紧要的代码
+	
+	if rw.readerCount.Add(1) < 0 {
+		//  rw.readerCount是负值的时候，意味着此时有writer等待请求锁，因为writer优先级高，所以把后来的reader阻塞休眠
+		runtime_SemacquireRWMutexR(&rw.readerSem, false, 0)
+	}
+    
+}
+```
 
 #### 读锁释放实现
 ![](.mutex_images/readerMutex_release.png)
 
 ```go
 func (rw *RWMutex) RUnlock() {
-    if race.Enabled {
-        _ = rw.w.state
-        race.ReleaseMerge(unsafe.Pointer(&rw.writerSem))
-        race.Disable()
-    }
-    // 如果小于0，则表明当前有writer正在等待
-    if r := atomic.AddInt32(&rw.readerCount, -1); r < 0 {
-        if r+1 == 0 || r+1 == -rwmutexMaxReaders {
-            race.Enable()
-            throw("sync: RUnlock of unlocked RWMutex")
-        }
-        // 将等待reader的计数减1，证明当前是已经有一个读的，如果值==0，则进行唤醒等待的
-        if atomic.AddInt32(&rw.readerWait, -1) == 0 {
-            //当检查到有加写锁的情况下，就递减readerWait，并由最后一个释放reader lock的goroutine来实现唤醒写锁
-            // The last reader unblocks the writer.
-            runtime_Semrelease(&rw.writerSem, false)
-        }
-    }
-    if race.Enabled {
-        race.Enable()
-    }
+	// ..
+	if r := rw.readerCount.Add(-1); r < 0 {
+		// 有等待的writer
+		rw.rUnlockSlow(r)
+	}
+    //..
+}
+
+func (rw *RWMutex) rUnlockSlow(r int32) {
+	if r+1 == 0 || r+1 == -rwmutexMaxReaders {
+		race.Enable()
+		fatal("sync: RUnlock of unlocked RWMutex")
+	}
+	// A writer is pending.
+	if rw.readerWait.Add(-1) == 0 {
+		// 最后一个reader了，writer终于有机会获得锁了
+		runtime_Semrelease(&rw.writerSem, false, 1)
+	}
 }
 ```
 
 #### 写锁加锁实现
 ![](.mutex_images/writerMutex_lock.png)
+
+
 ```go
 func (rw *RWMutex) Lock() {
-    if race.Enabled {
-        _ = rw.w.state
-        race.Disable()
-    }
-    // 首先获取mutex锁，同时多个goroutine只有一个可以进入到下面的逻辑
-    rw.w.Lock()
-    // 对readerCounter进行进行抢占，通过递减rwmutexMaxReaders允许最大读的数量
-    // 来实现写锁对读锁的抢占
-    r := atomic.AddInt32(&rw.readerCount, -rwmutexMaxReaders) + rwmutexMaxReaders
-    // 记录需要等待多少个reader完成,如果发现不为0，则表明当前有reader正在读取，当前goroutine
-    // 需要进行排队等待
-    if r != 0 && atomic.AddInt32(&rw.readerWait, r) != 0 {
-    	// // 写锁发现需要等待的读锁释放的数量不为0，就自己自己去休眠了
-        runtime_SemacquireMutex(&rw.writerSem, false)
-    }
-    if race.Enabled {
-        race.Enable()
-        race.Acquire(unsafe.Pointer(&rw.readerSem))
-        race.Acquire(unsafe.Pointer(&rw.writerSem))
-    }
+    // ..
+	// 首先解决其他writer竞争问题
+	rw.w.Lock()
+	// readerCount 字段保持两个含义（既保存了 reader 的数量，又表示当前有 writer）
+	r := rw.readerCount.Add(-rwmutexMaxReaders) + rwmutexMaxReaders
+	// Wait for active readers.
+	if r != 0 && rw.readerWait.Add(r) != 0 {
+		// 如果当前有reader持有锁，那么需要等待
+		runtime_SemacquireRWMutex(&rw.writerSem, false, 0)
+	}
+    // ..
 }
-
 ```
 
 #### 写锁释放实现
 ![](.mutex_images/writer_mutex_release.png)
+
+
 ```go
 func (rw *RWMutex) Unlock() {
-    if race.Enabled {
-        _ = rw.w.state
-        race.Release(unsafe.Pointer(&rw.readerSem))
-        race.Disable()
-    }
+    // ..
 
-    // 将reader计数器复位，上面减去了一个rwmutexMaxReaders现在再重新加回去即可复位
-    r := atomic.AddInt32(&rw.readerCount, rwmutexMaxReaders)
-    if r >= rwmutexMaxReaders {
-        race.Enable()
-        throw("sync: Unlock of unlocked RWMutex")
-    }
-    // 唤醒所有的读锁
-    for i := 0; i < int(r); i++ {
-        runtime_Semrelease(&rw.readerSem, false)
-    }
-    // 释放mutex
-    rw.w.Unlock()
-    if race.Enabled {
-        race.Enable()
-    }
+	// 将reader计数器复位，上面减去了一个rwmutexMaxReaders现在再重新加回去即可复位
+	r := rw.readerCount.Add(rwmutexMaxReaders)
+	if r >= rwmutexMaxReaders {
+		race.Enable()
+		fatal("sync: Unlock of unlocked RWMutex")
+	}
+	// 唤醒所有的读锁
+	for i := 0; i < int(r); i++ {
+		runtime_Semrelease(&rw.readerSem, false, 0)
+	}
+	// 释放内部的互斥锁
+	rw.w.Unlock()
+	if race.Enabled {
+		race.Enable()
+	}
 }
 ```
 
@@ -574,3 +601,5 @@ func (rw *RWMutex) Unlock() {
 - [Go Mutex 源码详解](https://juejin.cn/post/7147714649708822558)
 - [Go 语言设计与实现](https://grzhan.tech/2024/06/12/GoLockNotes/)
 - [linux--futex原理分析](https://www.openeuler.org/zh/blog/wangshuo/Linux_Futex_Principle_Analysis/Linux_Futex_Principle_Analysis.html)
+- [Go 并发编程实战课-02 | Mutex：庖丁解牛看实现](https://time.geekbang.org/column/article/295850)
+- [Go 并发编程实战课-05 | RWMutex：读写锁的实现原理及避坑指南](https://time.geekbang.org/column/article/297868)
