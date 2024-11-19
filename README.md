@@ -563,8 +563,13 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - 4 数据库测试
     - [4.1 sqlmock](chapter28_test/04_database/01_go-sqlmock/go-sqlmock.md)
     - [4.2 miniredis](chapter28_test/04_database/02_miniredis/miniredis.md)
-- 5 ginkgo-->k8s用
-- [6 gomonkey打桩测试(暂不支持arm)](chapter28_test/01_gomonkey/gomonkey.md)
+- 5 测试框架 ginkgo-->k8s 使用
+- [6 gomonkey 打桩测试(暂不支持arm)](chapter28_test/01_gomonkey/gomonkey.md)
+- [7 测试框架 goconvey](chapter28_test/07_goconvey/goconvey.md)
+- [8 测试框架testify-->gin 使用)](chapter28_test/08_testify/testify.md)
+  - [8.1 assert断言](chapter28_test/08_testify/01_assert/calculate_test.go)
+  - [8.2 mock测试替身](chapter28_test/08_testify/02_mock/main_test.go)
+  - [8.3 suite测试套件](chapter28_test/08_testify/03_suite/suite_test.go)
 
 ## 第二十九章 module包管理
 - [1 go-module 实践篇](chapter29_module/01_use/module_operation.md)
