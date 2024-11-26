@@ -7,7 +7,9 @@
     - [缺点](#%E7%BC%BA%E7%82%B9)
   - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
     - [Pool结构体](#pool%E7%BB%93%E6%9E%84%E4%BD%93)
-    - [sync.Pool 的 init 函数](#syncpool-%E7%9A%84-init-%E5%87%BD%E6%95%B0)
+    - [poolChain](#poolchain)
+    - [poolDequeue](#pooldequeue)
+    - [对象的清理注册](#%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%B8%85%E7%90%86%E6%B3%A8%E5%86%8C)
     - [sync.Pool的 Get 函数](#syncpool%E7%9A%84-get-%E5%87%BD%E6%95%B0)
     - [sync.Pool的 Put 函数](#syncpool%E7%9A%84-put-%E5%87%BD%E6%95%B0)
   - [常见问题](#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
@@ -16,6 +18,7 @@
     - [3. New() 的作用？假如没有 New 会出现什么情况？](#3-new-%E7%9A%84%E4%BD%9C%E7%94%A8%E5%81%87%E5%A6%82%E6%B2%A1%E6%9C%89-new-%E4%BC%9A%E5%87%BA%E7%8E%B0%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5)
     - [4. 先 Put，再 Get 会出现什么情况？](#4-%E5%85%88-put%E5%86%8D-get-%E4%BC%9A%E5%87%BA%E7%8E%B0%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5)
     - [5. 只 Get 不 Put 会内存泄露吗？](#5-%E5%8F%AA-get-%E4%B8%8D-put-%E4%BC%9A%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%90%97)
+    - [6. 为什么要禁止 copy sync.Pool 实例？](#6-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%A6%81%E6%AD%A2-copy-syncpool-%E5%AE%9E%E4%BE%8B)
   - [优秀应用实践](#%E4%BC%98%E7%A7%80%E5%BA%94%E7%94%A8%E5%AE%9E%E8%B7%B5)
     - [1. 官方包fmt源码分析](#1-%E5%AE%98%E6%96%B9%E5%8C%85fmt%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
     - [2. 第三方库应用（gin)](#2-%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E5%BA%94%E7%94%A8gin)
@@ -29,6 +32,9 @@
 
 sync.Pool 是一个内存池。通常内存池是用来防止内存泄露的（例如C/C++)。sync.Pool 这个内存池却不是干这个的，
 带 GC 功能的语言都存在垃圾回收 STW 问题，需要回收的内存块越多，STW 持续时间就越长。如果能让 new 出来的变量，一直不被回收，得到重复利用，是不是就减轻了 GC 的压力
+
+
+sync.Pool中就是使用的PoolChain来实现的，它是一个单生产者多消费者的队列，可以同时有多个消费者消费数据，但是只有一个生产者生产数据
 
 ## 背景
 
@@ -50,6 +56,10 @@ Go是自动垃圾回收的(garbage collector)，这大大减少了程序编程�
 
 ![](.pool_images/pool_structure.png)
 
+![](.pool_images/sync_pool_structure.png)
+一个goroutine固定在一个局部调度器P上，从当前 P 对应的 poolLocal 取值， 若取不到，则从对应的 shared 数组上取，若还是取不到；
+则尝试从其他 P 的 shared 中偷。 若偷不到，则调用 New 创建一个新的对象。池中所有临时对象在一次 GC 后会被全部清空。
+
 ```go
 type Pool struct {
 	noCopy noCopy
@@ -60,6 +70,7 @@ type Pool struct {
 	// [P]poolLocal的大小
 	localSize uintptr        // size of the local array
 
+	// victim 和 victimSize 在 (GC)poolCleanup 流程里赋值为 local 和 localSize
 	victim     unsafe.Pointer // local from previous cycle
 	victimSize uintptr        // size of victims array
 
@@ -71,18 +82,18 @@ type Pool struct {
 local 字段存储指向 [P]poolLocal 数组（严格来说，它是一个切片）的指针，localSize 则表示 local 数组的大小。
 访问时，P 的 id 对应 [P]poolLocal 下标索引。通过这样的设计，多个 goroutine 使用同一个 Pool 时，减少了竞争，提升了性能。
 
-在一轮 GC 到来时，victim 和 victimSize 会分别“接管” local 和 localSize。
+
 victim 的机制用于减少 GC 后冷启动导致的性能抖动，让分配对象更平滑.
 
 Victim Cache 本来是计算机架构里面的一个概念，是 CPU 硬件处理缓存的一种技术，sync.Pool 引入的意图在于降低 GC 压力的同时提高命中率.
-
+![](.pool_images/poolDequeueTrait.png)
 ```go
 // Local per-P Pool appendix.
 type poolLocalInternal struct {
     // P 的私有缓存区，使用时无需要加锁
 	private interface{} // Can be used only by the respective P.
 
-    // 公共缓存区。本地 P 可以 pushHead/popHead；其他 P 则只能 popTail
+    // 公共缓存区, 本地 P 可以 pushHead/popHead；其他 P popTail
 	shared  poolChain   // Local P can pushHead/popHead; any P can popTail.
 }
 
@@ -97,24 +108,32 @@ type poolLocal struct {
 }
 ```
 
-pad涉及伪共享]
-[伪共享](chapter02_goroutine/03_cache/cache.md)
+sync.Pool 采用了一种类似 Go 运行时调度的机制，针对每个 p 有一个 private 的数据，同时还有一个 shared 的数据，如果在本地 private、shared 中没有数据，就去其他 P 对应的 shared 去偷取。
+可能有多个 P 偷取同一个 shared, 这是多消费者
 
-现代 cpu 中，cache 都划分成以 cache line (cache block) 为单位，在 x86_64 体系下一般都是 64 字节，cache line 是操作的最小单元。
 
-程序即使只想读内存中的 1 个字节数据，也要同时把附近 63 节字加载到 cache 中，如果读取超个 64 字节，那么就要加载到多个 cache line 中。
 
-简单来说，如果没有 pad 字段，那么当需要访问 0 号索引的 poolLocal 时，CPU 同时会把 0 号和 1 号索引同时加载到 cpu cache。
-在只修改 0 号索引的情况下，会让 1 号索引的 poolLocal 失效。这样，当其他线程想要读取 1 号索引时，发生 cache miss，还得重新再加载，对性能有损。
-增加一个 pad，补齐缓存行，让相关的字段能独立地加载到缓存行就不会出现 false sharding 了。
+pad 涉及伪共享
 
+> 现代 cpu 中，cache 都划分成以 cache line (cache block) 为单位，在 x86_64 体系下一般都是 64 字节，cache line 是操作的最小单元。
+
+> 程序即使只想读内存中的 1 个字节数据，也要同时把附近 63 节字加载到 cache 中，如果读取超个 64 字节，那么就要加载到多个 cache line 中。
+
+> 简单来说，如果没有 pad 字段，那么当需要访问 0 号索引的 poolLocal 时，CPU 同时会把 0 号和 1 号索引同时加载到 cpu cache。
+> 在只修改 0 号索引的情况下，会让 1 号索引的 poolLocal 失效。这样，当其他线程想要读取 1 号索引时，发生 cache miss，还得重新再加载，对性能有损。
+> 增加一个 pad，补齐缓存行，让相关的字段能独立地加载到缓存行就不会出现 false sharding 了。
+
+### poolChain 
+
+PoolChain 是在 PoolDequeue 的基础上实现的一个动态尺寸的队列，它的实现和 PoolDequeue 类似，只是增加了一个 headTail 的链表，用于存储多个 PoolDequeue
 ```go
 // poolChain 是一个双端队列的实现
+
 type poolChain struct {
     // 只有生产者会 push to，不用加锁
 	head *poolChainElt
 
-	// 读写需要原子控制。pop from
+	// tail 是消费者用来pop的 poolDequeue。消费者访问，所以需要原子操作
 	tail *poolChainElt
 }
 
@@ -127,9 +146,18 @@ type poolChainElt struct {
 }
 ```
 
-![](.pool_images/poolDequeueTrait.png)
+整体的思想就是将多个poolDequeue串联起来，生产者在head处增加数据，消费者在tail处消费数据，当tail的poolDequeue为空时，就从head处获取一个poolDequeue。 当head满了的时候，就增加一个新的poolDequeue。 这样就实现了动态尺寸的队
+
+
+
+
+
+### poolDequeue
+poolDequeue 被实现为单生产者、多消费者的固定大小的无锁（atomic 实现） Ring 式队列（底层存储使用数组，使用两个指针标记 head、tail）。
+生产者可以从 head 插入、head 删除，而消费者仅可从 tail 删除。
 
 ```go
+// poolDequeue 是一个固定尺寸，使用 ringbuffer (环形队列) 方式实现的队列
 type poolDequeue struct {
     // headTail 包含一个 32 位的 head 和一个 32 位的 tail 指针。这两个值都和 len(vals)-1 取模过。
     // tail 是队列中最老的数据，head 指向下一个将要填充的 slot
@@ -144,69 +172,268 @@ type poolDequeue struct {
 }
 ```
 
-poolDequeue 被实现为单生产者、多消费者的固定大小的无锁（atomic 实现） Ring 式队列（底层存储使用数组，使用两个指针标记 head、tail）。
-生产者可以从 head 插入、head 删除，而消费者仅可从 tail 删除。
+为什么headTail 变量将 head 和 tail 打包在了一起？
 
-headTail 指向队列的头和尾，通过位运算将 head 和 tail 存入 headTail 变量中。
+是为了实现lock free。对于一个 poolDequeue 来说，可能会被多个 P 同时访问就会出现并发问题。
+
+
+
+
+两个重要的字段：
+```go
+const dequeueBits = 32
+
+// 实现了pack和unpack方法，用于将 head 和 tail 打包到一个 uint64 中，或者从 uint64 中解包出 head 和 tail
+func (d *poolDequeue) unpack(ptrs uint64) (head, tail uint32) {
+	const mask = 1<<dequeueBits - 1
+	head = uint32((ptrs >> dequeueBits) & mask)
+	tail = uint32(ptrs & mask)
+	return
+}
+```
+- headTail： 一个 atomic.Uint64 类型的字段，它的高 32 位是 head，低 32 位是 tail。head 是下一个要填充的位置，tail 是最老的数据的位置
+- vals： 一个 eface 类型的切片，它是一个环形队列，大小必须是 2 的幂次方。
 
 我们看到 Pool 并没有直接使用 poolDequeue，原因是它的大小是固定的，而 Pool 的大小是没有限制的。因此，在 poolDequeue 之上包装了一下，变成了一个 poolChainElt 的双向链表，可以动态增长
 
-### sync.Pool 的 init 函数
+
+生产者可以使用下面的方法：
+
+- pushHead: 在队列头部新增加一个数据。如果队列满了，增加失败
+- popHead： 在队列头部弹出一个数据。生产者总是弹出新增加的数据，除非队列为空
+
+
+消费者可以使用下面的一个方法：
+
+- popTail: 从队尾处弹出一个数据，除非队列为空。所以消费者总是消费最老的数据，这也正好符合大部分的场景
+
+生产者增加数据
+```go
+const dequeueBits = 32
+
+func (d *poolDequeue) pushHead(val any) bool {
+	ptrs := d.headTail.Load()
+	head, tail := d.unpack(ptrs)
+	if (tail+uint32(len(d.vals)))&(1<<dequeueBits-1) == head {
+		// 队列满
+		return false
+	}
+	slot := &d.vals[head&uint32(len(d.vals)-1)]
+
+	// 检查 head slot 是否被 popTail 释放
+	typ := atomic.LoadPointer(&slot.typ)
+	if typ != nil {
+		// 另一个 goroutine 正在清理 tail，所以队列还是满的
+		return false
+	}
+
+	// 如果值为空，那么设置一个特殊值
+	if val == nil {
+		val = dequeueNil(nil)
+	}
+	*(*any)(unsafe.Pointer(slot)) = val
+
+	// Increment head. This passes ownership of slot to popTail
+	// and acts as a store barrier for writing the slot.
+	d.headTail.Add(1 << dequeueBits)
+	return true
+}
+```
+
+
+
+
+消费者消费数据的逻辑
+```go
+// 出队 popTail（从队尾获取元素）
+func (d *poolDequeue) popTail() (any, bool) {
+	var slot *eface
+	for {
+		ptrs := d.headTail.Load()
+		head, tail := d.unpack(ptrs)
+		if tail == head {
+			// Queue is empty.
+			return nil, false
+		}
+
+		// Confirm head and tail (for our speculative check
+		// above) and increment tail. If this succeeds, then
+		// we own the slot at tail.
+		ptrs2 := d.pack(head, tail+1)
+		if d.headTail.CompareAndSwap(ptrs, ptrs2) {
+            // 成功读取了一个 slot
+			slot = &d.vals[tail&uint32(len(d.vals)-1)]
+			break
+		}
+	}
+
+	// We now own slot.
+	val := *(*any)(unsafe.Pointer(slot))
+	if val == dequeueNil(nil) { //如果本身就存储的nil
+		val = nil
+	}
+
+	// 释放 slot，这样 pushHead 就可以继续写入这个 slot 了
+	slot.val = nil
+	atomic.StorePointer(&slot.typ, nil)
+	// At this point pushHead owns the slot.
+
+	return val, true
+}
+```
+
+
+```go
+// 出队 popHead（从头部获取元素）
+func (d *poolDequeue) popHead() (any, bool) {
+	var slot *eface
+	for {
+		ptrs := d.headTail.Load()
+		head, tail := d.unpack(ptrs)
+		if tail == head {
+			// Queue is empty.
+			return nil, false
+		}
+
+		// Confirm tail and decrement head. We do this before
+		// reading the value to take back ownership of this
+		// slot.
+		head--
+		ptrs2 := d.pack(head, tail)
+		if d.headTail.CompareAndSwap(ptrs, ptrs2) {
+			// We successfully took back slot.
+			slot = &d.vals[head&uint32(len(d.vals)-1)]
+			break
+		}
+	}
+
+	val := *(*any)(unsafe.Pointer(slot))
+	if val == dequeueNil(nil) {
+		val = nil
+	}
+	// Zero the slot. Unlike popTail, this isn't racing with
+	// pushHead, so we don't need to be careful here.
+	*slot = eface{}
+	return val, true
+}
+```
+
+
+### 对象的清理注册
 
 对于 Pool 而言，并不能无限扩展，否则对象占用内存太多了，会引起内存溢出。
 
 ```go
+// go1.23.0/src/sync/pool.go
 func init() {
-    runtime_registerPoolCleanup(poolCleanup)
+	runtime_registerPoolCleanup(poolCleanup)
 }
-func runtime_registerPoolCleanup(cleanup func())
 
+func poolCleanup() {
+	// This function is called with the world stopped, at the beginning of a garbage collection.
+	// It must not allocate and probably should not call any runtime functions.
 
-// src/runtime/mgc.go
+	// Because the world is stopped, no pool user can be in a
+	// pinned section (in effect, this has all Ps pinned).
 
-// Hooks for other packages
+	// 清空oldPools中 victim 的对象
+	for _, p := range oldPools {
+		p.victim = nil
+		p.victimSize = 0
+	}
 
-var poolcleanup func()
+	// 将allPools对象池中，local对象迁移到 victim上。
+	for _, p := range allPools {
+		p.victim = p.local
+		p.victimSize = p.localSize
+		p.local = nil
+		p.localSize = 0
+	}
 
-// 利用编译器标志将 sync 包中的清理注册到运行时
-//go:linkname sync_runtime_registerPoolCleanup sync.runtime_registerPoolCleanup
-func sync_runtime_registerPoolCleanup(f func()) {
-    poolcleanup = f
+	// 将allPools迁移到oldPools，并清空allPools
+	oldPools, allPools = allPools, nil
 }
 ```
 
+```go
+// go1.23.0/src/runtime/mgc.go
+
+//go:linkname sync_runtime_registerPoolCleanup sync.runtime_registerPoolCleanup
+func sync_runtime_registerPoolCleanup(f func()) {
+	poolcleanup = f
+}
+
+func clearpools() {
+	// clear sync.Pools
+	if poolcleanup != nil {
+		poolcleanup()
+	}
+	// ...
+}
+
+func gcStart(trigger gcTrigger) {
+	// ...
+	
+    // clearpools before we start the GC. If we wait the memory will not be
+    // reclaimed until the next GC cycle.
+    clearpools()
+	
+	// ..
+}
+```
+在一轮 GC 到来时，victim 和 victimSize 会分别“接管” local 和 localSize。
+
 可以看到pool包在init的时候注册了一个poolCleanup函数，它会清除所有的pool里面的所有缓存的对象，该函数注册进去之后会在每次gc之前都会调用，
-因此sync.Pool缓存的期限只是两次gc之间这段时间
+因此sync.Pool缓存的期限只是两次gc之间这段时间.
 
 正因为这样，我们是不可以使用sync.Pool去实现一个socket连接池的。
 
-![](.pool_images/sync_pool_structure.png)
-一个goroutine固定在一个局部调度器P上，从当前 P 对应的 poolLocal 取值， 若取不到，则从对应的 shared 数组上取，若还是取不到；
-则尝试从其他 P 的 shared 中偷。 若偷不到，则调用 New 创建一个新的对象。池中所有临时对象在一次 GC 后会被全部清空。
+
 
 ### sync.Pool的 Get 函数
 
 ![](.pool_images/pool_get.png)
 
 ```go
-func (p *Pool) Get() interface{} {
-    // ......
-  l, pid := p.pin()
-  x := l.private
-  l.private = nil
-  if x == nil {
-    x, _ = l.shared.popHead()
-    if x == nil {
-      x = p.getSlow(pid)
-    }
-  }
-  runtime_procUnpin()
-    // ......
-  if x == nil && p.New != nil {
-    x = p.New()
-  }
-  return x
+func (p *Pool) Get() any {
+    // ..
+	l, pid := p.pin()
+	x := l.private
+	l.private = nil
+	if x == nil {
+		// Try to pop the head of the local shard. We prefer
+		// the head over the tail for temporal locality of
+		// reuse.
+		x, _ = l.shared.popHead()
+		if x == nil {
+			x = p.getSlow(pid)
+		}
+	}
+	runtime_procUnpin()
+    // ...
+	if x == nil && p.New != nil {
+		x = p.New()
+	}
+	return x
 }
+```
+
+```go
+func (c *poolChain) popHead() (any, bool) {
+	d := c.head
+	for d != nil {
+		if val, ok := d.popHead(); ok {
+			// 从 head 位置获取对象，如果该环形队列中还有数据则会返回 true；
+			return val, ok
+		}
+		
+		// 如果 head 位置的环形队列空了，会定位到 prev 节点继续尝试获取对象
+
+		d = d.prev.Load()
+	}
+	return nil, false
+}
+
 ```
 
 ### sync.Pool的 Put 函数
@@ -214,26 +441,59 @@ func (p *Pool) Get() interface{} {
 ![](.pool_images/pool_put.png)
 
 ```go
-// src/sync/pool.go
+// go1.23.0/src/sync/pool.go
 
-// Put 将对象添加到 Pool 
-func (p *Pool) Put(x interface{}) {
-  if x == nil {
-    return
-  }
-  // ……
-  l, _ := p.pin()
-  if l.private == nil {
-    l.private = x
-    x = nil
-  }
-  if x != nil {
-    l.shared.pushHead(x)
-  }
-  runtime_procUnpin()
-    //…… 
+// Put adds x to the pool.
+func (p *Pool) Put(x any) {
+    // ...
+	l, _ := p.pin()
+	if l.private == nil {
+		l.private = x
+	} else {
+		l.shared.pushHead(x)
+	}
+	runtime_procUnpin()
+    // ..
 }
 ```
+
+```go
+
+func (c *poolChain) pushHead(val any) {
+	d := c.head
+	if d == nil {
+		// 如果c.head为空，初始化链表.
+		const initSize = 8 // Must be a power of 2
+		d = new(poolChainElt)
+		d.vals = make([]eface, initSize)
+		c.head = d
+		c.tail.Store(d)
+	}
+
+	// 将对象放入head中的环形队列poolDequeue
+	if d.pushHead(val) { // 调用 poolDequeue 的 pushHead
+		return
+	}
+
+	// 当poolDequeue满了，则新建一个双倍容量的链表节点，环形队列最大容量为 (1<<32)/4 =1073741824。
+	newSize := len(d.vals) * 2
+	if newSize >= dequeueLimit {
+		// Can't make it any bigger.
+		newSize = dequeueLimit
+	}
+
+	d2 := &poolChainElt{}
+	d2.prev.Store(d)
+	d2.vals = make([]eface, newSize)
+	c.head = d2 //新建的节点放入head位置
+	d.next.Store(d2)
+	// 调用 poolDequeue 的 pushHead
+	d2.pushHead(val)
+}
+
+```
+
+
 
 ## 常见问题
 
@@ -315,6 +575,11 @@ func main(){
 
 如果不 Put 回 sync.Pool，会造成 Get 的时候每次都调用的 New 来从堆栈申请空间，达不到减轻 GC 压力。
 
+
+
+### 6. 为什么要禁止 copy sync.Pool 实例？
+因为 copy 后，对于同一个 Pool 实例中的 cache 对象，就有了两个指向来源。
+原 Pool 清空之后，copy 的 Pool 没有清理掉，那么里面的对象就全都泄露了。并且 Pool 的无锁设计的基础是多个 Goroutine 不会操作到同一个数据结构，Pool 拷贝之后则不能保证这点（因为存储的成员都是指针）。
 ## 优秀应用实践
 
 ### 1. 官方包fmt源码分析
@@ -387,5 +652,6 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 ## 参考资料
 
-1
+- [lock-free、高性能的单生产者多消费者的队列：PoolDequeue 和 PoolChain](https://mp.weixin.qq.com/s/fj87oGZPkFKQiGZxhrYRVQ)
+- [深入理解Golang的sync.Pool原理](https://cloud.tencent.com/developer/article/2217768)
 
