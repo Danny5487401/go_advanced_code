@@ -49,7 +49,7 @@ go 1.21.1 // 指定最小可用版本为Go 1.21.1
 而如果go.mod中的go版本写着go 1.21.9，那么go命令捆绑的工具链版本1.21.3显然不能满足要求，那此时就要看GOTOOLCHAIN环境变量的配置。
 
 
-```go
+```shell
 $cat go.mod
 module demo1
 

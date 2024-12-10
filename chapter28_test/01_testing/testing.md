@@ -4,7 +4,7 @@
 
 - [testing](#testing)
   - [内置 testing 库中的包类型](#%E5%86%85%E7%BD%AE-testing-%E5%BA%93%E4%B8%AD%E7%9A%84%E5%8C%85%E7%B1%BB%E5%9E%8B)
-    - [公共类 testing.commmon](#%E5%85%AC%E5%85%B1%E7%B1%BB-testingcommmon)
+    - [公共类 testing.common](#%E5%85%AC%E5%85%B1%E7%B1%BB-testingcommon)
     - [T 平常使用的单元测试](#t-%E5%B9%B3%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
     - [B 基准测试](#b-%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95)
     - [M 可预置测试前后的操作](#m-%E5%8F%AF%E9%A2%84%E7%BD%AE%E6%B5%8B%E8%AF%95%E5%89%8D%E5%90%8E%E7%9A%84%E6%93%8D%E4%BD%9C)
@@ -28,7 +28,7 @@
 - testing.PB: 测试时并行执行.
 
 
-### 公共类 testing.commmon
+### 公共类 testing.common
 
 
 testing.T和testing.B 属于testing.common的扩展。
@@ -200,4 +200,4 @@ type F struct {
 ## 参考
 
 
-- 源码 Jay Conrod 博客:https://jayconrod.com/posts/123/internals-of-go-s-new-fuzzing-system
+- [Jay Conrod 关于 Internals of Go's new fuzzing system](https://jayconrod.com/posts/123/internals-of-go-s-new-fuzzing-system)

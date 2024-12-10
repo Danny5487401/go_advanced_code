@@ -554,7 +554,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 ## [第二十八章 如何进行测试](chapter28_test/test.md)
 - [1 testing](chapter28_test/01_testing/testing.md) 
   - 1.1 sub 测试并发
-  - 1.2 testing.M 将测试交给TestMain调度
+  - [1.2 testing.M 将测试交给TestMain调度](chapter28_test/01_testing/02_m/m_test.go)
   - 1.3 testing.F 模糊测试
 - [2 go-mock接口测试](chapter28_test/02_gomock/gomock.md)
 - 3 web 测试
@@ -575,9 +575,10 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - [1 go-module 实践篇](chapter29_module/01_use/module_operation.md)
   - 模块缓存
   - GOPROXY
-- [2 go-module原理篇](chapter29_module/02_discipline/module.md)
+- [2 go-module 原理篇](chapter29_module/02_discipline/module.md)
   - Minimal Version Selection 最小版本选择算法
-- [3 go1.17 module依赖图修剪及延迟 module 加载](chapter29_module/03_go1.17_module/module.md)
+- [3 go1.17 module 依赖图修剪及延迟 module 加载](chapter29_module/03_go1_17_module/module.md)
+- [3 go1.18 workspace 工作区模式-->k8s 使用](chapter29_module/04_go1_18_workspace/workspace.md)
     
 
 ## 第三十章 内存管理

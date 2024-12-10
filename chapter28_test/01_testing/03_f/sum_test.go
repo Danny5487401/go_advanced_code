@@ -29,8 +29,8 @@ func FuzzSum(f *testing.F) {
 }
 
 func FuzzReverse(f *testing.F) {
-	str_slice := []string{"abc", "bb"}
-	for _, v := range str_slice {
+	strSlice := []string{"abc", "bb"}
+	for _, v := range strSlice {
 		f.Add(v)
 	}
 	f.Fuzz(func(t *testing.T, str string) {
