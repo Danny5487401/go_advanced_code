@@ -21,6 +21,7 @@
     - [replace](#replace)
     - [retract](#retract)
   - [最佳实践](#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -98,7 +99,7 @@ go mod tidy
 Global Caching这个主要是针对 Go modules 的全局缓存数据说明，如
 
 ```shell
-go_advanced_code git:(feature/new-version) ✗ go env
+✗ go env
 GOMODCACHE="/Users/python/go/pkg/mod"
 ```
 
@@ -287,3 +288,5 @@ retract是go 1.16中新增加的内容，借用学术界期刊撤稿的术语，
     - replace：将依赖模块修改成本地依赖包地址，这样就可以在本地修改依赖包的同时进行编译调试了(需要注意go.mod文件内容发生修改，注意不要提交)
     - vendor：默认情况下go build会忽略vendor目录；当添加-mod=vendor选项时，go build会优先查找vendor目录下的依赖模块。因此可以将本地开发的依赖包放置在vendor目录，并将vendor通过.gitignore文件设置在版本控制之外，这样既可以满足本地调试，同时也不影响版本提交
  
+
+## 参考

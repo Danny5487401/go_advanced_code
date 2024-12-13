@@ -555,7 +555,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - [1 testing](chapter28_test/01_testing/testing.md) 
   - 1.1 sub 测试并发
   - [1.2 testing.M 将测试交给TestMain调度](chapter28_test/01_testing/02_m/m_test.go)
-  - 1.3 testing.F 模糊测试
+  - [1.3 testing.F 模糊测试](chapter28_test/01_testing/03_f/sum_test.go)
 - [2 go-mock接口测试](chapter28_test/02_gomock/gomock.md)
 - 3 web 测试
     - [3.1 使用标准包 httptest 进行 server handler 测试](chapter28_test/03_httptest/01_httptest/httptest.md)
@@ -563,7 +563,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - 4 数据库测试
     - [4.1 sqlmock](chapter28_test/04_database/01_go-sqlmock/go-sqlmock.md)
     - [4.2 miniredis](chapter28_test/04_database/02_miniredis/miniredis.md)
-- 5 测试框架 ginkgo-->k8s 使用
+- [5 测试框架 ginkgo-->k8s 使用](chapter28_test/05_ginkgo/ginkgo.md)
 - [6 gomonkey 打桩测试(暂不支持arm)](chapter28_test/01_gomonkey/gomonkey.md)
 - [7 测试框架 goconvey](chapter28_test/07_goconvey/goconvey.md)
 - [8 测试框架testify-->gin 使用)](chapter28_test/08_testify/testify.md)
@@ -577,8 +577,9 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
   - GOPROXY
 - [2 go-module 原理篇](chapter29_module/02_discipline/module.md)
   - Minimal Version Selection 最小版本选择算法
-- [3 go1.17 module 依赖图修剪及延迟 module 加载](chapter29_module/03_go1_17_module/module.md)
-- [3 go1.18 workspace 工作区模式-->k8s 使用](chapter29_module/04_go1_18_workspace/workspace.md)
+- [3 go1.16 retract 撤回版本](chapter29_module/03_go1_16_module/module.md)
+- [4 go1.17 module 依赖图修剪及延迟 module 加载](chapter29_module/04_go1_17_module/module.md)
+- [5 go1.18 workspace 工作区模式-->k8s 使用](chapter29_module/05_go1_18_workspace/workspace.md)
     
 
 ## 第三十章 内存管理

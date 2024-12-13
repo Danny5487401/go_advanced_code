@@ -5,7 +5,6 @@
 - [Go 1.17 新特性: module依赖图修剪(module graph pruning)与延迟module加载(lazy module loading)](#go-117-%E6%96%B0%E7%89%B9%E6%80%A7-module%E4%BE%9D%E8%B5%96%E5%9B%BE%E4%BF%AE%E5%89%AAmodule-graph-pruning%E4%B8%8E%E5%BB%B6%E8%BF%9Fmodule%E5%8A%A0%E8%BD%BDlazy-module-loading)
   - [module依赖图修剪 module graph pruning](#module%E4%BE%9D%E8%B5%96%E5%9B%BE%E4%BF%AE%E5%89%AA-module-graph-pruning)
   - [延迟module加载(lazy module loading)](#%E5%BB%B6%E8%BF%9Fmodule%E5%8A%A0%E8%BD%BDlazy-module-loading)
-  - [module deprecation注释](#module-deprecation%E6%B3%A8%E9%87%8A)
   - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -87,17 +86,7 @@ require (
 
 
 
-## module deprecation注释
 
-在Go 1.16版本在go.mod中加入retract，以帮助go module作者作废自己的module。
-go module作者只需在自己的go.mod中的module声明上面用**// Deprecated: comment**对module做出注释，就像下面这样：
-
-```go
-// Deprecated: user example.com/mod/v2 instead.
-module example.com/mod
-```
-
-对于那些使用了被废弃的module的go项目，go list、go get命令都会给出warning。
 
 
 ## 参考

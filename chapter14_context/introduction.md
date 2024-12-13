@@ -9,13 +9,14 @@
   - [Context 源码分析](#context-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
     - [1. Context接口](#1-context%E6%8E%A5%E5%8F%A3)
     - [2. canceler 接口](#2-canceler-%E6%8E%A5%E5%8F%A3)
-    - [实现的类型：](#%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%B1%BB%E5%9E%8B)
+    - [实现的类型](#%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%B1%BB%E5%9E%8B)
       - [1. emptyCtx：即空context，也是所有子context的祖先](#1-emptyctx%E5%8D%B3%E7%A9%BAcontext%E4%B9%9F%E6%98%AF%E6%89%80%E6%9C%89%E5%AD%90context%E7%9A%84%E7%A5%96%E5%85%88)
       - [2. cancelCtx](#2-cancelctx)
       - [3. timerCtx：继承自 cancelCtx 带取消功能的 Context](#3-timerctx%E7%BB%A7%E6%89%BF%E8%87%AA-cancelctx-%E5%B8%A6%E5%8F%96%E6%B6%88%E5%8A%9F%E8%83%BD%E7%9A%84-context)
       - [4. valueCtx：只能携带一个键值对，且自身要依附在上一级 Context 上](#4-valuectx%E5%8F%AA%E8%83%BD%E6%90%BA%E5%B8%A6%E4%B8%80%E4%B8%AA%E9%94%AE%E5%80%BC%E5%AF%B9%E4%B8%94%E8%87%AA%E8%BA%AB%E8%A6%81%E4%BE%9D%E9%99%84%E5%9C%A8%E4%B8%8A%E4%B8%80%E7%BA%A7-context-%E4%B8%8A)
         - [使用场景](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
         - [使用注意](#%E4%BD%BF%E7%94%A8%E6%B3%A8%E6%84%8F)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -130,7 +131,7 @@ caller 不应该去关心、干涉 callee 的情况，决定如何以及何时 r
 
 
 
-### 实现的类型：
+### 实现的类型
 
 - emptyCtx：默认初始的context使用的类型，仅实现Context接口，不做任何处理，返回默认空值。
 - cancelCtx：实现了canceler接口，为context提供了可取消自身和子孙的功能。
@@ -438,6 +439,7 @@ valueCtx类型真正实现了value函数，该函数是一个向上递归的查�
 
 
 
+## 参考
 
 
 
