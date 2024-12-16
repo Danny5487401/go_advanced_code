@@ -42,8 +42,8 @@
   - [第二十四章 命令行参数解析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%9B%9B%E7%AB%A0-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0%E8%A7%A3%E6%9E%90)
   - [第二十四章 Flag命令行参数及源码分析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%9B%9B%E7%AB%A0-flag%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0%E5%8F%8A%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
   - [第二十五章 结构体类型方法](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%BA%94%E7%AB%A0-%E7%BB%93%E6%9E%84%E4%BD%93%E7%B1%BB%E5%9E%8B%E6%96%B9%E6%B3%95)
-  - [第二十六章 strconv字符串和数值型转换源码分析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%85%AD%E7%AB%A0-strconv%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%92%8C%E6%95%B0%E5%80%BC%E5%9E%8B%E8%BD%AC%E6%8D%A2%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
-  - [第二十七章 Prometheus](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B8%83%E7%AB%A0-prometheus)
+  - [第二十六章 strconv 字符串和数值型转换源码分析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%85%AD%E7%AB%A0-strconv-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%92%8C%E6%95%B0%E5%80%BC%E5%9E%8B%E8%BD%AC%E6%8D%A2%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [第二十七章 image 图片处理](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B8%83%E7%AB%A0-image-%E5%9B%BE%E7%89%87%E5%A4%84%E7%90%86)
   - [第二十八章 如何进行测试](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%85%AB%E7%AB%A0-%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E6%B5%8B%E8%AF%95)
   - [第二十九章 module包管理](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B9%9D%E7%AB%A0-module%E5%8C%85%E7%AE%A1%E7%90%86)
   - [第三十章 内存管理](#%E7%AC%AC%E4%B8%89%E5%8D%81%E7%AB%A0-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86)
@@ -194,6 +194,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - [8 切片复制方式对比: copy和=复制](chapter05_slice_n_array/08_reslice_n_copy/slice_copy.md)
 - [9 append 切片常用考题](chapter05_slice_n_array/09_append/main.go)
 - [10 并发访问 slice 如何做到优雅和安全](chapter05_slice_n_array/10_concurrency_slice/slice_concurrency.md)
+- [11 go1.21 切片泛型库](chapter05_slice_n_array/11_slice_in_1_21/slice_in_1_21.md)
 ---
 
 ## 第六章 指针
@@ -538,18 +539,10 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - [1 方法调用语法糖](chapter25_struct_method/01_struct_method/main.go)
 
 
-## [第二十六章 strconv字符串和数值型转换源码分析](chapter26_strconv/strconv.md)
+## [第二十六章 strconv 字符串和数值型转换源码分析](chapter26_strconv/strconv.md)
 
-## [第二十七章 Prometheus](chapter27_prometheus/prometheus.md)
-- 部署方式
-  - [手工部署](chapter27_prometheus/k8s_deploy/manual)
-  - [operator 部署](chapter27_prometheus/k8s_deploy/opeartor)  
-- [1 exporter](chapter27_prometheus/01_exporter/exporter.md)
-  - [1.1 内置collector](chapter27_prometheus/01_exporter/01_embeded_collector/main.go)  
-  - [1.2 使用自定义collector](chapter27_prometheus/01_exporter/02_customized_collector/main.go)
-- [2 Prometheus Operator](chapter27_prometheus/k8s_deploy/opeartor/operator.md)
-- [3 AlertManager](chapter27_prometheus/alert_manager.md)
-- [4 PromQL](chapter27_prometheus/alert_manager.md)
+## [第二十七章 image 图片处理](chapter27_image/image.md)
+
 
 ## [第二十八章 如何进行测试](chapter28_test/test.md)
 - [1 testing](chapter28_test/01_testing/testing.md) 
