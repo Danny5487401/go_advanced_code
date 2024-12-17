@@ -5,24 +5,48 @@
 - [strace](#strace)
   - [strace 的两种启动方式](#strace-%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%90%AF%E5%8A%A8%E6%96%B9%E5%BC%8F)
   - [golang程序 goland 远程linux amd64 运行](#golang%E7%A8%8B%E5%BA%8F-goland-%E8%BF%9C%E7%A8%8Blinux-amd64-%E8%BF%90%E8%A1%8C)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # strace 
+![](.ptrace_images/strace_process.png)
 strace 可用于追踪进程与内核的交互情况，包括系统调用，信号，进程状态等信息。
 
 strace 常用于性能分析、问题定位等场景。
 
 strace 基于 linux 内核特性 ptrace 开发，相当于直接 hook 了系统调用。这意味着 strace 可以追踪所有的用户进程，即使没有被追踪程序的源码，或者程序是非 debug 版本，或者程序日志不完善，都可以通过 strace 追踪到不少有用信息\
 
+
+对于正在运行的进程而言，strace 可以 attach 到目标进程上，这是通过 ptrace 这个系统调用实现的（gdb 工具也是如此）。
+ptrace 的 PTRACE_SYSCALL 会去追踪目标进程的系统调用；
+目标进程被追踪后，每次进入 syscall，都会产生 SIGTRAP 信号并暂停执行；
+追踪者通过目标进程触发的 SIGTRAP 信号，就可以知道目标进程进入了系统调用，然后追踪者会去处理该系统调用，我们用 strace 命令观察到的信息输出就是该处理的结果；
+追踪者处理完该系统调用后，就会恢复目标进程的执行。被恢复的目标进程会一直执行下去，直到下一个系统调用.
+
+
+目标进程每执行一次系统调用都会被打断，等 strace 处理完后，目标进程才能继续执行，这就会给目标进程带来比较明显的延迟。
+因此，在生产环境中我不建议使用该命令，如果你要使用该命令来追踪生产环境的问题，那就一定要做好预案.
+
 ## strace 的两种启动方式
 ```shell
 # 另一种是追踪已启动的进程，使用-p加上进程号
-$ strace -p <pid> #查看某个进程的系统调用
+$ strace -tt -T -v -f -e trace=file -o /data/log/strace.log -s 1024 -p 23489 #查看某个进程的系统调用
 
 # 一种是使用 strace 启动被追踪的程序，
 $ strace <commond> #查看某条commond指令或进程的系统调用
 ```
+* -tt 在每行输出的前面，显示毫秒级别的时间
+* -T 显示每次系统调用所花费的时间
+* -v 对于某些相关调用，把完整的环境变量，文件stat结构等打出来。
+* -f 跟踪目标进程，以及目标进程创建的所有子进程
+* -e 控制要跟踪的事件和跟踪行为,比如指定要跟踪的系统调用名称
+* -o 把strace的输出单独写到指定的文件
+* -s 当系统调用的某个参数是字符串时，最多输出指定长度的内容，默认是32个字节
+* -p 指定要跟踪的进程pid, 要同时跟踪多个pid, 重复多次-p选项即可
+
+
+
 
 ```C
 #include <unistd.h>
@@ -87,3 +111,8 @@ ptrace在需要传入四个参数：
 ## golang程序 goland 远程linux amd64 运行
 
 ![](../.Syscall_images/remote_amd64_machine.png)
+
+
+## 参考
+- [strace命令用法详解](https://cloud.tencent.com/developer/article/1886514)
+- [Linux 内核技术实战课-20 分析篇 |如何分析CPU利用率飙高问题](https://time.geekbang.org/column/article/293313)

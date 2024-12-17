@@ -7,6 +7,7 @@
   - [历史](#%E5%8E%86%E5%8F%B2)
   - [Go语言系统调用](#go%E8%AF%AD%E8%A8%80%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8)
     - [案例分析 fmt.Println("hello world")](#%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90-fmtprintlnhello-world)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -192,3 +193,5 @@ func (f *File) write(b []byte) (n int, err error) {
     return fixCount(syscall.Write(f.fd, b))
 }
 ```
+
+## 参考

@@ -6,20 +6,22 @@
   - [cache 局部性原理](#cache-%E5%B1%80%E9%83%A8%E6%80%A7%E5%8E%9F%E7%90%86)
   - [缓存行（cache line）](#%E7%BC%93%E5%AD%98%E8%A1%8Ccache-line)
   - [cache 伪共享（false sharing）](#cache-%E4%BC%AA%E5%85%B1%E4%BA%ABfalse-sharing)
-    - [解决  伪共享 问题](#%E8%A7%A3%E5%86%B3--%E4%BC%AA%E5%85%B1%E4%BA%AB-%E9%97%AE%E9%A2%98)
+    - [解决伪共享问题](#%E8%A7%A3%E5%86%B3%E4%BC%AA%E5%85%B1%E4%BA%AB%E9%97%AE%E9%A2%98)
   - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # 缓存
+
+![](.cache_images/cpu_and_memory.png)
+
+
+对于现代处理器而言，一个实体CPU通常会有两个逻辑线程，也就是上图中的Core 0和Core 1。每个Core都有自己的L1 Cache，L1 Cache又分为dCache和iCache，对应到上图就是L1d和L1i。L1 Cache只有Core本身可以看到，其他的Core是看不到的。
+
+同一个实体CPU中的这两个Core会共享L2 Cache，其他的实体CPU是看不到这个L2 Cache的。所有的实体CPU会共享L3 Cache。这就是典型的CPU架构。
+
 ![](.cache_images/cache.png)
-
-![](.cache_images/cpu_n_memory.png)
-
 图中是一个存储结构示意图，cpu和主存直接使用的是L3的结构。金字塔越上面，相互之间的访问速度越快但是数据量越小，越往下访问速度越慢但数据量越大。
-
-在单核CPU结构中，为了缓解CPU指令流水中cycle冲突，L1分成了指令（L1P）和数据（L1D）两部分，而L2则是指令和数据共存。
-多核CPU增设了L3三级缓存，L1和L2是CPU核自己使用，但是L3缓存是多核共享的
 
 ## cache 局部性原理
 
@@ -97,7 +99,7 @@ Int64, 等于long, 占8个字节. -9223372036854775808 9223372036854775807
 两个线程写同一个变量可以在代码中发现。为了确定互相独立的变量是否共享了同一个缓存行，就需要了解内存布局，或找个工具告诉我们。Intel VTune就是这样一个分析工具。
 
 
-### 解决  伪共享 问题
+### 解决伪共享问题
 
 缓存填充（cache padding）：在变量之间填充一些无意义的变量。这将迫使一个变量单独占用一个核心的缓存行，所以当其他核心更新缓存变量时，不会使该核心从内存中重新加载变量.
 

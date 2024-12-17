@@ -360,4 +360,4 @@ type FD struct {
 ## 参考
 
 - [存储系列之总结：存储分层](https://www.cnblogs.com/orange-CC/p/12689583.html)
-- [Linux内核之 文件I/O](https://www.cnblogs.com/orange-CC/p/13528963.html)
+- [Linux内核之文件I/O](https://www.cnblogs.com/orange-CC/p/13528963.html)

@@ -97,7 +97,6 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
         - [2.4.1 标准包runtime/pprof及net/http/pprof使用](chapter02_goroutine/02_runtime/04_pprof/01_pprof/main.go)
         - [2.4.2 第三方包pkg/profile](chapter02_goroutine/02_runtime/04_pprof/02_pkg_profile/cpu.go)
         - [2.4.3 debug 定位goroutine：添加pprof标签](chapter02_goroutine/02_runtime/04_pprof/03_pprof_label/client/main.go)
-
 - [3 多 goroutine 的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
 - [4 线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
     - [4.1 使用channel实现Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
@@ -217,9 +216,9 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 
 ## [第七章 系统调用](chapter07_system_call/Syscall.md)
 - [1 基于 kqueue event loop 的 TCP server（涉及各种linux系统调用](chapter07_system_call/01_kqueue_server/kqueue.md)
-- [2 使用 strace 工具追踪系统调用-->使用 linux amd64 环境](chapter07_system_call/02_ptrace/ptrace.md)
+- [2 使用 strace 工具追踪进程与内核的交互情况:如系统调用](chapter07_system_call/02_ptrace/ptrace.md)
   - [2.1 syscall.PtraceGetRegs 获取所有寄存器的值](chapter07_system_call/02_ptrace/01_register/main.go)
-  - [2.2 使用 seccomp 查看 echo hello 的系统调用及次数](chapter07_system_call/02_ptrace/02_follow_system_call/main.go)
+  - [2.2 使用 libseccomp-golang 查看 echo hello 的系统调用及次数](chapter07_system_call/02_ptrace/02_follow_system_call/main.go)
 - [3 exec 执行命令](chapter07_system_call/03_exec/exec.md)
 ---
 
