@@ -68,10 +68,12 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
     - [1.1 os中 FileInfo 文件属性](chapter01_input_output/01_OS_module/01FileInfo/fileinfo.md)
     - [1.2 os文件操作](chapter01_input_output/01_OS_module/02FileOperation/main.go)   
     - 1.3 io包底层 Reader 和 Writer 接口   
-        - 1.3.1 os,bytes,strings包   
-    - [1.4 io断点续传 ](chapter01_input_output/01_OS_module/04seeker/02resume_from_break-point/main.go) 
+      - 1.3.1 os,bytes,strings包   
+    - [1.4 io 断点续传及网络支持](chapter01_input_output/01_OS_module/04seeker/resume.md) 
+      - seeker 偏移量
+      - http header: 客户端Range，Content-Range
     - [1.5 FilePath包 ](chapter01_input_output/01_OS_module/05filePath/walk.go)    
-        - [1.5.1 walkPath遍历目录及文件(匹配文件名)](chapter01_input_output/01_OS_module/05filePath/walk.go)
+    - [1.5.1 walkPath遍历目录及文件(匹配文件名)](chapter01_input_output/01_OS_module/05filePath/walk.go)
 - [2 bufio 缓存读写](chapter01_input_output/02_bufio/bufio.md)
   - [2.1 reader](chapter01_input_output/02_bufio/01reader/main.go)
   - [2.2 writer](chapter01_input_output/02_bufio/02writer/main.go)

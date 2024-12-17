@@ -15,20 +15,15 @@ import (
 func main() {
 	/*
 		断点续传：
-			文件传递：文件复制
-				E:\\github.com/Danny5487401/go_advanced_code\\chapter01_fileOperation\\resume_from_breakingPoint.jpg"
-
-			复制到
-				E:\github.com/Danny5487401/go_advanced_code\chapter01_fileOperation\dest.jpg
+			文件传递：文件复制 resume_from_breakingPoint.jpg 到 dest.jpg
 
 		思路：
 			边复制，边记录复制的总量
 	*/
 
-	srcFile := "E:\\github.com/Danny5487401/go_advanced_code\\chapter01_fileOperation\\resume_from_breakingPoint.jpg"
-	destFile := "E:\\github.com/Danny5487401/go_advanced_code\\chapter01_fileOperation\\dest.jpg"
+	srcFile := "./resume_from_breakingPoint.jpg"
+	destFile := "./dest.jpg"
 	tempFile := destFile + "temp.txt"
-	//fmt.Println(tempFile)
 	file1, _ := os.Open(srcFile)
 	file2, _ := os.OpenFile(destFile, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 	file3, _ := os.OpenFile(tempFile, os.O_CREATE|os.O_RDWR, os.ModePerm)
@@ -37,7 +32,7 @@ func main() {
 	defer file2.Close()
 	//1.读取临时文件中的数据，根据seek
 	file3.Seek(0, io.SeekStart)
-	bs := make([]byte, 100, 100)
+	bs := make([]byte, 100)
 	n1, err := file3.Read(bs)
 	fmt.Println(n1)
 	countStr := string(bs[:n1])
@@ -48,7 +43,7 @@ func main() {
 	//2. 设置读，写的偏移量
 	file1.Seek(count, 0)
 	file2.Seek(count, 0)
-	data := make([]byte, 1024, 1024)
+	data := make([]byte, 1024)
 	n2 := -1            // 读取的数据量
 	n3 := -1            //写出的数据量
 	total := int(count) //读取的总量

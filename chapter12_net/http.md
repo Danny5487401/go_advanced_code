@@ -26,11 +26,10 @@
 
 
 
-
 ## http的三个版本介绍
 
 ### http1.0
-![](../../go_advanced_code/chapter12_net/.http_images/http1.1.png)
+![](.http_images/http1.1.png)
 
 * 队头阻塞(head of blocking) (No Pipelining): 假如有五个请求被同时发出，如果第一个请求没有处理完成，就会导致后续的请求也无法得到处理
 * 一个连接同一时间只能处理一个请求，是串行，因为是无状态，不像tcp有序列号，http2会建立映射关系.
@@ -40,7 +39,7 @@ HTTP 1.0 有一个被抱怨最多的是连接无法复用，当每次有新的�
 HTTP 1.0 议头里可以设置 Connection:Keep-Alive。在 header 里设置 Keep-Alive 可以在一定时间内复用连接，具体复用时间的长短可以由服务器控制，一般在 15s 左右。到 HTTP 1.1 之后 Connection 的默认值就是Keep-Alive，如果要关闭连接复用需要显式的设置 Connection:Close。
 
 ### http1.1
-![](../../go_advanced_code/chapter12_net/.http_images/http_pipeline.png)
+![](.http_images/http_pipeline.png)
 
 pipelining 并不是救世主，它也存在不少缺陷：
 
@@ -69,7 +68,7 @@ SPDY 高级功能
 ### http2.0
 HTTP2.0 在设计之初就与 SPDY 的设计目的和出发点不同，SPDY 更像是 Google 自家的一个产品，相当于自家的一个玩具，你怎么玩儿都行，而 HTTP 2.0 在设计之初就是为了普适性的这个目的.
 
-![](../../go_advanced_code/chapter12_net/.http_images/http2_format.png)
+![](.http_images/http2_format.png)
 HTTP 1.x 的诞生使用的是明文协议，它的格式主要由三部分构成：请求行(request line) 、请求头(header) 和报文体(body)，要识别这三部分必须要做协议解析，而协议解析是基于文本的，基于文本的解析存在多样性的缺陷，
 而二进制格式只能识别 0 和 1 ，比较固定，基于这种考量，HTTP 2.0 决定采用二进制格式，实现方便而且健壮性强
 
@@ -143,14 +142,14 @@ binary frame 在应用层和TCP层中间
 
 message消息: 具有业务含义，类似Request/Response消息，每个消息包含一个或多个帧.
 
-![](../../go_advanced_code/chapter12_net/.http_images/frame.png)
+![](.http_images/frame.png)
 
 frame 帧 是HTTP/2协议里通信的最小单位，每个帧有自己的格式，不同类型的帧负责传输不同的消息
 - Length: 表示Frame Payload的大小，是一个24-bit的整型，表明Frame Payload的大小不应该超过2^24-1字节，但其实payload默认的大小是不超过2^14字节，可以通过SETTING Frame来设置SETTINGS_MAX_FRAME_SIZE修改允许的Payload大小。
 
 - Type: 表示Frame的类型,目前定义了0-9共10种类型。
 
-  ![](../../go_advanced_code/chapter12_net/.http_images/flag_frame.png)
+  ![](.http_images/flag_frame.png)
 
 - Flags: 为一些特定类型的Frame预留的标志位，比如Header, Data, Setting, Ping等，都会用到。
 
@@ -185,7 +184,7 @@ Magic 帧的主要作用是建立 HTTP/2 请求的前言。在 HTTP/2 中，要�
 
 Magic 帧是客户端的前言之一，内容为 PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n，以确定启用 HTTP/2 连接。
 2. Settings连接级参数
-![](../../go_advanced_code/chapter12_net/.http_images/settings_frame.png)
+![](.http_images/settings_frame.png)
 
 SETTINGS 帧的主要作用是设置这一个连接的参数，作用域是整个连接而并非单一的流,比如最大并发量。
 ETTINGS帧必须在连接开始时由通信双方发送，并且可以在任何其他时间由任一端点在连接的生命周期内发送。SETTINGS帧必须在id为0的stream上进行发送，不能通过其他stream发送；SETTINGS影响的是整个TCP链接，而不是某个stream；在SETTINGS设置出现错误时，必须当做connection error重置整个链接。
@@ -194,7 +193,7 @@ ETTINGS帧必须在连接开始时由通信双方发送，并且可以在任何�
 
 HEADERS 帧的主要作用是存储和传播 HTTP 的标头信息。我们关注到 HEADERS 里有一些眼熟的信息，分别如下：
 
-![](../../go_advanced_code/chapter12_net/.http_images/header_frame.png)
+![](.http_images/header_frame.png)
 ```html
 method：POST
 scheme：http
@@ -229,5 +228,5 @@ QUIC本身就是一个名字，不是缩略词，它的发音和英语单词“q
 QUIC是基于UDP之上实现的传输协议.
 
 ## 参考资料
-1. [http 理解](https://mp.weixin.qq.com/s?__biz=MzkwMDE1MzkwNQ==&mid=2247496030&idx=1&sn=82f56874f82f372af71e23a8e385f8cd&chksm=c04ae600f73d6f16d707c1d32b00e3f0d47e893c9cf59a2eb60ace418943aeb5c5c679cb27ea&token=1094112620&lang=zh_CN#rd)
-2. [http/3 详解](https://hungryturbo.com/HTTP3-explained/quic/%E5%8D%8F%E8%AE%AE%E7%89%B9%E7%82%B9.html)
+- [http 理解](https://mp.weixin.qq.com/s?__biz=MzkwMDE1MzkwNQ==&mid=2247496030&idx=1&sn=82f56874f82f372af71e23a8e385f8cd&chksm=c04ae600f73d6f16d707c1d32b00e3f0d47e893c9cf59a2eb60ace418943aeb5c5c679cb27ea&token=1094112620&lang=zh_CN#rd)
+- [http/3 详解](https://hungryturbo.com/HTTP3-explained/quic/%E5%8D%8F%E8%AE%AE%E7%89%B9%E7%82%B9.html)
