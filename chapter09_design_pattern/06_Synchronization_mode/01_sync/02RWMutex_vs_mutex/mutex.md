@@ -116,7 +116,7 @@ func NewSpinLock() sync.Locker {
 
 ### Mutex 互斥锁
 
-只有取得互斥锁的进程才能进入临界区，无论读写
+只有取得互斥锁的进程才能进入临界区，无论读写.
 
 ```go
 type Mutex struct {
@@ -124,7 +124,9 @@ type Mutex struct {
     sema  uint32 // 信号
 }
 ```
-Mutex 的实现主要借助了 CAS 指令 + 自旋 + 信号量来实现
+Mutex 的实现主要借助了 CAS 指令 + 自旋 + 信号量来实现.
+
+
 
 #### 互斥锁的状态
 ![](.mutex_images/mutex_status.png)
@@ -603,3 +605,4 @@ func (rw *RWMutex) Unlock() {
 - [linux--futex原理分析](https://www.openeuler.org/zh/blog/wangshuo/Linux_Futex_Principle_Analysis/Linux_Futex_Principle_Analysis.html)
 - [Go 并发编程实战课-02 | Mutex：庖丁解牛看实现](https://time.geekbang.org/column/article/295850)
 - [Go 并发编程实战课-05 | RWMutex：读写锁的实现原理及避坑指南](https://time.geekbang.org/column/article/297868)
+- [Go中秘而不宣的数据结构 Treap](https://mp.weixin.qq.com/s/dGVItzVF-fieXywdDhJctA)

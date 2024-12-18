@@ -7,6 +7,7 @@
   - [缓存行（cache line）](#%E7%BC%93%E5%AD%98%E8%A1%8Ccache-line)
   - [cache 伪共享（false sharing）](#cache-%E4%BC%AA%E5%85%B1%E4%BA%ABfalse-sharing)
     - [解决伪共享问题](#%E8%A7%A3%E5%86%B3%E4%BC%AA%E5%85%B1%E4%BA%AB%E9%97%AE%E9%A2%98)
+    - [CacheLinePad](#cachelinepad)
   - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -36,6 +37,12 @@
 ## 缓存行（cache line）
 
 CPU 缓存中的最小单位是缓存行（cache line）（如今，CPU 中常见的缓存行大小为 64 字节）。因此，当 CPU 从内存读取一个变量时，它会同时读取该变量附近的所有变量。
+
+```shell
+# 在 mac m1 机器是，我们可以查看此 CPU 的缓存行大小为 128 字节
+➜  git_download sysctl -a |grep cachelinesize
+hw.cachelinesize: 128
+```
 
 缓存系统中是以缓存行（cache line）为单位存储的。缓存行通常是 64 字节（译注：本文基于 64 字节，其他长度的如 32 字节等不适本文讨论的重点），
 并且它有效地引用主内存中的一块地址。
@@ -101,10 +108,82 @@ Int64, 等于long, 占8个字节. -9223372036854775808 9223372036854775807
 
 ### 解决伪共享问题
 
-缓存填充（cache padding）：在变量之间填充一些无意义的变量。这将迫使一个变量单独占用一个核心的缓存行，所以当其他核心更新缓存变量时，不会使该核心从内存中重新加载变量.
+1. 缓存填充（cache padding）：将每个变量扩展至一个完整的 cacheline，以防止多个线程访问同一个 cacheline。例如，可以在变量之间添加填充数据来分隔不同的 cacheline (假定 CPU 缓存行是 64 字节)：
+```go
+type Data struct {
+    x int64           // 线程A更新的变量
+    _ [7]int64        // 填充7个int64以对齐至64字节的cache line大小
+    y int64           // 线程B更新的变量
+}
+```
+
+2. 将变量分散到不同的结构体中：对于经常被多个线程更新的变量，可以考虑将它们分散到不同的结构体，避免同一结构体被多个线程同时频繁更新
+3. 使用原子变量：在某些情况下，可以使用原子变量进行更新。虽然这不会彻底消除伪共享，但可以减少缓存一致性带来的开销
+4. 绑定 CPU 核心（CPU Affinity）：可以将线程绑定到指定的 CPU 核心上，从而减少多个线程同时访问同一块缓存的数据的几率
 
 
+### CacheLinePad
+
+```go
+// go1.23.0/src/internal/cpu/cpu.go
+
+// CacheLinePad is used to pad structs to avoid false sharing.
+type CacheLinePad struct{ _ [CacheLinePadSize]byte }
+
+// CacheLineSize is the CPU's assumed cache line size.
+// There is currently no runtime detection of the real cache line size
+// so we use the constant per GOARCH CacheLinePadSize as an approximation.
+var CacheLineSize uintptr = CacheLinePadSize
+```
+
+针对不同的 CPU 架构定义不同的缓存行大小。
+
+```go
+// go1.23.0/src/internal/cpu/cpu_arm64.go
+
+// CacheLinePadSize is used to prevent false sharing of cache lines.
+// We choose 128 because Apple Silicon, a.k.a. M1, has 128-byte cache line size.
+// It doesn't cost much and is much more future-proof.
+const CacheLinePadSize = 128
+```
+
+
+但是这个数据结构是定义在Go运行时internal库中，不对外暴露.
+
+没关系，Go的扩展库golang.org/x/sys/cpu中提供了CacheLinePad的定义，我们可以直接使用。
+
+```go
+// golang.org/x/sys/cpu/cpu.go
+
+// CacheLinePad is used to pad structs to avoid false sharing.
+type CacheLinePad struct{ _ [cacheLineSize]byte }
+```
+
+
+实际应用
+```go
+type semaRoot struct {
+	lock  mutex
+	treap *sudog        // root of balanced tree of unique waiters.
+	nwait atomic.Uint32 // Number of waiters. Read w/o the lock.
+}
+
+var semtable semTable
+
+// Prime to not correlate with any user patterns.
+const semTabSize = 251
+
+type semTable [semTabSize]struct {
+	root semaRoot
+	pad  [cpu.CacheLinePadSize - unsafe.Sizeof(semaRoot{})]byte
+}
+
+```
+
+等并发读取semTable时，由于semTable中的root是一个semaRoot结构体，semaRoot中有mutex，treap等字段，这些字段可能会被不同的CPU核心同时访问，导致伪共享问题。
+为了解决伪共享问题，它增加了一个Pad字段，补齐字段的大小到CacheLineSize，这样就可以避免伪共享问题。当然这里可以确定semaRoot的大小不会超过一个CacheLineSize。
 
 ## 参考
 
 - [What’s false sharing and how to solve it (using Golang as example)](https://medium.com/@genchilu/whats-false-sharing-and-how-to-solve-it-using-golang-as-example-ef978a305e10)
+- [Go中秘而不宣的数据结构 CacheLinePad](https://colobu.com/2024/11/17/go-internal-ds-cacheline/)
