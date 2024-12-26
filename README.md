@@ -34,7 +34,7 @@
   - [第十六章 并发编程](#%E7%AC%AC%E5%8D%81%E5%85%AD%E7%AB%A0-%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B)
   - [第十七章 数据结构及算法](#%E7%AC%AC%E5%8D%81%E4%B8%83%E7%AB%A0-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%8A%E7%AE%97%E6%B3%95)
   - [第十八章 错误跟踪 error 和 panic](#%E7%AC%AC%E5%8D%81%E5%85%AB%E7%AB%A0-%E9%94%99%E8%AF%AF%E8%B7%9F%E8%B8%AA-error-%E5%92%8C-panic)
-  - [第十九章 nil预定义标识](#%E7%AC%AC%E5%8D%81%E4%B9%9D%E7%AB%A0-nil%E9%A2%84%E5%AE%9A%E4%B9%89%E6%A0%87%E8%AF%86)
+  - [第十九章 nil 预定义标识](#%E7%AC%AC%E5%8D%81%E4%B9%9D%E7%AB%A0-nil-%E9%A2%84%E5%AE%9A%E4%B9%89%E6%A0%87%E8%AF%86)
   - [第二十章 for-range 源码分析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E7%AB%A0-for-range-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
   - [第二十一章 time标准包源码分析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B8%80%E7%AB%A0-time%E6%A0%87%E5%87%86%E5%8C%85%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
   - [第二十二章 数据驱动模板源码分析-->kratos工具](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%BA%8C%E7%AB%A0-%E6%95%B0%E6%8D%AE%E9%A9%B1%E5%8A%A8%E6%A8%A1%E6%9D%BF%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90--kratos%E5%B7%A5%E5%85%B7)
@@ -494,17 +494,18 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
   - [7.1 errors.Unwrap 获取错误链中最后面的一个 root error](chapter18_error_n_panic/07_chain_error/01_root_error/main.go)
   - [7.2 errors.As函数 提取 error chain中特定类型的error](chapter18_error_n_panic/07_chain_error/02_error_as/main.go)  
 - [8 debug.SetCrashOutput -->go 1.23 允许设置未被捕获的错误、异常的日志写入](chapter18_error_n_panic/08_SetCrashOutput/main.go)
-## 第十九章 nil预定义标识
-- 1 不同类型为nil时的地址和size大小
+## [第十九章 nil 预定义标识](chapter19_nil/nil.md)
+- [1 pointer, channel, func, interface, map, or slice type 为nil时的地址和size大小](chapter19_nil/01_nil_size_n_addr/main.go)
 - 2 不同类型与nil的比较
-  - [interface为nil时:数据段和类型](chapter19_nil/02_comparison/interface/interface.go)
-  - [nil==nil不可以比较](chapter19_nil/02_comparison/nil/main.go)
-  - [ptr,channel,func,map为nil必须地址未分配](chapter19_nil/02_comparison/ptr_chan_func_map/main.go)
-  - [slice的长度和容量不决定nil](chapter19_nil/02_comparison/slice/slice.go)
-- 3 不同类型nil时的特点
-  - [channel为nil时的接收，发送，关闭及select](chapter19_nil/03_Attribute/channel/chan.go)
-  - [map为nil时可读不可写](chapter19_nil/03_Attribute/map/map.go)
-  - [结构体指针为nil时是否可以调用方法](chapter19_nil/03_Attribute/ptr/ptr.go)
+  - [2.1 nil==nil不可以比较](chapter19_nil/02_comparison/01_nil/main.go)
+  - [2.2 两个 nil 值未必相等](chapter19_nil/02_comparison/02_nil_to_nil/main.go)
+  - [2.3 interface为nil时:数据段和类型](chapter19_nil/02_comparison/03_interface/interface.go)
+  - [2.4 ptr,channel,func,map为nil必须地址未分配](chapter19_nil/02_comparison/04_ptr_chan_func_map/main.go)
+  - [2.5 slice 的长度和容量不决定nil](chapter19_nil/02_comparison/05_slice/slice.go)
+- 3 不同类型 nil 时的特点
+  - [3.1 channel为 nil 时的接收，发送，关闭及select](chapter19_nil/03_Attribute/01_channel/chan.go)
+  - [3.2 map 为 nil 时可读不可写](chapter19_nil/03_Attribute/02_map/map.go)
+  - [3.3 结构体指针为 nil 时是否可以调用方法](chapter19_nil/03_Attribute/03_struct_method/ptr.go)
 
 ## [第二十章 for-range 源码分析](chapter20_for_range/for_range.md)
 - [1 遍历数组,切片,结构体数组](chapter20_for_range/01_for_range_slice_n_array/main.go)

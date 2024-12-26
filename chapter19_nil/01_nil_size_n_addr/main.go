@@ -1,26 +1,21 @@
-package main
+package _1_nil_size_n_addr
 
 import (
 	"fmt"
+	"unsafe"
 )
-
-/*
-nil介绍
-	nil是预定义标识，可以在Go语言标准文档builtin/builtin.go标准库中找到nil的定义。
-	nil代表了指针pointer、通道channel、函数func、接口interface、map、切片slice类型变量的零值
-源码
-	// nil is a predeclared identifier representing the zero value for a
-	// pointer, channel, func, interface, map, or slice type.
-	var nil Type // Type must be a pointer, channel, func, interface, map, or slice type
-
-	// Type is here for the purposes of documentation only. It is a stand-in
-	// for any Go type, but represents the same type for any given function
-	// invocation.
-	type Type int
-*/
 
 func main() {
 	// 1. 各类型为nil时的地址
+	addr()
+
+	// 2. 各类型为nil时的大小
+	size()
+
+}
+
+func addr() {
+
 	var p *int
 	var c chan int
 	var f func()
@@ -40,6 +35,10 @@ func main() {
 
 
 	*/
+	type People struct {
+		name string
+		age  int
+	}
 	//实例化是有地址的
 	var p1 = &People{}
 	var p2 = People{}
@@ -48,10 +47,20 @@ func main() {
 	fmt.Printf("p2地址%p\n", &p2)                   // 0xc00000c080
 	fmt.Printf("p3地址%p\n", p3)                    // 0x0
 	fmt.Println(p1 == nil, &p2 == nil, p3 == nil) // false false true
-
 }
 
-type People struct {
-	name string
-	age  int
+func size() {
+
+	var p *int = nil
+	fmt.Println("int: ", unsafe.Sizeof(p)) // 8
+	var c chan int = nil
+	fmt.Println("chan int: ", unsafe.Sizeof(c)) // 8
+	var f func() = nil
+	fmt.Println("func: ", unsafe.Sizeof(f)) //8
+	var m map[int]int = nil
+	fmt.Println("map: ", unsafe.Sizeof(m)) // 8
+	var s []int = nil
+	fmt.Println("slice: ", unsafe.Sizeof(s)) // 24
+	var i interface{} = nil
+	fmt.Println("interface: ", unsafe.Sizeof(i)) // 16
 }
