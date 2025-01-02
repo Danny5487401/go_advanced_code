@@ -187,7 +187,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - 4 底层数据结构
   - [4.1 数组数据结构](chapter05_slice_n_array/04_structure_of_array_n_slice/01_array/arrayStructure.md)
   - [4.2 切片数据结构及拷贝copy源码分析](chapter05_slice_n_array/04_structure_of_array_n_slice/02_slice/sliceStructure.md)
-  - [4.3 slice 转 array 在版本 1.20 前后变化](chapter05_slice_n_array/04_structure_of_array_n_slice/03_slice_to_array/main.go)
+  - [4.3 array 转 slice,slice 转 array 在版本 1.20 前后变化](chapter05_slice_n_array/04_structure_of_array_n_slice/03_slice_to_array/main.go)
 - [5 nil 切片和 empty 切片](chapter05_slice_n_array/05nilSlice_n_NoneSlice/nil_n_empty_slice.md)
   - [5.1 优雅的清空切片，复用内存](chapter05_slice_n_array/05nilSlice_n_NoneSlice/clear_slice.go)
 - [6 扩容策略](chapter05_slice_n_array/06GrowSlice/grow_size_policy.md)
@@ -224,10 +224,10 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 
 ## [第八章 defer函数及汇编语言理解](chapter08_defer/defer.md)
 - [1 注册延迟调用机制定义及使用](chapter08_defer/01_defer_definiton/main.go)
-- [2 defer陷阱](chapter08_defer/02_defer_common_mistakes/main.go)
-- [3 分阶段解析defer函数](chapter08_defer/03_defer_params_n_return/main.go)
-- [4 defer循环性能问题](chapter08_defer/04_defer_loop_performance/main.go)
-- [5 汇编理解defer函数(AMD)](chapter08_defer/05_defer_assembly/defer_amd.s)
+- [2 defer 陷阱](chapter08_defer/02_defer_common_mistakes/main.go)
+- [3 分阶段解析 defer 函数](chapter08_defer/03_defer_params_n_return/main.go)
+- [4 defer 循环性能问题](chapter08_defer/04_defer_loop_performance/main.go)
+- [5 汇编理解 defer 函数(AMD)](chapter08_defer/05_defer_assembly/defer_amd.s)
 ---
 
 ## [第九章 设计模式-OOP七大准则](chapter09_design_pattern/introduction.md)
@@ -362,8 +362,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
   - [2.1 官方库版(爬虫获取邮箱案例-未封装)](chapter12_net/02_http_client/01_standard_pkg/client.go)
   - [2.2 go-resty(推荐使用)](chapter12_net/02_http_client/02_go_resty/rest_client.go)
 - [3 Tcp 实现 Socket 编程 (服务端 netpoll 分析)](chapter12_net/03_tcp/tcp_server.md)
-  - [客户端](chapter12_net/03_tcp/client/main.go)
-  - [服务端](chapter12_net/03_tcp/server/main.go)
+  - [3.1 客户端](chapter12_net/03_tcp/client/main.go)
+  - [3.2 服务端](chapter12_net/03_tcp/server/main.go)
 - [4 Tcp 黏包分析及处理(大小端介绍)](chapter12_net/04_tcp_sticky_problem/big_n_small_endian.md)
   - [4.1 TCP 粘包问题](chapter12_net/04_tcp_sticky_problem/01_problem)
   - [4.2 TCP 粘包解决方式](chapter12_net/04_tcp_sticky_problem/02_solution)

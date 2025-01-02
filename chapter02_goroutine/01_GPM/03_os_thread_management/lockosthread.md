@@ -6,7 +6,8 @@
   - [背景](#%E8%83%8C%E6%99%AF)
   - [runtime.LockOSThread](#runtimelockosthread)
   - [runtime.UnlockOSThread()](#runtimeunlockosthread)
-  - [应用-cni](#%E5%BA%94%E7%94%A8-cni)
+  - [应用-->cni](#%E5%BA%94%E7%94%A8--cni)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -100,8 +101,9 @@ func dounlockOSThread() {
 ```
 
 
-## 应用-cni
+## 应用-->cni
 
+初始化调度
 ```go
 // https://github.com/AliyunContainerService/terway/blob/c742f76b042a96949aadc8bd4610a2fb5aa0fead/plugin/terway/cni.go
 func init() {
@@ -112,6 +114,139 @@ func main() {
 	skel.PluginMain(cmdAdd, cmdCheck, cmdDel, version.PluginSupports("0.3.0", "0.3.1", "0.4.0", "1.0.0"), bv.BuildString("terway"))
 }
 ```
+
+背景:在 Linux 中，不同的操作系统线程可能会设置不同的网络命名空间，而 Go 语言的协程会基于操作系统线程的负载以及其他信息动态地在不同的操作系统线程之间切换，这样可能会导致 Go 协程在意想不到的情况下切换到不同的网络命名空间中。
+比较稳妥的做法是，利用 Go 语言提供的 runtime.LockOSThread() 函数保证特定的 Go 协程绑定到当前的操作系统线程中。
+
+接口
+```go
+type NetNS interface {
+	// Executes the passed closure in this object's network namespace,
+	// attempting to restore the original namespace before returning.
+	// However, since each OS thread can have a different network namespace,
+	// and Go's thread scheduling is highly variable, callers cannot
+	// guarantee any specific namespace is set unless operations that
+	// require that namespace are wrapped with Do().  Also, no code called
+	// from Do() should call runtime.UnlockOSThread(), or the risk
+	// of executing code in an incorrect namespace will be greater.  See
+	// https://github.com/golang/go/wiki/LockOSThread for further details.
+	Do(toRun func(NetNS) error) error
+
+	// Sets the current network namespace to this object's network namespace.
+	// Note that since Go's thread scheduling is highly variable, callers
+	// cannot guarantee the requested namespace will be the current namespace
+	// after this function is called; to ensure this wrap operations that
+	// require the namespace with Do() instead.
+	Set() error
+
+	// Returns the filesystem path representing this object's network namespace
+	Path() string
+
+	// Returns a file descriptor representing this object's network namespace
+	Fd() uintptr
+
+	// Cleans up this instance of the network namespace; if this instance
+	// is the last user the namespace will be destroyed
+	Close() error
+}
+```
+具体实现
+```go
+// github.com/containernetworking/plugins/pkg/ns/ns_linux.go
+func (ns *netNS) Do(toRun func(NetNS) error) error {
+    // ..
+
+	containedCall := func(hostNS NetNS) error {
+		threadNS, err := GetCurrentNS()
+		if err != nil {
+			return fmt.Errorf("failed to open current netns: %v", err)
+		}
+		defer threadNS.Close()
+
+		// switch to target namespace
+		if err = ns.Set(); err != nil {
+			return fmt.Errorf("error switching to ns %v: %v", ns.file.Name(), err)
+		}
+		defer func() {
+			err := threadNS.Set() // switch back
+			if err == nil {
+				// Unlock the current thread only when we successfully switched back
+				// to the original namespace; otherwise leave the thread locked which
+				// will force the runtime to scrap the current thread, that is maybe
+				// not as optimal but at least always safe to do.
+				runtime.UnlockOSThread()
+			}
+		}()
+
+		return toRun(hostNS)
+	}
+
+	// save a handle to current network namespace
+	hostNS, err := GetCurrentNS()
+	if err != nil {
+		return fmt.Errorf("Failed to open current namespace: %v", err)
+	}
+	defer hostNS.Close()
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	// Start the callback in a new green thread so that if we later fail
+	// to switch the namespace back to the original one, we can safely
+	// leave the thread locked to die without a risk of the current thread
+	// left lingering with incorrect namespace.
+	var innerError error
+	go func() {
+		defer wg.Done()
+		runtime.LockOSThread()
+		innerError = containedCall(hostNS)
+	}()
+	wg.Wait()
+
+	return innerError
+}
+
+```
+
+调用runtime.LockOSThread()函数，锁定了执行闭包的当前线程。
+
+
+
+```go
+func setupVeth(netns ns.NetNS, br *netlink.Bridge, ifName string, ipAddress string) error {
+  hostIface := &current.Interface{}                           ①
+
+  err := netns.Do(func(hostNS ns.NetNS) error {               ②
+    hostVeth, containerVeth, err := 
+      ip.SetupVeth(ifName, 1500, hostNS)                      ③
+    if err != nil {
+      return err
+    }
+    hostIface.Name = hostVeth.Name                            ④
+
+    return nil
+  })
+  if err != nil {
+    return err
+  }
+
+  hostVeth, err := netlink.LinkByName(hostIface.Name)         ⑤
+  if err != nil {
+    return err
+  }
+
+  if err := netlink.LinkSetMaster(hostVeth, br); err != nil { ⑥
+    return err
+  }
+
+  return nil
+}
+```
+
+我们使用②时, Do函数在执行闭包之前，会先保存当前线程的network namespace，也就是宿主机对应的namespace，并作为参数传入闭包。然后在闭包执行结束时，把当前network namespace恢复成宿主机对应的namespace
+
+## 参考
+
 
 
 

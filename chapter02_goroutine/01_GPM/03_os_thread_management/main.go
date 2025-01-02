@@ -2,6 +2,7 @@ package main
 
 // #include <pthread.h>
 import "C"
+
 import (
 	"fmt"
 	"runtime"
