@@ -458,7 +458,9 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
     - int 类型切片排序: sort.IntSlice
   - [4.2 sort.Search 二分查找: 根据排序切片找索引](chapter17_dataStructure_n_algorithm/04_sort/02_search/main.go)
 - [5 container](chapter17_dataStructure_n_algorithm/05_container/container.md)
-  - [5.1 heap 最小堆](chapter17_dataStructure_n_algorithm/05_container/01_heap/heap.md)
+  - [5.1 heap 堆](chapter17_dataStructure_n_algorithm/05_container/01_heap/heap.md)
+    - [5.1.1 最小堆](chapter17_dataStructure_n_algorithm/05_container/01_heap/01_basic/main.go)
+    - [5.1.2 优先队列](chapter17_dataStructure_n_algorithm/05_container/01_heap/02_priority)
   - [5.2 list 双向链表](chapter17_dataStructure_n_algorithm/05_container/02_list/list.md) 
   - [5.3 ring 环形链表](chapter17_dataStructure_n_algorithm/05_container/03_ring/ring.md) 
 - [6 certificate 证书-->openssl 使用](chapter17_dataStructure_n_algorithm/06_certificate/certificate.md)
