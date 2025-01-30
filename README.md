@@ -160,9 +160,9 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
     - [2.4 通过 reflect 基本函数修改值，调用结构体方法，调用普通函数](chapter04_interface_n_reflect/02_reflect/04_reflect_method/main.go)
     - [2.5 反射性能优化演变案例](chapter04_interface_n_reflect/02_reflect/05_performance_inprove/main.go)
     - [2.6 通过reflect.DeepEqual进行深度比较引用类型](chapter04_interface_n_reflect/02_reflect/06_deepEqual/deepEqual.md)
-        - 底层类型相同，相应的值也相同，两个自定义类型*是否“深度”相等
-        - 一个nil值的map和非nil值但是空的map*是否“深度”相等
-        - 带有环的数据对比*是否“深度”相等
+        - *底层类型相同，相应的值也相同,两个自定义类型*是否“深度”相等
+        - *一个 nil 值的map*和*非 nil 值但是空的map*是否“深度”相等
+        - *带有环的数据*对比是否“深度”相等
     - [2.7 reflect.implements 判断 struct 是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
     - [2.8 go-cmp-->reflect.DeepEqual 的替代品](chapter04_interface_n_reflect/02_reflect/08_go-cmp/go-cmp.md)
       - [2.8.1 结构体内嵌指针：与 == 对比进行相等判断](chapter04_interface_n_reflect/02_reflect/08_go-cmp/01_struct_compare_with_pointer/main.go)
@@ -388,6 +388,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
   - [let's encrypt 免费证书 开发server](chapter12_net/12_http2/01_server/server.go)
 - [13 flusher 实现 stream 流式返回](chapter12_net/13_flusher/flusher.md)
 - [14 ReverseProxy 反向代理](chapter12_net/14_reverse_proxy/reverse_proxy.md)
+- [15 go1.18 netip 处理网络地址和相关操作](chapter12_net/15_netip/netip.md)
 
 
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
