@@ -21,6 +21,8 @@
     - [replace](#replace)
     - [retract](#retract)
   - [最佳实践](#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5)
+  - [go list](#go-list)
+    - [go list 的常用选项](#go-list-%E7%9A%84%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9)
   - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -89,7 +91,7 @@ go mod tidy
 
 ## go mod vendor说明
 
-使用goverdor来管理项目依赖包时, 如果GOPATH中本身没有项目的依赖包，则需要通过go get先下载到GOPATH中，再通过govendor add +external拷贝到vendor目录中
+使用govendor来管理项目依赖包时, 如果GOPATH中本身没有项目的依赖包，则需要通过go get先下载到GOPATH中，再通过govendor add +external拷贝到vendor目录中
 
 
 构建的环境无法连接其他网络或者无法连接一些依赖库下载对应依赖时(尤其是国内这种恶劣的开发环境), 将依赖直接导出到项目目录直接进行构建就显得尤为重要了!
@@ -287,6 +289,26 @@ retract是go 1.16中新增加的内容，借用学术界期刊撤稿的术语，
 - 本地调试：如果本地有依赖模块还未发布，则可以利用如下方法进行调试：
     - replace：将依赖模块修改成本地依赖包地址，这样就可以在本地修改依赖包的同时进行编译调试了(需要注意go.mod文件内容发生修改，注意不要提交)
     - vendor：默认情况下go build会忽略vendor目录；当添加-mod=vendor选项时，go build会优先查找vendor目录下的依赖模块。因此可以将本地开发的依赖包放置在vendor目录，并将vendor通过.gitignore文件设置在版本控制之外，这样既可以满足本地调试，同时也不影响版本提交
- 
+
+## go list
+go list 用于列出包、模块或其依赖的详细信息.
+```shell
+# 默认情况下，这将输出包的导入路径
+✗ go list encoding/json
+encoding/json
+
+# 不指定包名则默认输出当前所在目录的包的导入路径
+✗ go list                                         
+github.com/Danny5487401/go_advanced_code
+```
+
+### go list 的常用选项
+
+* -deps 选项列出指定包及其所有依赖包。使用深度优先的后序遍历顺序访问包
+* -e 选项改变对错误包的处理方式。
+* -m 选项用于列出模块（go.mod）而非包（package xxx）
+* -u 选项显示有关可用升级的信息。如果模块有更新版本，它将显示最新版本的信息
 
 ## 参考
+
+- [go list 命令详解](https://blog.axiaoxin.com/post/go-list/)

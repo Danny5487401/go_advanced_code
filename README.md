@@ -568,6 +568,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
   - [8.1 assert断言](chapter28_test/08_testify/01_assert/calculate_test.go)
   - [8.2 mock测试替身](chapter28_test/08_testify/02_mock/main_test.go)
   - [8.3 suite测试套件](chapter28_test/08_testify/03_suite/suite_test.go)
+- [9 testcontainers 使用容器依赖进行集成测试](chapter28_test/09_testcontainers/testcontainers.md)
+  - [9.1 使用 mysql 容器](chapter28_test/09_testcontainers/01_mysql/main_test.go)
 
 ## 第二十九章 module包管理
 - [1 go-module 实践篇](chapter29_module/01_use/module_operation.md)
