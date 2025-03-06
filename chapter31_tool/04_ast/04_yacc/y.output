@@ -1,0 +1,156 @@
+
+state 0
+	$accept: .main $end 
+
+	D  shift 4
+	.  error
+
+	phone  goto 2
+	area  goto 3
+	main  goto 1
+
+state 1
+	$accept:  main.$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	main:  phone.    (1)
+
+	.  reduce 1 (src line 25)
+
+
+state 3
+	phone:  area.part1 part2 
+	phone:  area.'-' part1 '-' part2 
+
+	D  shift 7
+	'-'  shift 6
+	.  error
+
+	part1  goto 5
+
+state 4
+	area:  D.D D 
+
+	D  shift 8
+	.  error
+
+
+state 5
+	phone:  area part1.part2 
+
+	D  shift 10
+	.  error
+
+	part2  goto 9
+
+state 6
+	phone:  area '-'.part1 '-' part2 
+
+	D  shift 7
+	.  error
+
+	part1  goto 11
+
+state 7
+	part1:  D.D D 
+
+	D  shift 12
+	.  error
+
+
+state 8
+	area:  D D.D 
+
+	D  shift 13
+	.  error
+
+
+state 9
+	phone:  area part1 part2.    (2)
+
+	.  reduce 2 (src line 30)
+
+
+state 10
+	part2:  D.D D D 
+
+	D  shift 14
+	.  error
+
+
+state 11
+	phone:  area '-' part1.'-' part2 
+
+	'-'  shift 15
+	.  error
+
+
+state 12
+	part1:  D D.D 
+
+	D  shift 16
+	.  error
+
+
+state 13
+	area:  D D D.    (4)
+
+	.  reduce 4 (src line 40)
+
+
+state 14
+	part2:  D D.D D 
+
+	D  shift 17
+	.  error
+
+
+state 15
+	phone:  area '-' part1 '-'.part2 
+
+	D  shift 10
+	.  error
+
+	part2  goto 18
+
+state 16
+	part1:  D D D.    (5)
+
+	.  reduce 5 (src line 45)
+
+
+state 17
+	part2:  D D D.D 
+
+	D  shift 19
+	.  error
+
+
+state 18
+	phone:  area '-' part1 '-' part2.    (3)
+
+	.  reduce 3 (src line 35)
+
+
+state 19
+	part2:  D D D D.    (6)
+
+	.  reduce 6 (src line 50)
+
+
+5 terminals, 6 nonterminals
+7 grammar rules, 20/16000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+55 working sets used
+memory: parser 6/240000
+0 extra closures
+14 shift entries, 1 exceptions
+7 goto entries
+0 entries saved by goto default
+Optimizer space used: output 20/240000
+20 table entries, 0 zero
+maximum spread: 5, maximum offset: 15
