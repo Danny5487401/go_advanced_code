@@ -7,12 +7,15 @@ import (
 )
 
 func main() {
-	var src string = `package main
+	var src string = `
+package main
 
 import "fmt"
 import https "net/http"
 import . "go/token"
-import _ "go/parser"`
+import _ "go/parser"
+
+`
 
 	fl := token.NewFileSet()
 	pl, _ := parser.ParseFile(fl, "example.go", src, parser.ImportsOnly)

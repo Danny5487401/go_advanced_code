@@ -13,7 +13,7 @@ func main() {
 	// Initialize the scanner.
 	var s scanner.Scanner
 	fset := token.NewFileSet()                      // positions are relative to fset
-	file := fset.AddFile("", fset.Base(), len(src)) // register input "file"
+	file := fset.AddFile("", fset.Base(), len(src)) // register input "file", 要求 file 的大小等于src
 	s.Init(file, src, nil /* no error handler */, scanner.ScanComments)
 
 	// Repeated calls to Scan yield the token sequence found in the input.

@@ -13,6 +13,7 @@
     - [Expression](#expression)
     - [Declaration Node](#declaration-node)
     - [General declaration](#general-declaration)
+  - [parser](#parser)
   - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -22,7 +23,7 @@
 ![](.ast_images/ast.png)
 
 
-1 词法分析器(Lexer)对文本(Source Code)进行词法分析，生成Token。一般接下来是将它传给一个解析器，然后检索生成AST。
+1 词法分析器(A Lexical Analyzer Generator): 对文本(Source Code)进行词法分析，生成Token(又称扫描)。一般接下来是将它传给一个解析器，然后检索生成AST。
 
 
 Lexer-又名词法分析器：词法分析器用来将字符序列转换为单词(Token)。词法分析主要是完成：
@@ -50,7 +51,7 @@ Token被定义为一种枚举值，不同值的Token表示不同类型的词法�
 
 
 
-2 Parser-语法分析器：语法分析器的作用是进行语法检查、并构建由输入的单词(Token)组成的数据结构（一般是语法分析树、抽象语法树等层次化的数据结构）
+2 语法分析器(Parser)：语法分析器的作用是进行语法检查、并构建由输入的单词(Token)组成的数据结构（一般是语法分析树、抽象语法树等层次化的数据结构）
 
 
 ## Token 
@@ -100,6 +101,8 @@ const (
   
   operator_beg
   // Operators and delimiters
+  
+  // ....
 }
 
 
@@ -143,13 +146,22 @@ golang官方提供的几个包，可以帮助我们进行AST分析：
 Go语言是由多个文件组成的包，而后多个包链接为一个可执行文件，因此单个包对应的多个文件可被视作Go的基本编译单元。
 
 ```go
+
+// /Users/python/go/go1.23.0/src/go/token/position.go
+
+// 一组文件
 type FileSet struct {
 	mutex sync.RWMutex         // protects the file set
 	base  int                  // base offset for the next file
 	files []*File              // list of files in the order added to the set
 	last  atomic.Pointer[File] // cache of last file looked up
 }
+```
 
+```go
+// /Users/python/go/go1.23.0/src/go/ast/ast.go
+
+// 单个文件
 // A File is a handle for a file belonging to a FileSet.
 // A File has a name, size, and line offset table.
 type File struct {
@@ -294,6 +306,7 @@ type UnaryExpr struct{ ... }
 ```
 
 ### Declaration Node
+
 ### General declaration
 通用声明是不含函数声明的包级别声明，包含：导入、类型、常量和变量四种声明
 
@@ -310,8 +323,44 @@ import _ "go/parser"
 - 第四种仅触发包初始化动作，而不导入任何符号
 
 
+
+## parser
+
+ParseFile 函数的作用：解析单个 Go 源文件的源代码，并返回对应的 ast.File 节点。
+```go
+func ParseFile(fset *token.FileSet, filename string, src any, mode Mode) (f *ast.File, err error) {
+    // ...
+	
+	// get source: 如果传入了 src，优先从 src 解析文件,其次从filename
+	text, err := readSource(filename, src)
+	if err != nil {
+		return nil, err
+	}
+
+	var p parser
+    // ...
+
+	// parse source
+	p.init(fset, filename, text, mode)
+	f = p.parseFile()
+
+	return
+}
+
+
+func (p *parser) init(fset *token.FileSet, filename string, src []byte, mode Mode) {
+	p.file = fset.AddFile(filename, -1, len(src))
+	eh := func(pos token.Position, msg string) { p.errors.Add(pos, msg) }
+	p.scanner.Init(p.file, src, eh, scanner.ScanComments)
+
+	p.top = true
+	p.mode = mode
+	p.trace = mode&Trace != 0 // for convenience (p.trace is used frequently)
+	p.next()
+}
+```
+
 ## 参考
-
-
+- https://github.com/chai2010/go-ast-book
 - [Golang的抽象语法树(AST)](https://zhuanlan.zhihu.com/p/380421057)
 - [Go AST 浅析与CTF中的实战运用](https://tttang.com/archive/1736/)

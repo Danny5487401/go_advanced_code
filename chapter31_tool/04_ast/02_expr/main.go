@@ -10,7 +10,7 @@ import (
 func main() {
 	expr := []byte(`a == 1 && b == 2`)
 	fset := token.NewFileSet()
-	exprAst, err := parser.ParseExprFrom(fset, "", expr, parser.PackageClauseOnly)
+	exprAst, err := parser.ParseExprFrom(fset, "", expr, parser.PackageClauseOnly) // 从 src 中获取
 	if err != nil {
 		fmt.Println(err)
 		return
