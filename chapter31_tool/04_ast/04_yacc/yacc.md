@@ -145,6 +145,8 @@ main(int argc, char **argv) {
 - 动作：模式匹配时要执行的 C 代码
 
 
+$i 表示第i（起始为1）个文法符号（包含终结符、非终结符）的值 ,语义动作一般为根据$i计算$$, 默认语义动作为 { $$ = $1 }，可省略
+
 
 ## 第三方应用 --> prometheus
 
@@ -375,3 +377,4 @@ func (p *parser) Error(e string) {
 - [SQL解析系列(golang)--goyacc实战](https://zhuanlan.zhihu.com/p/264367718)
 - [编译原理工具系列(1)——lex](https://chuquan.me/2022/06/22/compiler-principle-tool-lex/)
 - [编译原理工具系列(2)——yacc](https://chuquan.me/2022/07/10/compiler-principle-tool-yacc/)
+- [TiDB 源码阅读系列文章（五）TiDB SQL Parser 的实现](https://cn.pingcap.com/blog/tidb-source-code-reading-5/)

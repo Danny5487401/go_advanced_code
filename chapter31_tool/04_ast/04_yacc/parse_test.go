@@ -5,6 +5,7 @@ import (
 )
 
 func TestParser(t *testing.T) {
+	// 美国手机号码的格式通常为(XXX) XXX-XXXX，前三位数字代表区号，其余七位数字代表具体电话号码
 	// 功能实现: 支持电话号码4085551212、408-555-1212解析成3个部分
 	testcases := []struct {
 		input   string

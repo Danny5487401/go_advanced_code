@@ -612,7 +612,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
   - [4.1 scanner 词法分析，生成 Token](chapter31_tool/04_ast/01_scan/main.go)
   - 4.2 ast.Expr 
   - 4.3 ImportSpec 打印
-  - [4.4 yacc-->prometheus 应用](chapter31_tool/04_ast/04_yacc/yacc.md)
+  - [4.4 yacc+手动定义词法解析器 lexer-->prometheus 应用](chapter31_tool/04_ast/04_yacc/yacc.md)
+    - 实现美国手机号码格式解析
 - [5 go1.21 toolchain 规则](chapter31_tool/05_toolchain_in_go1.21/toolchain.md)
 
 ## [第三十二章 Generic 泛型](chapter32_generic/generic.md)

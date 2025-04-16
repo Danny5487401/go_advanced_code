@@ -428,7 +428,8 @@ type Bad3 interface {
 ```
 
 接口的并集成员个数大于一的时候不能直接或间接并入 comparable 接口
-```type OK interface {
+```go
+type OK interface {
     comparable // 正确。只有一个类型的时候可以使用 comparable
 }
 
@@ -470,6 +471,9 @@ type Bad[T any] interface {
 }
 ```
 
+5. Method cannot have type parameters 不支持泛型方法
+解决方式: 实现泛型函数来实现泛型方法，把方法的receiver当成第一个参数传递过去,参考 https://github.com/marwan-at-work/singleflight
+
 ## 推荐写法
 
 阶段一
@@ -507,6 +511,8 @@ type Slice[T Int | Uint | Float] []T  // 使用 '|' 将多个接口类型组合
 
 
 ## 参考资料
+- https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md
+- https://dominikbraun.io/blog/a-gentle-introduction-to-generics-in-go/
 - [鸟窝关于 Go 泛形实现](https://colobu.com/2021/08/30/how-is-go-generic-implemented/)
-- [Go泛型全面讲解](https://www.cnblogs.com/insipid/p/17772581.html)
-- [A Gentle Introduction to Generics in Go](https://dominikbraun.io/blog/a-gentle-introduction-to-generics-in-go/)
+- [Go泛型不支持泛型方法，这是一个悲伤的故事](https://colobu.com/2021/12/22/no-parameterized-methods/)
+- [Go 泛型全面讲解](https://www.cnblogs.com/insipid/p/17772581.html)
