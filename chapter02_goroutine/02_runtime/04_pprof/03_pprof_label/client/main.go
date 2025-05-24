@@ -2,14 +2,13 @@ package main
 
 import (
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/dlsniper/debugger"
+	"github.com/dlsniper/debugger" // 调试 goroutine
 )
 
 func main() {
@@ -78,7 +77,7 @@ func makeRequest(done chan struct{}, c *http.Client, page string, i int64) {
 	}
 	defer resp.Body.Close()
 
-	_, _ = io.Copy(ioutil.Discard, resp.Body)
+	_, _ = io.Copy(io.Discard, resp.Body)
 
 	time.Sleep(time.Duration(10+rand.Intn(40)) + time.Millisecond)
 }

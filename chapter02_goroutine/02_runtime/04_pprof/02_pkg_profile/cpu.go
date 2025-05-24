@@ -32,7 +32,7 @@ func joinSlice2() []string {
 }
 
 func main() {
-	// 开始性能分析, 返回一个停止接口
+	// 开始 cpu 性能分析, 返回一个停止接口
 	stopper := profile.Start(profile.CPUProfile, profile.ProfilePath("."))
 
 	// 在main()结束时停止性能分析

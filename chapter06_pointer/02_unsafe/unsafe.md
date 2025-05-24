@@ -3,16 +3,15 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Golang指针](#golang%E6%8C%87%E9%92%88)
-  - [分类](#%E5%88%86%E7%B1%BB)
   - [为什么有 unsafe](#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89-unsafe)
   - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
     - [Go 1.17 之前](#go-117-%E4%B9%8B%E5%89%8D)
       - [1. func Sizeof(x ArbitraryType) uintptr](#1-func-sizeofx-arbitrarytype-uintptr)
       - [2. func Offsetof(x ArbitraryType) uintptr](#2-func-offsetofx-arbitrarytype-uintptr)
       - [3. func Alignof(x ArbitraryType) uintptr](#3-func-alignofx-arbitrarytype-uintptr)
-    - [总结](#%E6%80%BB%E7%BB%93)
-    - [新变化](#%E6%96%B0%E5%8F%98%E5%8C%96)
-  - [应用：](#%E5%BA%94%E7%94%A8)
+      - [总结](#%E6%80%BB%E7%BB%93)
+    - [1.17 新变化](#117-%E6%96%B0%E5%8F%98%E5%8C%96)
+  - [应用](#%E5%BA%94%E7%94%A8)
     - [1. map 源码中的应用](#1-map-%E6%BA%90%E7%A0%81%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8)
       - [简单应用](#%E7%AE%80%E5%8D%95%E5%BA%94%E7%94%A8)
       - [复杂应用](#%E5%A4%8D%E6%9D%82%E5%BA%94%E7%94%A8)
@@ -23,12 +22,6 @@
 
 # Golang指针
 
-## 分类
-分为3种
-![](pointer_transfer.png)
-1. *类型:普通指针类型，用于传递对象地址，不能进行指针运算。
-2. unsafe.Pointer:通用指针类型，用于转换不同类型的指针，不能进行指针运算，不能读取内存存储的值（必须转换到某一类型的普通指针）。
-3. uintptr:用于指针运算，GC 不把 uintptr 当指针，uintptr 无法持有对象。uintptr 类型的目标会被回收。
 
 
 ## 为什么有 unsafe
@@ -49,7 +42,7 @@ Note : 我们不可以直接通过*p来获取unsafe.Pointer指针指向的真实
    和普通指针一样，unsafe.Pointer指针也是可以比较的，并且支持和nil常量比较判断是否为空指针
 
 
-2. uintptr   整数类型
+2. uintptr  整数类型
 
 定义: uintptr is an integer type that is large enough to hold the bit pattern of any 03PointerSetPrivateValue
 
@@ -140,13 +133,13 @@ fmt.Println(unsafe.Alignof(b1.z)) // 1：表示此字段须按1的倍数对
 - 对于 array 类型的变量 x，unsafe.Alignof(x) 等于构成数组的元素类型的对齐倍数。
 
 
-### 总结
+#### 总结
 
 三个函数的参数均是ArbitraryType类型，就是接受任何类型的变量,返回的结果都是 uintptr 类型，这和 unsafe.Pointer 可以相互转换。
 
 三个函数都是在编译期间执行，它们的结果可以直接赋给 const型变量。另外，因为三个函数执行的结果和操作系统、编译器相关，所以是不可移植的
 
-### 新变化 
+### 1.17 新变化 
 Go 1.17引入了一个新类型和两个新函数。 此新类型为IntegerType。它的定义如下。 此类型不代表着一个具体类型，它只是表示任意整数类型
 
 Go 1.17引入的两个函数为：
@@ -159,7 +152,7 @@ Go 1.20进一步引入了三个函数：
 - func SliceData(slice []ArbitraryType) *ArbitraryType。 此函数用来获取一个切片底层元素序列中的第一个元素的指针
 
 
-## 应用：
+## 应用
 例如，一般我们不能操作一个结构体的未导出成员，但是通过 unsafe 包就能做到。
 unsafe 包让我可以直接读写内存，还管你什么导出还是未导出
 

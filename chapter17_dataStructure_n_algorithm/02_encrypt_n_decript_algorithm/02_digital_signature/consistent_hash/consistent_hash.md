@@ -9,7 +9,7 @@
     - [单调性(Monotonicity)](#%E5%8D%95%E8%B0%83%E6%80%A7monotonicity)
     - [分散性(Spread)](#%E5%88%86%E6%95%A3%E6%80%A7spread)
   - [库](#%E5%BA%93)
-    - ["https://github.com/serialx/hashring" -->buildkit 使用](#httpsgithubcomserialxhashring---buildkit-%E4%BD%BF%E7%94%A8)
+    - [github.com/serialx/hashring -->buildkit 使用](#githubcomserialxhashring---buildkit-%E4%BD%BF%E7%94%A8)
     - [go-zero实现](#go-zero%E5%AE%9E%E7%8E%B0)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -35,7 +35,7 @@
 
 ## 库
 
-### "https://github.com/serialx/hashring" -->buildkit 使用
+### github.com/serialx/hashring -->buildkit 使用
 使用 kentama 是一致性哈希的一种实现，主要思想如下：
 
 - 将server和key同时映射到环形连续统（0~2^32)
@@ -103,7 +103,8 @@ Note: 这里使用的是 md5 算法
 
 ### go-zero实现
 ```go
-// /Users/python/go/pkg/mod/github.com/zeromicro/go-zero@v1.3.5/core/hash/consistenthash.go
+// github.com/zeromicro/go-zero@v1.3.5/core/hash/consistenthash.go
+
 type ConsistentHash struct {
   hashFunc Func       // hash 函数
   replicas int       // 虚拟节点放大因子

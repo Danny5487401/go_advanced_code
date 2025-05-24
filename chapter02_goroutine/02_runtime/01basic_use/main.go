@@ -42,7 +42,7 @@ func main() {
 	// 7. 变量绑定方法,当垃圾回收的时候进行监听
 	var i *Student = new(Student)
 	runtime.SetFinalizer(i, func(i *Student) {
-		println("垃圾回收了")
+		fmt.Println("垃圾回收了")
 	})
 	// 立即执行一次垃圾回收
 	runtime.GC()

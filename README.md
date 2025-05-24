@@ -52,6 +52,7 @@
   - [第三十三章 makefile 使用](#%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%89%E7%AB%A0-makefile-%E4%BD%BF%E7%94%A8)
   - [第三十四章 regexp 正则表达式 Regular Expression](#%E7%AC%AC%E4%B8%89%E5%8D%81%E5%9B%9B%E7%AB%A0-regexp-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F-regular-expression)
   - [第三十五章 编码 Unicode](#%E7%AC%AC%E4%B8%89%E5%8D%81%E4%BA%94%E7%AB%A0-%E7%BC%96%E7%A0%81-unicode)
+  - [第三十六章 unique 包--go 1.23](#%E7%AC%AC%E4%B8%89%E5%8D%81%E5%85%AD%E7%AB%A0-unique-%E5%8C%85--go-123)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 # *目录*
@@ -93,10 +94,10 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
     - [2.3 data race 资源竞争一致性问题分析](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/resource_competion.md)
         - [2.3.1 -race 标志分析问题产生](chapter02_goroutine/02_runtime/03ResourceCompetition/01problem/main.go)
         - [2.3.2 mutex解决问题](chapter02_goroutine/02_runtime/03ResourceCompetition/02Fix_Resource_data_consistency/main.go)
-    - [2.4 监控代码性能pprof](chapter02_goroutine/02_runtime/04_pprof/intro.md)
-        - [2.4.1 标准包runtime/pprof及net/http/pprof使用](chapter02_goroutine/02_runtime/04_pprof/01_pprof/main.go)
-        - [2.4.2 第三方包pkg/profile](chapter02_goroutine/02_runtime/04_pprof/02_pkg_profile/cpu.go)
-        - [2.4.3 debug 定位goroutine：添加pprof标签](chapter02_goroutine/02_runtime/04_pprof/03_pprof_label/client/main.go)
+    - [2.4 监控代码性能 pprof](chapter02_goroutine/02_runtime/04_pprof/intro.md)
+        - [2.4.1 标准包 runtime/pprof 及 net/http/pprof 使用](chapter02_goroutine/02_runtime/04_pprof/01_pprof/main.go)
+        - [2.4.2 第三方包 github.com/pkg/profile ](chapter02_goroutine/02_runtime/04_pprof/02_pkg_profile/pkg_profile.md)
+        - [2.4.3 dlsniper/debugger: 添加 pprof 标签调试 goroutine](chapter02_goroutine/02_runtime/04_pprof/03_pprof_label/client/main.go)
 - [3 多 goroutine 的缓存一致性(涉及cpu伪共享)](chapter02_goroutine/03_cache/cache.md)
 - [4 线程池(池化技术)](chapter02_goroutine/04_concurrent_pool/pool.md)
     - [4.1 使用channel实现Goroutine最大数量限制(令牌桶方式)](chapter02_goroutine/04_concurrent_pool/01_goroutine_max_control/main.go)
@@ -199,7 +200,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 ---
 
 ## 第六章 指针
-- [1 指针类型转换及修改值](chapter06_pointer/01ptrOperation/main.go)
+- [1 指针类型转换及修改值](chapter06_pointer/01_ptrOperation/ptr_operation.md)
 - [2 指针分类及unsafe包使用](chapter06_pointer/02unsafe/unsafe.md)
     - [2.1 sizeof 获取类型其占用的字节数, Offsetof 修改结构体私有成员, Alignof 内存中的地址对齐](chapter06_pointer/02unsafe/01_basic_api/unsafe.go)
     - [2.2 指针获取切片长度和容量](chapter06_pointer/02unsafe/02_slice_operaion/slice_len_n_cap.go)
@@ -212,6 +213,12 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
     - [5.2 空 struct{} 结构体使用](chapter06_pointer/05_struct_align/02_empty_struct/empty_struct.go)
         - 空结构体作为第一个元素
         - 空结构体作为最后一个元素
+- [6 弱指针--go 1.24 ](chapter06_pointer/06_weak_pointer/week_pointer.md)
+  - [6.1 基本使用](chapter06_pointer/06_weak_pointer/01_basic_use/main.go)
+  - [6.2 缓存使用](chapter06_pointer/06_weak_pointer/02_cache/main.go))
+- [7 keepalive 配合 finalizer 使用](chapter06_pointer/07_keepalive_n_finalizer/keepalive.md)
+  - [7.1 错误使用 finalizer 优化](chapter06_pointer/07_keepalive_n_finalizer/01_wrong_use/main.go)
+  - [7.2 正确使用 finalizer 优化](chapter06_pointer/07_keepalive_n_finalizer/02_correct_use/main.go)
 ---
 
 ## [第七章 系统调用](chapter07_system_call/Syscall.md)
@@ -343,12 +350,13 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
     - [2.15 两种方式获取GoroutineId](chapter11_assembly_language/02plan9/15_GoroutineId/main.go)
     - [2.16 汇编调用非汇编Go函数](chapter11_assembly_language/02plan9/16_assembly_call_NonassemblyFunc/main.go)
 
-
+---
 ## [第十二章 net 网络--涉及性能指标,协议栈统计,套接字信息](chapter12_net/net.md)
 - [socket 套接字缓冲区](chapter12_net/socket.md)
 - [tcp 传输控制协议](chapter12_net/tcp.md)
 - [I/O 多路复用及 epoll 在 Golang 工作模型体现](chapter12_net/io_multiplexing.md)
 - [http的三个版本知识介绍](chapter12_net/http.md)
+---
 
 - 1 http 服务端高级封装演变: ServeHTTP 是 HTTP 服务器响应客户端的请求接口
   - [1.1 高级封装：使用 DefaultServeMux](chapter12_net/01_http_server/01_use_DefaultServeMux/main.go)
@@ -390,7 +398,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - [14 ReverseProxy 反向代理](chapter12_net/14_reverse_proxy/reverse_proxy.md)
 - [15 go1.18 netip 处理网络地址和相关操作](chapter12_net/15_netip/netip.md)
 
-
+---
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
 [cgo在confluent-kafka-go源码使用](https://github.com/Danny5487401/go_grpc_example/blob/master/03_amqp/02_kafka/02_confluent-kafka/confluent_kafka_source_code.md)
 
@@ -407,7 +415,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - [9 调用静态C库](chapter13_Go_call_C_or_C++/09_static_c_lib/main.go)
 - [10 调用动态C库](chapter13_Go_call_C_or_C++/10_dynamic_c_lib/main.go)
 - [11 Golang使用pkg-config自动获取头文件和链接库的方法](chapter13_Go_call_C_or_C++/11_pkg_config/pkg_config.md)
-
+---
 ## [第十四章 Context上下文-源码分析涉及父类EmptyCtx](chapter14_context/introduction.md)
 - 1 Context使用背景
     - [1.1 问题：如何通过父进程优雅释放子goroutine资源](chapter14_context/01_Reason_To_Use_Context/01_problem/main.go)
@@ -419,16 +427,16 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - [4 WithValue 使用](chapter14_context/04_WIthValue/main.go)
 - [5 WithTimeout 对 WithDeadline 封装的使用](chapter14_context/05_WithTimeout/main.go)
 - [6 Go1.21 增加取消原因以及回调函数的增添](chapter14_context/06_cancel_reason_in_go1_21/main.go)
-
+---
 ## 第十五章 接口嵌套编程
 - [1 常见冗余代码写法](chapter15_interfaceProgramming/01_problem/main.go)
 - [2 简单优化](chapter15_interfaceProgramming/02_simple_method/main.go)
 - [3 更优方式](chapter15_interfaceProgramming/03_better_solution/main.go)
-
+---
 ## 第十六章 并发编程
 - [1 简单流水线模型](chapter16_concurrentProgramming/01_pipeline/pipeline.md)
 - [2 FAN-IN和FAN-OUT模型](chapter16_concurrentProgramming/02_fanin_fanout/fanin_fanout.md)
-
+---
 ## 第十七章 数据结构及算法
 - [1 queue 双端单向队列](chapter17_dataStructure_n_algorithm/01_queue/queue.md)
   - [1.1 array 数组实现非阻塞 Queue-->没有实现容量限制和容量收缩](chapter17_dataStructure_n_algorithm/01_queue/01_unblock_queue/queue_test.go)
@@ -509,45 +517,45 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
   - [3.1 channel为 nil 时的接收，发送，关闭及select](chapter19_nil/03_Attribute/01_channel/chan.go)
   - [3.2 map 为 nil 时可读不可写](chapter19_nil/03_Attribute/02_map/map.go)
   - [3.3 结构体指针为 nil 时是否可以调用方法](chapter19_nil/03_Attribute/03_struct_method/ptr.go)
-
+---
 ## [第二十章 for-range 源码分析](chapter20_for_range/for_range.md)
 - [1 遍历数组,切片,结构体数组](chapter20_for_range/01_for_range_slice_n_array/main.go)
 - [2 正确遍历 Goroutine 捕获变量 (解析协程启动时间) 及在 GO 1.21 使用 EXPERIMENT=loopvar重新定义循环](chapter20_for_range/02_for_range_goroutine/main.go)
 - [3 遍历 Map(增加或删除map元素时)](chapter20_for_range/03_for_range_map/main.go)
-
+---
 ## [第二十一章 time标准包源码分析](chapter21_time/time.md)
 - [1 比time.Now()更优雅获取时间戳（go:link技术）](chapter21_time/01_time_sec.go)
 - [2 time.Format()优化写法](chapter21_time/02_append_format.go)
-
+---
 ## [第二十二章 数据驱动模板源码分析-->kratos工具](chapter22_template/template.md)
 - [1 加载多个模版并指定模版生成结构体方法](chapter22_template/01_multi_template/main.go)
 - [2 自定义扩展模版函数 FuncMap ](chapter22_template/02_template_func/main.go)
 - [3 html模版](chapter22_template/03_html_template/main.go)
 - [4 generate 根据模版代码生成](chapter22_template/04_gen_template/gen_main.go)
 - [5 推荐第三方 sprig 模版函数](chapter22_template/05_sprig_func/sprig.md)
-
+---
 ## 第二十三章 调试内部对象
 - [1 fmt 打印结构体中含有指针对象, 数组或者map中是指针对象, 循环结构时的困难](chapter23_debug_program/01_fmt_problem/main.go)
 - [2 go-spew 优化调试](chapter23_debug_program/02_go_spew/go_spew.md)
 
-
+---
 ## [第二十四章 命令行参数解析](chapter24_flag/flag.md)
 - [1 flag 基本使用及自定义帮助信息](chapter24_flag/01_flag/nginx.go) 
 - [2 pflag 完全兼容flag](chapter24_flag/02_pflag/pflag.md) 
 
-
+---
 ## [第二十四章 Flag命令行参数及源码分析](chapter24_flag/flag.md)
 - [1 标准包flag基本使用及自定义帮助信息](chapter24_flag/01_flag/nginx.go)
 - [2 第三方包pflag：兼容标准包flag](chapter24_flag/02_pflag/pflag.md)
 
 ## 第二十五章 结构体类型方法
 - [1 方法调用语法糖](chapter25_struct_method/01_struct_method/main.go)
-
+---
 
 ## [第二十六章 strconv 字符串和数值型转换源码分析](chapter26_strconv/strconv.md)
-
+---
 ## [第二十七章 image 图片处理](chapter27_image/image.md)
-
+---
 
 ## [第二十八章 如何进行测试](chapter28_test/test.md)
 - [1 testing](chapter28_test/01_testing/testing.md) 
@@ -580,7 +588,8 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - [3 go1.16 retract 撤回版本](chapter29_module/03_go1_16_module/module.md)
 - [4 go1.17 module 依赖图修剪及延迟 module 加载](chapter29_module/04_go1_17_module/module.md)
 - [5 go1.18 workspace 工作区模式-->k8s 使用](chapter29_module/05_go1_18_workspace/workspace.md)
-    
+
+---
 
 ## 第三十章 内存管理
 - 1 Linux内存及Go内存结构管理
@@ -597,7 +606,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
     - [3.2 局部变量指针返回时被外部引用](chapter30_memory_management/03_escape_to_heap/02_params_ptr_return.go)
     - [3.3 接口类型](chapter30_memory_management/03_escape_to_heap/03_interface_method.go)
 - [4 内存模型:happened before](chapter30_memory_management/05_happened_before/happened_before.md)
-    
+---   
 ## [第三十一章 go开发套件](chapter31_tool/go_toolsets.md)
 - [1 build == compile编译 + link链接，附Go包导入路径讲解](chapter31_tool/01_build/build.md)
   - [1.1 Go build 构建约束（build constraint），也叫做构建标记（build tag）](chapter31_tool/01_build/01_tags/tags.md)
@@ -615,21 +624,24 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
   - [4.4 yacc+手动定义词法解析器 lexer-->prometheus 应用](chapter31_tool/04_ast/04_yacc/yacc.md)
     - 实现美国手机号码格式解析
 - [5 go1.21 toolchain 规则](chapter31_tool/05_toolchain_in_go1.21/toolchain.md)
-
+---
 ## [第三十二章 Generic 泛型](chapter32_generic/generic.md)
 - [1 泛型在算法上的基本使用](chapter32_generic/01_basic_algorithm_application/main.go)
 - [2 ~int 底层类型及 Go1.18 接口分为两种类型: 基本接口(Basic interface) 和 一般接口(General interface)](chapter32_generic/02_typeParam_n_typeArgument/main.go)
 - [3 泛型性能测试](chapter32_generic/03_performance/generic_test.go)
 - [4 comparable 要求结构体中每个成员变量都是可比较](chapter32_generic/04_comparable/main.go)
 - [5 泛型工具库-->samber/lo](chapter32_generic/05_samber_lo/samber_lo.md)
-
+---
 ## [第三十三章 makefile 使用](chapter33_makefile/Makefile_info.md)
 - [1 Makefile常用函数列表](chapter33_makefile/makefile_func.md)
 - [2 golang makefile 最佳实践](chapter33_makefile/go_makefile.md)
-
+---
 ## [第三十四章 regexp 正则表达式 Regular Expression](chapter34_regexp/regexp.md)
 - [1 基本正则表达式使用](chapter34_regexp/01_basic_grammar/main.go)
-
+---
 
 ## [第三十五章 编码 Unicode](chapter35_unicode/unicode.md)
+---
+## 第三十六章 unique 包--go 1.23
+- [1 字符串驻留（string interning)](chapter36_unique/01_interning/interning.md)
 

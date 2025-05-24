@@ -9,11 +9,11 @@ import (
 )
 
 /*
-	*x 称为 解引用 或者 间接引用.
+*x 称为 解引用 或者 间接引用.
 
-	*x += *x 是通过借助 x 变量的地址, 来操作 x 对应的空间.
+*x += *x 是通过借助 x 变量的地址, 来操作 x 对应的空间.
 
-	不管是 x 还是 *p , 我们操作的都是同一个空间.
+不管是 x 还是 *p , 我们操作的都是同一个空间.
 */
 func double(x *int) {
 	*x += *x
@@ -38,14 +38,13 @@ func main() {
 	v1 := uint(12)
 	var v2 int = 13
 
-	fmt.Println("指针")
 	fmt.Println(reflect.TypeOf(&v1)) //*uint
 	fmt.Println(reflect.TypeOf(&v2)) //*int
 
 	//使用unsafe.Pointer进行类型的转换
-	q := (*uint)(unsafe.Pointer(&v2))           // &v2 *int-->*unit转换
-	fmt.Printf("转换前指针地址%p,转换后指针地址%p\n", &v2, q) // 转换前指针地址0xc0000180b0,转换后指针地址0xc0000180b0
-	fmt.Println(reflect.TypeOf(q))              // *unit
-	fmt.Println(*q)                             //13值不变
+	q := (*uint)(unsafe.Pointer(&v2))             // &v2 *int-->*unit转换
+	fmt.Printf("转换前指针地址:%p,转换后指针地址:%p\n", &v2, q) // 转换前指针地址0xc0000180b0,转换后指针地址0xc0000180b0
+	fmt.Println(reflect.TypeOf(q))                // *unit
+	fmt.Println(*q)                               //13值不变
 
 }
