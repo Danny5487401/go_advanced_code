@@ -291,7 +291,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
         - [6.5.2 newFunc与GC前后Get对比](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/02NewFunc/newFunc.go)
         - [6.5.3 何时使用对象缓存](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/03When2Use_object_pool/main.go)
         - [6.5.4 第三方对象池object pool(bytebufferpool)](chapter09_design_pattern/06_Synchronization_mode/01_sync/05Pool/04_byteBufferPool/main.go)
-    - [6.6 Cond 条件变量协调想要访问共享资源的goroutine及 NoCopy机制-->熔断框架 hystrix-go 优秀实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/06Cond/Cond.md)
+    - [6.6 Cond 条件变量协调想要访问共享资源的goroutine-->熔断框架 hystrix-go 优秀实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/06Cond/Cond.md)
     - [6.7 atomic原子操作源码分析-->zerolog源码中实现](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/atomic.md)
         - [6.7.0 Value的load和store](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/00_value/main.go)
         - [6.7.1 add及补码减](chapter09_design_pattern/06_Synchronization_mode/01_sync/07Atomic/01_add/main.go)
@@ -305,6 +305,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
     - [6.10 SingleFlight避免缓存击穿](chapter09_design_pattern/06_Synchronization_mode/01_sync/10SingleFlight/singleFlight.md)
         - [6.10.1 Do方法](chapter09_design_pattern/06_Synchronization_mode/01_sync/10SingleFlight/01_do/main.go)
         - [6.10.2 DoChan方法](chapter09_design_pattern/06_Synchronization_mode/01_sync/10SingleFlight/02_do_chan/main.go)
+    - [6.11 NoCopy 机制](chapter09_design_pattern/06_Synchronization_mode/01_sync/11_nocopy/nocopy.md)
 ---
 
 ## [第十章 函数式编程](chapter10_function/func.md)

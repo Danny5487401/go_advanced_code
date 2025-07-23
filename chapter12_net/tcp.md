@@ -2,7 +2,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [***TCP 传输控制协议 transmission control protocol***](#tcp-%E4%BC%A0%E8%BE%93%E6%8E%A7%E5%88%B6%E5%8D%8F%E8%AE%AE-transmission-control-protocol)
+- [TCP 传输控制协议 transmission control protocol](#tcp-%E4%BC%A0%E8%BE%93%E6%8E%A7%E5%88%B6%E5%8D%8F%E8%AE%AE-transmission-control-protocol)
   - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
     - [RTT(Round Trip Time) 往返时延](#rttround-trip-time-%E5%BE%80%E8%BF%94%E6%97%B6%E5%BB%B6)
   - [字节流和数据报主要区别](#%E5%AD%97%E8%8A%82%E6%B5%81%E5%92%8C%E6%95%B0%E6%8D%AE%E6%8A%A5%E4%B8%BB%E8%A6%81%E5%8C%BA%E5%88%AB)
@@ -19,10 +19,11 @@
   - [timewait 过程-->过多连接会timewait等待很久,端口占用](#timewait-%E8%BF%87%E7%A8%8B--%E8%BF%87%E5%A4%9A%E8%BF%9E%E6%8E%A5%E4%BC%9Atimewait%E7%AD%89%E5%BE%85%E5%BE%88%E4%B9%85%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8)
   - [tcp拥塞控制-->tcp慢启动,探测网络环境](#tcp%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6--tcp%E6%85%A2%E5%90%AF%E5%8A%A8%E6%8E%A2%E6%B5%8B%E7%BD%91%E7%BB%9C%E7%8E%AF%E5%A2%83)
   - [syn flood攻击](#syn-flood%E6%94%BB%E5%87%BB)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# ***TCP 传输控制协议 transmission control protocol***
+# TCP 传输控制协议 transmission control protocol
 
 ![](.asset/img/.tcp_images/protocol.png)
 
@@ -69,8 +70,11 @@ TCP发送端发送了1000个字节，TCP接收端就会接收到1000个字节。
 
     
 综上所述，发送端执行的写操作次数和接收端执行的读操作次数之间没有任何数量关系，这就是字节流的概念：应用程序对数据的发送和接收是没有边界限制的。
-UDP则然，发送端应用程序每执行一次写操作，UDP模块就将其封装成一个UDP数据包并发送之。接收端必须及时针对每一个UDP数据报执行读操作（通过recvfrom系统调用），
+UDP则发送端应用程序每执行一次写操作，UDP模块就将其封装成一个UDP数据包并发送之。接收端必须及时针对每一个UDP数据报执行读操作（通过recvfrom系统调用），
 否则就会丢包（这经常发生在较慢的服务器上）。并且，如果过用户没有指定足够的应用程序缓冲区来读取UDP数据，则UDP数据将被截断
+
+![tcp_send_process.png](tcp_send_process.png)
+
 
 ## 应用
 
@@ -261,3 +265,7 @@ static inline int before(__u32 seq1, __u32 seq2){
 # 注：如果你在实践过程中现象不明显，可以尝试把 100 调小，比如调成 10 甚至 1
 $ hping3 -S -p 80 -i u100 192.168.0.30
 ```
+
+
+
+## 参考

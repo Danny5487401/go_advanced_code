@@ -140,7 +140,7 @@ func createStruct() {
 }
 
 func createPointer() {
-	typ := reflect.PtrTo(reflect.TypeOf(Person{}))
+	typ := reflect.PointerTo(reflect.TypeOf(Person{}))
 	val := reflect.New(typ.Elem())
 	val.Elem().FieldByName("Name").SetString("Alice")
 	val.Elem().FieldByName("Age").SetInt(25)

@@ -3,14 +3,15 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [socket](#socket)
-  - [socket缓冲区](#socket%E7%BC%93%E5%86%B2%E5%8C%BA)
+  - [socket 缓冲区](#socket-%E7%BC%93%E5%86%B2%E5%8C%BA)
   - [观察 socket 缓冲区](#%E8%A7%82%E5%AF%9F-socket-%E7%BC%93%E5%86%B2%E5%8C%BA)
   - [执行 send 发送的字节，会立马发送吗](#%E6%89%A7%E8%A1%8C-send-%E5%8F%91%E9%80%81%E7%9A%84%E5%AD%97%E8%8A%82%E4%BC%9A%E7%AB%8B%E9%A9%AC%E5%8F%91%E9%80%81%E5%90%97)
   - [如果缓冲区满了会怎么办](#%E5%A6%82%E6%9E%9C%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BB%A1%E4%BA%86%E4%BC%9A%E6%80%8E%E4%B9%88%E5%8A%9E)
   - [如果接收缓冲区为空，执行 recv 会怎么样？](#%E5%A6%82%E6%9E%9C%E6%8E%A5%E6%94%B6%E7%BC%93%E5%86%B2%E5%8C%BA%E4%B8%BA%E7%A9%BA%E6%89%A7%E8%A1%8C-recv-%E4%BC%9A%E6%80%8E%E4%B9%88%E6%A0%B7)
   - [如果接收缓冲区有数据时，执行close了，会怎么样？](#%E5%A6%82%E6%9E%9C%E6%8E%A5%E6%94%B6%E7%BC%93%E5%86%B2%E5%8C%BA%E6%9C%89%E6%95%B0%E6%8D%AE%E6%97%B6%E6%89%A7%E8%A1%8Cclose%E4%BA%86%E4%BC%9A%E6%80%8E%E4%B9%88%E6%A0%B7)
   - [如果发送缓冲区有数据时，执行close了，会怎么样？](#%E5%A6%82%E6%9E%9C%E5%8F%91%E9%80%81%E7%BC%93%E5%86%B2%E5%8C%BA%E6%9C%89%E6%95%B0%E6%8D%AE%E6%97%B6%E6%89%A7%E8%A1%8Cclose%E4%BA%86%E4%BC%9A%E6%80%8E%E4%B9%88%E6%A0%B7)
-  - [UDP也有缓冲区吗](#udp%E4%B9%9F%E6%9C%89%E7%BC%93%E5%86%B2%E5%8C%BA%E5%90%97)
+  - [UDP 也有缓冲区吗](#udp-%E4%B9%9F%E6%9C%89%E7%BC%93%E5%86%B2%E5%8C%BA%E5%90%97)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -47,7 +48,7 @@ socket 监听的地址(socket_service_address): 必填项，监听的 url 地址
 
 
 
-## socket缓冲区
+## socket 缓冲区
 
 在建立好连接之后，这个 socket 文件就像是远端机器的 "代理人" 一样。比如，如果我们想给远端服务发点什么东西，那就只需要对这个文件执行写操作就行了。
 那写到了这个文件之后，剩下的发送工作自然就是由操作系统内核来完成了。
@@ -75,6 +76,9 @@ tcp        0     60 172.22.66.69:22         122.14.220.252:59889    ESTABLISHED
 还有Send-Q 是发送缓冲区，下面的数字60是指，当前还有60 Byte在发送缓冲区中未发送。
 而 Recv-Q 代表接收缓冲区，此时是空的，数据都被应用进程接收干净了
 
+典型的健康应用程序应该具有较低的发送和接收缓冲区利用率。
+
+![tcp_buffer.png](tcp_buffer.png)
 
 ## 执行 send 发送的字节，会立马发送吗
 
@@ -150,7 +154,7 @@ void tcp_send_fin(struct sock *sk)
     
     有一点需要注意的是，只有在接收缓冲区为空的前提下，我们才有可能走到 tcp_send_fin() 。而只有在进入了这个方法之后，我们才有可能考虑发送缓冲区是否为空的场景。
 
-## UDP也有缓冲区吗
+## UDP 也有缓冲区吗
 UDP socket 也是 socket，一个socket 就是会有收和发两个缓冲区，跟用什么协议关系不大
 ```shell
 int udp_sendmsg()
@@ -172,3 +176,10 @@ int udp_sendmsg()
 ```
 
 而我们大部分情况下，都不会用  MSG_MORE，也就是来一个数据包就直接发一个数据包。从这个行为上来说，虽然UDP用上了发送缓冲区，但实际上并没有起到"缓冲"的作用
+
+
+
+## 参考
+
+
+- [TCP性能和发送接收窗口、Buffer的关系](https://www.cnblogs.com/Chary/articles/17669280.html)
