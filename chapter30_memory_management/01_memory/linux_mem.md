@@ -50,7 +50,7 @@ Linux 内核给每个进程都提供了一个独立的虚拟地址空间，并�
 分块很有用，因为单独管理每个内存槽需要更多的内存，而且会降低计算机的性能。
 ![](../.asset/img/.go_mem_images/virtual_mem_transfer_to_physical_mem.png)
 
-为了实现分页虚拟内存，计算机通常有一个称为内存管理单元(MMU)的芯片，它位于 CPU 和内存之间。
+为了实现分页虚拟内存，计算机通常有一个称为MMU(Memory Manage Unit 内存管理单元)的芯片，它位于 CPU 和内存之间。
 MMU 在一个名为页表的表(它存储在内存中)中保存了从虚拟地址到物理地址的映射，其中每页包含一个页表项(PTE)。
 MMU 还有一个物理缓存旁路转换缓冲(TLB Translation Lookaside Buffer)，用来存储最近从虚拟内存到物理内存的转换。
 

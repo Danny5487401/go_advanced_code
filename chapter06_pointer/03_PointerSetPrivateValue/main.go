@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"unsafe"
 
-	"github.com/Danny5487401/go_advanced_code/chapter06_pointer/03PointerSetPrivateValue/p"
+	"github.com/Danny5487401/go_advanced_code/chapter06_pointer/03_PointerSetPrivateValue/p"
 )
 
 // unsafe.pointer用于访问操作结构体的私有变量

@@ -398,6 +398,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - [13 flusher 实现 stream 流式返回](chapter12_net/13_flusher/flusher.md)
 - [14 ReverseProxy 反向代理](chapter12_net/14_reverse_proxy/reverse_proxy.md)
 - [15 go1.18 netip 处理网络地址和相关操作](chapter12_net/15_netip/netip.md)
+- [16 dns 解析](chapter12_net/16_dns/dns.md)
 
 ---
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)

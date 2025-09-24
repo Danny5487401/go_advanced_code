@@ -3,6 +3,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Makefile简介](#makefile%E7%AE%80%E4%BB%8B)
+  - [make 命令](#make-%E5%91%BD%E4%BB%A4)
   - [Makefile 常见管理内容](#makefile-%E5%B8%B8%E8%A7%81%E7%AE%A1%E7%90%86%E5%86%85%E5%AE%B9)
   - [Makefile规则介绍](#makefile%E8%A7%84%E5%88%99%E4%BB%8B%E7%BB%8D)
     - [规则语法](#%E8%A7%84%E5%88%99%E8%AF%AD%E6%B3%95)
@@ -32,8 +33,62 @@ Makefile是一个工程文件的编译规则，描述了整个工程的编译和
 
 默认情况下，make命令会在当前目录下按如下顺序查找Makefile文件：“GNUmakefile”、“makefile”、“Makefile”的文件，一旦找到，就开始读取这个文件并执行。
 
+
 这里，**我建议使用“Makefile”文件**名，因为这个文件名第一个字符大写，这样有一种显目的感觉。还有一些make只对全小写的“makefile”文件名敏感。
 大多数的make都支持“makefile”和“Makefile”这两种默认文件名。make也支持`-f`和`--file`参数来指定其它文件名，比如：`make -f golang.mk`或者`make --file golang.mk`。
+
+## make 命令
+
+make命令 是GNU的工程化编译工具.
+
+```shell
+(⎈|kubeasz-test:multus)➜  ~ make --help
+Usage: make [options] [target] ...
+Options:
+  -b, -m                      Ignored for compatibility.
+  -B, --always-make           Unconditionally make all targets.
+  -C DIRECTORY, --directory=DIRECTORY
+                              Change to DIRECTORY before doing anything.
+  -d                          Print lots of debugging information.
+  --debug[=FLAGS]             Print various types of debugging information.
+  -e, --environment-overrides
+                              Environment variables override makefiles.
+  -f FILE, --file=FILE, --makefile=FILE 
+                              指定“makefile”文件；
+  -h, --help                  Print this message and exit.
+  -i, --ignore-errors         Ignore errors from commands.
+  -I DIRECTORY, --include-dir=DIRECTORY
+                              Search DIRECTORY for included makefiles.
+  -j [N], --jobs[=N]          Allow N jobs at once; infinite jobs with no arg.
+  -k, --keep-going            Keep going when some targets can't be made.
+  -l [N], --load-average[=N], --max-load[=N]
+                              Don't start multiple jobs unless load is below N.
+  -L, --check-symlink-times   Use the latest mtime between symlinks and target.
+  -n, --just-print, --dry-run, --recon
+                              Don't actually run any commands; just print them.
+  -o FILE, --old-file=FILE, --assume-old=FILE
+                              Consider FILE to be very old and don't remake it.
+  -p, --print-data-base       Print make's internal database.
+  -q, --question              Run no commands; exit status says if up to date.
+  -r, --no-builtin-rules      Disable the built-in implicit rules.
+  -R, --no-builtin-variables  Disable the built-in variable settings.
+  -s, --silent, --quiet       Don't echo commands.
+  -S, --no-keep-going, --stop
+                              Turns off -k.
+  -t, --touch                 Touch targets instead of remaking them.
+  -v, --version               Print the version number of make and exit.
+  -w, --print-directory       Print the current directory.
+  --no-print-directory        Turn off -w, even if it was turned on implicitly.
+  -W FILE, --what-if=FILE, --new-file=FILE, --assume-new=FILE
+                              Consider FILE to be infinitely new.
+  --warn-undefined-variables  Warn when an undefined variable is referenced.
+  -N OPTION, --NeXT-option=OPTION
+                              Turn on value of NeXT OPTION.
+
+This program built for i386-apple-darwin11.3.0
+Report bugs to <bug-make@gnu.org>
+```
+
 
 ## Makefile 常见管理内容
 
@@ -211,7 +266,6 @@ include也可以包含通配符：`include scripts/make-rules/*`。make会按如
 如果有文件没有找到的话，make会生成一条警告信息，但不会马上出现致命错误。
 它会继续载入其它的文件，一旦完成makefile的读取，make会再重试这些没有找到，或是不能读取的文件，如果还是不行，make才会出现一条致命信息。
 如果你想让make不理那些无法读取的文件，而继续执行，你可以在include前加一个减号`-`。如：`-include <filename>`。
-
 
 
 ## Makefile语法概览

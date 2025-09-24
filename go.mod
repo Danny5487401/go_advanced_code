@@ -1,8 +1,8 @@
 module github.com/Danny5487401/go_advanced_code
 
-go 1.22
+go 1.24.0
 
-toolchain go1.23.0
+toolchain go1.24.3
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
@@ -43,9 +43,9 @@ require (
 	github.com/valyala/fasthttp v1.38.0
 	go.uber.org/automaxprocs v1.5.3
 	go.uber.org/goleak v1.2.1
-	golang.org/x/crypto v0.31.0
-	golang.org/x/net v0.29.0
-	golang.org/x/sync v0.10.0
+	golang.org/x/crypto v0.42.0
+	golang.org/x/net v0.44.0
+	golang.org/x/sync v0.17.0
 	google.golang.org/grpc v1.64.1
 	google.golang.org/grpc/examples v0.0.0-20221020162917-9127159caf5a
 	gopkg.in/h2non/gock.v1 v1.1.2
@@ -141,8 +141,8 @@ require (
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
-	golang.org/x/sys v0.28.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
