@@ -2,7 +2,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [http.Request源码分析](#httprequest%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+- [http.Request 源码分析](#httprequest-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
   - [Request](#request)
   - [1.错误类型](#1%E9%94%99%E8%AF%AF%E7%B1%BB%E5%9E%8B)
   - [2.结构体定义](#2%E7%BB%93%E6%9E%84%E4%BD%93%E5%AE%9A%E4%B9%89)
@@ -11,10 +11,11 @@
   - [5. request 写入方法](#5-request-%E5%86%99%E5%85%A5%E6%96%B9%E6%B3%95)
   - [6. 根据读取器 读出一个请求对象(以及内部实现)方法自定义request请求](#6-%E6%A0%B9%E6%8D%AE%E8%AF%BB%E5%8F%96%E5%99%A8-%E8%AF%BB%E5%87%BA%E4%B8%80%E4%B8%AA%E8%AF%B7%E6%B1%82%E5%AF%B9%E8%B1%A1%E4%BB%A5%E5%8F%8A%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95%E8%87%AA%E5%AE%9A%E4%B9%89request%E8%AF%B7%E6%B1%82)
   - [7. 根据 读取器(*bufio.Reader)，读取一个请求实例方法（readRequest内部方法实现），以及读取器的相关方法（新建一个最大字节的读取器，以及读取器结构体对象的读取关闭方法](#7-%E6%A0%B9%E6%8D%AE-%E8%AF%BB%E5%8F%96%E5%99%A8bufioreader%E8%AF%BB%E5%8F%96%E4%B8%80%E4%B8%AA%E8%AF%B7%E6%B1%82%E5%AE%9E%E4%BE%8B%E6%96%B9%E6%B3%95readrequest%E5%86%85%E9%83%A8%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0%E4%BB%A5%E5%8F%8A%E8%AF%BB%E5%8F%96%E5%99%A8%E7%9A%84%E7%9B%B8%E5%85%B3%E6%96%B9%E6%B3%95%E6%96%B0%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%9C%80%E5%A4%A7%E5%AD%97%E8%8A%82%E7%9A%84%E8%AF%BB%E5%8F%96%E5%99%A8%E4%BB%A5%E5%8F%8A%E8%AF%BB%E5%8F%96%E5%99%A8%E7%BB%93%E6%9E%84%E4%BD%93%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%AF%BB%E5%8F%96%E5%85%B3%E9%97%AD%E6%96%B9%E6%B3%95)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# http.Request源码分析
+# http.Request 源码分析
 
 ## Request
 request 表示由服务器接收或由客户端发送的HTTP请求，例如客户端(client)在发送各种请求时，需要先新建一个请求对象，然后调用一些请求的方法开始自定义一些配置，服务端监听到该请求便会做出相应的应答
@@ -715,3 +716,5 @@ func copyValues(dst, src url.Values) {
 }
 
 ```
+
+## 参考

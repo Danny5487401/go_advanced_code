@@ -3,42 +3,54 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [bufio](#bufio)
-  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [设计原因](#%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%9B%A0)
+  - [解决](#%E8%A7%A3%E5%86%B3)
+  - [原理](#%E5%8E%9F%E7%90%86)
+  - [分类](#%E5%88%86%E7%B1%BB)
+  - [Reader 分析](#reader-%E5%88%86%E6%9E%90)
+  - [writer](#writer)
+  - [副作用及局限性](#%E5%89%AF%E4%BD%9C%E7%94%A8%E5%8F%8A%E5%B1%80%E9%99%90%E6%80%A7)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # bufio
-    bufio实现了带缓冲的IO功能，它是在io.Reader和io.Writer接口对象上提供了进一步的封装
 
-设计原因：
+bufio实现了带缓冲的IO功能，它是在io.Reader和io.Writer接口对象上提供了进一步的封装.
 
-    io操作本身的效率并不低，低的是频繁的访问本地磁盘的文件。
-解决：
+## 设计原因
 
-    所以bufio就提供了缓冲区(分配一块内存)，读和写都先在缓冲区中，最后再读写文件，来降低访问本地磁盘的次数，从而提高效率。
+io操作本身的效率并不低，低的是频繁的访问本地磁盘的文件。
+有一些场景，比如对实时性要求比较高的应用：如动作类游戏，对于网络通信要求实时触达，那就不太适合用 bufio 来传输数据。
 
-原理：
+## 解决
 
-    把文件读取进缓冲（内存）之后再读取的时候就可以避免文件系统的io 从而提高速度。
-    同理，在进行写操作时，先把文件写入缓冲（内存），然后由缓冲写入文件系统。
-    看完以上解释有人可能会表示困惑了，直接把 内容->文件 和 内容->缓冲->文件相比， 缓冲区好像没有起到作用嘛。
-    其实缓冲区的设计是为了存储多次的写入，最后一口气把缓冲区内容写入文件
-分类：
+所以bufio就提供了缓冲区(分配一块内存)，读和写都先在缓冲区中，最后再读写文件，来降低访问本地磁盘的次数，从而提高效率。
 
-    主要分三部分Reader、Writer、Scanner,分别是读数据、写数据和扫描器三种数据类型
+## 原理
+
+把文件读取进缓冲（内存）之后再读取的时候就可以避免文件系统的io 从而提高速度。
+同理，在进行写操作时，先把文件写入缓冲（内存），然后由缓冲写入文件系统。
+看完以上解释有人可能会表示困惑了，直接把 内容->文件 和 内容->缓冲->文件相比， 缓冲区好像没有起到作用嘛。
+其实缓冲区的设计是为了存储多次的写入，最后一口气把缓冲区内容写入文件
+
+## 分类
+
+主要分三部分Reader、Writer、Scanner,分别是读数据、写数据和扫描器三种数据类型
+
 主要读取方式
 
     ReadLine和ReadString方法：buf.ReadLine()，buf.ReadString("\n")都是按行读，只不过ReadLine读出来的是[]byte，后者直接读出了string，
     最终他们底层调用的都是ReadSlice方法
 
-## 源码分析
+## Reader 分析
 
 ```go
-//结构体
+// 结构体
 type Reader struct {
     buf          []byte    //缓冲区的数据
     rd           io.Reader // 底层的io.Reader
-    r, w         int       //  r ,w分别表示 buf中读和写的指针位置
+    r, w         int       // r ,w分别表示 buf中读和写的指针位置
     err          error    //记录本次读取的error，后续操作中调用readErr函数后会重置err
     lastByte     int      //记录读取的最后一个字节（用于撤销）
     lastRuneSize int      //记录读取的最后一个字符(Rune)的长度（用于撤销）
@@ -63,13 +75,14 @@ func NewReaderSize(rd io.Reader, size int) *Reader {
 //否则会创建一个*bufio.Reader对象，并指定buf的大小为size
 
 ```
+
 常用方法
 ```go
- //Size方法返回底层缓冲区的大小
+ // Size方法返回底层缓冲区的大小
 func (b *Reader) Size() int { return len(r.buf) }
 
 
-//   Reset方法丢弃所有缓冲数据，重置所有状态，并切换reader到r，从而从r中读取数据。
+// Reset方法丢弃所有缓冲数据，重置所有状态，并切换reader到r，从而从r中读取数据。
 func (b *Reader) Reset(r io.Reader) {
     b.reset(b.buf, r)
 }
@@ -254,8 +267,8 @@ func (b *Reader) Read(p []byte) (n int, err error) {
 ```
 
 ```go
-//fun    ReadRune  读取一个UTF-8字符，并且返回该字符r，该字符的所占的字节数size，以及可能出现的error，如果UTF-8编码的字符无效，则消耗一个字节并返回大小为1的unicode.ReplacementChar（U + FFFDc (b *Reader) ReadRune() (r rune, size int, err error) {
- 
+// ReadRune  读取一个UTF-8字符，并且返回该字符r，该字符的所占的字节数size，以及可能出现的error，如果UTF-8编码的字符无效，则消耗一个字节并返回大小为1的unicode.ReplacementChar
+func (b *Reader) ReadRune() (r rune, size int, err error) {
 	/*
 	当满足：
 	1.可读的字节数小于UTFMax（UTFMax是一个UTF字符占用的最大字节数）
@@ -450,3 +463,164 @@ func (b *Reader) ReadString(delim byte) (string, error) {
 }
 //ReadString方法功能同ReadBytes，只不过把ReadBytes返回的切片转成字符串
 ```
+
+
+## writer
+
+```go
+// go1.24.3/src/bufio/bufio.go
+
+type Writer struct {
+	err error // 用于记录异常
+	buf []byte // 用于缓冲的Slice， 默认大小 defaultBufSize = 4096
+    n   int //  buf 中已经缓存的字节数
+	wr  io.Writer
+}
+
+// NewWriterSize returns a new [Writer] whose buffer has at least the specified
+// size. If the argument io.Writer is already a [Writer] with large enough
+// size, it returns the underlying [Writer].
+func NewWriterSize(w io.Writer, size int) *Writer {
+	// Is it already a Writer?
+	b, ok := w.(*Writer)
+	if ok && len(b.buf) >= size {
+		return b
+	}
+	if size <= 0 {
+		size = defaultBufSize
+	}
+	return &Writer{
+		buf: make([]byte, size),
+		wr:  w,
+	}
+}
+
+```
+
+写入
+
+```go
+func (b *Writer) WriteString(s string) (int, error) {
+	var sw io.StringWriter
+	tryStringWriter := true //尝试先用
+
+	nn := 0
+	// 如果待写数据长度大于缓存可接收长度
+	for len(s) > b.Available() && b.err == nil {
+		var n int
+		if b.Buffered() == 0 && sw == nil && tryStringWriter {
+			// Check at most once whether b.wr is a StringWriter.
+			sw, tryStringWriter = b.wr.(io.StringWriter)
+		}
+		if b.Buffered() == 0 && tryStringWriter {
+			// Large write, empty buffer, and the underlying writer supports
+			// WriteString: forward the write to the underlying StringWriter.
+			// This avoids an extra copy.
+			n, b.err = sw.WriteString(s)
+		} else {
+			n = copy(b.buf[b.n:], s)
+			b.n += n
+			// 缓存数据写入文件
+			b.Flush()
+		}
+		nn += n
+		s = s[n:]
+	}
+	if b.err != nil {
+		return nn, b.err
+	}
+	// 可以一次写入缓存
+	n := copy(b.buf[b.n:], s)
+	b.n += n
+	nn += n
+	return nn, nil
+}
+
+// 剩余可用大小
+func (b *Writer) Available() int { return len(b.buf) - b.n }
+
+// 已经缓存的字节数
+func (b *Writer) Buffered() int { return b.n }
+```
+
+
+```go
+func (b *Writer) Flush() error {
+	if b.err != nil { // 
+		return b.err
+	}
+	if b.n == 0 {
+		return nil
+	}
+	n, err := b.wr.Write(b.buf[0:b.n])
+	if n < b.n && err == nil {
+		err = io.ErrShortWrite
+	}
+	if err != nil {
+		if n > 0 && n < b.n {
+			copy(b.buf[0:b.n-n], b.buf[n:b.n])
+		}
+		b.n -= n
+		b.err = err
+		return err
+	}
+	b.n = 0 // 缓存索引置零
+	return nil
+}
+```
+
+
+重置
+```go
+func (b *Writer) Reset(w io.Writer) {
+	// If a Writer w is passed to NewWriter, NewWriter will return w.
+	// Different layers of code may do that, and then later pass w
+	// to Reset. Avoid infinite recursion in that case.
+	if b == w {
+		return
+	}
+	if b.buf == nil {
+		b.buf = make([]byte, defaultBufSize)
+	}
+	// 错误重置
+	b.err = nil
+	b.n = 0
+	b.wr = w
+}
+
+```
+
+
+
+##  副作用及局限性
+
+bufio 底层实现时有一个 buf 存在，这个 buf 并没有加锁，因此多个协程并发读写时就会出问题，需要特别注意。
+
+下面看一个例子。有很多协议包在设计的时候采用的是包头+包体的二段式设计，在读取包的时候，因为并不知道需要读多长，因此先读取一个固定长度的包头，从中解出包长n，然后再继续读取长度为n的包体：
+
+
+```go
+func unpack(reader bufio.Reader) {
+    // 读取包头
+    var h header
+    io.ReadFull(reader, h.buf[:])
+    
+    // 从包头中取出包体长度
+    bodyLen := h.bodylen()
+
+    // 读取包体
+    payload := make([]byte, bodyLen)
+    io.ReadFull(reader, payload)
+}
+
+如果这段 unpack 的代码由多个协程并发执行，就会出问题：一个goroutine刚读完了包头，包体就被别的goroutine读走了，接下来数据就会错乱。
+```
+
+
+要解决这个问题，要么加锁，要么由一个goroutine读数据，再分发给多个goroutine处理逻辑。
+
+
+
+
+
+## 参考

@@ -347,7 +347,9 @@ MOV r/m, r
 MOV r, r/m
 MOV r/m, imm
 ```
-r 表示 register，即寄存器；m 表示 memory，即内存中的某个具体位置；imm 表示 immediate，即直接书写在指令中的立即数
+r 表示 register，即寄存器；
+m 表示 memory，即内存中的某个具体位置；
+imm 表示 immediate，即直接书写在指令中的立即数(immediate operands)
 
 ```shell
 add   %rdx,%rax  

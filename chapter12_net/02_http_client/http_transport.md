@@ -12,6 +12,7 @@
   - [连接管理：获取或则新建连接](#%E8%BF%9E%E6%8E%A5%E7%AE%A1%E7%90%86%E8%8E%B7%E5%8F%96%E6%88%96%E5%88%99%E6%96%B0%E5%BB%BA%E8%BF%9E%E6%8E%A5)
     - [1. 获取空闲连接 queueForIdleConn](#1-%E8%8E%B7%E5%8F%96%E7%A9%BA%E9%97%B2%E8%BF%9E%E6%8E%A5-queueforidleconn)
     - [2. 建立连接 queueForDial](#2-%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5-queuefordial)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -228,10 +229,10 @@ type persistConn struct {
 ```
 
 两者总结：transport用来建立一个连接，其中维护了一个空闲连接池idleConn map[connectMethodKey][]*persistConn，
-其中的每个成员都是一个persistConn对象，persistConn是个具体的连接实例，包含了连接的上下文，会启动两个groutine分别执行readLoop和writeLoop, 
+其中的每个成员都是一个persistConn对象，persistConn是个具体的连接实例，包含了连接的上下文，会启动两个goroutine分别执行readLoop和writeLoop, 
 每当transport调用roundTrip的时候，就会从连接池中选择一个空闲的persistConn，然后调用其roundTrip方法，将读写请求通过channel分别发送到readLoop和writeLoop中，
 然后会进行select各个channel的信息，包括连接关闭，请求超时，writeLoop出错， readLoop返回读取结果等。
-在writeLoop中发送请求，在readLoop中获取response并通过channe返回给roundTrip函数中，并再次将自己加入到idleConn中，等待下次请求到来。
+在writeLoop中发送请求，在readLoop中获取response并通过channel返回给roundTrip函数中，并再次将自己加入到idleConn中，等待下次请求到来。
 
 ### transport 实现interface中的RoundTrip方法
 RoundTrip方法会做两件事情：
@@ -561,4 +562,8 @@ func (t *Transport) dialConn(ctx context.Context, cm connectMethod) (pconn *pers
 }
 ```
 
-可以看到首先调用dial函数，获取一个conn对象，然后封装为pconn的, 启动readLoop和wirteLoop后将该pconn返回。
+可以看到首先调用dial函数，获取一个conn对象，然后封装为pconn的, 启动readLoop和writeLoop后将该pconn返回。
+
+
+
+## 参考

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -45,7 +45,7 @@ func GetEmail() {
 		上面的代码保证了无论如何 Body 都会被关闭，如果你没有打算使用其中的数据，那么你还需要丢弃已经接收的数据
 	*/
 	// 2.读取页面内容
-	pageBytes, err := ioutil.ReadAll(resp.Body) // 不建议的方式,未做长度限制,这里 cap达到了 22w
+	pageBytes, err := io.ReadAll(resp.Body) // 不建议的方式,未做长度限制,这里 cap达到了 22w
 
 	// 字节转字符串
 	var pageStr string
