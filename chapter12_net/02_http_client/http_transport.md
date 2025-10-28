@@ -6,6 +6,8 @@
   - [接口](#%E6%8E%A5%E5%8F%A3)
   - [实现](#%E5%AE%9E%E7%8E%B0)
   - [重要的结构体](#%E9%87%8D%E8%A6%81%E7%9A%84%E7%BB%93%E6%9E%84%E4%BD%93)
+    - [1 Transport](#1-transport)
+    - [persistConn 持久连接](#persistconn-%E6%8C%81%E4%B9%85%E8%BF%9E%E6%8E%A5)
     - [transport 实现interface中的RoundTrip方法](#transport-%E5%AE%9E%E7%8E%B0interface%E4%B8%AD%E7%9A%84roundtrip%E6%96%B9%E6%B3%95)
       - [注册协议对应的transport](#%E6%B3%A8%E5%86%8C%E5%8D%8F%E8%AE%AE%E5%AF%B9%E5%BA%94%E7%9A%84transport)
       - [执行过程](#%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B)
@@ -17,18 +19,19 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # http 之 transport 源码详解
-使用golang net/http 库发送http请求，最后都是调用 transport的 RoundTrip方法中
+使用golang net/http 库发送http请求，最后都是调用 transport的 RoundTrip方法中.
 
 
 ## 接口
 ```go
 // go/go1.15.10/src/net/http/client.go
 
-//接口
+// 接口
 type RoundTripper interface {
+    // RoundTrip执行单个HTTP事务，返回给定请求的响应
     RoundTrip(*Request) (*Response, error)
 }
-//实际调用
+// 实际调用
 func send(ireq *Request, rt RoundTripper, deadline time.Time) (resp *Response, didTimeout func() bool, err error) {
 	//--------
     resp, err = rt.RoundTrip(req)
@@ -42,14 +45,15 @@ RoundTrip 代表一个http事务，给一个请求返回一个响应。RoundTrip
 
 ## 实现
 HTTP 请求和响应在标准库中不止有一种实现，它们都包含了层级结构，标准库中的 net/http.RoundTripper 包含如下所示的层级结构
-![](chapter12_net/02_http_client/.http_images/roundTrip_achieve.png)
+![](.http_images/roundTrip_achieve.png)
 
 ## 重要的结构体
-1. Transport
+### 1 Transport
 > net/http.Transport 会处理 HTTP/HTTPS 协议的底层实现细节，其中会包含连接重用、构建请求以及发送请求等功能。
 ```go
 // RoundTripper接口的实现Transport结构体在源码包 net/http/transport.go 中
 type Transport struct {
+    // 内部字段
 	idleMu     sync.Mutex
 	wantIdle   bool                                // 用户是否已关闭所有的空闲连接
 	idleConn   map[connectMethodKey][]*persistConn // 保存从connectMethodKey(代表着不同的协议，不同的host，也就是不同的请求)到persistConn的映射
@@ -59,15 +63,14 @@ type Transport struct {
 	通过这个channel发送给其他http请求使用这个persistConn
 	*/
 	idleConnCh map[connectMethodKey]chan *persistConn
-	idleLRU    connLRU
+	idleLRU    connLRU //实现了空闲连接的 LRU（最近最少使用）缓存
  
 	reqMu       sync.Mutex
 	reqCanceler map[*Request]func(error)   //请求取消器
- 
 	altMu    sync.Mutex   // guards changing altProto only
 	altProto atomic.Value // of nil or map[string]RoundTripper, key is URI scheme  为空或者map[string]RoundTripper,key为URI  的scheme，用于自定义的协议及对应的处理请求的RoundTripper
- 
 
+    // 代理设置
 	Proxy func(*Request) (*url.URL, error)   //根据给定的Request返回一个代理，如果返回一个不为空的error，请求会终止
  
 
@@ -89,47 +92,31 @@ type Transport struct {
 	返回的net.Conn假设已经通过了TLS握手
 	*/
 	DialTLS func(network, addr string) (net.Conn, error)
- 
 
+
+    // TLS配置
 	/*
-      TLSClientConfig指定tls.Client使用的TLS配置信息
+	TLSClientConfig指定tls.Client使用的TLS配置信息
 	如果为空，则使用默认配置
 	如果不为空，默认情况下未启动HTTP/2支持
 	*/
 	TLSClientConfig *tls.Config
+	TLSHandshakeTimeout time.Duration // 指定TLS握手的超时时间
 
-	/*
-	指定TLS握手的超时时间
-	*/
-	TLSHandshakeTimeout time.Duration
- 
-	// DisableKeepAlives, if true, prevents re-user of TCP connections
-	// between different HTTP requests.
+
+    // 连接池管理
 	DisableKeepAlives bool   //如果为true，则阻止在不同http请求之间重用TCP连接
- 
-
 	DisableCompression bool   //如果为true，则进制传输使用 Accept-Encoding: gzip
- 
-
 	MaxIdleConns int   //指定最大的空闲连接数
- 
-
 	MaxIdleConnsPerHost int  //用于控制某一个主机的连接的最大空闲数
- 
-
 	IdleConnTimeout time.Duration   //指定空闲连接保持的最长时间，如果为0，则不受限制
  
-	// ResponseHeaderTimeout, if non-zero, specifies the amount of
-	// time to wait for a server's response headers after fully
-	// writing the request (including its body, if any). This
-	// time does not include the time to read the response body.
+    // 请求/响应控制
 	/*
 	ResponseHeaderTimeout，如果非零，则指定在完全写入请求（包括其正文，如果有）之后等待服务器响应头的最长时间。
 	此时间不包括读响应体的时间。
 	*/
 	ResponseHeaderTimeout time.Duration
- 
-
 	/*
    如果请求头是"Expect:100-continue",ExpectContinueTimeout  如果不为0，它表示等待服务器第一次响应头的最大时间
 	零表示没有超时并导致正文立即发送，无需等待服务器批准。
@@ -139,7 +126,7 @@ type Transport struct {
  
 
 	/*
-TLSNextProto指定在TLS NPN / ALPN协议协商之后传输如何切换到备用协议（例如HTTP / 2）。
+    TLSNextProto指定在TLS NPN / ALPN协议协商之后传输如何切换到备用协议（例如HTTP / 2）。
 	如果传输使用非空协议名称拨打TLS连接并且TLSNextProto包含该密钥的映射条目（例如“h2”），则使用请求的权限调用func（例如“example.com”或“example” .com：1234“）和TLS连接。
 	该函数必须返回一个RoundTripper，然后处理该请求。 如果TLSNextProto不是nil，则不会自动启用HTTP / 2支持。
 	*/
@@ -167,6 +154,14 @@ TLSNextProto指定在TLS NPN / ALPN协议协商之后传输如何切换到备用
 	// TODO: tunable on max per-host TCP dials in flight (Issue 13957)
 }
 ```
+关键特性：
+
+- 连接池管理：维护空闲连接池，支持连接复用
+- 代理支持：支持 HTTP、HTTPS 和 SOCKS5 代理
+- TLS支持：可自定义 TLS 配置
+- 超时控制：多种粒度的超时控制（连接建立、响应头、空闲连接等）
+- HTTP/2 支持：自动协商使用 HTTP/2 协议
+
 
 如果不给http.Client显式指定RoundTripper则会创建一个默认的DefaultTransport。
 ```go
@@ -181,45 +176,53 @@ func (c *Client) transport() RoundTripper {
 Transport是用来保存多个请求过程中的一些状态，用来缓存tcp连接，客户可以重用这些连接，防止每次新建，transport需要同时支持http, https。
 
 
-2. persistConn
+### persistConn 持久连接
 
+可以被复用于多个 HTTP 请求
 ```go
 type persistConn struct {
 	// alt optionally specifies the TLS NextProto RoundTripper.
 	// 当下给 http2 使用
 	alt RoundTripper
 
-	t         *Transport
+	t         *Transport // // 所属的Transport
 	cacheKey  connectMethodKey        // 当前连接对应的key， 也是idleConns map中的key
 	conn      net.Conn                  // 被封装的conn对象
-	tlsState  *tls.ConnectionState  
-	br        *bufio.Reader       // from conn      // bufio.Reader 对象，封装conn
-	bw        *bufio.Writer       // to conn        // bufio.Writer 对象，封装conn
-	nwrite    int64               // bytes written  // 记录写入的长度
+	tlsState  *tls.ConnectionState
+
+    // 读写缓冲
+	br        *bufio.Reader       // bufio.Reader 对象，封装conn
+	bw        *bufio.Writer       // bufio.Writer 对象，封装conn
+	nwrite    int64               // 记录写入的字节数
+	
+	// 用于请求和响应的通道
 	reqch     chan requestAndChan // written by roundTrip; read by readLoop // rountTrip在创建一个请求的时候会讲请求通过该chenel发送给readLoop,  readLoop后面解释
 	writech   chan writeRequest   // written by roundTrip; read by writeLoop    // writeTrop 从中读取写入请求并执行写入
-	closech   chan struct{}       // closed when conn closed                    // 连接关闭的时候从该channle通信
-	isProxy   bool
-	sawEOF    bool  // whether we've seen EOF from conn; owned by readLoop
+	closech   chan struct{}       // 连接关闭的通道
+	
+	// 连接状态标志
+	isProxy   bool  // 是否是代理连接
+	sawEOF    bool  // 是否已经看到EOF
 	readLimit int64 // bytes allowed to be read; owned by readLoop
 	// writeErrCh passes the request write error (usually nil)
 	// from the writeLoop goroutine to the readLoop which passes
 	// it off to the res.Body reader, which then uses it to decide
 	// whether or not a connection can be reused. Issue 7569.
-	writeErrCh chan error                                       // 
+	writeErrCh chan error  
 
 	writeLoopDone chan struct{} // closed when write loop ends
 
-	// Both guarded by Transport.idleMu:
-	idleAt    time.Time   // time it last become idle
-	idleTimer *time.Timer // holding an AfterFunc to close it
+	// 空闲连接管理
+	idleAt    time.Time   // 变为空闲状态的时间
+	idleTimer *time.Timer // 空闲超时计时器
 
+	// 连接状态管理（由互斥锁保护）
 	mu                   sync.Mutex // guards following fields
 	numExpectedResponses int            //表示当期期望的返回response数目
 	closed               error // set non-nil when conn is closed, before closech is closed
-	canceledErr          error // set non-nil if conn is canceled
-	broken               bool  // an error has happened on this connection; marked broken so it's not reused.
-	reused               bool  // whether conn has had successful request/response and is being reused.
+	canceledErr          error // 连接被取消的错误
+	broken               bool  // 连接是否已损坏
+	reused               bool  // 连接是否已被复用
 	// mutateHeaderFunc is an optional func to modify extra
 	// headers on each outbound request before it's written. (the
 	// original Request given to RoundTrip is not modified)
@@ -260,14 +263,14 @@ func (t *Transport) RegisterProtocol(scheme string, rt RoundTripper) {
 
 #### 执行过程
 ```go
-// /Users/python/go/go1.18.1/src/net/http/roundtrip.go
+// go1.18.1/src/net/http/roundtrip.go
 func (t *Transport) RoundTrip(req *Request) (*Response, error) {
 	return t.roundTrip(req)
 }
 ```
 ```go
-//RoundTrip实现了RoundTripper接口
-// /Users/python/go/go1.18.1/src/net/http/transport.go
+// RoundTrip实现了RoundTripper接口
+// go1.18.1/src/net/http/transport.go
 func (t *Transport) roundTrip(req *Request) (*Response, error) {
 	//初始化TLSNextProto  http2使用
 	t.nextProtoOnce.Do(t.onceSetNextProtoDefaults)
@@ -303,7 +306,7 @@ func (t *Transport) roundTrip(req *Request) (*Response, error) {
 		}
  
 
-		//从缓存中获取一个连接，或者新建一个连接
+		// 从缓存中获取一个连接，或者新建一个连接
 		pconn, err := t.getConn(treq, cm)
 		if err != nil {
 			t.setReqCanceler(req, nil)
@@ -419,9 +422,9 @@ func (t *Transport) queueForIdleConn(w *wantConn) (delivered bool) {
         for len(list) > 0 && !stop {
             // 找到connection列表最后一个
             pconn := list[len(list)-1] 
-            // 检查这个 connection 是不是等待太久了
+            
             tooOld := !oldTime.IsZero() && pconn.idleAt.Round(0).Before(oldTime)
-            if tooOld { 
+            if tooOld {  // 空闲超时：如果连接空闲时间超过 IdleConnTimeout，则连接会被关闭而不是复用
                 go pconn.closeConnIfStillIdle()
             }
             // 该 connection 被标记为 broken 或 闲置太久 continue
@@ -567,3 +570,5 @@ func (t *Transport) dialConn(ctx context.Context, cm connectMethod) (pconn *pers
 
 
 ## 参考
+
+- [goroutine泄漏:从不 body.Close 为啥没事](https://mp.weixin.qq.com/s/Afdz3EBU6u_mAsoqYrspJg)

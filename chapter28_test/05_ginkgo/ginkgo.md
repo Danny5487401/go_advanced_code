@@ -3,13 +3,15 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [ginkgo](#ginkgo)
+  - [TDD vs BDD](#tdd-vs-bdd)
   - [使用](#%E4%BD%BF%E7%94%A8)
-    - [DesctibeTable用法](#desctibetable%E7%94%A8%E6%B3%95)
-    - [Measure模块测试例性能](#measure%E6%A8%A1%E5%9D%97%E6%B5%8B%E8%AF%95%E4%BE%8B%E6%80%A7%E8%83%BD)
+    - [DescribeTable](#describetable)
+    - [Measure 模块测试例性能](#measure-%E6%A8%A1%E5%9D%97%E6%B5%8B%E8%AF%95%E4%BE%8B%E6%80%A7%E8%83%BD)
   - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
     - [测试入口](#%E6%B5%8B%E8%AF%95%E5%85%A5%E5%8F%A3)
     - [运行用例](#%E8%BF%90%E8%A1%8C%E7%94%A8%E4%BE%8B)
-    - [为Suite添加Specs 编写描述用例](#%E4%B8%BAsuite%E6%B7%BB%E5%8A%A0specs-%E7%BC%96%E5%86%99%E6%8F%8F%E8%BF%B0%E7%94%A8%E4%BE%8B)
+    - [为Suite添加 Specs 编写描述用例](#%E4%B8%BAsuite%E6%B7%BB%E5%8A%A0-specs-%E7%BC%96%E5%86%99%E6%8F%8F%E8%BF%B0%E7%94%A8%E4%BE%8B)
+  - [命令行](#%E5%91%BD%E4%BB%A4%E8%A1%8C)
   - [第三方使用-->victoria-operator](#%E7%AC%AC%E4%B8%89%E6%96%B9%E4%BD%BF%E7%94%A8--victoria-operator)
   - [参考](#%E5%8F%82%E8%80%83)
 
@@ -23,6 +25,14 @@ Ginkgo是一个 Go 语言的 BDD 测试框架，旨在帮助开发者编写富�
 Ginkgo 集成了 Go 原生的库，这意味着你可以通过来运行 Ginkgo 测试套件。同时，它与断言和 mock 套件testify、富测试集go-check同样兼容。但 Ginkgo 建议的是搭配gomega库一起使用。
 
 
+
+
+Ginkgo10个常用的模块：It、Context、Describe、BeforeEach、AfterEach、JustBeforeEach、BeforeSuite、AfterSuite、By、Fail
+
+Ginkgo支持标签过滤功能，允许开发者根据特定标签来选择性地运行测试，这对于快速定位问题或执行特定环境下的回归测试尤为有用。
+
+## TDD vs BDD
+
 测试驱动开发（Test-Driven Development，TDD）和行为驱动开发（Behavior-driven development，BDD）。
 
 TDD 的基本思路就是通过测试来推动整个开发的进行，原则就是在开发功能代码之前，先编写单元测试用例。
@@ -30,16 +40,13 @@ TDD 侧重点偏向开发，通过测试用例来规范约束开发者编写出�
 
 BDD 衍生于 TDD，主要区别就是在于测试的描述上。BDD 使用一种更通俗易懂的文字来描述测试用例，更关注需求的功能，而不是实际结果。
 
-Ginkgo10个常用的模块：It、Context、Describe、BeforeEach、AfterEach、JustBeforeEach、BeforeSuite、AfterSuite、By、Fail
-
-
 ## 使用
+当需要测试一个复杂的系统时，可以先使用Describe来定义顶层的测试领域，接着通过嵌套的Context来细分不同的测试场景，最后再利用It来具体描述每一个测试点。
 
-
-### DesctibeTable用法
+### DescribeTable 
 有时候很多测试例除了数据部分其他都是相同的，写很多类似的It会很繁琐，于是有Table格式出现
 
-### Measure模块测试例性能
+### Measure 模块测试例性能
 
 ## 源码分析
 
@@ -314,7 +321,8 @@ func (suite *Suite) runSpecs(description string, suiteLabels Labels, suitePath s
 ```
 
 
-### 为Suite添加Specs 编写描述用例
+### 为Suite添加 Specs 编写描述用例
+spec 是为了区分  Ginkgo tests and 传统的 testing tests.
 ```go
 func Describe(text string, args ...interface{}) bool {
 	// 推送 用例容器 
@@ -477,6 +485,23 @@ func (suite *Suite) PushNode(node Node) error {
 	return nil
 }
 ```
+
+## 命令行
+https://onsi.github.io/ginkgo/#ginkgo-cli-overview
+
+一个命令行界面，带有大量方便的命令行参数，用于运行测试和生成测试文件。以下是一些选择示例：
+
+ginkgo -nodes = N在N个并行进程中运行测试，并实时打印出相干输出
+
+ginkgo -cover使用Go的代码覆盖工具运行您的测试
+
+ginkgo convert将XUnit风格的测试包转换为Ginkgo风格的包
+
+ginkgo -focus =“REGEXP”和ginkgo -skip =“REGEXP”允许您指定要通过正则表达式运行的测试子集
+
+ginkgo -r运行当前目录下的所有测试套件
+
+ginkgo -v在运行之前打印出每个测试的识别信息
 
 ## 第三方使用-->victoria-operator
 

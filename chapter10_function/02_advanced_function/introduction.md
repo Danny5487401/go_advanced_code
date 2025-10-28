@@ -47,5 +47,5 @@
 
 ## 参考资料
 
-1. [Go-zero官网推荐链接](https://go-zero.dev/cn/mapreduce.html) 
+- [Go-zero mapreduce](https://go-zero.dev/cn/mapreduce.html) 
 

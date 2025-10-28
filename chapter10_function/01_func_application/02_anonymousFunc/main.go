@@ -36,7 +36,7 @@ func SortByDescending(ele interface{}) {
 	}
 }
 
-//  SortByAscending具体操作:升序排序数组元素
+// SortByAscending 具体操作:升序排序数组元素
 func SortByAscending(ele interface{}) {
 	intSlice, ok := ele.([]int)
 	if !ok {
@@ -84,7 +84,7 @@ func process(array interface{}, traveser Traveser) error {
 
 }
 
-//在一些公共的操作中经常会包含一些差异性的特殊操作，而这些差异性的操作可以用函数来进行封装。
+// 在一些公共的操作中经常会包含一些差异性的特殊操作，而这些差异性的操作可以用函数来进行封装。
 func main() {
 	// 1. int类型切片
 	intSlice := []int{3, 1, 4, 2}

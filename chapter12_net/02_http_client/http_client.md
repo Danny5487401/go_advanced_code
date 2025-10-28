@@ -10,6 +10,9 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Client
+Go HTTP 客户端采用分层设计，主要分为高层 API 和底层实现两部分
+- 高层 API：由 Client 结构体提供，负责处理重定向、Cookie、认证等高级功能，为开发者提供简单易用的接口
+- 底层实现：由 Transport 结构体提供，负责与 TCP 层交互，管理连接池，发送 HTTP 请求和接收响应
 
 http.Client 表示一个http client端，用来处理HTTP相关的工作，例如cookies, redirect, timeout等工作，
 
@@ -17,13 +20,21 @@ http.Client 表示一个http client端，用来处理HTTP相关的工作，例�
 Client 结构体
 
 ```go
+// go1.24.3/src/net/http/client.go
 type Client struct { 
-    Transport RoundTripper  // 表示 HTTP 事务，用于处理客户端的请求连接并等待服务端的响应；
-    CheckRedirect func(req *Request, via []*Request) error  // 用于指定处理重定向的策略
-    Jar CookieJar  // 用于管理和存储请求中的 cookie
-    Timeout time.Duration // 指定客户端请求的最大超时时间，该超时时间包括连接、任何的重定向以及读取相应的时间
+    Transport RoundTripper  // Transport指定了如何发送HTTP请求的机制 .如果为nil，则使用DefaultTransport
+    CheckRedirect func(req *Request, via []*Request) error  // 指定处理重定向的策略.如果为nil，则使用默认策略（最多跟随10个重定向）
+    Jar CookieJar  // Jar指定cookie管理器 .如果为nil，则只有在请求中明确设置的cookie才会被发送
+    Timeout time.Duration // 指定客户端请求的最大超时时间，该超时时间包括连接、任何的重定向以及读取相应的时间. 值为0表示没有超时限制
 }
 ```
+
+关键特性:
+
+- 连接复用：通过 Transport 复用 TCP 连接，提高性能
+- 自动重定向：处理 3xx 重定向响应，可配置重定向策略
+- Cookie 管理：可选的 Cookie 管理功能
+- 超时控制：支持请求级别的超时控制
 
 ## 发送请求流程
 
@@ -116,3 +127,4 @@ func (c *Client) send(req *Request, deadline time.Time) (resp *Response, didTime
 
 ## 参考
 
+- [golang http客户端源码解析](https://zhuanlan.zhihu.com/p/1923369392357498885)
