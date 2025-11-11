@@ -5,7 +5,7 @@
 - [github.com/google/go-cmp](#githubcomgooglego-cmp)
   - [特点](#%E7%89%B9%E7%82%B9)
   - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
-  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -19,9 +19,6 @@ reflect.DeepEqual 的替代品
 - 不会比较未导出字段（即字段名首字母小写的字段）。遇到未导出字段，cmp.Equal() 直接panic.
 - 自定义比较选项：你可以使用 cmp.Options 结构来自定义比较的行为。这包括忽略特定字段、指定自定义比较函数、配置忽略类型的选项等。这使得你可以精确控制比较的方式
 - 友好的错误报告：当比较失败时，cmp 生成清晰和有用的错误报告，帮助你理解为什么两个值不相等。这有助于快速识别和修复问题。
-
-
-
 
 
 
@@ -255,6 +252,6 @@ func (s *state) compareStruct(t reflect.Type, vx, vy reflect.Value) {
 
 
 
-## 参考资料
+## 参考
 
 - [每日一库 go-cmp](https://darjun.github.io/2020/03/20/godailylib/go-cmp/)

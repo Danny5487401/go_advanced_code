@@ -2,15 +2,21 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [strconv 包](#strconv-%E5%8C%85)
+- [strconv（string conversion)](#strconvstring-conversion)
   - [strconv/itoa （int或int64转字符串）](#strconvitoa-int%E6%88%96int64%E8%BD%AC%E5%AD%97%E7%AC%A6%E4%B8%B2)
   - [Atoi 字符串转整形](#atoi-%E5%AD%97%E7%AC%A6%E4%B8%B2%E8%BD%AC%E6%95%B4%E5%BD%A2)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# strconv 包
+# strconv（string conversion)
+strconv包提供了字符串和基本数据类型之间的相互转换功能。
 
 ## strconv/itoa （int或int64转字符串）
+
+Atoi 函数用于将字符串转换为 int 类型，Itoa 函数则用于将 int 类型转换为字符串类型。
+
+【扩展阅读 a的典故】这是C语言遗留下的典故。C语言中没有string类型而是用字符数组(array)表示字符串，所以Itoa对很多C系的程序员很好理解。
 
 对外提供的接口,Itoa函数具体的实现是由FormatInt()函数实现
 ```go
@@ -20,7 +26,7 @@ func Itoa(i int) string {
 
 ```
 
-【扩展阅读 a的典故】这是C语言遗留下的典故。C语言中没有string类型而是用字符数组(array)表示字符串，所以Itoa对很多C系的程序员很好理解。
+
 ```go
 // 快速模式
 const fastSmalls = true
@@ -187,6 +193,7 @@ func formatBits(dst []byte, u uint64, base int, neg, append_ bool) (d []byte, s 
 
 ## Atoi 字符串转整形
 Atoi函数是对外提供的接口函数.具体实现由ParseInt函数实现。
+
 ```go
 func Atoi(s string) (int, error) {
 	const fnAtoi = "Atoi"
@@ -268,3 +275,7 @@ func ParseInt(s string, base int, bitSize int) (i int64, err error) {
 	return n, nil
 }
 ```
+
+## 参考
+
+- [Golang strconv 包源码剖析](https://maiyang.me/post/2017-10-25-read-strconv-package-in-golang/)

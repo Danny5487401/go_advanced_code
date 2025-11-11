@@ -42,7 +42,7 @@
   - [第二十四章 命令行参数解析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%9B%9B%E7%AB%A0-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0%E8%A7%A3%E6%9E%90)
   - [第二十四章 Flag命令行参数及源码分析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%9B%9B%E7%AB%A0-flag%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0%E5%8F%8A%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
   - [第二十五章 结构体类型方法](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%BA%94%E7%AB%A0-%E7%BB%93%E6%9E%84%E4%BD%93%E7%B1%BB%E5%9E%8B%E6%96%B9%E6%B3%95)
-  - [第二十六章 strconv 字符串和数值型转换源码分析](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%85%AD%E7%AB%A0-strconv-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%92%8C%E6%95%B0%E5%80%BC%E5%9E%8B%E8%BD%AC%E6%8D%A2%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [第二十六章 类型转换](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%85%AD%E7%AB%A0-%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2)
   - [第二十七章 image 图片处理](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B8%83%E7%AB%A0-image-%E5%9B%BE%E7%89%87%E5%A4%84%E7%90%86)
   - [第二十八章 如何进行测试](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%85%AB%E7%AB%A0-%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E6%B5%8B%E8%AF%95)
   - [第二十九章 module包管理](#%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B9%9D%E7%AB%A0-module%E5%8C%85%E7%AE%A1%E7%90%86)
@@ -554,7 +554,10 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - [1 方法调用语法糖](chapter25_struct_method/01_struct_method/main.go)
 ---
 
-## [第二十六章 strconv 字符串和数值型转换源码分析](chapter26_strconv/strconv.md)
+## [第二十六章 类型转换]()
+- [1 strconv 字符串和数值型转换](chapter26_typeConvert/01_strconv/strconv.md)
+- [2 cast 类型转换](chapter26_typeConvert/02_cast/cast.md)
+
 ---
 ## [第二十七章 image 图片处理](chapter27_image/image.md)
 ---

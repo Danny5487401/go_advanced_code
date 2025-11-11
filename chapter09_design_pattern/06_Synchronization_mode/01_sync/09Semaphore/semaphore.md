@@ -124,7 +124,7 @@ type waiter struct {
 }
 ```
 
-semaphore库核心结构就是Weighted，主要有4个字段：
+semaphore库核心结构就是 Weighted，主要有4个字段：
 - size：这个代表的是最大权值，在创建Weighted对象指定
 - cur：相当于一个游标，来记录当前已使用的权值
 - mu：互斥锁，并发情况下做临界区保护
@@ -191,7 +191,8 @@ func (s *Weighted) Acquire(ctx context.Context, n int64) error {
 
 ### Release归还信号量资源  
 
-```func (s *Weighted) Release(n int64) {
+```go
+func (s *Weighted) Release(n int64) {
     s.mu.Lock()
     s.cur -= n
     if s.cur < 0 {
@@ -205,7 +206,7 @@ func (s *Weighted) Acquire(ctx context.Context, n int64) error {
 ```
 
 ## 参考资料
-1. [信号量的使用方法和其实现原理](https://juejin.cn/post/6906677772479889422#heading-5)
+- [信号量的使用方法和其实现原理](https://juejin.cn/post/6906677772479889422#heading-5)
 
 
 
