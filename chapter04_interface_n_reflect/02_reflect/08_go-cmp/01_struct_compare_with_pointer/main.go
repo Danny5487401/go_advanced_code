@@ -18,6 +18,7 @@ type User struct {
 }
 
 func main() {
+	// go-cmp 默认对比导出字段
 	u1 := User{Name: "dj", Age: 18}
 	u2 := User{Name: "dj", Age: 18}
 

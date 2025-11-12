@@ -31,6 +31,7 @@ func main() {
 
 	// cmdopts.IngoreUnexported忽略未导出字段
 	fmt.Println("u1 equals u2?", cmp.Equal(u1, u2, cmpopts.IgnoreUnexported(Address{}))) // u1 equals u2? true
+
 	// cmdopts.AllowUnexported(User{})表示需要比较User的未导出字段：
 	fmt.Println("u1 equals u2?", cmp.Equal(u1, u2, cmp.AllowUnexported(User{}.Address))) // u1 equals u2? false
 

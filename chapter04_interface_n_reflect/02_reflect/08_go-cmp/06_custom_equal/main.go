@@ -39,7 +39,7 @@ type NetAddr struct {
 	Port int
 }
 
-// 函数格式 trFunc  // func(T) R
+// 函数格式 trFunc : func(T) R
 func transformLocalhost(a NetAddr) NetAddr {
 	if a.IP == "localhost" {
 		return NetAddr{IP: "127.0.0.1", Port: a.Port}

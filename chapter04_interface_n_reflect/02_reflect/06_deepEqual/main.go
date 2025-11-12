@@ -8,6 +8,7 @@ import (
 func main() {
 	// 内置 ==
 	builtinEqual()
+
 	// 反射 equal
 	deepEqualUse()
 }
@@ -39,11 +40,21 @@ func typeNewCompare() {
 }
 
 func structCompare() {
-	aa := A{a: 1, b: "test1"}
-	bb := A{a: 1, b: "test1"}
-	cc := A{a: 1, b: "test2"}
+	aa := User{A: 1, b: "test1"}
+	bb := User{A: 1, b: "test1"}
+	cc := User{A: 1, b: "test2"}
 	fmt.Println(aa == bb)
 	fmt.Println(aa == cc)
+}
+
+func structExportedDeepCompare() {
+	aa := User{A: 1, b: "test1"}
+	bb := User{A: 1, b: "test1"}
+	cc := User{A: 1, b: "test2"}
+	res1 := reflect.DeepEqual(aa, bb)
+	fmt.Println("Is aa is equal to bb:", res1) // Is aa is equal to bb: true
+	res2 := reflect.DeepEqual(aa, cc)
+	fmt.Println("Is aa is equal to cc:", res2) // Is aa is equal to cc: false
 }
 
 func arrayCompare() {
@@ -54,8 +65,8 @@ func arrayCompare() {
 	fmt.Println(a == c) // false
 }
 
-type A struct {
-	a int
+type User struct {
+	A int
 	b string
 }
 
@@ -83,8 +94,11 @@ func deepEqualUse() {
 	// 3. 自定义int比较
 	intDeepEqual()
 
-	// 4.带有环的数据对比
+	// 4. 带有环的数据对比
 	circleEqual()
+
+	// 5. 结构体导出字段
+	structExportedDeepCompare()
 }
 
 type link struct {
@@ -118,14 +132,14 @@ func sliceEqual() {
 }
 
 func mapEqual() {
-	map_1 := map[int]string{
+	map1 := map[int]string{
 		200: "Anita",
 		201: "Neha",
 		203: "Suman",
 		204: "Robin",
 		205: "Rohit",
 	}
-	map_2 := map[int]string{
+	map2 := map[int]string{
 		200: "Anita",
 		201: "Neha",
 		203: "Suman",
@@ -133,11 +147,11 @@ func mapEqual() {
 		205: "Rohit",
 	}
 
-	res1 := reflect.DeepEqual(map_1, map_2)
-	fmt.Println("Is Map 1 is equal to Map 2:", res1)
+	res1 := reflect.DeepEqual(map1, map2)
+	fmt.Println("Is Map 1 is equal to Map 2:", res1) // Is Map 1 is equal to Map 2: true
 
 	var c, d map[string]int = nil, make(map[string]int)
-	fmt.Println("一个nil值的map和非nil值但是空的map", reflect.DeepEqual(c, d)) // "false"
+	fmt.Println("一个nil值的map和非nil值但是空的map", reflect.DeepEqual(c, d)) // 一个nil值的map和非nil值但是空的map false
 }
 
 type MyInt int

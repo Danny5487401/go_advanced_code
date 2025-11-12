@@ -167,11 +167,12 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
     - [2.7 reflect.implements 判断 struct 是否实现某接口](chapter04_interface_n_reflect/02_reflect/07_implement_interface/main.go)
     - [2.8 go-cmp-->reflect.DeepEqual 的替代品](chapter04_interface_n_reflect/02_reflect/08_go-cmp/go-cmp.md)
       - [2.8.1 结构体内嵌指针：与 == 对比进行相等判断](chapter04_interface_n_reflect/02_reflect/08_go-cmp/01_struct_compare_with_pointer/main.go)
-      - [2.8.2 IgnoreUnexported 忽略未导出字段,AllowUnexported 指定某些类型的未导出字段需要比较](chapter04_interface_n_reflect/02_reflect/08_go-cmp/02_ignoreUnexported/main.go)
+      - [2.8.2 cmp.Equal()函数不会比较未导出字段,IgnoreUnexported 忽略未导出字段,AllowUnexported 指定某些类型的未导出字段需要比较](chapter04_interface_n_reflect/02_reflect/08_go-cmp/02_ignoreUnexported/main.go)
       - [2.8.3 切片变量值为 nil 与 长度为 0 的切片相等判断，map 实现元素对比 ](chapter04_interface_n_reflect/02_reflect/08_go-cmp/03_nil_and_empty_slice_or_map/main.go)
       - [2.8.4 切片 及 map 相等判断](chapter04_interface_n_reflect/02_reflect/08_go-cmp/04_slice_and_map_equal/main.go)
       - [2.8.5 diff 打印结构体成员区别](chapter04_interface_n_reflect/02_reflect/08_go-cmp/05_diff/main.go)
       - [2.8.6 自定义Equal方法](chapter04_interface_n_reflect/02_reflect/08_go-cmp/06_custom_equal/main.go)
+    - [2.9 CanAddr 方法 对比 CanSet 方法](chapter04_interface_n_reflect/02_reflect/09_canaddr_n_canset/main.go)
 ---
 
 ## 第五章 切片和数组

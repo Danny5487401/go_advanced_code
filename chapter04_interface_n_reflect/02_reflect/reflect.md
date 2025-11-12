@@ -5,15 +5,15 @@
 - [反射](#%E5%8F%8D%E5%B0%84)
   - [一. 背景](#%E4%B8%80-%E8%83%8C%E6%99%AF)
     - [为什么要用反射?](#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8%E5%8F%8D%E5%B0%84)
-    - [不建议使用反射的原因：](#%E4%B8%8D%E5%BB%BA%E8%AE%AE%E4%BD%BF%E7%94%A8%E5%8F%8D%E5%B0%84%E7%9A%84%E5%8E%9F%E5%9B%A0)
+    - [不建议使用反射的原因](#%E4%B8%8D%E5%BB%BA%E8%AE%AE%E4%BD%BF%E7%94%A8%E5%8F%8D%E5%B0%84%E7%9A%84%E5%8E%9F%E5%9B%A0)
   - [二. 用到反射的包](#%E4%BA%8C-%E7%94%A8%E5%88%B0%E5%8F%8D%E5%B0%84%E7%9A%84%E5%8C%85)
   - [三. 源码分析](#%E4%B8%89-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
     - [两种类型：Type 和 Value](#%E4%B8%A4%E7%A7%8D%E7%B1%BB%E5%9E%8Btype-%E5%92%8C-value)
       - [1. reflect.Type 是以一个接口的形式存在的](#1-reflecttype-%E6%98%AF%E4%BB%A5%E4%B8%80%E4%B8%AA%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%BD%A2%E5%BC%8F%E5%AD%98%E5%9C%A8%E7%9A%84)
       - [2. reflect.Value 是以一个结构体的形式存在](#2-reflectvalue-%E6%98%AF%E4%BB%A5%E4%B8%80%E4%B8%AA%E7%BB%93%E6%9E%84%E4%BD%93%E7%9A%84%E5%BD%A2%E5%BC%8F%E5%AD%98%E5%9C%A8)
     - [反射的基本函数](#%E5%8F%8D%E5%B0%84%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%87%BD%E6%95%B0)
-      - [1. TypeOf函数](#1-typeof%E5%87%BD%E6%95%B0)
-      - [2. ValueOf函数](#2-valueof%E5%87%BD%E6%95%B0)
+      - [1. TypeOf 函数](#1-typeof-%E5%87%BD%E6%95%B0)
+      - [2. ValueOf 函数](#2-valueof-%E5%87%BD%E6%95%B0)
   - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -24,11 +24,12 @@
 用比喻来说，反射就是程序在运行的时候能够“观察”并且修改自己的行为。
 
 ## 一. 背景
+
 ### 为什么要用反射?
 1. 有时你需要编写一个函数，但是并不知道传给你的参数类型是什么，可能是没约定好；也可能是传入的类型很多，这些类型并不能统一表示。这时反射就会用的上了
 2. 有时候需要根据某些条件决定调用哪个函数，比如根据用户的输入来决定。这时就需要对函数和函数的参数进行反射，在运行期间动态地执行函数。
 
-### 不建议使用反射的原因：
+### 不建议使用反射的原因
 1. 与反射相关的代码，经常是难以阅读的。在软件工程中，代码可读性也是一个非常重要的指标
 2. Go 语言作为一门静态语言，编码过程中，编译器能提前发现一些类型错误，但是对于反射代码是无能为力的。
 所以包含反射相关的代码，很可能会运行很久，才会出错，这时候经常是直接 panic，可能会造成严重的后果
@@ -362,7 +363,7 @@ go 中的基本类型总共 26 种，在反射中也有枚举体现
 type Kind uint
 
 const (
-	Invalid Kind = iota
+	Invalid Kind = iota  // 无效的值，通常表示空值或无效的 reflect.Value
 	Bool
 	Int
 	Int8
@@ -537,12 +538,13 @@ const (
 
 
 ### 反射的基本函数
+
 reflect 包里定义了一个接口和一个结构体，即 reflect.Type 和 reflect.Value，它们提供很多函数来获取存储在接口里的类型信息。
 
 ![](./.reflect_images/reflect_all_struct.png)
 
 
-#### 1. TypeOf函数
+#### 1. TypeOf 函数
 ```go
 ///Users/python/go/go1.18/src/reflect/type.go
 //type定义了接口，rtype实现了接口
@@ -616,7 +618,7 @@ func (t *rtype) Method(i int) (m Method) {
 }
 ```
 
-#### 2. ValueOf函数
+#### 2. ValueOf 函数
 reflect.Value 表示 interface{} 里存储的实际变量，它能提供实际变量的各种信息。相关的方法常常是需要结合类型信息和值信息。
 例如，如果要提取一个结构体的字段信息，那就需要用到 _type (具体到这里是指 structType) 类型持有的关于结构体的字段信息、偏移信息，以及 *data 所指向的内容 —— 结构体的实际值。
 
@@ -713,7 +715,6 @@ call 方法接着会做一些可变参数的判断以及组合传入的参数值
 
 
 
-
 ## 参考资料
-1. [Go 反射源码解读](https://zhuanlan.zhihu.com/p/408731140)
+- [Go 反射源码解读](https://zhuanlan.zhihu.com/p/408731140)
 

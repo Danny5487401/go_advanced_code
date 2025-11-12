@@ -5,15 +5,22 @@
 - [github.com/google/go-cmp](#githubcomgooglego-cmp)
   - [特点](#%E7%89%B9%E7%82%B9)
   - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [cmp.Options：用于定制比较行为的结构体](#cmpoptions%E7%94%A8%E4%BA%8E%E5%AE%9A%E5%88%B6%E6%AF%94%E8%BE%83%E8%A1%8C%E4%B8%BA%E7%9A%84%E7%BB%93%E6%9E%84%E4%BD%93)
+    - [相等判断](#%E7%9B%B8%E7%AD%89%E5%88%A4%E6%96%AD)
+    - [diff 区别判断](#diff-%E5%8C%BA%E5%88%AB%E5%88%A4%E6%96%AD)
   - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # github.com/google/go-cmp
 
-reflect.DeepEqual 的替代品
+reflect.DeepEqual 的替代品.
+
+与reflect.DeepEqual不同，go-cmp默认情况下不会比较未导出的字段，从而避免了潜在的panic风险。
+开发者可以通过使用Ignore选项（如cmpopts.IgnoreUnexported）或显式地使用AllowUnexported选项来控制未导出字段的比较行为。
 
 ## 特点
+
 - reflect.DeepEqual不够灵活，无法提供选项实现我们想要的行为，例如允许浮点数误差，对test 不友好 .
 - 支持自定义比较函数：你可以编写自定义比较函数，以处理特定类型的值的比较。这允许你在比较复杂的数据结构时定义自己的比较逻辑。
 - 不会比较未导出字段（即字段名首字母小写的字段）。遇到未导出字段，cmp.Equal() 直接panic.
@@ -24,12 +31,11 @@ reflect.DeepEqual 的替代品
 
 ## 源码分析
 
-重要结构体
+对比状态
 ```go
 type state struct {
-	// These fields represent the "comparison state".
-	// Calling statelessCompare must not result in observable changes to these.
-	result    diff.Result // The current result of comparison
+
+	result    diff.Result // 对比结果
 	curPath   Path        // The current path in the value tree
 	curPtrs   pointerPath // The current set of visited pointers
 	reporters []reporter  // Optional reporters
@@ -47,6 +53,8 @@ type state struct {
 	opts      Options    // List of all fundamental and filter options
 }
 ```
+
+### cmp.Options：用于定制比较行为的结构体
 
 选项 option 接口用来配置 equal 和 diff：基础option 有 [Ignore], [Transformer], and [Comparer]
 ```go
@@ -115,9 +123,10 @@ func Transformer(name string, f interface{}) Option {
 
 
 
-相等判断入口
+### 相等判断
 ```go
 // github.com/google/go-cmp@v0.6.0/cmp/compare.go
+
 func Equal(x, y interface{}, opts ...Option) bool {
 	// state 初始化
 	s := newState(opts)
@@ -153,6 +162,7 @@ func (s *state) compareAny(step PathStep) {
 	}
 
 	// Rule 1: Check whether an option applies on this node in the value tree.
+	// 应用option
 	if s.tryOptions(t, vx, vy) {
 		return
 	}
@@ -164,7 +174,7 @@ func (s *state) compareAny(step PathStep) {
 	}
 
 	// Rule 3: Compare based on the underlying kind.
-	// 根据 kind 类型金习惯判断
+	// 根据 kind 类型进行判断
 	switch t.Kind() {
 	case reflect.Bool:
 		s.report(vx.Bool() == vy.Bool(), 0)
@@ -249,6 +259,7 @@ func (s *state) compareStruct(t reflect.Type, vx, vy reflect.Value) {
 ```
 
 
+### diff 区别判断
 
 
 
