@@ -12,6 +12,7 @@ type myString otherString
 
 // Equal 自定义类型的Equal方法
 func (sf otherString) Equal(s otherString) bool {
+	// 不区分大小写（case-insensitive）
 	return strings.EqualFold(string(sf), string(s))
 }
 

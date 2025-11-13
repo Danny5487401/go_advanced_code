@@ -12,6 +12,22 @@ type FooStruct struct {
 	b int
 }
 
+type Foo interface {
+	Name() string
+}
+
+func (f FooStruct) Name() string {
+	return f.A
+}
+
+type FooPointer struct {
+	A string
+}
+
+func (f *FooPointer) Name() string {
+	return f.A
+}
+
 func main() {
 	{
 		// canAddr vs canSet
@@ -60,5 +76,43 @@ func main() {
 		fmt.Println("reflect.ValueOf(pn2).Elem().CanAddr():", reflect.ValueOf(pn2).Elem().CanAddr()) // reflect.ValueOf(pn2).Elem().CanAddr(): false
 		fmt.Println("reflect.ValueOf(ppn).Elem().CanAddr():", reflect.ValueOf(ppn).Elem().CanAddr()) // reflect.ValueOf(ppn).Elem().CanAddr(): true
 
+	}
+
+	{
+		// 对于复杂的 slice， map， struct， pointer 等方法
+		{
+			// slice
+			a := []int{1, 2, 3}
+			val := reflect.ValueOf(&a)
+			val.Elem().SetLen(2)
+			val.Elem().Index(0).SetInt(4)
+			fmt.Println(a) // [4,2]
+		}
+		{
+			// map
+			a := map[int]string{
+				1: "foo1",
+				2: "foo2",
+			}
+			val := reflect.ValueOf(&a)
+			key3 := reflect.ValueOf(3)
+			val3 := reflect.ValueOf("foo3")
+			val.Elem().SetMapIndex(key3, val3)
+			fmt.Println(val) // &map[1:foo1 2:foo2 3:foo3]
+		}
+		{
+			// struct
+			a := FooStruct{}
+			val := reflect.ValueOf(&a)
+			val.Elem().FieldByName("A").SetString("foo2")
+			fmt.Println(a) // {foo2}
+		}
+		{
+			// pointer
+			a := &FooPointer{}
+			val := reflect.ValueOf(a)
+			val.Elem().FieldByName("A").SetString("foo2")
+			fmt.Println(a) //&{foo2}
+		}
 	}
 }

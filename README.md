@@ -172,7 +172,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
       - [2.8.4 切片 及 map 相等判断](chapter04_interface_n_reflect/02_reflect/08_go-cmp/04_slice_and_map_equal/main.go)
       - [2.8.5 diff 打印结构体成员区别](chapter04_interface_n_reflect/02_reflect/08_go-cmp/05_diff/main.go)
       - [2.8.6 自定义Equal方法](chapter04_interface_n_reflect/02_reflect/08_go-cmp/06_custom_equal/main.go)
-    - [2.9 CanAddr 方法 对比 CanSet 方法](chapter04_interface_n_reflect/02_reflect/09_canaddr_n_canset/main.go)
+    - [2.9 CanAddr 方法 对比 CanSet 方法](chapter04_interface_n_reflect/02_reflect/09_canaddr_n_canset/canset_canaddr.md)
 ---
 
 ## 第五章 切片和数组
@@ -602,7 +602,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
   - [1.1 Linux 内存管理](chapter30_memory_management/01_memory/linux_mem.md)
   - [1.2 Go 内存结构管理](chapter30_memory_management/01_memory/go_mem.md)
 - [2 GC垃圾回收机制](chapter30_memory_management/02_GC/gc.md)
-  - [2.1 下次GC的时机](chapter30_memory_management/02_GC/01_next_gc_stage/main.go)
+  - [2.1 下次GC的时机](chapter30_memory_management/02_GC/01_next_gc_stage/next_gc.md)
   - [2.2 删除Map元素时通过 runtime.MemStats 查看GC回收流程](chapter30_memory_management/02_GC/02_map_GC/main.go)
   - 2.3 内存对象中有指针与无指针的GC对比,检测内存对象中的指针
     - [2.3.1 gc运行时间: 切片中存储10亿个指针](chapter30_memory_management/02_GC/03_gc_between_pointer_and_not/01_with_pointer/pointer.go)

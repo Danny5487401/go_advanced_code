@@ -12,7 +12,9 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # 系统调用
+
 ![](.Syscall_images/system_call.png)
+
 系统调用是操作系统内核提供给用户空间程序的一套标准接口。
 
 用户程序不会直接与磁盘等硬件打交道，所以不能直接对文件进行操作，所以需要内核这层"垫片"，用户程序既然要访问内核，就免不了要执行系统调用。

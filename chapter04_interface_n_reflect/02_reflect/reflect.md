@@ -518,19 +518,20 @@ type Value struct {
    // 方法值表示当前的方法调用，就像接收者r调用r.Read方法。typ+val+flag的标志位描述r的话，但flag的Kind标志位表示Func（方法是函数），flag的高位表示r类型的方法列表中的方法编号
 }
 ```
-flag的枚举定义以及标志位的二进制占位分布情况
+flag的枚举定义以及标志位的二进制占位分布情况.
 
 ```go
+// 它既能表达这个 value 的类型，也能表达一些元信息（比如是否可寻址等）。
 type flag uintptr
 
 const (
 	flagKindWidth        = 5 //  有27个Kind类型，5位可以容纳2^5可以表示32个类型
 	flagKindMask    flag = 1<<flagKindWidth - 1
-	flagStickyRO    flag = 1 << 5
-	flagEmbedRO     flag = 1 << 6
-	flagIndir       flag = 1 << 7
-	flagAddr        flag = 1 << 8
-	flagMethod      flag = 1 << 9
+	flagStickyRO    flag = 1 << 5  // 标记是否是结构体内部私有属性
+	flagEmbedRO     flag = 1 << 6  // 标记是否是嵌套结构体内部私有属性
+	flagIndir       flag = 1 << 7  // 标记 value 的ptr是否是保存了一个指针 
+	flagAddr        flag = 1 << 8  // 标记这个 value 是否可寻址 
+	flagMethod      flag = 1 << 9  // 标记 value 是个匿名函数
 	flagMethodShift      = 10
 	flagRO          flag = flagStickyRO | flagEmbedRO
 )

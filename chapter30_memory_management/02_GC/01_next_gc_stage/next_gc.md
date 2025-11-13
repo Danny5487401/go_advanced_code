@@ -27,7 +27,7 @@ const (
 )
 ```
 
-##  gcController 和 work 这两个数据结构
+## gcController 和 work 这两个数据结构
 gcController GC 控制器
 
 ```go
@@ -152,7 +152,7 @@ func forcegchelper() {
 
 
 ```go
-// /Users/python/go/go1.21.5/src/runtime/mgc.go
+// go1.21.5/src/runtime/mgc.go
 const (
 	_GCoff             = iota // GC未运行; sweeping in background, write barrier disabled
 	_GCmark                   // 标记中，启用写屏障 GC marking roots and workbufs: allocate black, write barrier ENABLED
@@ -425,9 +425,9 @@ func gcStart(trigger gcTrigger) {
 ## 观察GC方式
 
 1.
-```go
- go build main.go
- GODEBUG=gctrace=1 ./main
+```shell
+go build main.go
+GODEBUG=gctrace=1 ./main
 ```
 GODEBUG 变量可以控制运行时内的调试变量，参数以逗号分隔，格式为：name=val。本文着重点在 GC 的观察上，主要涉及 gctrace 参数，
 我们通过设置 gctrace=1 后就可以使得垃圾收集器向标准错误流发出 GC 运行信息
