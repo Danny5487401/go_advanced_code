@@ -3,10 +3,11 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [error](#error)
-  - [背景：](#%E8%83%8C%E6%99%AF)
+  - [背景](#%E8%83%8C%E6%99%AF)
   - [扩展包Pkg.errors](#%E6%89%A9%E5%B1%95%E5%8C%85pkgerrors)
     - [1. Wrap 更多的消息](#1-wrap-%E6%9B%B4%E5%A4%9A%E7%9A%84%E6%B6%88%E6%81%AF)
     - [2. 对比](#2-%E5%AF%B9%E6%AF%94)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -38,7 +39,8 @@ func (e *errorString) Error() string {
 	return e.s
 }
 ```
-## 背景：
+
+## 背景
 ```go
 func AuthenticateRequest(r *Request) error {
     err := authenticate(r.User)
@@ -190,3 +192,7 @@ func main() {
 data not found,  bar failed: foo failed: sql: no rows in result set
 */
 ```
+
+
+## 参考
+

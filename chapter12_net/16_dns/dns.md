@@ -2,19 +2,21 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [DNS （Domain Name System)](#dns-domain-name-system)
+- [DNS（Domain Name System)](#dnsdomain-name-system)
   - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
   - [DNS的记录类型](#dns%E7%9A%84%E8%AE%B0%E5%BD%95%E7%B1%BB%E5%9E%8B)
   - [工作原理](#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86)
-  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [net 源码分析](#net-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
     - [基本方法](#%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95)
     - [具体实现](#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0)
   - [应用 --> VictoriaMetrics 使用](#%E5%BA%94%E7%94%A8----victoriametrics-%E4%BD%BF%E7%94%A8)
+  - [github.com/miekg/dns-->github.com/miekg/dns](#githubcommiekgdns--githubcommiekgdns)
+    - [主要功能](#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD)
   - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-#  DNS （Domain Name System)
+# DNS（Domain Name System)
 
 
 主要作用是将主机名解析为IP地址的过程，完成了从域名到主机识别ip地址之间的转换；
@@ -24,7 +26,7 @@
 ## 基本概念
 
 
-FQDN(Full Qualified Domain Name)：完整主机名，是由主机名和域名构成。例如http://www.baidu.com。当中，www就是web网站服务器的主机名，http://baidu.com就是域名，主机名和域名之间用实心点号来表示
+FQDN(Full Qualified Domain Name)：完整主机名，是由主机名和域名构成。例如http://www.baidu.com。当中，www就是web网站服务器的主机名，http://baidu.com 就是域名，主机名和域名之间用实心点号来表示
 
 
 ## DNS的记录类型
@@ -114,7 +116,7 @@ ns5.a.shifen.com.       535     IN      AAAA    240e:940:603:a:0:ff:b08d:239d
 ```
 
 
-## 源码分析
+## net 源码分析
 
 解析结构体
 ```go
@@ -521,7 +523,6 @@ func (r *Resolver) goLookupIPCNAMEOrder(ctx context.Context, network, name strin
 
 ## 应用 --> VictoriaMetrics 使用
 
-
 ```go
 // https://github.com/VictoriaMetrics/VictoriaMetrics/blob/41e413537167c6a90eb19f67cdab168387710ec0/lib/netutil/netutil.go
 type resolver interface {
@@ -543,12 +544,33 @@ func init() {
 ```
 
 
+## github.com/miekg/dns-->github.com/miekg/dns
+Go的 net 包提供了开箱即用的DNS查询功能，而第三方库如 miekg/dns 则赋予开发者构建自定义DNS服务器的能力。
 
+github.com/miekg/dns 是一个用于 Go 语言的 DNS 库，它提供了丰富的功能来处理 DNS 查询、响应、解析和构建 DNS 消息。
+
+
+### 主要功能
+1. DNS 查询与响应：
+支持各种类型的 DNS 查询（如 A、AAAA、MX、NS、TXT 等）。
+支持发送和接收 DNS 消息。
+
+2. DNS 消息构建与解析：
+提供便捷的方法来构建 DNS 消息（如请求和响应）。
+能够解析 DNS 消息并提取所需信息。
+
+3. DNS 服务器：
+可以用来构建自定义的 DNS 服务器。
+支持处理多种类型的 DNS 请求。
+
+4. 扩展性：
+支持扩展和自定义，允许用户添加自己的功能和处理逻辑。
 
 ## 参考
 
 - [深入解析Go语言net库：Resolver的全方位DNS解析实战指南](https://blog.csdn.net/tekin_cn/article/details/150571109)
-
+- [go语言中强大的DNS库](https://www.cnblogs.com/guangdelw/p/18306424)
+- [Go语言实现DNS解析与域名服务的实践与优化](https://juejin.cn/post/7526383867101642806)
 
 
 

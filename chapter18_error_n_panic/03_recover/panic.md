@@ -7,10 +7,12 @@
   - [2. 被动的方式：](#2-%E8%A2%AB%E5%8A%A8%E7%9A%84%E6%96%B9%E5%BC%8F)
 - [Go 1.13.5](#go-1135)
   - [_panic 数据结构](#_panic-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Panic产生方式
+
 ![](./three_ways_of_panic.png) 
 
 ## 1. 主动方式：
@@ -78,6 +80,7 @@ panic 的实现在一个叫做 gopanic 的函数，位于 runtime/panic.go 文�
 
 ```go
 // runtime/panic.go
+
 func gopanic(e interface{}) {
     gp := getg()
     
@@ -143,3 +146,6 @@ func gopanic(e interface{}) {
     *(*int)(nil) = 0      // not reached
 }
 ```
+
+
+## 参考

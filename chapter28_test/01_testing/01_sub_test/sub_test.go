@@ -16,12 +16,12 @@ func TestSub(t *testing.T) {
 /*
 === RUN   TestSub
 === RUN   TestSub/A=1
+--- PASS: TestSub/A=1 (1.00s)
 === RUN   TestSub/A=2
+--- PASS: TestSub/A=2 (2.00s)
 === RUN   TestSub/B=1
---- PASS: TestSub (0.00s)
-    --- PASS: TestSub/A=1 (0.00s)
-    --- PASS: TestSub/A=2 (0.00s)
-    --- PASS: TestSub/B=1 (0.00s)
+--- PASS: TestSub/B=1 (3.00s)
+--- PASS: TestSub (6.00s)
 PASS
 
 */

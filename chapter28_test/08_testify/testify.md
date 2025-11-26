@@ -3,21 +3,20 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [testify](#testify)
-  - [第三方使用](#%E7%AC%AC%E4%B8%89%E6%96%B9%E4%BD%BF%E7%94%A8)
   - [1. assert](#1-assert)
     - [Assertions 对象](#assertions-%E5%AF%B9%E8%B1%A1)
   - [2. mock](#2-mock)
   - [3. suite](#3-suite)
-  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+  - [第三方使用-->gin](#%E7%AC%AC%E4%B8%89%E6%96%B9%E4%BD%BF%E7%94%A8--gin)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # testify
+
 三大套件：assert断言，mock测试替身，suite测试套件
 
-## 第三方使用
 
-gin框架使用
 
 ## 1. assert
 assert子库提供了便捷的断言函数，可以大大简化测试代码的编写。总的来说，它将之前需要判断 + 信息输出的模式：
@@ -52,6 +51,7 @@ Mock 简单来说就是构造一个仿对象，仿对象提供和原对象一样
 例如，我们现在要编写一个从一个站点拉取用户列表信息的程序，拉取完成之后程序显示和分析。
 如果每次都去访问网络会带来极大的不确定性，甚至每次返回不同的列表，这就给测试带来了极大的困难。我们可以使用 Mock 技术。
 
+
 ## 3. suite
 
 testify提供了测试套件的功能（TestSuite），testify测试套件只是一个结构体，内嵌一个匿名的suite.Suite结构。
@@ -71,6 +71,31 @@ type TearDownAllSuite interface {
 ```
 
 
-## 参考资料
-1. [每日一库 testify](https://darjun.github.io/2021/08/11/godailylib/testify/)
-2. [testify 官网](https://github.com/stretchr/testify)
+## 第三方使用-->gin 
+
+```go
+// github.com/gin-gonic/gin@v1.9.1/gin_test.go
+
+func TestAddRoute(t *testing.T) {
+	router := New()
+	router.addRoute("GET", "/", HandlersChain{func(_ *Context) {}})
+
+	assert.Len(t, router.trees, 1)
+	assert.NotNil(t, router.trees.get("GET"))
+	assert.Nil(t, router.trees.get("POST"))
+
+	router.addRoute("POST", "/", HandlersChain{func(_ *Context) {}})
+
+	assert.Len(t, router.trees, 2)
+	assert.NotNil(t, router.trees.get("GET"))
+	assert.NotNil(t, router.trees.get("POST"))
+
+	router.addRoute("POST", "/post", HandlersChain{func(_ *Context) {}})
+	assert.Len(t, router.trees, 2)
+}
+
+```
+
+## 参考
+- https://github.com/stretchr/testify
+- [每日一库 testify](https://darjun.github.io/2021/08/11/godailylib/testify/)

@@ -400,6 +400,10 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
 - [14 ReverseProxy 反向代理](chapter12_net/14_reverse_proxy/reverse_proxy.md)
 - [15 go1.18 netip 处理网络地址和相关操作](chapter12_net/15_netip/netip.md)
 - [16 dns 解析](chapter12_net/16_dns/dns.md)
+  - 1 内置包
+  - 2 miekg/dns
+    - [2.1 客户端](chapter12_net/16_dns/02_miekg_dns/01_client/main.go)
+    - [2.2 服务端](chapter12_net/16_dns/02_miekg_dns/02_server/main.go)
 
 ---
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)
@@ -508,6 +512,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
   - [7.1 errors.Unwrap 获取错误链中最后面的一个 root error](chapter18_error_n_panic/07_chain_error/01_root_error/main.go)
   - [7.2 errors.As函数 提取 error chain中特定类型的error](chapter18_error_n_panic/07_chain_error/02_error_as/main.go)  
 - [8 debug.SetCrashOutput -->go 1.23 允许设置未被捕获的错误、异常的日志写入](chapter18_error_n_panic/08_SetCrashOutput/main.go)
+---
 ## [第十九章 nil 预定义标识](chapter19_nil/nil.md)
 - [1 pointer, channel, func, interface, map, or slice type 为nil时的地址和size大小](chapter19_nil/01_nil_size_n_addr/main.go)
 - 2 不同类型与nil的比较
