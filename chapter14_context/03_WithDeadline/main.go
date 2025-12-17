@@ -21,6 +21,8 @@ func main() {
 	case t := <-time.After(1 * time.Second):
 		fmt.Println("overslept:", t)
 	case <-ctx.Done():
-		fmt.Println(ctx.Err()) // context deadline exceeded
+		t, _ := ctx.Deadline()
+		err := ctx.Err()
+		fmt.Printf("deadline:%s, err:%v", t.String(), err) // cdeadline:2025-12-16 17:17:15.21407 +0800 CST m=+0.005130417 ,err:context deadline exceeded
 	}
 }

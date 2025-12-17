@@ -19,11 +19,12 @@ LOOP:
 		time.Sleep(time.Millisecond * 10) // 假设正常连接数据库耗时10毫秒
 		select {
 		case <-ctx.Done(): // 50毫秒后自动调用
+			fmt.Println("worker done")
 			break LOOP
 		default:
 		}
 	}
-	fmt.Println("worker done!")
+	fmt.Println("worker exit!")
 	wg.Done()
 }
 
@@ -39,3 +40,13 @@ func main() {
 	wg.Wait()
 	fmt.Println("over")
 }
+
+/*
+db connecting ...
+db connecting ...
+db connecting ...
+db connecting ...
+db connecting ...
+worker done
+worker exit!
+*/

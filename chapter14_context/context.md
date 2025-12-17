@@ -6,8 +6,8 @@
   - [应用场景](#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF)
   - [Context 的调用](#context-%E7%9A%84%E8%B0%83%E7%94%A8)
   - [遵循规则](#%E9%81%B5%E5%BE%AA%E8%A7%84%E5%88%99)
-  - [Context 源码分析](#context-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
-    - [1. Context接口](#1-context%E6%8E%A5%E5%8F%A3)
+  - [接口及实现](#%E6%8E%A5%E5%8F%A3%E5%8F%8A%E5%AE%9E%E7%8E%B0)
+    - [1. Context 接口](#1-context-%E6%8E%A5%E5%8F%A3)
     - [2. canceler 接口](#2-canceler-%E6%8E%A5%E5%8F%A3)
     - [实现的类型](#%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%B1%BB%E5%9E%8B)
       - [1. emptyCtx：即空context，也是所有子context的祖先](#1-emptyctx%E5%8D%B3%E7%A9%BAcontext%E4%B9%9F%E6%98%AF%E6%89%80%E6%9C%89%E5%AD%90context%E7%9A%84%E7%A5%96%E5%85%88)
@@ -15,13 +15,18 @@
       - [3. timerCtx：继承自 cancelCtx 带取消功能的 Context](#3-timerctx%E7%BB%A7%E6%89%BF%E8%87%AA-cancelctx-%E5%B8%A6%E5%8F%96%E6%B6%88%E5%8A%9F%E8%83%BD%E7%9A%84-context)
       - [4. valueCtx：只能携带一个键值对，且自身要依附在上一级 Context 上](#4-valuectx%E5%8F%AA%E8%83%BD%E6%90%BA%E5%B8%A6%E4%B8%80%E4%B8%AA%E9%94%AE%E5%80%BC%E5%AF%B9%E4%B8%94%E8%87%AA%E8%BA%AB%E8%A6%81%E4%BE%9D%E9%99%84%E5%9C%A8%E4%B8%8A%E4%B8%80%E7%BA%A7-context-%E4%B8%8A)
         - [使用场景](#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF)
-        - [使用注意](#%E4%BD%BF%E7%94%A8%E6%B3%A8%E6%84%8F)
+        - [设置值](#%E8%AE%BE%E7%BD%AE%E5%80%BC)
+        - [读取值](#%E8%AF%BB%E5%8F%96%E5%80%BC)
+  - [Go1.21 新版本特性](#go121-%E6%96%B0%E7%89%88%E6%9C%AC%E7%89%B9%E6%80%A7)
+    - [增加 WithXXXCause](#%E5%A2%9E%E5%8A%A0-withxxxcause)
+    - [增加 AfterFunc](#%E5%A2%9E%E5%8A%A0-afterfunc)
   - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # context
 
+Context 上下文，在多个函数、方法、协程、跨 API、进程之间传递信息。
 Context 为同一任务的多个 goroutine 之间提供了 *退出信号通知* 和 *元数据传递* 的功能。
 
 ## 应用场景
@@ -63,34 +68,36 @@ func DoSomething(ctx context.Context，arg Arg)error { // ... user ctx ... }
 使用context的Value相关方法只应该用于在程序和接口中传递的和请求相关的元数据，不要用它来传递一些可选的参数
 相同的 Context 可以传递给在不同的goroutine；Context 是并发安全的。
 
-## Context 源码分析
+
+
+## 接口及实现
+
 ![](.introduction_images/context_relation.png)
 
-### 1. Context接口
+### 1. Context 接口
 ```go
+// go1.24.3/src/context/context.go
 type Context interface {
+	// /返回截止时间和ok,截止时间没有设置，ok为false. 连续调用的结果相同.
+	Deadline() (deadline time.Time, ok bool)
 
-    Deadline() (deadline time.Time, ok bool)   // 返回截止时间和ok,
-    // 截止时间没有设置，ok为false. 连续调用的结果相同.
+	// 返回一个Channel，这个Channel会在当前工作完成或者上下文被取消之后关闭，多次调用Done方法会返回同一个Channel；
+    // 如果从来不关闭,为 nil 
+	Done() <-chan struct{}
+
+	// 返回当前Context结束的原因，它只会在Done返回的Channel被关闭时才会返回非空的值；
+    // - 如果当前Context被取消就会返回Canceled错误；
+    // - 如果当前Context超时就会返回DeadlineExceeded错误；
+	Err() error
     
-    Done() <-chan struct{}    // 当 context 被取消或者到了 deadline，返回一个被关闭的 channel
-    
-    Err() error  // 在 channel Done 关闭后，返回 context 取消原因
-    
-    Value(key interface{}) interface{}   // 返回值
+	//  会从Context中返回键对应的值，对于同一个上下文来说，多次调用Value 并传入相同的Key会返回相同的结果，该方法仅用于传递跨API和进程间跟请求域的数据
+	Value(key any) any
 }
-// Context 是一个接口，定义了 4 个方法，它们都是 幂等的。也就是说连续多次调用同一个方法，得到的结果都是相同的
-
 ```
 
-上面可以看到Context是一个接口，想要使用就得实现其方法。在context包内部已经为我们实现好了两个空的Context，可以通过调用Background()和TODO()方法获取。
-一般的将它们作为Context的根，往下派生。
 
-1. Deadline方法需要返回当前Context被取消的时间，也就是完成工作的截止时间（deadline）；
-2. Done方法需要返回一个Channel，这个Channel会在当前工作完成或者上下文被取消之后关闭，多次调用Done方法会返回同一个Channel；
-3. Err方法会返回当前Context结束的原因，它只会在Done返回的Channel被关闭时才会返回非空的值；
-   - 如果当前Context被取消就会返回Canceled错误；
-   - 如果当前Context超时就会返回DeadlineExceeded错误；
+
+错误说明
 ```go
 var Canceled = errors.New("context canceled")
 var DeadlineExceeded error = deadlineExceededError{}
@@ -101,7 +108,7 @@ func (deadlineExceededError) Error() string   { return "context deadline exceede
 func (deadlineExceededError) Timeout() bool   { return true }
 func (deadlineExceededError) Temporary() bool { return true }
 ```
-4. Value方法会从Context中返回键对应的值，对于同一个上下文来说，多次调用Value 并传入相同的Key会返回相同的结果，该方法仅用于传递跨API和进程间跟请求域的数据
+
 
 
 ### 2. canceler 接口
@@ -129,8 +136,6 @@ caller 不应该去关心、干涉 callee 的情况，决定如何以及何时 r
 
 
 
-
-
 ### 实现的类型
 
 - emptyCtx：默认初始的context使用的类型，仅实现Context接口，不做任何处理，返回默认空值。
@@ -140,6 +145,8 @@ caller 不应该去关心、干涉 callee 的情况，决定如何以及何时 r
 
 
 #### 1. emptyCtx：即空context，也是所有子context的祖先
+
+在context包内部已经为我们实现好了两个空的Context，可以通过调用Background()和TODO()方法获取。
 ```go
 type emptyCtx int
 
@@ -195,147 +202,155 @@ c设计思想：
 
 
 #### 2. cancelCtx
+
 ![](.introduction_images/cancelCtx.png)
 
-withCancel使用分析：WithCancel 以一个新的 Done channel 返回一个父 Context 的拷贝。
 ```go
-// Canceled is the error returned by Context.Err when the context is canceled.
-var Canceled = errors.New("context canceled")
-
-func WithCancel(parent Context) (ctx Context, cancel CancelFunc) {
-    c := newCancelCtx(parent)
-    propagateCancel(parent, &c)
-    return &c, func() { c.cancel(true, Canceled) }
-}
-```
-
-
-```go
-
 type cancelCtx struct {
-    Context
-    mu       sync.Mutex            // 用于保证Context的线程安全，
-    done     chan struct{}         // 互斥锁通道实例done向本goroutine外发送本context已经被关闭的的消息
-    children map[canceler]struct{} // children字典则存储了本context派生的所有context，key值为canceler类型.
-    err      error                 //  err字段用于标记该context是否已经被取消，取消则将是非空值
-}
+	Context
 
-type canceler interface {
-    cancel(removeFromParent bool, err error)
-    Done() <-chan struct{}
+	mu       sync.Mutex            // 用于保证下面字段线程安全
+	done     atomic.Value          // of chan struct{}, created lazily, closed by first cancel call
+	children map[canceler]struct{} // children字典则存储了本context派生的所有context，key值为canceler类型.
+	err      error                 // err 字段用于标记该context是否已经被取消，一经取消则将是非空值
+	cause    error                 // go 1.21 新增原因
 }
 ```
 
+
 ```go
-// newCancelCtx returns an initialized cancelCtx.
-func newCancelCtx(parent Context) cancelCtx {
-    return cancelCtx{Context: parent}
+// 使用 
+func WithCancel(parent Context) (ctx Context, cancel CancelFunc) {
+	c := withCancel(parent)
+	return c, func() { c.cancel(true, Canceled, nil) }
 }
 
-func propagateCancel(parent Context, child canceler) {
-    if parent.Done() == nil {
-    	// 祖先为不可取消类型，则自己就是取消链的根，直接返回
-    	// Note：emptyCtx的Done() 为Nil
-        return // parent is never canceled
-    }
+```
+
+```go
+// go1.24.3/src/context/context.go
+func withCancel(parent Context) *cancelCtx {
+	if parent == nil {
+		panic("cannot create context from nil parent")
+	}
+	c := &cancelCtx{} // 初始化
+	c.propagateCancel(parent, c)
+	return c
+}
+
+func (c *cancelCtx) propagateCancel(parent Context, child canceler) {
+	c.Context = parent // 设置 父亲 context 
+
+	done := parent.Done()
+	if done == nil { //  祖先为不可取消类型，则自己就是取消链的根，直接返回,如 emptyCtx的Done() 为Nil
+		return 
+	}
+
+	select {
+	case <-done:
+		// parent is already canceled
+		child.cancel(false, parent.Err(), Cause(parent))
+		return
+	default:
+	}
+
     // 通过辅助函数parentCancelCtx向上回溯，尝试找到最近的*cancelCtx类型祖先。
-    if p, ok := parentCancelCtx(parent); ok {
-        p.mu.Lock()
-        if p.err != nil {
-            // parent has already been canceled
-            child.cancel(false, p.err)
-        } else {
-        	//则将自身加入其children列表中。
-            if p.children == nil {
-                p.children = make(map[canceler]struct{})
-            }
-            p.children[child] = struct{}{}
-        }
-        p.mu.Unlock()
-    } else {
-    	// 单独监听其父context和自己的取消情况。
-        go func() {
-            select {
-            case <-parent.Done():
-                child.cancel(false, parent.Err())
-            case <-child.Done():
-            }
-        }()
-    }
-}
+	if p, ok := parentCancelCtx(parent); ok {
+		// parent is a *cancelCtx, or derives from one.
+		p.mu.Lock()
+		if p.err != nil {          // parent 已经被取消
+			child.cancel(false, p.err, p.cause)
+		} else {
+			if p.children == nil {
+				p.children = make(map[canceler]struct{})
+			}
+			p.children[child] = struct{}{}         	// 则将自身加入其children列表中
+		}
+		p.mu.Unlock()
+		return
+	}
 
+	if a, ok := parent.(afterFuncer); ok {
+		// parent implements an AfterFunc method.
+		c.mu.Lock()
+		stop := a.AfterFunc(func() {
+			child.cancel(false, parent.Err(), Cause(parent))
+		})
+		c.Context = stopCtx{
+			Context: parent,
+			stop:    stop,
+		}
+		c.mu.Unlock()
+		return
+	}
+
+	goroutines.Add(1)
+	go func() {
+		select {
+		case <-parent.Done():
+			child.cancel(false, parent.Err(), Cause(parent))
+		case <-child.Done():
+		}
+	}()
+}
 
 func parentCancelCtx(parent Context) (*cancelCtx, bool) {
-	for {
-		switch c := parent.(type) {
-		// 总共就三种Ctx
-		case *cancelCtx:
-			return c, true
-		case *timerCtx:
-			return &c.cancelCtx, true
-		case *valueCtx:
-			parent = c.Context
-		default:
-			return nil, false
-		}
+	done := parent.Done()
+	if done == closedchan || done == nil {
+		return nil, false
 	}
+	p, ok := parent.Value(&cancelCtxKey).(*cancelCtx)
+	if !ok {
+		return nil, false
+	}
+	// 拿到了 cancelCtx
+	pdone, _ := p.done.Load().(chan struct{})
+	if pdone != done { // 对比 channel
+		return nil, false
+	}
+	return p, true
 }
-
-
 ```
-propagateCancel完成的主要工作：
-将新建立的cancelCtx，绑定到祖先的取消广播树中， 简单来说，就是将自身存储到最近的*cancelCtx类型祖先的children列表中，接收该祖先的广播。
-
-1、parent.Done()==nil，祖先为不可取消类型，则自己就是取消链的根，直接返回。
-
-2、通过辅助函数parentCancelCtx向上回溯，尝试找到最近的*cancelCtx类型祖先。
-
-3、如果成功找到，则先判断是否已经被取消，如果为否，则将自身加入其children列表中。
-
-4、否则，就单独监听其父context和自己的取消情况。
 
 
-分析：
-
-得益于子context引用父context的设计，对于每个contest都将可以通过向上回溯得到一条引用链，
-辅助函数 parentCancelCtx即通过不断向内部引用类型转换，达到回看context历史的目的，寻找最近的*cancelCtx型祖先
-
-结束时调用
+取消时调用
 ```go
-// cancel closes c.done, cancels each of c's children, and, if
-// removeFromParent is true, removes c from its parent's children.
-func (c *cancelCtx) cancel(removeFromParent bool, err error) {
+var closedchan = make(chan struct{})
+
+func (c *cancelCtx) cancel(removeFromParent bool, err, cause error) {
+	// 校验: 调用时需要传入错误
 	if err == nil {
-		// 调用时需要传入错误
 		panic("context: internal error: missing cancel error")
 	}
+	// 默认用 err
+	if cause == nil {
+		cause = err
+	}
 	c.mu.Lock()
-	if c.err != nil {
+	if c.err != nil { // 代表已经取消
 		c.mu.Unlock()
-		return // already canceled
+		return 
 	}
 	c.err = err
-	if c.done == nil {
-		c.done = closedchan
+	c.cause = cause
+	d, _ := c.done.Load().(chan struct{})
+	if d == nil {
+		c.done.Store(closedchan) // 初始化
 	} else {
-		// 1. 将本context自身关闭
-		close(c.done)
+		close(d) 
 	}
 	for child := range c.children {
 		// NOTE: acquiring the child's lock while holding parent's lock.
-		// 2. 向其在取消链中的子节点广播取消通知
-		child.cancel(false, err)
+		child.cancel(false, err, cause)
 	}
-	c.children = nil
+	c.children = nil // 设置 child 为空
 	c.mu.Unlock()
 
-	if removeFromParent {
-		// 解除自身在取消链中的绑定
+	if removeFromParent { // 解除自身在 父取消链中的绑定
 		removeChild(c.Context, c)
 	}
 }
-```
-```go
+
 func removeChild(parent Context, child canceler) {
 	p, ok := parentCancelCtx(parent)
 	if !ok {
@@ -393,6 +408,7 @@ func WithDeadline(parent Context, d time.Time) (Context, CancelFunc) {
 本质上说，无论是WithDeadline还是WithTimeout生成的子context，都是对于time.AfterFunc函数和cancelCtx的一个封装。
 
 #### 4. valueCtx：只能携带一个键值对，且自身要依附在上一级 Context 上
+
 ![](.introduction_images/value_context.png)
 ```go
 
@@ -400,46 +416,110 @@ type valueCtx struct {
     Context
     key, val interface{} // valueCtx:在原状态基础上添加一个键值对
 }
-	
-func (c *valueCtx) Value(key interface{}) interface{} {
-    if c.key == key {
-        return c.val
-    }
-    // valueCtx类型真正实现了value函数，该函数是一个向上递归的查询过程，如果key不存在，将递归调用emptyCtx定义好的默认函数，返回一个nil值
-    return c.Context.Value(key)  
-}
+
 
 ```
+
 
 ##### 使用场景
 WithValue函数能够将请求作用域的数据与 Context 对象建立关系。
 
-每次要在Context链路上增加要携带的键值对时，都要在上级Context的基础上新建一个 valueCtx 存储键值对，切只能增加不能修改，
+，
 读取 Context 上的键值又是一个幂等的操作，所以 Context 就这样实现了线程安全的数据共享机制，且全程无锁，不会影响性能
 
-##### 使用注意
-提供的键必须是可比性和应该不是字符串类型或任何其他内置的类型以避免包使用的上下文之间的碰撞。WithValue 用户应该定义自己的键的类型。
-为了避免在分配给interface{}时进行分配，上下文键通常具有具体类型struct{}。或者，导出的上下文关键变量的静态类型应该是指针或接口
+##### 设置值
 
-使用 context.WithValue
 ```go
-
 func WithValue(parent Context, key, val interface{}) Context {
-    if key == nil {
-        panic("nil key")
-    }
-    if !reflectlite.TypeOf(key).Comparable() {
-        panic("key is not comparable")
-    }
+    // 校验 ... ,提供的键必须是可比性和应该不是字符串类型或任何其他内置的类型以避免包使用的上下文之间的碰撞。
+	
     return &valueCtx{parent, key, val}
 }
 
 ```
+每次要在Context链路上增加要携带的键值对时，都要在上级Context的基础上新建一个 valueCtx 存储键值对，且只能增加不能修改
+
+
+
 valueCtx类型真正实现了value函数，该函数是一个向上递归的查询过程，如果key不存在，将递归调用emptyCtx定义好的默认函数，返回一个nil值
+
+
+##### 读取值
+
+```go
+// go1.24.3/src/context/context.go
+
+func (c *valueCtx) Value(key any) any {
+	if c.key == key {
+		return c.val
+	}
+	// valueCtx类型真正实现了value函数，该函数是一个向上递归的查询过程，如果key不存在，将递归调用emptyCtx定义好的默认函数，返回一个nil值
+	return value(c.Context, key)
+}
+
+func value(c Context, key any) any {
+	for {
+        // 递归遍历获取父节点值
+		switch ctx := c.(type) {
+		case *valueCtx:
+			if key == ctx.key {
+				return ctx.val
+			}
+			// 上一级递归
+			c = ctx.Context
+		case *cancelCtx:
+			if key == &cancelCtxKey {
+				return c
+			}
+			c = ctx.Context
+		case withoutCancelCtx:
+			if key == &cancelCtxKey {
+				// This implements Cause(ctx) == nil
+				// when ctx is created using WithoutCancel.
+				return nil
+			}
+			c = ctx.c
+		case *timerCtx:
+			if key == &cancelCtxKey {
+				return &ctx.cancelCtx
+			}
+			c = ctx.Context
+		case backgroundCtx, todoCtx: //  遇到 emptyCtx 后退出
+			return nil
+		default:
+			return c.Value(key)
+		}
+	}
+}
+
+```
+
+## Go1.21 新版本特性
+性能优化
+- 减少了内存分配次数
+- 优化了取消操作的性能
+- 改进了context树的遍历效率
+
+### 增加 WithXXXCause
+针对 Context 的错误处理终于有了一点点的增强，来填补这个地方的信息，允许添加自定义的错误类型和信息。
+```go
+// WithDeadlineCause behaves like WithDeadline but also sets the cause of the
+// returned Context when the deadline is exceeded. The returned CancelFunc does
+// not set the cause.
+func WithDeadlineCause(parent Context, d time.Time, cause error) (Context, CancelFunc)
+
+// WithTimeoutCause behaves like WithTimeout but also sets the cause of the
+// returned Context when the timout expires. The returned CancelFunc does
+// not set the cause.
+func WithTimeoutCause(parent Context, timeout time.Duration, cause error) (Context, CancelFunc)
+
+```
+
+### 增加 AfterFunc
 
 
 
 ## 参考
 
-
+- [深入 GO Context「源码分析+详细案例」](https://zhuanlan.zhihu.com/p/682397085)
 
