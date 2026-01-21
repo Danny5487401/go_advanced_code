@@ -2,18 +2,23 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [扩容政策](#%E6%89%A9%E5%AE%B9%E6%94%BF%E7%AD%96)
-  - [扩容分析](#%E6%89%A9%E5%AE%B9%E5%88%86%E6%9E%90)
-  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+- [扩容](#%E6%89%A9%E5%AE%B9)
+  - [早期（Go 1.18 之前）的策略：硬阈值下的“突变”](#%E6%97%A9%E6%9C%9Fgo-118-%E4%B9%8B%E5%89%8D%E7%9A%84%E7%AD%96%E7%95%A5%E7%A1%AC%E9%98%88%E5%80%BC%E4%B8%8B%E7%9A%84%E7%AA%81%E5%8F%98)
+    - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+  - [现代（Go 1.18 及之后）的策略：平滑过渡的艺术](#%E7%8E%B0%E4%BB%A3go-118-%E5%8F%8A%E4%B9%8B%E5%90%8E%E7%9A%84%E7%AD%96%E7%95%A5%E5%B9%B3%E6%BB%91%E8%BF%87%E6%B8%A1%E7%9A%84%E8%89%BA%E6%9C%AF)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# 扩容政策
-
-## 扩容分析
+# 扩容
 ![](./growSlice.png)
 
 新的切片和之前的切片已经不同了，因为新的切片更改了一个值，并没有影响到原来的数组，新切片指向的数组是一个全新的数组。并且 cap 容量也发生了变化。
+
+
+## 早期（Go 1.18 之前）的策略：硬阈值下的“突变”
+在很长一段时间里，Go 的扩容策略是一个简单明了的分段函数，其分界点设在 1024.
+在 1024 这个阈值点，增长行为会发生一次“突变”。一个容量为 1023 的切片，下次会扩容到 2046；而一个容量为 1024 的切片，下次只会扩容到 1280。
 
 
 Go 中切片扩容的策略是这样的：
@@ -29,7 +34,7 @@ Go 中切片扩容的策略是这样的：
 注意：扩容扩大的容量都是针对原来的容量而言的，而不是针对原来数组的长度而言的。
 
 
-## 源码分析
+### 源码分析
 ```go
 // et为切片存放的数据的类型，old为旧的slice，cap为期望的容量大小
 func growslice(et *_type, old slice, cap int) slice {
@@ -138,3 +143,9 @@ func growslice(et *_type, old slice, cap int) slice {
 
 
 ```
+
+## 现代（Go 1.18 及之后）的策略：平滑过渡的艺术
+![grow_size_after_1_18.png](grow_size_after_1_18.png)
+
+## 参考
+- [Slice 的“隐秘角落”——只读切片与扩容策略的权衡](https://tonybai.com/2025/10/02/go-archaeology-slice/)

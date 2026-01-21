@@ -182,17 +182,17 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
   - [1.3 切片和数组作为参数传递性能对比及注意项](chapter05_slice_n_array/01_pass_as_param/03_array_n_slice_pass_performance/main_test.go)
 - [2 切片传递的疑惑](chapter05_slice_n_array/02_slice_pass/slice_n_array_pass.md)
   - [2.1 没有足够容量时函数中切片传递的疑惑](chapter05_slice_n_array/02_slice_pass/01_slice_pass_confusition_without_enough_cap/main.go)
-  - [2.2 没有足够容量切片传递疑惑揭秘：底层扩容指向的数据变化](chapter05_slice_n_array/02_slice_pass/02_slice_pass_reality_without_enough_cap/main.go)
+  - [2.2 没有足够容量切片传递疑惑揭秘: 底层扩容指向的数据变化](chapter05_slice_n_array/02_slice_pass/02_slice_pass_reality_without_enough_cap/main.go)
   - [2.3 有足够容量时函数中切片传递的疑惑](chapter05_slice_n_array/02_slice_pass/03_slice_pass_confusition_fix_with_enough_cap)
   - [2.4 有足够容量时函数传递疑惑揭秘: 底层len长度没变](chapter05_slice_n_array/02_slice_pass/04_slice_pass_confusition_with_enough_cap)
 - [3 带索引初始化数组和切片](chapter05_slice_n_array/03_make_slice_with_index/make_slice_with_index.go)
 - 4 底层数据结构
   - [4.1 数组数据结构](chapter05_slice_n_array/04_structure_of_array_n_slice/01_array/arrayStructure.md)
-  - [4.2 切片数据结构及拷贝copy源码分析](chapter05_slice_n_array/04_structure_of_array_n_slice/02_slice/sliceStructure.md)
+  - [4.2 切片数据结构及拷贝 copy 源码分析](chapter05_slice_n_array/04_structure_of_array_n_slice/02_slice/sliceStructure.md)
   - [4.3 array 转 slice,slice 转 array 在版本 1.20 前后变化](chapter05_slice_n_array/04_structure_of_array_n_slice/03_slice_to_array/main.go)
 - [5 nil 切片和 empty 切片](chapter05_slice_n_array/05nilSlice_n_NoneSlice/nil_n_empty_slice.md)
   - [5.1 优雅的清空切片，复用内存](chapter05_slice_n_array/05nilSlice_n_NoneSlice/clear_slice.go)
-- [6 扩容策略](chapter05_slice_n_array/06GrowSlice/grow_size_policy.md)
+- [6 扩容策略](chapter05_slice_n_array/06_grow_slice/grow_size_policy.md)
 - [7 不同类型的切片间互转](chapter05_slice_n_array/07_transfer_slice_in_different_type/main.go)
 - [8 切片复制方式对比: copy和=复制](chapter05_slice_n_array/08_reslice_n_copy/slice_copy.md)
 - [9 append 切片常用考题](chapter05_slice_n_array/09_append/main.go)
@@ -404,6 +404,7 @@ Note: 目录同级为 *代码展示*，推荐在 Goland 版本 2022.2.1+ 运行,
   - 2 miekg/dns
     - [2.1 客户端](chapter12_net/16_dns/02_miekg_dns/01_client/main.go)
     - [2.2 服务端](chapter12_net/16_dns/02_miekg_dns/02_server/main.go)
+- [17 httptrace HTTP客户端钩子](chapter12_net/17_httptrace/httptrace.md)
 
 ---
 ## [第十三章 CGO调用C语言](chapter13_Go_call_C_or_C++/introduction.md)

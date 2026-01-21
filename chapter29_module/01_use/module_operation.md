@@ -2,16 +2,16 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Go Modules相关操作](#go-modules%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C)
+- [Go Modules 相关操作](#go-modules-%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C)
   - [配置环境变量](#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F)
     - [关于 GOPROXY](#%E5%85%B3%E4%BA%8E-goproxy)
-  - [在module-get模式下:](#%E5%9C%A8module-get%E6%A8%A1%E5%BC%8F%E4%B8%8B)
+  - [在module-get模式下](#%E5%9C%A8module-get%E6%A8%A1%E5%BC%8F%E4%B8%8B)
   - [更换依赖版本](#%E6%9B%B4%E6%8D%A2%E4%BE%9D%E8%B5%96%E7%89%88%E6%9C%AC)
   - [go mod vendor说明](#go-mod-vendor%E8%AF%B4%E6%98%8E)
   - [模块缓存](#%E6%A8%A1%E5%9D%97%E7%BC%93%E5%AD%98)
   - [go mod & sum格式](#go-mod--sum%E6%A0%BC%E5%BC%8F)
-  - [1. go.sum](#1-gosum)
-  - [2. go.mod](#2-gomod)
+    - [1. go.sum](#1-gosum)
+    - [2. go.mod](#2-gomod)
     - [module path](#module-path)
     - [go directive](#go-directive)
     - [require](#require)
@@ -27,7 +27,8 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Go Modules相关操作
+# Go Modules 相关操作
+
 ![](.godule_operation_images/gomodule_operation.png)
 
 ## 配置环境变量
@@ -66,7 +67,17 @@ direct用于指示 Go 回源到模块版本的源地址去抓取(比如 GitHub �
 - 遇见 EOF 时终止并抛出类似 invalid version: unknown revision…的错误
 
 
-## 在module-get模式下:
+## 在module-get模式下
+
+```shell
+$ go help get
+usage: go get [-t] [-u] [-tool] [build flags] [packages]
+
+Get resolves its command-line arguments to packages at specific module versions,
+updates go.mod to require those versions, and downloads source code into the
+module cache.
+# ...
+```
 
 - 拉取最新的版本(优先择取 tag)：go get golang.org/x/text@latest
 - 拉取 master 分支的最新 commit：go get golang.org/x/text@master
@@ -74,13 +85,33 @@ direct用于指示 Go 回源到模块版本的源地址去抓取(比如 GitHub �
 - 拉取 hash 为 342b231 的 commit，最终会被转换为 v0.3.2：go get golang.org/x/text@342b2e
 
 
-## 更换依赖版本
+```go
+// go1.24.3/src/cmd/go/internal/modget/get.go
 
-查看gin所有历史版本:
-```shell
-$ go list -m -versions github.com/gin-gonic/gin 
-github.com/gin-gonic/gin v1.1.1 v1.1.2 v1.1.3 v1.1.4 v1.3.0 v1.4.0 v1.5.0 v1.6.0 v1.6.1 v1.6.2 v1.6.3
+func init() {
+	work.AddBuildFlags(CmdGet, work.OmitModFlag)
+	// 方法实现
+	CmdGet.Run = runGet // break init loop
+
+}
+
 ```
+
+go get支持的协议除了https还支持git+ssh, bzr+ssh, svn+ssh, ssh
+```go
+// go1.24.3/src/cmd/go/internal/vcs/vcs.go
+var defaultSecureScheme = map[string]bool{
+	"https":   true,
+	"git+ssh": true,
+	"bzr+ssh": true,
+	"svn+ssh": true,
+	"ssh":     true,
+}
+```
+
+
+
+## 更换依赖版本
 
 ```shell
 # 修改依赖版本
@@ -113,7 +144,7 @@ GOMODCACHE="/Users/python/go/pkg/mod"
 ## go mod & sum格式
 go.mod以及go.sum一般会成对出现在项目根目录中。其中，go.mod负责记录需求列表(用于构建依赖模块)；而go.sum用于记录安全性以及完整性校验
 
-## 1. go.sum
+### 1. go.sum
 
 ```go
  <模块> <版本>[/go.mod] <哈希>
@@ -129,7 +160,7 @@ go.mod以及go.sum一般会成对出现在项目根目录中。其中，go.mod�
 go.sum文件可以不存在，当go.sum文件不存在时默认会到远程校验数据库进行校验(通过GOSUMDB设置地址)，当然也可以设置为不校验(GONOSUMDB)
 
 
-## 2. go.mod
+### 2. go.mod
 go module最重要的是go.mod文件的定义，它用来标记一个module和它的依赖库以及依赖库的版本。会放在module的主文件夹下，一般以go.mod命名。
 
 一个go.mod内容类似下面的格式:
@@ -302,13 +333,27 @@ encoding/json
 github.com/Danny5487401/go_advanced_code
 ```
 
+
+查看 gin 所有历史版本:
+```shell
+$ go list -m -versions github.com/gin-gonic/gin 
+github.com/gin-gonic/gin v1.1.1 v1.1.2 v1.1.3 v1.1.4 v1.3.0 v1.4.0 v1.5.0 v1.6.0 v1.6.1 v1.6.2 v1.6.3
+```
+
 ### go list 的常用选项
 
+```shell
+$ go help list
+usage: go list [-f format] [-json] [-m] [list flags] [build flags] [packages]
+# ...
+```
 * -deps 选项列出指定包及其所有依赖包。使用深度优先的后序遍历顺序访问包
 * -e 选项改变对错误包的处理方式。
 * -m 选项用于列出模块（go.mod）而非包（package xxx）
 * -u 选项显示有关可用升级的信息。如果模块有更新版本，它将显示最新版本的信息
+* -versions 查看版本,根据 semantic versioning 排序
 
 ## 参考
 
 - [go list 命令详解](https://blog.axiaoxin.com/post/go-list/)
+- [Go Module 浅析](https://blog.icytown.com/posts/go/module/)

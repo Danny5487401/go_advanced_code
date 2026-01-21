@@ -17,9 +17,9 @@ func main() {
 	// Clip 函数用于删除切片中未使用的容量，执行操作后，切片的长度 = 切片的容量
 	s := make([]int, 0, 8)
 	s = append(s, 1, 2, 3, 4)
-	fmt.Printf("len: %d, cap: %d\n", len(s), cap(s))
+	fmt.Printf("len: %d, cap: %d\n", len(s), cap(s)) // len: 4, cap: 8
 	s = slices.Clip(s)
-	fmt.Printf("len: %d, cap: %d\n", len(s), cap(s))
+	fmt.Printf("len: %d, cap: %d\n", len(s), cap(s)) // len: 4, cap: 4
 
 	// Clone 函数返回一个拷贝的切片副本，元素是赋值复制，因此是浅拷贝. 由于是浅拷贝，修改副本切片里的元素，原切片的元素也会更新
 	type User struct {

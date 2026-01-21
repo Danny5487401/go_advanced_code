@@ -2,9 +2,9 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Timer定时器源码分析](#timer%E5%AE%9A%E6%97%B6%E5%99%A8%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+- [Timer 定时器](#timer-%E5%AE%9A%E6%97%B6%E5%99%A8)
   - [全局的 timer 堆经历过三个阶段的重要升级](#%E5%85%A8%E5%B1%80%E7%9A%84-timer-%E5%A0%86%E7%BB%8F%E5%8E%86%E8%BF%87%E4%B8%89%E4%B8%AA%E9%98%B6%E6%AE%B5%E7%9A%84%E9%87%8D%E8%A6%81%E5%8D%87%E7%BA%A7)
-  - [timer的使用](#timer%E7%9A%84%E4%BD%BF%E7%94%A8)
+  - [timer 使用](#timer-%E4%BD%BF%E7%94%A8)
     - [初始化结构体](#%E5%88%9D%E5%A7%8B%E5%8C%96%E7%BB%93%E6%9E%84%E4%BD%93)
     - [删除定时器](#%E5%88%A0%E9%99%A4%E5%AE%9A%E6%97%B6%E5%99%A8)
   - [四叉堆原理](#%E5%9B%9B%E5%8F%89%E5%A0%86%E5%8E%9F%E7%90%86)
@@ -21,7 +21,7 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Timer定时器源码分析
+# Timer 定时器
 
 我们不管用 NewTimer, timer.After，还是 timer.AfterFun 来初始化一个 timer, 这个 timer 最终都会加入到一个全局 timer 堆中， 由 Go runtime 统一管理。
 
@@ -91,7 +91,7 @@ type p struct {
 timer 不再使用 timerproc 异步任务来调度，而是改用调度循环或系统监控调度的时候进行触发执行，减少了线程之间上下文切换带来的性能损失，并且通过使用 netpoll 阻塞唤醒机制可以让 timer 更加及时的得到执行。
 
 
-## timer的使用
+## timer 使用
 
 time.Timer计时器必须通过time.NewTimer、time.AfterFunc或者 time.After 函数创建。
 
